@@ -1,0 +1,15 @@
+# browser-extension scratch file dropped into the project root
+.playwriter-eval.js
+
+# archives (v2.zip is a duplicate of design/mockups/v2)
+*.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# node (for the future Next.js app)
+node_modules/
+.next/
+.env*
