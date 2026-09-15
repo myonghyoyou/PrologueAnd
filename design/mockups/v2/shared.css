@@ -1,0 +1,153 @@
+/* Prologue& v2 mockups — shared parts.
+   1) THEMES: three visual languages, switchable on any concept via <html data-theme="...">
+      product   제품 UI풍   — Pretendard, 밝은 회색 표면 + 흰 패널, 네이비 액센트, 모노스페이스 라벨
+      blueprint 설계도풍    — 트레이싱지, 네이비 1px 선, 코너 틱, Didone 헤드라인, 좌표 라벨
+      editorial 편집물풍    — 순백, Didone + Noto Serif KR, 검정 헤어라인, 넓은 여백
+   2) STRUCTURE: drawer, crosshair cursor, progress strip, work list, theme switcher */
+
+:root, [data-theme="product"]{
+  --bg:#F3F4F7; --panel:#FFFFFF; --panel-border:#E1E3EA; --ink:#111318; --accent:#2B3160; --steel:#7A8AA6; --line:#E1E3EA; --muted:#5B6072;
+  --head:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif; --head-w:700; --head-ls:-.03em; --head-lh:1.15;
+  --body:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif; --body-size:16px; --body-lh:1.6;
+  --label:"JetBrains Mono",ui-monospace,monospace; --label-size:.72rem; --label-ls:.02em; --label-tt:none;
+  --radius:4px; --edge:#E1E3EA; --edge-strong:#111318; --diagram:#7A8AA6; --diagram-strong:#2B3160;
+  --btn-bg:#111318; --btn-fg:#FFFFFF; --btn-border:#111318; --btn2-bg:transparent; --btn2-fg:#111318; --btn2-border:#111318;
+  --gutter:4rem; --show-tick:none; --panel-alpha:1;
+}
+[data-theme="blueprint"]{
+  --bg:#F7F8FA; --panel:rgba(247,248,250,.94); --panel-border:#2B3160; --ink:#111318; --accent:#2B3160; --steel:#7A8AA6; --line:#C9D0DE; --muted:#5B6072;
+  --head:"Bodoni Moda","Noto Serif KR","Apple SD Gothic Neo",serif; --head-w:500; --head-ls:-.01em; --head-lh:1.18;
+  --body:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif; --body-size:16px; --body-lh:1.65;
+  --label:"JetBrains Mono",ui-monospace,monospace; --label-size:.7rem; --label-ls:.06em; --label-tt:uppercase;
+  --radius:0; --edge:#C9D0DE; --edge-strong:#2B3160; --diagram:#7A8AA6; --diagram-strong:#2B3160;
+  --btn-bg:#2B3160; --btn-fg:#FFFFFF; --btn-border:#2B3160; --btn2-bg:transparent; --btn2-fg:#2B3160; --btn2-border:#2B3160;
+  --gutter:4rem; --show-tick:block;
+}
+[data-theme="editorial"]{
+  --bg:#FFFFFF; --panel:#FFFFFF; --panel-border:#111318; --ink:#111318; --accent:#2B3160; --steel:#7A8AA6; --line:#E1E3EA; --muted:#4A4F5E;
+  --head:"Bodoni Moda","Noto Serif KR","Apple SD Gothic Neo",serif; --head-w:500; --head-ls:-.01em; --head-lh:1.2;
+  --body:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif; --body-size:17px; --body-lh:1.75;
+  --label:"Bodoni Moda","Noto Serif KR",serif; --label-size:.85rem; --label-ls:0; --label-tt:none;
+  --radius:0; --edge:#111318; --edge-strong:#111318; --diagram:#111318; --diagram-strong:#2B3160;
+  --btn-bg:#111318; --btn-fg:#FFFFFF; --btn-border:#111318; --btn2-bg:transparent; --btn2-fg:#111318; --btn2-border:#111318;
+  --gutter:8vw; --show-tick:none;
+}
+/* Bodoni hairlines vanish at large sizes when the browser picks a high optical size; pin it */
+[data-theme="blueprint"] body,[data-theme="editorial"] body{font-optical-sizing:none;font-variation-settings:"opsz" 20}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{font-size:var(--body-size)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:var(--body-lh);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.lbl{font-family:var(--label);font-size:var(--label-size);letter-spacing:var(--label-ls);text-transform:var(--label-tt);color:var(--steel)}
+.head{font-family:var(--head);font-weight:var(--head-w);letter-spacing:var(--head-ls);line-height:var(--head-lh)}
+.btn{display:inline-flex;align-items:center;gap:.6rem;padding:.85rem 1.2rem;background:var(--btn-bg);color:var(--btn-fg);border:1px solid var(--btn-border);font-size:.92rem;line-height:1;border-radius:var(--radius)}
+.btn i.tri{width:0;height:0;border-left:8px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.btn.ghost{background:var(--btn2-bg);color:var(--btn2-fg);border-color:var(--btn2-border)}
+.tick{display:var(--show-tick);position:absolute;width:7px;height:7px;border-color:var(--accent);border-style:solid}
+.tick.tl{left:-4px;top:-4px;border-width:1px 0 0 1px;background:var(--bg)}.tick.br{right:-4px;bottom:-4px;border-width:0 1px 1px 0;background:var(--bg)}
+
+/* ---------- theme switcher (mockup only) ---------- */
+#p-theme{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:80;display:flex;gap:2px;background:#111318;padding:3px;border-radius:999px;font-family:"Pretendard",sans-serif}
+#p-theme button{padding:.4rem .8rem;border-radius:999px;font-size:12px;color:#C9CED9}
+#p-theme button.on{background:#fff;color:#111318}
+#p-theme span{align-self:center;padding:0 .6rem 0 .8rem;font-size:11px;color:#8A90A2}
+
+/* ---------- crosshair cursor (desktop only) ---------- */
+#p-crosshair{position:fixed;inset:0;pointer-events:none;z-index:60;opacity:0;transition:opacity .3s}
+.has-crosshair #p-crosshair{opacity:1}
+#p-crosshair .lx,#p-crosshair .ly{position:absolute;background:var(--steel);opacity:.55}
+#p-crosshair .lx{left:0;right:0;height:1px}
+#p-crosshair .ly{top:0;bottom:0;width:1px}
+#p-crosshair.over-text .lx,#p-crosshair.over-text .ly{opacity:.22}
+#p-crosshair .cl{position:absolute;transform:translate(14px,-50%);display:flex;align-items:center;gap:.4rem;font:500 11px/1 var(--body);color:#fff;background:var(--accent);padding:.35rem .55rem;opacity:0;transition:opacity .15s;white-space:nowrap;letter-spacing:0;text-transform:none}
+#p-crosshair .cl::before{content:"";width:0;height:0;border-left:7px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent}
+#p-crosshair.is-clickable .cl{opacity:1}
+#p-crosshair .coord{position:absolute;right:1rem;bottom:3.4rem;font:400 11px/1 "JetBrains Mono",ui-monospace,monospace;color:var(--steel);letter-spacing:.04em}
+.has-crosshair body,.has-crosshair a,.has-crosshair button,.has-crosshair [data-view]{cursor:none}
+
+/* ---------- progress strip ---------- */
+.p-progress{display:flex;gap:4px;align-items:flex-end;height:14px}
+.p-progress i{display:block;width:2px;height:8px;background:var(--line);transition:height .25s,background .25s}
+.p-progress i.on{height:14px;background:var(--ink)}
+.p-progress i.done{background:var(--steel)}
+.p-progress b{display:block;width:22px;height:14px;border:1.5px solid var(--ink);transition:left .35s cubic-bezier(.2,.8,.2,1)}
+.p-progress button{display:contents}
+
+/* ---------- drawer ---------- */
+#p-dim{position:fixed;inset:0;background:rgba(17,19,24,.45);opacity:0;pointer-events:none;transition:opacity .35s;z-index:70}
+#p-drawer{position:fixed;top:0;right:0;bottom:0;width:min(30rem,100vw);background:var(--bg);color:var(--ink);z-index:71;transform:translateX(102%);transition:transform .45s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;font-family:var(--body);border-left:1px solid var(--edge-strong)}
+html.drawer-open #p-dim{opacity:1;pointer-events:auto}
+html.drawer-open #p-drawer{transform:none}
+#p-drawer .hd{display:flex;justify-content:space-between;align-items:center;padding:1.2rem 1.5rem;border-bottom:1px solid var(--edge)}
+#p-drawer .hd h2{margin:0;font-family:var(--head);font-weight:var(--head-w);font-size:1.2rem;letter-spacing:var(--head-ls)}
+#p-drawer .hd button{font-size:.85rem;color:var(--steel)}
+#p-drawer .bd{padding:1.4rem 1.5rem;overflow:auto;flex:1;font-size:.95rem;line-height:1.6}
+#p-drawer .ctx{display:flex;align-items:center;gap:.6rem;padding:.7rem .9rem;border:1px solid var(--edge);font-size:.85rem;margin-bottom:1.2rem;background:var(--panel);border-radius:var(--radius)}
+#p-drawer .ctx b{font-weight:600}
+#p-drawer .ctx span{color:var(--steel)}
+#p-drawer .ctx button{margin-left:auto;font-size:.8rem;color:var(--steel)}
+#p-drawer label{display:block;font-size:.85rem;color:var(--muted);margin:1rem 0 .35rem}
+#p-drawer label:first-child{margin-top:0}
+#p-drawer textarea,#p-drawer input,#p-drawer select{width:100%;font:inherit;padding:.7rem .8rem;border:1px solid var(--edge);background:var(--panel);color:var(--ink);border-radius:var(--radius)}
+#p-drawer textarea{min-height:5.5rem;resize:vertical}
+#p-drawer .chips{display:flex;flex-wrap:wrap;gap:.4rem}
+#p-drawer .chips label{margin:0;display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .65rem;border:1px solid var(--edge);font-size:.85rem;cursor:pointer;border-radius:var(--radius)}
+#p-drawer .chips input{width:auto}
+#p-drawer .ft{padding:1rem 1.5rem;border-top:1px solid var(--edge);display:flex;gap:.6rem;align-items:center}
+#p-drawer .ft .step{font-size:.8rem;color:var(--steel);margin-right:auto}
+#p-drawer .done{text-align:center;padding:3rem 1rem}
+#p-drawer .done .flag{width:0;height:0;border-left:26px solid var(--accent);border-top:15px solid transparent;border-bottom:15px solid transparent;margin:0 auto 1.2rem}
+#p-drawer .done h3{margin:0 0 .5rem;font-family:var(--head);font-weight:var(--head-w);font-size:1.4rem}
+#p-drawer .done p{margin:0;color:var(--muted)}
+#p-drawer .note{font-size:.8rem;color:var(--steel);margin-top:1.2rem}
+
+/* ---------- work list ---------- */
+.p-work .tools{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem;font-size:.85rem}
+.p-work .tools .src{color:var(--steel)}
+.p-work .tools .toggle{display:flex;gap:1rem}
+.p-work .tools .toggle button{color:var(--steel)}
+.p-work .tools .toggle button.on{color:var(--ink);text-decoration:underline;text-underline-offset:4px}
+.p-work .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:2rem 1.5rem}
+.p-work .it .thumb{background:var(--accent);position:relative;overflow:hidden;border-radius:var(--radius)}
+[data-theme="editorial"] .p-work .it .thumb{background:#fff;border:1px solid var(--ink)}
+.p-work .it .thumb svg{position:absolute;inset:0;width:100%;height:100%}
+.p-work .grid .it .thumb{aspect-ratio:4/3;margin-bottom:.7rem}
+.p-work .grid .it h3{margin:0 0 .2rem;font-family:var(--head);font-weight:var(--head-w);font-size:1.1rem;letter-spacing:var(--head-ls)}
+.p-work .grid .it p{margin:0;font-size:.85rem;color:var(--steel)}
+.p-work .list .it{display:grid;grid-template-columns:5rem 1fr auto;gap:1.2rem;align-items:center;padding:1rem 0;border-top:1px solid var(--edge)}
+.p-work .list .it:last-child{border-bottom:1px solid var(--edge)}
+.p-work .list .it .thumb{aspect-ratio:1}
+.p-work .list .it h3{margin:0 0 .15rem;font-family:var(--head);font-weight:var(--head-w);font-size:1.05rem;letter-spacing:var(--head-ls)}
+.p-work .list .it p{margin:0;font-size:.85rem;color:var(--steel)}
+.p-work .list .it .meta{font-size:.8rem;color:var(--steel);text-align:right;white-space:nowrap}
+.p-work .list .it .meta b{display:block;color:var(--ink);font-weight:500}
+
+/* ---------- case study panel (shared markup: .p-case) ---------- */
+.p-case h1{font-family:var(--head);font-weight:var(--head-w);font-size:1.9rem;line-height:1.2;letter-spacing:var(--head-ls);margin:0 0 .4rem;word-break:keep-all}
+.p-case .tags{color:var(--steel);font-size:.85rem;margin:0 0 1.6rem}
+.p-case section{display:grid;grid-template-columns:6.5rem 1fr;gap:1rem;padding:1.1rem 0;border-top:1px solid var(--edge)}
+[data-theme="blueprint"] .p-case section{border-top-style:dashed}
+.p-case section h2{margin:0;font-size:.8rem;font-weight:600;color:var(--accent)}
+[data-theme="editorial"] .p-case section h2{font-family:var(--head);font-weight:500;font-size:.95rem;color:var(--ink)}
+.p-case section h2 small{display:block;font-family:var(--label);font-weight:400;font-size:.65rem;color:var(--steel);letter-spacing:var(--label-ls)}
+.p-case section p{margin:0 0 .6rem;font-size:.92rem;word-break:keep-all}
+.p-case .q{font-family:var(--head);font-weight:var(--head-w);font-size:1.25rem;line-height:1.4;color:var(--accent);word-break:keep-all;letter-spacing:var(--head-ls)}
+.p-case .flow{display:flex;flex-wrap:wrap;gap:.35rem;margin:.3rem 0 .6rem}
+.p-case .flow span{border:1px solid var(--edge-strong);padding:.4rem .6rem;font-size:.8rem;background:var(--panel);border-radius:var(--radius)}
+.p-case .flow span.g{background:var(--accent);color:#fff;border-color:var(--accent)}
+.p-case .flow em{align-self:center;color:var(--steel);font-style:normal}
+.p-case .built{font-size:.78rem;color:var(--steel);margin-top:1.5rem}
+
+@media (max-width:760px){
+  .p-work .list .it{grid-template-columns:3.5rem 1fr}
+  .p-work .list .it .meta{display:none}
+  .p-case section{grid-template-columns:1fr;gap:.3rem}
+  #p-theme{bottom:.6rem}
+  #p-theme span{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  #p-drawer,#p-dim,.p-progress i,.p-progress b{transition:none}
+}

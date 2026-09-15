@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A 도구형 — Prologue&</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Noto+Serif+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="shared.css">
+<style>
+  /* ===== structure A: tool. Every color/font comes from the theme variables in shared.css ===== */
+  .bar{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;gap:1.4rem;padding:0 1.4rem;background:var(--panel);border-bottom:1px solid var(--edge);z-index:20}
+  [data-theme="editorial"] .bar,[data-theme="blueprint"] .bar{background:var(--bg)}
+  .bar .logo{display:flex;align-items:center;gap:.6rem}
+  .bar .logo img{height:26px;width:auto;display:block}
+  .bar .logo img.word{height:34px;display:none}
+  [data-theme="blueprint"] .bar .logo img.sym,[data-theme="editorial"] .bar .logo img.sym,[data-theme="blueprint"] .bar .logo span,[data-theme="editorial"] .bar .logo span{display:none}
+  [data-theme="blueprint"] .bar .logo img.word,[data-theme="editorial"] .bar .logo img.word{display:block}
+  .bar .logo span{font-weight:600;font-size:.95rem;letter-spacing:-.01em}
+  .bar .stage{flex:1;display:flex;align-items:center;justify-content:center;gap:1.6rem}
+  .bar .stage .names{display:flex;gap:1.6rem}
+  .bar .stage .names span{font-size:.8rem;color:var(--steel);transition:color .2s}
+  .bar .stage .names span.on{color:var(--ink);font-weight:600}
+  .bar .stage .names span.done{color:var(--accent)}
+  .bar nav{display:flex;gap:1.2rem;font-size:.9rem;align-items:center}
+  .bar nav .cta{padding:.55rem .9rem;background:var(--btn-bg);color:var(--btn-fg);font-size:.85rem;border-radius:var(--radius)}
+  .bar nav a.on{text-decoration:underline;text-underline-offset:4px}
+
+  main{padding-top:56px;min-height:100vh}
+  .view{display:none}
+  .view.on{display:block}
+
+  #tool{height:calc(100vh - 56px);display:grid;grid-template-columns:22rem 1fr;overflow:hidden}
+  .queue{border-right:1px solid var(--edge);background:var(--panel);display:flex;flex-direction:column}
+  [data-theme="editorial"] .queue{background:var(--bg)}
+  .queue .qh{padding:1rem 1.2rem;border-bottom:1px solid var(--edge);display:flex;justify-content:space-between;align-items:center}
+  .queue .qh b{font-size:.85rem;font-weight:600}
+  .queue .cols{flex:1;display:grid;grid-template-rows:repeat(4,1fr)}
+  .queue .col{padding:.9rem 1.2rem;border-bottom:1px solid var(--edge);position:relative}
+  .queue .col:last-child{border-bottom:0}
+  .queue .col .cn{display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem}
+  .queue .col .cn i{width:8px;height:8px;border:1px solid var(--steel);transform:rotate(45deg);display:inline-block}
+  .queue .col.on .cn i{background:var(--accent);border-color:var(--accent)}
+  .queue .col.done .cn i{background:var(--steel)}
+  .queue .col .cn b{font-size:.85rem;font-weight:600}
+  .queue .col .cn .lbl{margin-left:auto}
+  .queue .ghost{font-size:.8rem;color:var(--steel);border:1px dashed var(--edge);padding:.55rem .7rem;border-radius:var(--radius)}
+  .card{background:var(--panel);border:1px solid var(--edge-strong);padding:.7rem .8rem;font-size:.85rem;line-height:1.45;position:absolute;left:1.2rem;right:1.2rem;top:2.6rem;transition:top .6s cubic-bezier(.2,.8,.2,1),opacity .3s;opacity:0;border-radius:var(--radius)}
+  [data-theme="editorial"] .card{background:#fff}
+  .card .lbl{display:block;margin-bottom:.25rem}
+  .card .st{display:inline-block;margin-top:.5rem;font-size:.72rem;padding:.15rem .45rem;border:1px solid var(--edge);color:var(--muted)}
+  .card.show{opacity:1}
+
+  .work{position:relative;overflow:hidden}
+  .pane{position:absolute;inset:0;padding:3.5rem var(--gutter);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .4s,transform .4s;overflow:auto}
+  .pane.on{opacity:1;transform:none;pointer-events:auto}
+  .pane h1{font-family:var(--head);font-weight:var(--head-w);letter-spacing:var(--head-ls);line-height:var(--head-lh);font-size:clamp(1.8rem,3.2vw,2.6rem);margin:0 0 1.2rem;word-break:keep-all;max-width:22ch}
+  .pane .lead{color:var(--muted);max-width:34rem;margin:0 0 1.6rem;word-break:keep-all}
+  .ask{max-width:44rem}
+  .ask .in{display:flex;border:1px solid var(--edge-strong);background:var(--panel);border-radius:var(--radius);overflow:hidden}
+  [data-theme="editorial"] .ask .in{background:#fff}
+  .ask .in input{flex:1;font:inherit;font-size:1.05rem;padding:1rem 1.1rem;border:0;outline:0;background:transparent;color:var(--ink)}
+  .ask .in button{padding:0 1.3rem;background:var(--btn-bg);color:var(--btn-fg);display:flex;align-items:center;gap:.5rem;font-size:.9rem}
+  .chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+  .chips button{padding:.55rem .85rem;border:1px solid var(--edge);background:var(--panel);font-size:.88rem;border-radius:var(--radius)}
+  [data-theme="editorial"] .chips button{background:transparent;border-color:var(--ink)}
+  .chips button:hover{border-color:var(--accent)}
+  .escape{position:absolute;left:var(--gutter);bottom:2.2rem;font-size:.85rem;color:var(--steel)}
+  .escape a{text-decoration:underline;text-underline-offset:3px;color:var(--ink)}
+  .brand{position:absolute;right:var(--gutter);bottom:2.2rem;text-align:right}
+  .brand b{display:block;font-family:var(--head);font-weight:var(--head-w);font-size:1rem}
+  .brand span{font-size:.8rem;color:var(--steel)}
+
+  table.q{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--edge);font-size:.88rem}
+  [data-theme="editorial"] table.q{background:transparent;border:0;border-top:1px solid var(--ink)}
+  table.q th,table.q td{text-align:left;padding:.7rem .9rem;border-bottom:1px solid var(--edge);vertical-align:middle}
+  table.q th{font-weight:500;color:var(--steel);font-size:.75rem}
+  table.q tr.me td{background:rgba(43,49,96,.05)}
+  table.q .st{display:inline-block;padding:.15rem .5rem;border:1px solid var(--edge);font-size:.72rem;white-space:nowrap}
+  table.q .st.wait{color:#8A6D0B;border-color:#E6D6A2}
+  table.q .st.go{color:var(--accent);border-color:#B9C1DD}
+  table.q .st.done{color:var(--steel)}
+  .btn{margin-top:1.6rem}
+  .btn+.btn{margin-left:.6rem}
+
+  .match{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;max-width:60rem}
+  .match .pj{background:var(--panel);border:1px solid var(--panel-border);padding:1.4rem 1.5rem;position:relative;border-radius:var(--radius)}
+  [data-theme="editorial"] .match .pj{background:transparent;border:0;border-top:1px solid var(--ink);padding:1rem 0}
+  .match .pj .lbl{display:block;margin-bottom:.6rem}
+  .match .pj h2{margin:0 0 .3rem;font-family:var(--head);font-weight:var(--head-w);letter-spacing:var(--head-ls);font-size:1.4rem}
+  .match .pj p{margin:0 0 1rem;color:var(--muted);font-size:.92rem}
+  .match .pj .tags{display:flex;flex-wrap:wrap;gap:.35rem}
+  .match .pj .tags span{font-size:.72rem;padding:.15rem .5rem;border:1px solid var(--edge);color:var(--muted)}
+  .match blockquote{margin:0;padding:0 0 0 1.2rem;border-left:2px solid var(--accent);font-family:var(--head);font-weight:var(--head-w);font-size:1.25rem;line-height:1.45;letter-spacing:var(--head-ls);word-break:keep-all}
+  .match .why{margin-top:1.2rem;font-size:.92rem;color:var(--muted)}
+
+  .dia{max-width:60rem}
+  .dia svg{width:100%;height:auto;display:block;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius)}
+  [data-theme="editorial"] .dia svg{background:transparent;border:0}
+  .dia .lg{display:flex;gap:1.6rem;margin-top:.8rem;font-size:.8rem;color:var(--muted)}
+  .dia .lg i{display:inline-block;width:14px;height:1px;background:var(--diagram);vertical-align:middle;margin-right:.35rem}
+  .dia .lg i.b{background:var(--diagram-strong);height:2px}
+
+  .product .stat{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:44rem;margin-bottom:1.6rem}
+  .product .stat div{background:var(--panel);border:1px solid var(--edge);padding:1rem 1.1rem;border-radius:var(--radius)}
+  [data-theme="editorial"] .product .stat div{background:transparent;border:0;border-top:1px solid var(--ink);padding:.8rem 0}
+  .product .stat b{display:block;font-family:var(--head);font-weight:var(--head-w);font-size:1.6rem;letter-spacing:var(--head-ls)}
+  .product .stat span{font-size:.8rem;color:var(--steel)}
+
+  #work{padding:3rem var(--gutter) 5rem;max-width:74rem;margin:0 auto}
+  #work h1{font-family:var(--head);font-weight:var(--head-w);letter-spacing:var(--head-ls);font-size:1.8rem;margin:0 0 .3rem}
+  #work .lead{color:var(--muted);margin:0 0 2rem;font-size:.95rem}
+
+  #case{max-width:44rem;margin:0 auto;padding:3rem 1.5rem 6rem}
+  #case .top{position:sticky;top:56px;background:var(--bg);padding:.8rem 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--edge);margin-bottom:2rem;z-index:5}
+  #case .top b{font-weight:600}
+  #case .top .btn{margin:0;padding:.5rem .8rem;font-size:.85rem}
+
+  @media (max-width:760px){
+    .bar{gap:.8rem;padding:0 1rem}
+    .bar .stage .names{display:none}
+    #tool{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 56px);overflow:visible}
+    .queue{border-right:0;border-bottom:1px solid var(--edge)}
+    .queue .cols{grid-template-rows:none;grid-template-columns:repeat(4,1fr)}
+    .queue .col{border-bottom:0;border-right:1px solid var(--edge);padding:.7rem .7rem}
+    .queue .col .cn b{font-size:.75rem}
+    .queue .col .cn .lbl,.queue .ghost{display:none}
+    .card{position:static;margin-top:.4rem;display:none}
+    .card.show{display:block}
+    .work{overflow:visible;min-height:60vh}
+    .pane{position:static;padding:1.8rem 1.2rem 5rem;display:none}
+    .pane.on{display:block}
+    .escape,.brand{position:static;margin-top:1.4rem;text-align:left}
+    .match{grid-template-columns:1fr;gap:1.4rem}
+    .product .stat{grid-template-columns:1fr}
+    #work{padding:1.8rem 1.2rem 4rem}
+    table.q .hide{display:none}
+    .btn+.btn{margin-left:0;margin-top:.6rem}
+  }
+</style>
+</head>
+<body>
+<div class="bar">
+  <a class="logo" href="#" data-go="tool"><img class="sym" src="../../../data/images/logo/png/%5Bcolor%5DP%26simple%20black.png" alt=""><img class="word" src="../../../data/images/logo/png/%5Bcolor%5DP%26%20black.png" alt="Prologue&"><span>Prologue&</span></a>
+  <div class="stage"><div id="prog"></div><div class="names"><span class="on">접수</span><span>분석</span><span>재설계</span><span>제품</span></div></div>
+  <nav><a href="#" data-go="work" data-view="열기">Work</a><a href="#" class="cta" data-open-drawer data-view="문의">문의</a></nav>
+</div>
+
+<main>
+  <section id="tool" class="view on">
+    <aside class="queue">
+      <div class="qh"><b>요청 Queue</b><span class="lbl" id="qcount">REQ #0000 · 대기</span></div>
+      <div class="cols">
+        <div class="col on" data-stage="0"><i class="tick tl"></i><div class="cn"><i></i><b>접수</b><span class="lbl">01</span></div><div class="ghost">문제를 고르면 여기에 접수됩니다</div></div>
+        <div class="col" data-stage="1"><div class="cn"><i></i><b>분석</b><span class="lbl">02</span></div><div class="ghost">비슷한 문제를 푼 사례를 찾습니다</div></div>
+        <div class="col" data-stage="2"><div class="cn"><i></i><b>재설계</b><span class="lbl">03</span></div><div class="ghost">기존 흐름을 다시 그립니다</div></div>
+        <div class="col" data-stage="3"><div class="cn"><i></i><b>제품</b><span class="lbl">04</span></div><div class="ghost">실제로 쓸 수 있는 제품이 됩니다</div></div>
+        <div class="card" id="card"><i class="tick tl"></i><i class="tick br"></i><span class="lbl">REQ #0001</span><span id="cardText"></span><br><span class="st" id="cardSt">접수 대기</span></div>
+      </div>
+    </aside>
+
+    <div class="work">
+      <div class="pane on" data-pane="0">
+        <h1>지금 어떤 업무가<br>복잡한가요?</h1>
+        <p class="lead">한 줄이면 충분합니다. 아래 네 가지 중 하나를 골라도 됩니다. 이 요청이 어떻게 정리되는지 그대로 보여드리겠습니다.</p>
+        <div class="ask">
+          <form class="in" id="ask"><input type="text" id="askIn" placeholder="예: 거래처 단가표를 엑셀로 관리하는데 매번 틀려요" autocomplete="off"><button type="submit" data-view="접수">접수 <i class="tri" style="width:0;height:0;border-left:8px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent"></i></button></form>
+          <div class="chips" id="chips"></div>
+        </div>
+        <p class="escape">문의할 생각은 아직 없으신가요? <a href="#" data-go="work">그냥 둘러볼게요</a></p>
+        <div class="brand"><b>Prologue&</b><span>복잡한 업무를 단순한 제품으로 바꿉니다.</span></div>
+      </div>
+
+      <div class="pane" data-pane="1">
+        <h1>접수됐습니다.<br>요청은 이렇게 한곳에 모입니다.</h1>
+        <p class="lead">전화·메신저·이메일·방문으로 흩어지던 요청을 하나의 Queue로 받는 것부터 시작합니다. 아래는 실제로 운영 중인 요청 화면의 구조입니다.</p>
+        <table class="q">
+          <thead><tr><th>요청</th><th>내용</th><th class="hide">희망일</th><th>상태</th></tr></thead>
+          <tbody>
+            <tr class="me"><td class="lbl">#0001</td><td id="rowText"></td><td class="hide">—</td><td><span class="st wait">심사 대기</span></td></tr>
+            <tr><td class="lbl">#0842</td><td>비품 신청 화면 필수값 추가</td><td class="hide">09.20</td><td><span class="st wait">심사 대기</span></td></tr>
+            <tr><td class="lbl">#0841</td><td>검사 결과 엑셀 내보내기</td><td class="hide">09.22</td><td><span class="st go">진행 중 · 09.19 약속</span></td></tr>
+            <tr><td class="lbl">#0839</td><td>작업지시서 인쇄 여백 수정</td><td class="hide">09.16</td><td><span class="st done">완료</span></td></tr>
+          </tbody>
+        </table>
+        <button class="btn" data-stage-go="2" data-view="다음">비슷한 문제를 어떻게 풀었는지 보기 <i class="tri"></i></button>
+      </div>
+
+      <div class="pane" data-pane="2">
+        <h1>비슷한 문제를<br>이렇게 풀었습니다.</h1>
+        <div class="match">
+          <div class="pj" id="pj"></div>
+          <div><blockquote id="pjInsight"></blockquote><p class="why" id="pjWhy"></p><button class="btn" data-stage-go="3" data-view="다음">기존 흐름이 어떻게 바뀌었는지 보기 <i class="tri"></i></button></div>
+        </div>
+      </div>
+
+      <div class="pane" data-pane="3">
+        <h1>기존 흐름을 다시 그렸습니다.</h1>
+        <p class="lead" id="diaLead"></p>
+        <div class="dia"><svg id="dia" viewBox="0 0 900 300" aria-label="기존 흐름과 재설계 흐름"></svg><div class="lg"><span><i></i>기존 흐름</span><span><i class="b"></i>재설계</span></div></div>
+        <button class="btn" data-stage-go="4" data-view="다음">이 흐름을 제품으로 <i class="tri"></i></button>
+        <button class="btn ghost" data-open-case data-view="열기">Case Study 전체 읽기 <i class="tri"></i></button>
+      </div>
+
+      <div class="pane product" data-pane="4">
+        <h1>요청 하나가 제품이 되기까지,<br>이 과정을 함께합니다.</h1>
+        <p class="lead">방금 보신 4단계가 Prologue&이 일하는 방식입니다. 남은 것은 실제 업무를 듣는 일뿐입니다. 입력하신 문장은 문의 서랍에 이미 채워져 있습니다.</p>
+        <div class="stat"><div><b>4단계</b><span>접수 → 분석 → 재설계 → 제품</span></div><div><b>1개</b><span>요청이 들어오는 경로</span></div><div><b>0회</b><span>"그거 언제 돼요?" 문의</span></div></div>
+        <button class="btn" id="openFinal" data-view="문의">문의 서랍 열기 <i class="tri"></i></button>
+        <button class="btn ghost" data-go="work" data-view="열기">다른 작업 보기 <i class="tri"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="work" class="view">
+    <h1>Work</h1>
+    <p class="lead">요청 Queue와 같은 구조로 정리한 프로젝트 목록입니다. Notion에서 추가하면 여기에 나타납니다.</p>
+    <div id="worklist"></div>
+  </section>
+
+  <section id="case" class="view p-case">
+    <div class="top"><b>Por favor, Harry</b><a class="btn" href="#" data-open-drawer data-project="por-favor-harry" data-view="문의">이 프로젝트를 보고 문의</a></div>
+    <div id="caseBody"></div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script src="shared.js"></script>
+<script>
+  P.initTheme('product'); P.initDrawer(); P.initCrosshair(); P.initLenis();
+  document.getElementById('caseBody').innerHTML = P.caseHTML();
+  const prog = P.progress(document.getElementById('prog'), 4, i => { if (i <= maxStage) goStage(i); });
+  const names = [...document.querySelectorAll('.bar .names span')], cols = [...document.querySelectorAll('.queue .col')], panes = [...document.querySelectorAll('.pane')], card = document.getElementById('card');
+  let stage = 0, maxStage = 0, request = '', matched = null;
+  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  const go = v => { document.querySelectorAll('.view').forEach(x => x.classList.toggle('on', x.id === v)); document.querySelectorAll('.bar nav a[data-go]').forEach(a => a.classList.toggle('on', a.dataset.go === v)); window.scrollTo(0, 0); if (P.lenis) P.lenis.scrollTo(0, { immediate: true }); };
+  document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) { e.preventDefault(); go(g.dataset.go); } const c = e.target.closest('[data-open-case]'); if (c) { e.preventDefault(); go('case'); } });
+  P.renderWork(document.getElementById('worklist'), { mode: 'list', onOpen: () => go('case') });
+
+  document.getElementById('chips').innerHTML = P.problems.map(p => `<button type="button" data-key="${p.key}" data-view="접수">${p.name}</button>`).join('');
+  document.getElementById('chips').addEventListener('click', e => { const b = e.target.closest('[data-key]'); if (!b) return; const pr = P.problem(b.dataset.key); submit(pr.desc, pr.key); });
+  document.getElementById('ask').addEventListener('submit', e => { e.preventDefault(); const v = document.getElementById('askIn').value.trim(); if (!v) { document.getElementById('askIn').focus(); return; } submit(v, guess(v)); });
+  const guess = t => /엑셀|메신저|카톡|이메일|전화|요청|흩어/.test(t) ? 'scattered' : /시스템|화면|erp|복잡|어렵/i.test(t) ? 'legacy' : /종이|수작업|인쇄|문제집/.test(t) ? 'paper' : /아이디어|앱|서비스|만들/.test(t) ? 'idea' : 'scattered';
+
+  function submit(text, key) { request = text; matched = P.projectFor(key) || P.projects[0];
+    document.getElementById('cardText').textContent = text; document.getElementById('rowText').textContent = text; document.getElementById('qcount').textContent = 'REQ #0001 · 접수됨';
+    card.classList.add('show'); fillMatch(); drawDiagram(); goStage(1); }
+  function fillMatch() { const p = matched, pr = P.problem(p.problem);
+    document.getElementById('pj').innerHTML = `<i class="tick tl"></i><i class="tick br"></i><span class="lbl">${pr.name} · ${p.period}</span><h2>${p.title}</h2><p>${p.tagline}</p><div class="tags">${p.tags.map(t => `<span>${t}</span>`).join('')}</div>`;
+    document.getElementById('pjInsight').textContent = p.insight;
+    document.getElementById('pjWhy').textContent = `입력하신 요청은 "${pr.name}" 유형으로 분류됩니다. 이 프로젝트는 같은 유형의 문제를 ${p.role}로 해결했습니다.`;
+    document.getElementById('diaLead').textContent = `${p.title}의 기존 흐름(위)과 재설계한 흐름(아래)입니다. 단계를 더한 것이 아니라 경로를 줄였습니다.`; }
+  function drawDiagram() { const p = matched, svg = document.getElementById('dia'), c1 = cssVar('--diagram') || '#7A8AA6', c2 = cssVar('--diagram-strong') || '#2B3160', lf = cssVar('--label') || 'monospace', bf = cssVar('--body') || 'sans-serif';
+    const box = (x, y, w, t, cls) => `<g class="${cls}"><rect x="${x}" y="${y}" width="${w}" height="44" fill="rgba(255,255,255,.9)" stroke="${cls === 'b' ? c2 : c1}" stroke-width="${cls === 'b' ? 1.5 : 1}"/><text x="${x + w / 2}" y="${y + 27}" text-anchor="middle" font-family="${bf}" font-size="13" fill="#111318">${t}</text></g>`;
+    let s = `<text x="30" y="40" font-family="${lf}" font-size="11" fill="${c1}">BEFORE</text><text x="30" y="200" font-family="${lf}" font-size="11" fill="${c1}">AFTER</text>`;
+    const bw = Math.min(150, (760 - (p.before.length - 1) * 30) / p.before.length);
+    p.before.forEach((t, i) => { const x = 110 + i * (bw + 30); s += box(x, 60, bw, t, 'a'); if (i < p.before.length - 1) s += `<line class="a" x1="${x + bw}" y1="82" x2="${x + bw + 30}" y2="82" stroke="${c1}"/>`; });
+    const aw = Math.min(150, (760 - (p.after.length - 1) * 30) / p.after.length);
+    p.after.forEach((t, i) => { const x = 110 + i * (aw + 30); s += box(x, 220, aw, t, 'b'); if (i < p.after.length - 1) s += `<line class="b" x1="${x + aw}" y1="242" x2="${x + aw + 30}" y2="242" stroke="${c2}" stroke-width="1.5"/>`; });
+    const lastX = 110 + (p.after.length - 1) * (aw + 30) + aw;
+    s += `<polygon class="flag" points="${lastX + 6},232 ${lastX + 26},242 ${lastX + 6},252" fill="${c2}"/>`; svg.innerHTML = s; }
+  function animateDiagram() { if (!window.gsap) return; gsap.set('#dia .a, #dia .b, #dia .flag', { opacity: 0 }); gsap.to('#dia .a', { opacity: 1, duration: .35, stagger: .12 }); gsap.to('#dia .b', { opacity: 1, duration: .35, stagger: .14, delay: .9 }); gsap.to('#dia .flag', { opacity: 1, duration: .3, delay: 1.9 }); }
+  function goStage(n) { stage = n; maxStage = Math.max(maxStage, n); prog.set(Math.max(n - 1, 0));
+    names.forEach((s, i) => { s.classList.toggle('on', i === n - 1 || (n === 0 && i === 0)); s.classList.toggle('done', i < n - 1); });
+    cols.forEach((c, i) => { c.classList.toggle('on', i === n - 1 || (n === 0 && i === 0)); c.classList.toggle('done', i < n - 1); });
+    panes.forEach(p => p.classList.toggle('on', +p.dataset.pane === n));
+    if (n >= 1) { const col = cols[n - 1]; card.style.top = (col.offsetTop + 40) + 'px'; document.getElementById('cardSt').textContent = ['접수 대기', '분석 중', '재설계 중', '제품 · 약속일 확정'][n - 1]; }
+    if (n === 3) animateDiagram();
+    if (n === 4) setTimeout(() => P.openDrawer({ project: matched && matched.slug, message: request }), 700); }
+  document.addEventListener('click', e => { const b = e.target.closest('[data-stage-go]'); if (b) goStage(+b.dataset.stageGo); });
+  document.getElementById('openFinal').addEventListener('click', () => P.openDrawer({ project: matched && matched.slug, message: request }));
+</script>
+</body>
+</html>

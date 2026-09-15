@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ko" data-theme="product">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D 포스터형 — Prologue&</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="shared.css">
+<style>
+  /* ===== structure D: horizontal posters (Rauno-faithful). One typeface, huge type, one big flat shape per panel. ===== */
+  :root{--g:#ECEDF0;--paper:#FFFFFF;--ink:#111318;--navy:#2B3160;--sky:#7DB6F2;--steel:#7A8AA6;
+    --pw:min(1240px,84vw);--ph:min(760px,74vh);--gap:36px}
+  html{font-size:16px}
+  body{background:var(--g);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;overflow:hidden;height:100vh;-webkit-font-smoothing:antialiased}
+  .has-crosshair body{cursor:none}
+
+  /* tiny plus cursor (Rauno) instead of full-screen lines */
+  #plus{position:fixed;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;pointer-events:none;z-index:60;opacity:0;transition:opacity .2s,transform .15s}
+  #plus::before,#plus::after{content:"";position:absolute;background:var(--ink)}
+  #plus::before{left:8px;top:0;width:1px;height:18px}
+  #plus::after{top:8px;left:0;width:18px;height:1px}
+  #plus.on{opacity:1}
+  #plus.hot{transform:rotate(45deg) scale(1.4)}
+  #plus span{position:absolute;left:24px;top:-2px;font-size:11px;font-weight:500;white-space:nowrap;background:var(--ink);color:#fff;padding:.25rem .45rem;opacity:0;transition:opacity .15s}
+  #plus.hot span{opacity:1}
+
+  .top{position:fixed;left:0;right:0;top:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:20;pointer-events:none}
+  .top>*{pointer-events:auto}
+  .top img{height:30px;width:auto;display:block}
+  .top nav{display:flex;gap:1.4rem;font-size:13px;color:var(--steel)}
+  .top nav a:hover{color:var(--ink)}
+  #strip{position:fixed;left:50%;top:26px;transform:translateX(-50%);z-index:20}
+
+  /* the strip */
+  #rail{position:absolute;left:0;top:0;height:100vh;display:flex;align-items:center;padding:0 calc((100vw - var(--pw)) / 2);gap:var(--gap);will-change:transform}
+  .panel{position:relative;flex:0 0 var(--pw);height:var(--ph);background:var(--paper);overflow:hidden}
+  .panel .cap{position:absolute;left:0;top:-26px;font-size:12px;color:var(--steel);white-space:nowrap}
+  .panel .cap b{color:var(--ink);font-weight:500;margin-right:.6rem}
+  .panel h1,.panel h2{position:absolute;margin:0;font-weight:500;letter-spacing:-.035em;line-height:1.02;font-size:clamp(3rem,7.2vw,6.6rem);word-break:keep-all;z-index:2}
+  .panel h1{left:6%;top:12%}
+  .panel h1 i{font-style:normal;display:block}
+  .panel h1 i.in{padding-left:.8em}
+  .panel .sm{position:absolute;left:6%;bottom:9%;font-size:clamp(1rem,1.3vw,1.2rem);color:var(--steel);max-width:26rem;line-height:1.5;z-index:2;word-break:keep-all}
+  .panel .sm b{color:var(--ink);font-weight:500}
+  .panel[data-view]{cursor:none}
+
+  /* shapes */
+  .sh{position:absolute;z-index:1}
+  .circle{border-radius:50%}
+  .sky{background:var(--sky)} .nv{background:var(--navy)} .bk{background:var(--ink)}
+  .tri{width:0;height:0;border-top:var(--t) solid transparent;border-bottom:var(--t) solid transparent;border-left:var(--w) solid var(--navy)}
+  .scribble{fill:none;stroke:var(--sky);stroke-width:34;stroke-linecap:round;stroke-linejoin:round}
+  .dots{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+  .dots i{display:block;aspect-ratio:1;background:var(--navy)}
+  .ring{border:26px solid var(--sky);border-radius:50%}
+  .lines path{fill:none;stroke:var(--navy);stroke-width:22;stroke-linecap:round}
+  .lines path.s{stroke:var(--sky)}
+  .steps5{position:absolute;left:6%;right:6%;bottom:16%;display:flex;justify-content:space-between;z-index:2}
+  .steps5 div{text-align:center;width:16%}
+  .steps5 i{display:block;width:clamp(36px,4.6vw,64px);aspect-ratio:1;border-radius:50%;background:var(--navy);margin:0 auto 14px}
+  .steps5 div:nth-child(3) i{background:var(--sky)}
+  .steps5 b{display:block;font-weight:500;font-size:clamp(.9rem,1.2vw,1.1rem)}
+  .steps5 span{display:block;font-size:.8rem;color:var(--steel)}
+
+  .panel.end{background:var(--navy);color:#fff}
+  .panel.end .sm{color:rgba(255,255,255,.7)}
+  .panel.end .sm b{color:#fff}
+
+  .panel.project .t{position:absolute;left:6%;top:11%;z-index:2}
+  .panel.project h2{position:static;font-size:clamp(2.6rem,6vw,5.4rem)}
+  .panel.project .tag{display:block;margin-top:1rem;font-size:clamp(1rem,1.3vw,1.2rem);color:var(--steel);max-width:26rem;line-height:1.45;word-break:keep-all}
+  .panel.project .go{position:absolute;left:6%;bottom:9%;font-size:.95rem;z-index:2;display:inline-flex;align-items:center;gap:.5rem}
+  .panel.project .go::after{content:"";width:0;height:0;border-left:9px solid var(--ink);border-top:5px solid transparent;border-bottom:5px solid transparent}
+
+  .hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);font-size:12px;color:var(--steel);z-index:20;transition:opacity .4s}
+  .hint.off{opacity:0}
+
+  /* panels over the strip */
+  .side{position:fixed;top:0;right:0;bottom:0;width:min(34rem,100vw);background:var(--paper);border-left:1px solid var(--ink);z-index:30;transform:translateX(102%);transition:transform .45s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+  .side.on{transform:none}
+  .side .ph{display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.5rem;border-bottom:1px solid #E1E3EA}
+  .side .ph b{font-weight:600;font-size:1.1rem}
+  .side .ph button{font-size:.85rem;color:var(--steel)}
+  .side .pb{flex:1;overflow:auto;padding:1.4rem 1.5rem 3rem}
+  .p-work .grid{grid-template-columns:1fr 1fr}
+  .p-work .it .thumb{background:var(--navy)}
+
+  @media (max-width:760px){
+    :root{--pw:calc(100vw - 32px);--ph:78vh;--gap:16px}
+    body{overflow:auto;height:auto}
+    #rail{position:static;height:auto;flex-direction:column;padding:88px 16px 60px;gap:44px;transform:none!important}
+    .panel{flex:none;width:100%}
+    .panel h1,.panel h2,.panel.project h2{font-size:clamp(2.4rem,11vw,3.4rem)}
+    .panel .cap{top:-22px}
+    .panel .sm{max-width:none;right:6%}
+    #strip,.hint,#plus{display:none}
+    .steps5{left:6%;right:6%;bottom:12%}
+    .steps5 span{display:none}
+    .side{width:100vw}
+    .p-work .grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div id="plus"><span></span></div>
+<div class="top">
+  <a href="#" id="home"><img src="../../../data/images/logo/png/%5Bcolor%5DP%26%20black.png" alt="Prologue&"></a>
+  <nav><a href="#" id="toWork">Work</a><a href="#" id="toList" data-view="목록">목록</a><a href="#" data-open-drawer data-view="문의">문의</a></nav>
+</div>
+<div id="strip"></div>
+<div class="hint" id="hint">휠을 돌리면 옆으로 넘어갑니다</div>
+
+<div id="rail">
+  <!-- 01 -->
+  <section class="panel" data-cap="Prologue&">
+    <span class="cap"><b>01</b>Prologue&</span>
+    <h1><i>복잡한</i><i class="in">업무를</i><i>단순한</i><i class="in">제품으로</i><i>바꿉니다.</i></h1>
+    <svg class="sh" style="right:-4%;top:-6%;width:62%;height:112%" viewBox="0 0 600 600"><path class="scribble" d="M120 300 C 80 120, 330 60, 400 180 S 560 380, 380 470 S 90 520, 150 330 S 330 130, 460 260 S 470 480, 300 430 S 170 250, 300 210 S 480 300, 410 400"/></svg>
+    <p class="sm"><b>B2B Product Engineer.</b> 업무 프로세스를 분석하고, 불필요한 단계를 줄이고, 실제 쓸 수 있는 웹 제품으로 구현합니다.</p>
+  </section>
+  <!-- 02 -->
+  <section class="panel" data-cap="Prologue&">
+    <span class="cap"><b>02</b>Prologue&</span>
+    <h1><i>&amp;</i><i class="in">그 다음 장을</i><i>엽니다.</i></h1>
+    <i class="sh tri" style="--w:min(520px,42vw);--t:min(260px,21vw);right:0;top:50%;transform:translateY(-50%)"></i>
+    <p class="sm">Prologue는 시작, &amp;는 이어짐. 지금 쓰는 방식이 <b>다음 장</b>으로 넘어가도록 만듭니다.</p>
+  </section>
+  <!-- 03~06 problems (rendered by JS) -->
+  <div id="problems" style="display:contents"></div>
+  <!-- 07~10 projects (rendered by JS) -->
+  <div id="projects" style="display:contents"></div>
+  <!-- 11 -->
+  <section class="panel">
+    <span class="cap"><b>11</b>일하는 방식</span>
+    <h1><i>다섯</i><i class="in">정거장.</i></h1>
+    <div class="steps5"><div><i></i><b>Understand</b><span>업무를 이해</span></div><div><i></i><b>Simplify</b><span>단계를 뺀다</span></div><div><i></i><b>Design</b><span>흐름을 설계</span></div><div><i></i><b>Build</b><span>제품으로</span></div><div><i></i><b>Improve</b><span>쓰면서 고침</span></div></div>
+  </section>
+  <!-- 12 -->
+  <section class="panel end" data-view="문의" data-open-drawer>
+    <span class="cap"><b>12</b>문의</span>
+    <h1><i>지금 하시는</i><i class="in">업무를</i><i>알려주세요.</i></h1>
+    <i class="sh tri" style="--w:min(380px,30vw);--t:min(190px,15vw);right:8%;bottom:8%;border-left-color:var(--sky)"></i>
+    <p class="sm"><b>2영업일 안에 답변.</b> 현재 방식과 가장 불편한 점 한 줄이면 충분합니다.</p>
+  </section>
+</div>
+
+<aside class="side" id="listPanel"><div class="ph"><b>Work</b><button type="button" data-close-side>닫기</button></div><div class="pb"><div id="worklist"></div></div></aside>
+<aside class="side" id="casePanel"><div class="ph"><b>Por favor, Harry</b><button type="button" data-close-side>닫기</button></div><div class="pb p-case" id="caseBody"></div></aside>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="shared.js"></script>
+<script>
+  P.initDrawer();
+  document.getElementById('caseBody').innerHTML = P.caseHTML();
+  const isMobile = matchMedia('(max-width:760px)').matches;
+
+  /* problem posters: one line + one shape each */
+  const shapes = [
+    `<i class="sh circle sky" style="width:22%;aspect-ratio:1;right:30%;top:14%"></i><i class="sh circle sky" style="width:14%;aspect-ratio:1;right:10%;top:52%"></i><i class="sh circle sky" style="width:9%;aspect-ratio:1;right:44%;bottom:12%"></i><i class="sh circle sky" style="width:6%;aspect-ratio:1;right:22%;bottom:30%"></i>`,
+    `<div class="sh dots" style="right:6%;top:10%;width:46%">${'<i></i>'.repeat(84)}</div>`,
+    `<i class="sh sky" style="width:34%;height:70%;right:10%;top:15%;transform:rotate(-8deg)"></i><i class="sh" style="width:34%;height:70%;right:14%;top:12%;transform:rotate(4deg);background:#fff;border:1px solid var(--ink)"></i>`,
+    `<i class="sh ring" style="width:40%;aspect-ratio:1;right:8%;top:12%"></i>`
+  ];
+  const short = ['흩어진 요청', '불편한 시스템', '종이·수작업', '아이디어'];
+  document.getElementById('problems').innerHTML = P.problems.map((pr, i) => `
+    <section class="panel" data-problem="${pr.key}">
+      <span class="cap"><b>0${i + 3}</b>Problem 0${i + 1}</span>
+      <h1>${short[i].split(' ').map((w, k) => `<i class="${k ? 'in' : ''}">${w}</i>`).join('')}</h1>
+      ${shapes[i]}
+      <p class="sm">${pr.desc}</p>
+    </section>`).join('');
+
+  /* project posters: title huge + the project's before→after lines as a shape */
+  const big = p => { const n = p.before.length; const paths = p.before.map((_, i) => { const y = 60 + i * (480 / Math.max(n - 1, 1)); return `<path d="M0 ${y} C 260 ${y}, 300 300, 520 300" class="${i % 2 ? 's' : ''}"/>`; }).join(''); return `<svg class="sh lines" style="right:-2%;top:0;width:58%;height:100%" viewBox="0 0 640 600" preserveAspectRatio="xMaxYMid meet">${paths}<path d="M520 300 L 640 300"/></svg>`; };
+  document.getElementById('projects').innerHTML = P.projects.map((p, i) => `
+    <section class="panel project" data-slug="${p.slug}" data-view="Case Study">
+      <span class="cap"><b>0${i + 7}</b>Work 0${i + 1} · ${P.problem(p.problem).name}</span>
+      <div class="t"><h2>${p.title.replace(', ', ',<br>').replace(' Learning', '<br>Learning').replace(' UI/UX', '<br>UI/UX')}</h2><span class="tag">${p.tagline}</span></div>
+      ${big(p)}
+      <span class="go">Case Study</span>
+    </section>`).join('');
+
+  /* horizontal strip with inertia */
+  const rail = document.getElementById('rail'), panels = [...rail.querySelectorAll('.panel')];
+  let target = 0, cur = 0, max = 0, idx = 0;
+  const strip = P.progress(document.getElementById('strip'), panels.length, i => goTo(i));
+  const step = () => panels[1].offsetLeft - panels[0].offsetLeft;
+  const measure = () => { max = rail.scrollWidth - innerWidth; };
+  function goTo(i) { target = Math.min(max, Math.max(0, panels[i].offsetLeft - panels[0].offsetLeft)); }
+  function tick() { cur += (target - cur) * .09; rail.style.transform = `translate3d(${-cur}px,0,0)`; const i = Math.round(cur / step()); if (i !== idx && i >= 0 && i < panels.length) { idx = i; strip.set(i); } requestAnimationFrame(tick); }
+  if (!isMobile) {
+    measure(); window.addEventListener('resize', () => { measure(); goTo(idx); });
+    window.addEventListener('wheel', e => { if (document.documentElement.classList.contains('drawer-open') || document.querySelector('.side.on')) return; e.preventDefault(); target = Math.min(max, Math.max(0, target + (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) * 1.4)); document.getElementById('hint').classList.add('off'); }, { passive: false });
+    window.addEventListener('keydown', e => { if (e.key === 'ArrowRight') goTo(Math.min(panels.length - 1, idx + 1)); if (e.key === 'ArrowLeft') goTo(Math.max(0, idx - 1)); });
+    let drag = null;
+    rail.addEventListener('pointerdown', e => { if (e.target.closest('a,button')) return; drag = { x: e.clientX, t: target, moved: false }; });
+    window.addEventListener('pointermove', e => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 4) drag.moved = true; target = Math.min(max, Math.max(0, drag.t - dx)); });
+    window.addEventListener('pointerup', () => { if (drag && drag.moved) rail.dataset.dragged = '1'; setTimeout(() => delete rail.dataset.dragged, 50); drag = null; });
+    tick();
+    /* intro: panels rise */
+    if (window.gsap && !matchMedia('(prefers-reduced-motion:reduce)').matches) gsap.from(panels.slice(0, 3), { y: 30, opacity: 0, duration: .7, stagger: .12, ease: 'power3.out' });
+  }
+
+  /* plus cursor with label */
+  const plus = document.getElementById('plus'), pl = plus.querySelector('span');
+  if (matchMedia('(hover:hover) and (pointer:fine)').matches && !isMobile) {
+    document.addEventListener('mousemove', e => { document.documentElement.classList.add('has-crosshair'); plus.classList.add('on'); plus.style.transform = ''; plus.style.left = e.clientX + 'px'; plus.style.top = e.clientY + 'px';
+      const t = e.target.closest('[data-view],a,button'); plus.classList.toggle('hot', !!t); if (t) pl.textContent = t.dataset.view || '열기'; });
+    document.addEventListener('mouseleave', () => plus.classList.remove('on'));
+  }
+
+  /* open things */
+  const openSide = id => { document.querySelectorAll('.side').forEach(p => p.classList.toggle('on', p.id === id)); };
+  const closeSides = () => document.querySelectorAll('.side').forEach(p => p.classList.remove('on'));
+  rail.addEventListener('click', e => { if (rail.dataset.dragged) return; const pj = e.target.closest('.panel.project'); if (pj) { openSide('casePanel'); return; } const pr = e.target.closest('.panel[data-problem]'); if (pr) goTo(6 + P.projects.findIndex(p => p.problem === pr.dataset.problem)); });
+  document.addEventListener('click', e => { if (e.target.closest('[data-close-side]')) closeSides(); });
+  document.getElementById('toWork').addEventListener('click', e => { e.preventDefault(); closeSides(); if (isMobile) panels[6].scrollIntoView({ behavior: 'smooth' }); else goTo(6); });
+  document.getElementById('toList').addEventListener('click', e => { e.preventDefault(); openSide('listPanel'); });
+  document.getElementById('home').addEventListener('click', e => { e.preventDefault(); closeSides(); if (isMobile) window.scrollTo({ top: 0, behavior: 'smooth' }); else goTo(0); });
+  P.renderWork(document.getElementById('worklist'), { mode: 'grid', onOpen: () => openSide('casePanel') });
+  if (isMobile) P.initLenis();
+</script>
+</body>
+</html>
