@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prologue& 디자인 시안 비교</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{--ink:#111318;--navy:#2B3160;--steel:#7A8AA6;--rule:#E1E3EA;--bg:#F4F5F8}
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:14px;line-height:1.6}
+  .top{display:flex;align-items:center;gap:1rem;padding:.8rem 1.2rem;background:#fff;border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:2;flex-wrap:wrap}
+  .top h1{font-size:15px;margin:0 1rem 0 0;font-weight:700}
+  .tabs{display:flex;gap:.3rem;flex-wrap:wrap}
+  .tabs button{border:1px solid var(--rule);background:#fff;padding:.45rem .8rem;border-radius:4px;cursor:pointer;font:inherit;font-size:13px}
+  .tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .top .open{margin-left:auto;font-size:13px;color:var(--navy)}
+  .modes{display:flex;gap:.3rem}
+  .modes button{border:1px solid var(--rule);background:#fff;padding:.45rem .7rem;border-radius:4px;cursor:pointer;font:inherit;font-size:13px}
+  .modes button.on{border-color:var(--ink)}
+
+  .stage{display:grid;grid-template-columns:1fr 440px;gap:1.2rem;padding:1.2rem;align-items:start}
+  .stage.single{grid-template-columns:1fr}
+  .stage.single .mobile{display:none}
+  .stage.mobileonly{grid-template-columns:440px}
+  .stage.mobileonly .desktop{display:none}
+  .device{background:#fff;border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+  .device .cap{padding:.5rem .8rem;border-bottom:1px solid var(--rule);color:var(--steel);font-size:12px;display:flex;justify-content:space-between}
+  .desktop .vp{width:100%;overflow:hidden;position:relative}
+  .desktop iframe{width:1200px;height:3600px;border:0;transform-origin:0 0;display:block}
+  .mobile iframe{width:400px;height:3600px;border:0;display:block;margin:0 auto}
+  .mobile .vp{display:flex;justify-content:center;background:#EEF0F4;padding:1rem 0}
+
+  .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;padding:1.2rem}
+  .grid5 .device .vp{overflow:hidden;height:520px}
+  .grid5 iframe{width:1200px;height:2600px;border:0;transform-origin:0 0;display:block;pointer-events:none}
+
+  .criteria{margin:0 1.2rem 2rem;background:#fff;border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem}
+  .criteria h2{font-size:14px;margin:0 0 .6rem}
+  .criteria table{border-collapse:collapse;width:100%;font-size:13px}
+  .criteria th,.criteria td{border-top:1px solid var(--rule);padding:.45rem .5rem;text-align:left;vertical-align:top}
+  .criteria th{color:var(--steel);font-weight:500;width:9rem}
+  .criteria td.q{color:#3A3F4E}
+  .criteria .tick{display:flex;gap:.3rem}
+  .criteria .tick span{width:2.2rem;text-align:center;border:1px solid var(--rule);border-radius:3px;padding:.1rem 0;font-size:11px;color:var(--steel)}
+  .note{margin:0 1.2rem 1.2rem;font-size:12px;color:var(--steel)}
+</style>
+</head>
+<body>
+  <div class="top">
+    <h1>Prologue& 디자인 시안 비교</h1>
+    <div class="tabs" id="tabs">
+      <button data-src="01-editorial.html" class="on">1안 에디토리얼 미니멀</button>
+      <button data-src="02-blueprint.html">2안 블루프린트</button>
+      <button data-src="03-deep-navy.html">3안 딥 네이비</button>
+      <button data-src="04-swiss.html">4안 스위스</button>
+      <button data-src="05-paper-to-product.html">5안 종이→제품</button>
+    </div>
+    <div class="modes">
+      <button data-mode="both" class="on">데스크톱 + 모바일</button>
+      <button data-mode="single">데스크톱만</button>
+      <button data-mode="mobileonly">모바일만</button>
+      <button data-mode="all">5안 한눈에</button>
+    </div>
+    <a class="open" id="open" href="01-editorial.html" target="_blank">새 탭에서 열기 ↗</a>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="device desktop">
+      <div class="cap"><span>데스크톱 1200px</span><span id="scaleLabel"></span></div>
+      <div class="vp" id="dvp"><iframe id="dframe" src="01-editorial.html" title="데스크톱 미리보기"></iframe></div>
+    </div>
+    <div class="device mobile">
+      <div class="cap"><span>모바일 400px</span><span>실제 크기</span></div>
+      <div class="vp"><iframe id="mframe" src="01-editorial.html" title="모바일 미리보기"></iframe></div>
+    </div>
+  </div>
+
+  <div class="grid5" id="all" hidden></div>
+
+  <p class="note">폰트는 Google Fonts·jsDelivr CDN에서 불러오므로 온라인 상태에서 열어야 의도한 서체로 보입니다. 로고는 data/images/logo/png 원본을 참조합니다.</p>
+
+  <div class="criteria">
+    <h2>비교 기준 (08_design_directions.md §5.3)</h2>
+    <table>
+      <tr><th>5초 테스트</th><td class="q">시안을 5초 보고 "무엇을 하는 브랜드인지" 말할 수 있는가</td><td><div class="tick"><span>1안</span><span>2안</span><span>3안</span><span>4안</span><span>5안</span></div></td></tr>
+      <tr><th>문의 욕구</th><td class="q">Problems 섹션에서 자기 문제를 찾을 수 있는가</td><td><div class="tick"><span>1안</span><span>2안</span><span>3안</span><span>4안</span><span>5안</span></div></td></tr>
+      <tr><th>가독성</th><td class="q">모바일 400px에서 본문이 편하게 읽히는가</td><td><div class="tick"><span>1안</span><span>2안</span><span>3안</span><span>4안</span><span>5안</span></div></td></tr>
+      <tr><th>확장성</th><td class="q">병원 UI/UX·Custom Commerce에도 같은 톤이 적용되는가</td><td><div class="tick"><span>1안</span><span>2안</span><span>3안</span><span>4안</span><span>5안</span></div></td></tr>
+      <tr><th>공수</th><td class="q">Week 1~6 안에 4개 Case Study를 이 톤으로 만들 수 있는가</td><td><div class="tick"><span>1안</span><span>2안</span><span>3안</span><span>4안</span><span>5안</span></div></td></tr>
+    </table>
+  </div>
+
+<script>
+  const srcs = Array.from(document.querySelectorAll('#tabs button')).map(b => b.dataset.src);
+  const dframe = document.getElementById('dframe');
+  const mframe = document.getElementById('mframe');
+  const open = document.getElementById('open');
+  const stage = document.getElementById('stage');
+  const all = document.getElementById('all');
+
+  function fitDesktop(){
+    const vp = document.getElementById('dvp');
+    const scale = Math.min(1, vp.clientWidth / 1200);
+    dframe.style.transform = `scale(${scale})`;
+    vp.style.height = (3600 * scale) + 'px';
+    document.getElementById('scaleLabel').textContent = Math.round(scale * 100) + '% 축소';
+  }
+  function select(src){
+    document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.src === src));
+    dframe.src = src; mframe.src = src; open.href = src;
+  }
+  document.getElementById('tabs').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (b) select(b.dataset.src);
+  });
+  document.querySelector('.modes').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('.modes button').forEach(x => x.classList.toggle('on', x === b));
+    const mode = b.dataset.mode;
+    stage.className = 'stage' + (mode === 'both' ? '' : ' ' + mode);
+    stage.hidden = mode === 'all';
+    all.hidden = mode !== 'all';
+    if (mode === 'all' && !all.children.length){
+      srcs.forEach((s, i) => {
+        const d = document.createElement('div'); d.className = 'device';
+        d.innerHTML = `<div class="cap"><span>${i+1}안</span><a href="${s}" target="_blank">열기 ↗</a></div><div class="vp"><iframe src="${s}" title="${i+1}안"></iframe></div>`;
+        all.appendChild(d);
+      });
+      fitAll();
+    }
+    if (mode !== 'all') fitDesktop();
+  });
+  function fitAll(){
+    all.querySelectorAll('.vp').forEach(vp => {
+      const f = vp.querySelector('iframe');
+      const scale = vp.clientWidth / 1200;
+      f.style.transform = `scale(${scale})`;
+    });
+  }
+  window.addEventListener('resize', () => { fitDesktop(); if (!all.hidden) fitAll(); });
+  fitDesktop();
+</script>
+</body>
+</html>

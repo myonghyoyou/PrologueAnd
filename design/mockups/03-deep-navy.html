@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3안 딥 네이비 프로덕트 — Prologue&</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Noto+Serif+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --base:#161A33; --surface:#1F2447; --surface2:#262C55; --text:#F3F4F8; --muted:#A9B4D0; --steel:#7A8AA6; --edge:rgba(169,180,208,.18);
+    --serif:"Bodoni Moda","Noto Serif KR","Apple SD Gothic Neo",serif;
+    --sans:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{font-size:17px;color-scheme:dark}
+  body{margin:0;background:var(--base);color:var(--text);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased;font-optical-sizing:none;font-variation-settings:"opsz" 20}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:72rem;margin:0 auto;padding:0 1.5rem}
+
+  header{display:flex;justify-content:space-between;align-items:center;padding:1.5rem 0}
+  header img{height:48px;width:auto;display:block}
+  nav{display:flex;gap:2rem;font-size:.92rem;color:var(--muted)}
+  nav a.on{color:var(--text)}
+
+  .hero{padding:4.5rem 0 3rem;text-align:center}
+  .hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,5.4vw,4.4rem);line-height:1.15;margin:0 auto 1.4rem;max-width:20ch;word-break:keep-all}
+  .hero p{margin:0 auto 2rem;max-width:34rem;color:var(--muted);word-break:keep-all}
+  .cta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-bottom:3.5rem}
+  .btn{display:inline-block;padding:.9rem 1.4rem;border-radius:6px;border:1px solid var(--edge);font-size:.95rem;line-height:1;color:var(--text)}
+  .btn.primary{background:var(--text);color:var(--base);border-color:var(--text)}
+  .kw{display:flex;justify-content:center;flex-wrap:wrap;gap:.5rem 1.4rem;margin:0 0 3rem;padding:0;list-style:none;font-size:.85rem;color:var(--steel)}
+
+  /* product frame */
+  .frame{background:var(--surface);border:1px solid var(--edge);border-radius:10px;overflow:hidden;box-shadow:0 40px 80px -30px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.2);text-align:left;font-size:.82rem}
+  .frame .bar{display:flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-bottom:1px solid var(--edge);color:var(--muted)}
+  .frame .bar i{width:9px;height:9px;border-radius:50%;background:var(--edge);display:inline-block}
+  .frame .bar span{margin-left:.6rem}
+  .app{display:grid;grid-template-columns:11rem 1fr;min-height:22rem}
+  .side{border-right:1px solid var(--edge);padding:1rem .9rem;color:var(--muted)}
+  .side .brand{color:var(--text);font-weight:600;margin-bottom:1rem}
+  .side div{padding:.35rem .5rem;border-radius:5px}
+  .side div.on{background:var(--surface2);color:var(--text)}
+  .main{padding:1rem 1.2rem}
+  .main h4{margin:0 0 .8rem;font-size:.95rem;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+  .main h4 small{font-weight:400;color:var(--muted)}
+  .row{display:grid;grid-template-columns:1.4fr 3fr 1fr 1.2fr 1.5fr;gap:.8rem;padding:.6rem .5rem;border-top:1px solid var(--edge);align-items:center;color:var(--muted)}
+  .row.head{border-top:0;font-size:.74rem;color:var(--steel)}
+  .row b{color:var(--text);font-weight:500}
+  .pill{display:inline-block;padding:.15rem .5rem;border-radius:999px;font-size:.72rem;border:1px solid var(--edge)}
+  .pill.wait{color:#E9D8A6;border-color:rgba(233,216,166,.35)}
+  .pill.go{color:#B5D6C2;border-color:rgba(181,214,194,.35)}
+  .pill.done{color:var(--muted)}
+  .act{display:flex;gap:.4rem}
+  .act span{padding:.2rem .55rem;border-radius:5px;background:var(--surface2);color:var(--text);font-size:.72rem}
+
+  section{padding:4.5rem 0}
+  h2.sec{font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,3vw,2.3rem);margin:0 0 .6rem;line-height:1.3}
+  .lead{margin:0 0 2.2rem;color:var(--muted);max-width:34rem;word-break:keep-all}
+  .problems{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+  .card{background:var(--surface);border:1px solid var(--edge);border-radius:10px;padding:1.5rem 1.6rem;word-break:keep-all}
+  .card h3{margin:0 0 .4rem;font-size:1.1rem;font-weight:600}
+  .card p{margin:0;color:var(--muted);font-size:.95rem}
+
+  /* case */
+  .case-head{max-width:46rem;margin-bottom:2.4rem}
+  .case-head .num{font-size:.85rem;color:var(--steel);margin:0 0 .5rem}
+  .case-head h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.9rem,3.6vw,2.8rem);line-height:1.25;margin:0 0 .8rem;word-break:keep-all}
+  .case-head .tags{margin:0;font-size:.9rem;color:var(--steel)}
+  .block{display:grid;grid-template-columns:3fr 9fr;gap:2rem;padding:2.2rem 0;border-top:1px solid var(--edge)}
+  .block h3{margin:0;font-size:1rem;font-weight:600;color:var(--muted)}
+  .block .body{max-width:34rem;color:var(--muted);word-break:keep-all}
+  .block .body p{margin:0 0 1rem}
+  .block .body.full{max-width:none}
+  .insight{padding:2.6rem 0;border-top:1px solid var(--edge);text-align:center}
+  .insight p{font-family:var(--serif);font-size:clamp(1.4rem,2.6vw,2rem);line-height:1.4;margin:0 auto;max-width:36rem;color:var(--text);word-break:keep-all}
+
+  .flow{display:flex;align-items:stretch;flex-wrap:wrap;gap:.6rem;margin:.6rem 0 1.6rem}
+  .node{background:var(--surface);border:1px solid var(--edge);border-radius:8px;padding:.7rem .95rem;font-size:.88rem;line-height:1.45;min-width:8rem;color:var(--text)}
+  .node .label{display:block;font-size:.72rem;color:var(--steel);margin-bottom:.15rem}
+  .node.multi{display:flex;flex-direction:column;gap:.15rem;color:var(--muted);border-style:dashed}
+  .node.bad{color:var(--steel)}
+  .node.good{background:var(--text);color:var(--base);border-color:var(--text)}
+  .node.good .label{color:#5B6386}
+  .arrow{display:flex;align-items:center;color:var(--steel);padding:0 .1rem}
+  .list{margin:0;padding-left:1.1rem}
+  .list li{margin:.2rem 0}
+
+  footer{padding:2.5rem 0 3rem;font-size:.85rem;color:var(--steel);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-top:1px solid var(--edge)}
+
+  @media (max-width:760px){
+    html{font-size:16px}
+    nav{display:none}
+    .hero{padding:2.8rem 0 2rem}
+    .problems{grid-template-columns:1fr}
+    .block{grid-template-columns:1fr;gap:.8rem}
+    section{padding:3rem 0}
+    .app{grid-template-columns:1fr}
+    .side{display:none}
+    .row{grid-template-columns:1.2fr 2.4fr 1fr}
+    .row .hide{display:none}
+    .flow{flex-direction:column}
+    .arrow{transform:rotate(90deg);width:2rem;justify-content:center}
+    .node{min-width:0}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="#"><img src="../../data/images/logo/png/%5Bcolor%5DP%26%20white.png" alt="Prologue&"></a>
+    <nav><a class="on" href="#">Home</a><a href="#">Work</a><a href="#">Services</a><a href="#">About · Contact</a></nav>
+  </header>
+
+  <section class="hero">
+    <h1>복잡한 업무를 단순한 제품으로 바꿉니다.</h1>
+    <p>업무 프로세스를 분석하고, 불필요한 단계를 줄이고, 더 나은 UX를 설계해 실제 사용할 수 있는 웹 제품으로 구현합니다.</p>
+    <div class="cta"><a class="btn primary" href="#">작업 사례 보기</a><a class="btn" href="#">프로젝트 문의하기</a></div>
+    <ul class="kw"><li>Workflow Design</li><li>B2B UX</li><li>Product Engineering</li><li>Automation</li></ul>
+
+    <!-- Product frame: reconstructed review queue screen from Por favor, Harry -->
+    <div class="frame">
+      <div class="bar"><i></i><i></i><i></i><span>Por favor, Harry — 심사 Queue</span></div>
+      <div class="app">
+        <div class="side">
+          <div class="brand">Por favor, Harry</div>
+          <div class="on">심사 Queue</div><div>진행 중</div><div>완료</div><div>요청자 링크</div><div>Dashboard</div>
+        </div>
+        <div class="main">
+          <h4>심사 대기 <small>오늘 들어온 요청 6건 · 정리 필요 0건</small></h4>
+          <div class="row head"><span>요청자</span><span>요청 내용</span><span class="hide">희망일</span><span>상태</span><span>처리</span></div>
+          <div class="row"><b>영업 1팀 김OO</b><span>거래처 단가표 양식 변경</span><span class="hide">09.18</span><span class="pill wait">심사 대기</span><span class="act"><span>수락</span><span>보류</span></span></div>
+          <div class="row"><b>총무 박OO</b><span>비품 신청 화면 필수값 추가</span><span class="hide">09.20</span><span class="pill wait">심사 대기</span><span class="act"><span>수락</span><span>보류</span></span></div>
+          <div class="row"><b>품질 이OO</b><span>검사 결과 엑셀 내보내기</span><span class="hide">09.22</span><span class="pill go">진행 중 · 09.19 약속</span><span class="act"><span>상태 공유됨</span></span></div>
+          <div class="row"><b>생산 최OO</b><span>작업지시서 인쇄 여백 수정</span><span class="hide">09.16</span><span class="pill done">완료</span><span class="act"><span>요청자 확인</span></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec">이런 문제를 해결합니다</h2>
+    <p class="lead">화면을 새로 그리기 전에, 업무가 왜 복잡해졌는지부터 봅니다.</p>
+    <div class="problems">
+      <div class="card"><h3>복잡한 업무</h3><p>엑셀, 메신저, 이메일, 구두 요청 등으로 업무가 흩어져 있는 경우.</p></div>
+      <div class="card"><h3>불편한 기존 시스템</h3><p>기능은 있지만 직원들이 사용하기 어렵고 화면이 복잡한 경우.</p></div>
+      <div class="card"><h3>종이·수작업</h3><p>기존 업무를 디지털화하고 싶지만 단순 복사보다 구조 개선이 필요한 경우.</p></div>
+      <div class="card"><h3>제품화가 필요한 아이디어</h3><p>아이디어는 있으나 Workflow, UX, MVP 구조가 없는 경우.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="case-head">
+      <p class="num">Work 01 — Por favor, Harry</p>
+      <h2>흩어진 업무 요청을 하나의 Workflow로</h2>
+      <p class="tags">Workflow Design · Product Thinking · Internal Tool</p>
+    </div>
+
+    <div class="block">
+      <h3>문제</h3>
+      <div class="body">
+        <p>업무 요청이 전화, 메신저, 이메일, 직접 방문으로 흩어져 들어왔습니다. 요청자는 요구를 충분히 정리하지 않은 채 전달하는 경우가 많았고, 받는 사람은 그것을 다시 정리하거나 기억해야 했습니다.</p>
+        <p>업무 중 걸려오는 전화와 자리로 찾아오는 요청 때문에 몰입이 자주 끊겼습니다.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>기존 흐름</h3>
+      <div class="body full">
+        <div class="flow">
+          <div class="node multi"><span class="label">요청 경로 4개</span><span>전화</span><span>메신저</span><span>이메일</span><span>직접 방문</span></div>
+          <div class="arrow">→</div>
+          <div class="node"><span class="label">담당자 1명</span>다시 정리하고<br>기억한다</div>
+          <div class="arrow">→</div>
+          <div class="node bad"><span class="label">결과</span>몰입 중단<br>진행상황 문의 반복</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight"><p>ToDo 관리의 문제가 아니라<br>요청 Workflow의 문제였습니다.</p></div>
+
+    <div class="block">
+      <h3>재설계</h3>
+      <div class="body full">
+        <div class="flow">
+          <div class="node"><span class="label">01</span>요청자별<br>개인 링크</div>
+          <div class="arrow">→</div>
+          <div class="node"><span class="label">02</span>구조화된<br>요청폼</div>
+          <div class="arrow">→</div>
+          <div class="node"><span class="label">03</span>하나의<br>심사 Queue</div>
+          <div class="arrow">→</div>
+          <div class="node"><span class="label">04</span>수락 시<br>약속일 확정</div>
+          <div class="arrow">→</div>
+          <div class="node good"><span class="label">05</span>진행 상태<br>자동 공유</div>
+        </div>
+        <ul class="list">
+          <li>요청 단계에서 필수 정보를 채우도록 해 되묻는 일을 없앴습니다.</li>
+          <li>심사 Queue에서 한 번에 판단하고, 수락하면 약속일이 확정됩니다.</li>
+          <li>요청자는 자신의 링크에서 진행 상태를 직접 확인합니다.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Prologue& — 복잡한 업무를 단순한 제품으로 바꿉니다.</span>
+    <span>시안 3안 · 딥 네이비 프로덕트</span>
+  </footer>
+</div>
+</body>
+</html>
