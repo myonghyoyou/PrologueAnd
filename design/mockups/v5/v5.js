@@ -6,6 +6,20 @@ window.V5 = (function () {
   const desktop = () => matchMedia('(min-width:1024px)').matches;
   const LINE = () => Math.round(innerHeight * 0.58);
   let wrap, track, lenis = null, panels = [], hline, ink, guide, lineLen = 0, geo = {}, launched = false, animTip = 0, tipMin = 0;
+  /* 이동 중 축소 (V2 계승): 속도에 비례해 트랙을 최대 ZOOM.max 만큼 축소, 기준점은 매 프레임 화면 중심 */
+  const ZOOM = { max: 0.12, vel: 36, ease: 0.12, on: !reduced };   // 시안 조정: ?zoom=0.10&vel=30 (max = 최대 축소율, vel = 최대 축소에 이르는 속도 px/frame)
+  { const q = new URLSearchParams(location.search); if (q.get('zoom')) ZOOM.max = +q.get('zoom'); if (q.get('vel')) ZOOM.vel = +q.get('vel'); if (q.get('zoom') === '0') ZOOM.on = false; }
+  const st = { tipX: 0, s: 0, z: 1 };
+  function tick() {
+    if (!launched) return;
+    const v = lenis ? Math.abs(lenis.velocity || 0) : 0;
+    const zt = ZOOM.on ? 1 - Math.min(1, v / ZOOM.vel) * ZOOM.max : 1;
+    st.z += (zt - st.z) * ZOOM.ease; if (Math.abs(st.z - zt) < 0.0005) st.z = zt;
+    const cx = st.s + innerWidth / 2, cy = innerHeight / 2, z = st.z;
+    track.style.transformOrigin = `${cx}px ${cy}px`; track.style.transform = z < 0.9995 ? `scale(${z})` : '';
+    const mx = innerWidth / 2 + (st.tipX - st.s - innerWidth / 2) * z, my = cy + (geo.y - cy) * z;
+    document.getElementById('marker').style.transform = `translate(${mx}px, ${my}px) scale(${z})`;
+  }
 
   /* ---------- markup: project panels 02~05, panel 07 list, progress map ---------- */
   V.build = function () {
@@ -63,6 +77,7 @@ window.V5 = (function () {
     if (target) { wrap.scrollLeft = target.offsetLeft - 12; }
     intro(!!target || reduced || sl() > innerWidth * 0.3);
     (lenis ? lenis.on.bind(lenis) : wrap.addEventListener.bind(wrap))('scroll', render);
+    if (lenis) gsap.ticker.add(tick);
     addEventListener('resize', () => { build(); render(); });
   };
 
@@ -110,7 +125,7 @@ window.V5 = (function () {
     ink.style.strokeDashoffset = lineLen - len; const dkInk = document.querySelector('#hline-dark .ink'); if (dkInk) dkInk.style.strokeDashoffset = lineLen - len;
     hline.querySelectorAll('.pd').forEach(g => PANELS.progress(g, Math.min(1, Math.max(0, (tipX - +g.dataset.x0) / (+g.dataset.x1 - +g.dataset.x0)))));
     hline.querySelectorAll('.n6').forEach(n => n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6');
-    const marker = document.getElementById('marker'); marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
+    const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched || !lenis) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);
     document.getElementById('flag').classList.toggle('on', tipX >= geo.flagX - 2);
@@ -135,5 +150,6 @@ window.V5 = (function () {
         gsap.fromTo(ghost, { x: from.left + from.width / 2, y: from.top + from.height / 2, scale: 0.75 }, { x: geo.nodeX + tipMin - sl(), y: geo.y, scale: 1, duration: 0.9, ease: 'power3.inOut', onComplete() { ghost.remove(); marker.style.opacity = 1; launched = true; render(); } });
       });
   }
+  V.zoom = ZOOM;
   return V;
 })();
