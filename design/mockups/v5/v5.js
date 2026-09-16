@@ -81,7 +81,8 @@ window.V5 = (function () {
     // zoom toggle (mockup)
     const tg = document.getElementById('zoomToggle'), info = document.getElementById('zoomInfo');
     if (tg) { tg.checked = ZOOM.on; const upd = () => info.textContent = ZOOM.on ? `최대 ${Math.round(ZOOM.max * 100)}% · 속도 ${ZOOM.vel} · ease ${ZOOM.ease}` : '끔'; upd(); tg.addEventListener('change', () => { ZOOM.on = tg.checked; localStorage.setItem('v5-zoom', ZOOM.on ? 'on' : 'off'); upd(); }); }
-    addEventListener('resize', () => { build(); render(); });
+    addEventListener('resize', () => { build(); render(); if (lenis) lenis.resize(); });
+    if (lenis) lenis.resize();
   };
 
   function build() {
