@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prologue& 컬러셋 — 딥 네이비 + 웜 본</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --navy-950:#151A33;--navy-900:#1F2447;--navy-800:#2B3160;--navy-700:#3B4478;--navy-600:#4E5A94;--navy-500:#6675AC;--navy-400:#8A96C2;--navy-300:#AEB7D6;--navy-200:#CCD3E8;--navy-100:#E4E8F4;--navy-50:#F1F3F9;
+    --bone-0:#FFFFFF;--bone-50:#FAF9F6;--bone-100:#F3F1EC;--bone-200:#E8E5DE;--bone-300:#D6D2C8;--bone-400:#B3AEA3;--bone-500:#8A857A;--bone-600:#66625A;--bone-700:#4A4741;--bone-800:#2E2C28;--bone-900:#1C1B18;
+    --signal:#3B6FE0;--signal-soft:#DCEBFB;--success:#2E7D5B;--warning:#B7791F;--error:#C0392B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bone-50);color:var(--bone-900);font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:3rem 2rem 6rem}
+  h1{font-size:2rem;font-weight:600;letter-spacing:-.03em;margin:0 0 .3rem}
+  .lead{color:var(--bone-600);margin:0 0 2.5rem;max-width:40rem}
+  h2{font-size:1.05rem;font-weight:600;margin:2.6rem 0 1rem;padding-top:1.2rem;border-top:1px solid var(--bone-200)}
+  .scale{display:grid;grid-template-columns:repeat(11,1fr);gap:6px}
+  .scale div{height:84px;display:flex;flex-direction:column;justify-content:flex-end;padding:.5rem .6rem;font-size:11px;line-height:1.35}
+  .scale b{display:block;font-weight:600}
+  .row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .row div{height:64px;display:flex;align-items:flex-end;padding:.5rem .6rem;font-size:11px;color:#fff}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  th,td{text-align:left;padding:.55rem .6rem;border-top:1px solid var(--bone-200)}
+  th{color:var(--bone-500);font-weight:500}
+  .chip{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:-2px;margin-right:6px;border:1px solid rgba(0,0,0,.08)}
+  .ok{color:var(--success);font-weight:600}.aa{color:var(--warning);font-weight:600}.no{color:var(--error);font-weight:600}
+
+  /* applied sample */
+  .sample{display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;margin-top:1rem}
+  .page{background:var(--bone-50);border:1px solid var(--bone-200);padding:2rem}
+  .page h3{font-size:1.9rem;font-weight:600;letter-spacing:-.03em;line-height:1.15;margin:0 0 .8rem}
+  .page h3 em{font-style:normal;color:var(--navy-800)}
+  .page p{color:var(--bone-700);margin:0 0 1.2rem;max-width:30rem}
+  .btn{display:inline-block;padding:.75rem 1.1rem;background:var(--navy-800);color:#fff;font-size:.92rem;border-radius:2px;margin-right:.5rem}
+  .btn.o{background:transparent;color:var(--bone-900);border:1px solid var(--bone-900)}
+  .tag{display:inline-block;padding:.2rem .55rem;background:var(--navy-100);color:var(--navy-800);font-size:.78rem;border-radius:2px;margin-right:.3rem}
+  .dia{margin:1.4rem 0;border:1px solid var(--bone-200);background:var(--bone-0);padding:1rem}
+  .dia svg{width:100%;height:auto;display:block}
+  .frame{border:1px solid var(--bone-900);background:var(--bone-0);padding:6px;margin-top:1rem}
+  .frame div{height:120px;background:linear-gradient(0deg,var(--bone-100),var(--bone-0))}
+  .dark{background:var(--navy-950);color:var(--bone-50);padding:2rem}
+  .dark h3{font-size:1.5rem;font-weight:600;letter-spacing:-.02em;margin:0 0 .6rem}
+  .dark p{color:var(--navy-300);margin:0 0 1.2rem}
+  .dark .btn{background:var(--bone-50);color:var(--navy-900)}
+  .dark .card{background:var(--navy-900);border:1px solid var(--navy-800);padding:1rem;margin-top:1rem;font-size:.9rem}
+  .states span{display:inline-block;padding:.25rem .6rem;border-radius:2px;font-size:.8rem;margin-right:.4rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>컬러셋 — 딥 네이비 + 웜 본</h1>
+  <p class="lead">계열은 블루(로고 네이비). 중립은 차가운 회색 대신 따뜻한 본(bone). 강조는 네이비 하나, 시그널 블루는 인터랙션 순간에만. 결정 근거는 docs/13_colorset.md.</p>
+
+  <h2>Navy — 주색</h2>
+  <div class="scale" id="navy"></div>
+  <h2>Bone — 중립</h2>
+  <div class="scale" id="bone"></div>
+  <h2>인터랙티브 · 상태</h2>
+  <div class="row"><div style="background:var(--signal)">signal #3B6FE0</div><div style="background:var(--signal-soft);color:var(--bone-900)">signal-soft #DCEBFB</div><div style="background:var(--success)">success #2E7D5B</div><div style="background:var(--warning)">warning #B7791F</div><div style="background:var(--error)">error #C0392B</div></div>
+
+  <h2>대비 검증 (실시간 계산)</h2>
+  <table id="contrast"><tr><th>글자</th><th>바탕</th><th>대비</th><th>판정</th><th>용도</th></tr></table>
+
+  <h2>적용 예</h2>
+  <div class="sample">
+    <div class="page">
+      <span class="tag">Workflow Design</span><span class="tag">Internal Tool</span>
+      <h3>흩어진 업무 요청을<br><em>하나의 Workflow</em>로</h3>
+      <p>전화·메신저·이메일·직접 방문으로 들어오던 요청을 개인 링크 하나로 받고, 심사 Queue에서 한 번에 판단합니다.</p>
+      <span class="btn">Case Study 읽기</span><span class="btn o">프로젝트 문의</span>
+      <div class="dia"><svg viewBox="0 0 520 140"><g fill="none" stroke="#8A96C2" stroke-width="1"><path d="M20 20 C 120 20, 140 70, 240 70"/><path d="M20 50 C 120 50, 140 70, 240 70"/><path d="M20 90 C 120 90, 140 70, 240 70"/><path d="M20 120 C 120 120, 140 70, 240 70"/></g><path d="M240 70 L 470 70" stroke="#2B3160" stroke-width="1.5" fill="none"/><circle cx="330" cy="70" r="3.5" fill="#FAF9F6" stroke="#2B3160"/><circle cx="400" cy="70" r="3.5" fill="#FAF9F6" stroke="#2B3160"/><polygon points="470,62 488,70 470,78" fill="#2B3160"/><g font-family="Pretendard" font-size="10" fill="#8A857A"><text x="20" y="14">전화</text><text x="20" y="44">메신저</text><text x="20" y="84">이메일</text><text x="20" y="114">방문</text><text x="330" y="90" text-anchor="middle">심사</text><text x="400" y="90" text-anchor="middle">약속일</text><text x="479" y="94" text-anchor="middle">공유</text></g></svg></div>
+      <div class="frame"><div></div></div>
+      <p style="margin-top:1rem;font-size:.85rem;color:var(--bone-500)">캡션·메타는 bone-500. 본문은 bone-700, 헤드라인은 bone-900.</p>
+      <div class="states"><span style="background:#DFF0E8;color:var(--success)">접수됨</span><span style="background:#F7EBD3;color:var(--warning)">확인 필요</span><span style="background:#F6DCD9;color:var(--error)">오류</span></div>
+    </div>
+    <div class="dark">
+      <h3>지금 하시는 업무를 알려주세요.</h3>
+      <p>현재 방식과 가장 불편한 점 한 줄이면 충분합니다. 2영업일 안에 답변드립니다.</p>
+      <span class="btn">프로젝트 문의하기</span>
+      <div class="card">반전 섹션(문의·푸터)에서만 네이비를 면으로 씁니다. 카드 navy-900, 선 navy-800, 보조 글자 navy-300.</div>
+    </div>
+  </div>
+</div>
+<script>
+  const navy = { 950: '#151A33', 900: '#1F2447', 800: '#2B3160', 700: '#3B4478', 600: '#4E5A94', 500: '#6675AC', 400: '#8A96C2', 300: '#AEB7D6', 200: '#CCD3E8', 100: '#E4E8F4', 50: '#F1F3F9' };
+  const bone = { 900: '#1C1B18', 800: '#2E2C28', 700: '#4A4741', 600: '#66625A', 500: '#8A857A', 400: '#B3AEA3', 300: '#D6D2C8', 200: '#E8E5DE', 100: '#F3F1EC', 50: '#FAF9F6', 0: '#FFFFFF' };
+  const lum = h => { const c = h.slice(1).match(/../g).map(x => parseInt(x, 16) / 255).map(v => v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4)); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+  const cr = (a, b) => { const [l1, l2] = [lum(a), lum(b)].sort((x, y) => y - x); return (l1 + .05) / (l2 + .05); };
+  const paint = (id, obj) => document.getElementById(id).innerHTML = Object.entries(obj).map(([k, v]) => `<div style="background:${v};color:${lum(v) > .4 ? '#1C1B18' : '#fff'}"><b>${k}</b>${v}</div>`).join('');
+  paint('navy', navy); paint('bone', bone);
+  const pairs = [['bone-900', bone[900], 'bone-50', bone[50], '헤드라인·본문'], ['bone-700', bone[700], 'bone-50', bone[50], '본문'], ['bone-500', bone[500], 'bone-50', bone[50], '캡션(본문 크기 이상)'], ['navy-800', navy[800], 'bone-50', bone[50], '강조 구절·링크'], ['white', '#FFFFFF', 'navy-800', navy[800], '버튼 글자'], ['signal', '#3B6FE0', 'bone-50', bone[50], '포커스·호버'], ['bone-50', bone[50], 'navy-950', navy[950], '반전 섹션 글자'], ['navy-300', navy[300], 'navy-950', navy[950], '반전 섹션 보조 글자'], ['navy-800', navy[800], 'navy-100', navy[100], '태그']];
+  document.getElementById('contrast').innerHTML += pairs.map(([n1, c1, n2, c2, use]) => { const r = cr(c1, c2); const v = r >= 7 ? '<span class="ok">AAA</span>' : r >= 4.5 ? '<span class="aa">AA</span>' : r >= 3 ? '<span class="aa">AA 큰 글자</span>' : '<span class="no">부족</span>'; return `<tr><td><i class="chip" style="background:${c1}"></i>${n1}</td><td><i class="chip" style="background:${c2}"></i>${n2}</td><td>${r.toFixed(1)} : 1</td><td>${v}</td><td>${use}</td></tr>`; }).join('');
+</script>
+</body>
+</html>
