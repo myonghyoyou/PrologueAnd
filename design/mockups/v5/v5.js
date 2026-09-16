@@ -4,7 +4,7 @@ window.V5 = (function () {
   const V = {};
   const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const desktop = () => matchMedia('(min-width:1024px)').matches;
-  const LINE = () => Math.round(innerHeight * 0.60);
+  const LINE = () => { const p0 = document.getElementById('p00'); return p0.offsetTop + Math.round(p0.offsetHeight * 0.58); }; // 선 높이 = 패널 상단 + 58%
   let wrap, track, lenis = null, panels = [], hline, ink, guide, lineLen = 0, geo = {}, launched = false, animTip = 0, tipMin = 0;
   /* 이동 중 축소 (V2 계승): 속도에 비례해 트랙을 최대 ZOOM.max 만큼 축소, 기준점은 매 프레임 화면 중심 */
   const ZOOM = { max: 0.12, vel: 28, ease: 0.18, on: !reduced && localStorage.getItem('v5-zoom') !== 'off' };   // 시안 조정: ?zoom=0.10&vel=30 (max = 최대 축소율, vel = 최대 축소에 이르는 속도 px/frame)
@@ -87,6 +87,7 @@ window.V5 = (function () {
 
   function build() {
     const W = track.scrollWidth, H = innerHeight, y = LINE();
+    document.documentElement.style.setProperty('--ly', (y - document.getElementById('p00').offsetTop) + 'px');
     panels.forEach(p => { p._x = p.offsetLeft; p._w = p.offsetWidth; });
     const p00 = panels[0], p08 = panels.find(p => p.classList.contains('p08')), p09 = panels[panels.length - 1];
     const pt = p00.offsetTop, nodeL = Math.round(p00._w * 0.56), nodeX = p00._x + nodeL, yl = y - pt;   // panel-local coords for the hero svg

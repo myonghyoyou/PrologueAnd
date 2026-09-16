@@ -4,9 +4,9 @@ body{overflow:hidden}
 .hwrap{position:fixed;inset:0;overflow-x:auto;overflow-y:hidden;background:var(--bone-100)}
 .hwrap::-webkit-scrollbar{height:0}
 .htrack{position:relative;display:flex;height:100%;align-items:stretch}
-:root{--pt:96px;--pb:32px}
-.htrack{width:max-content;padding:0 12px}   /* max-content: 끝 패널의 여백까지 스크롤 폭에 포함 */
-.hp{position:relative;flex:none;width:min(78vw,1200px);height:auto;margin:var(--pt) 12px var(--pb);background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;overflow:hidden}
+:root{--pw:min(1100px,74vw);--ph:min(680px,72vh);--ly:0px}   /* V2 비율(84vw×74vh)보다 한 단계 작게, 세로 중앙 */
+.htrack{width:max-content;padding:0 16px;align-items:center}   /* max-content: 끝 패널의 여백까지 스크롤 폭에 포함 */
+.hp{position:relative;flex:none;width:var(--pw);height:var(--ph);margin:32px 12px 0;background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;overflow:hidden}
 .hp .pcap{position:absolute;left:40px;top:16px;font-size:12px;font-weight:500;color:var(--bone-500)}
 /* 00 Prologue */
 .p00{padding:40px}
@@ -14,7 +14,7 @@ body{overflow:hidden}
 .p00 .display,.p08 .display{font-size:56px}
 .p00 .lead{margin-top:28px}
 .p00 .cta{display:flex;gap:12px;margin-top:36px}
-.p00 .sub{position:absolute;left:40px;top:calc(60vh - var(--pt) + 22px);font-size:13px;color:var(--bone-500)}
+.p00 .sub{position:absolute;left:40px;top:calc(var(--ly) + 22px);font-size:13px;color:var(--bone-500)}
 .p00 .sub b{font-weight:500;color:var(--bone-700)}
 .p00 .hint{position:absolute;right:40px;bottom:40px;font-size:13px;color:var(--bone-500)}
 #hero-dia{position:absolute;inset:0;pointer-events:none;overflow:visible}
@@ -33,11 +33,11 @@ body{overflow:hidden}
 .p07 li .amp{font-size:.9em;margin-right:.2em}
 .p07 .link{position:absolute;left:40px;bottom:40px}
 /* 02~05 project panels: reuse .pan.pj rules from v4.css (width overridden) */
-.hp.pan.pj{width:min(78vw,1200px)}
+.hp.pan.pj{width:var(--pw)}
 /* 06 five steps on the line */
 .p06{padding:40px}
 .p06 .sec-head{position:absolute;left:40px;right:40px;top:40px;margin:0}
-.p06 .steps{position:absolute;left:40px;right:40px;top:calc(60vh - var(--pt) - 72px);display:grid;grid-template-columns:repeat(5,1fr);gap:24px;border:0}
+.p06 .steps{position:absolute;left:40px;right:40px;top:calc(var(--ly) - 72px);display:grid;grid-template-columns:repeat(5,1fr);gap:24px;border:0}
 .p06 .step{padding-top:0;text-align:center}
 .p06 .step h3{font-size:19px;font-weight:600;margin:0 0 6px}
 .p06 .step .num{display:block;margin-bottom:8px}
@@ -60,10 +60,10 @@ body{overflow:hidden}
 #flag{position:absolute;inset:0;pointer-events:none;overflow:visible;opacity:0;transition:opacity .35s}
 #flag path{fill:none;stroke:var(--bone-50);stroke-width:1.5}#flag polygon{fill:var(--bone-50)}#flag.on{opacity:1}
 /* 09 — & — */
-.p09 .seat{position:absolute;left:50%;top:calc(60vh - var(--pt));width:44px;height:44px;margin:-22px 0 0 -22px}
-.p09 .rule{position:absolute;top:calc(60vh - var(--pt));height:1px;background:var(--bone-300);transition:background .4s}
+.p09 .seat{position:absolute;left:50%;top:var(--ly);width:44px;height:44px;margin:-22px 0 0 -22px}
+.p09 .rule{position:absolute;top:var(--ly);height:1px;background:var(--bone-300);transition:background .4s}
 .p09.done .rule{background:var(--navy-800)}
-.p09 .foot-cap{position:absolute;left:0;right:0;top:calc(60vh - var(--pt) + 40px);text-align:center;font-size:13px;color:var(--bone-500)}
+.p09 .foot-cap{position:absolute;left:0;right:0;top:calc(var(--ly) + 40px);text-align:center;font-size:13px;color:var(--bone-500)}
 .p09 .foot-row{position:absolute;left:40px;right:40px;bottom:40px;margin:0;padding-top:20px;border-top:1px solid var(--bone-200);font-size:13px;color:var(--bone-500);display:flex;justify-content:space-between}
 .p09 .foot-row nav{display:flex;gap:24px}
 /* line */
@@ -74,7 +74,12 @@ body{overflow:hidden}
 #hline-dark svg{position:absolute;top:0;overflow:visible}
 #hline-dark .guide{fill:none;stroke:var(--navy-800);stroke-width:1}
 #hline-dark .ink{fill:none;stroke:var(--bone-50);stroke-width:1.5}
-@media (max-height:780px){.p00 .display,.p08 .display{font-size:46px}.p00 .lead,.p08 .lead{margin-top:18px;font-size:17px}.p00 .cta,.p08 .cta{margin-top:24px}}
+@media (max-height:780px){
+  .p00 .display,.p08 .display{font-size:46px}.p00 .lead,.p08 .lead{margin-top:18px;font-size:17px}.p00 .cta,.p08 .cta{margin-top:24px}
+  .hp.pan.pj h2{font-size:5.6rem!important}.hp.pan.pj .nums b{font-size:32px}
+  .p06 .step p{height:64px;font-size:12px}.p06 .step h3{font-size:16px}
+  .p06 .about{grid-template-columns:1fr}.p06 .about .body,.p06 .about>div:last-child{display:none}.p06 .about .lead{font-size:14px;max-width:40rem}
+}
 /* tune (mockup only) */
 #tune{position:fixed;right:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bone-0);border:1px solid var(--bone-300);border-radius:2px;font-size:12px}
 #tune label{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500}
@@ -100,7 +105,7 @@ body{overflow:hidden}
   .hwrap{position:static;overflow:visible;background:var(--bone-50)}
   .htrack{display:block;height:auto}
   .htrack{padding:0}
-  .hp{width:auto!important;height:auto;padding:24px;margin:0 24px 16px}
+  .hp{width:auto!important;height:auto!important;padding:24px;margin:0 24px 16px}
   #tune{display:none}
   .p00{min-height:auto;padding:104px 24px 48px}
   .p00 .inner{position:static;max-width:none}
