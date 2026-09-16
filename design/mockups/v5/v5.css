@@ -4,9 +4,9 @@ body{overflow:hidden}
 .hwrap{position:fixed;inset:0;overflow-x:auto;overflow-y:hidden;background:var(--bone-100)}
 .hwrap::-webkit-scrollbar{height:0}
 .htrack{position:relative;display:flex;height:100%;align-items:stretch}
-:root{--pt:88px;--pb:24px}
-.htrack{padding:0 12px}
-.hp{position:relative;flex:none;width:min(84vw,1280px);height:auto;margin:var(--pt) 12px var(--pb);background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;overflow:hidden}
+:root{--pt:96px;--pb:32px}
+.htrack{width:max-content;padding:0 12px}   /* max-content: 끝 패널의 여백까지 스크롤 폭에 포함 */
+.hp{position:relative;flex:none;width:min(78vw,1200px);height:auto;margin:var(--pt) 12px var(--pb);background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;overflow:hidden}
 .hp .pcap{position:absolute;left:40px;top:16px;font-size:12px;font-weight:500;color:var(--bone-500)}
 /* 00 Prologue */
 .p00{padding:40px}
@@ -32,8 +32,8 @@ body{overflow:hidden}
 .p07 li{padding:10px 0;border-top:1px solid var(--bone-200);font-size:15px}
 .p07 li .amp{font-size:.9em;margin-right:.2em}
 .p07 .link{position:absolute;left:40px;bottom:40px}
-/* 02~05 project panels: reuse .pan.pj rules from v4.css */
-.hp.pj{}
+/* 02~05 project panels: reuse .pan.pj rules from v4.css (width overridden) */
+.hp.pan.pj{width:min(78vw,1200px)}
 /* 06 five steps on the line */
 .p06{padding:40px}
 .p06 .sec-head{position:absolute;left:40px;right:40px;top:40px;margin:0}
