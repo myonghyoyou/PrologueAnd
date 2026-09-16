@@ -1,13 +1,13 @@
 /* v5 — horizontal-only engine: Lenis horizontal on a native overflow-x wrapper, one straight line (S1) across the track,
-   travelling & (S2) fixed at (50vw, 58vh), progress map in the header, Projects/Case Study as centred sheets. */
+   travelling & (S2) fixed at (50vw, 60vh), progress map in the header, Projects/Case Study as centred sheets. */
 window.V5 = (function () {
   const V = {};
   const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const desktop = () => matchMedia('(min-width:1024px)').matches;
-  const LINE = () => Math.round(innerHeight * 0.58);
+  const LINE = () => Math.round(innerHeight * 0.60);
   let wrap, track, lenis = null, panels = [], hline, ink, guide, lineLen = 0, geo = {}, launched = false, animTip = 0, tipMin = 0;
   /* 이동 중 축소 (V2 계승): 속도에 비례해 트랙을 최대 ZOOM.max 만큼 축소, 기준점은 매 프레임 화면 중심 */
-  const ZOOM = { max: 0.12, vel: 36, ease: 0.12, on: !reduced };   // 시안 조정: ?zoom=0.10&vel=30 (max = 최대 축소율, vel = 최대 축소에 이르는 속도 px/frame)
+  const ZOOM = { max: 0.12, vel: 28, ease: 0.18, on: !reduced && localStorage.getItem('v5-zoom') !== 'off' };   // 시안 조정: ?zoom=0.10&vel=30 (max = 최대 축소율, vel = 최대 축소에 이르는 속도 px/frame)
   { const q = new URLSearchParams(location.search); if (q.get('zoom')) ZOOM.max = +q.get('zoom'); if (q.get('vel')) ZOOM.vel = +q.get('vel'); if (q.get('zoom') === '0') ZOOM.on = false; }
   const st = { tipX: 0, s: 0, z: 1 };
   function tick() {
@@ -78,6 +78,9 @@ window.V5 = (function () {
     intro(!!target || reduced || sl() > innerWidth * 0.3);
     (lenis ? lenis.on.bind(lenis) : wrap.addEventListener.bind(wrap))('scroll', render);
     if (lenis) gsap.ticker.add(tick);
+    // zoom toggle (mockup)
+    const tg = document.getElementById('zoomToggle'), info = document.getElementById('zoomInfo');
+    if (tg) { tg.checked = ZOOM.on; const upd = () => info.textContent = ZOOM.on ? `최대 ${Math.round(ZOOM.max * 100)}% · 속도 ${ZOOM.vel} · ease ${ZOOM.ease}` : '끔'; upd(); tg.addEventListener('change', () => { ZOOM.on = tg.checked; localStorage.setItem('v5-zoom', ZOOM.on ? 'on' : 'off'); upd(); }); }
     addEventListener('resize', () => { build(); render(); });
   };
 
@@ -85,12 +88,12 @@ window.V5 = (function () {
     const W = track.scrollWidth, H = innerHeight, y = LINE();
     panels.forEach(p => { p._x = p.offsetLeft; p._w = p.offsetWidth; });
     const p00 = panels[0], p08 = panels.find(p => p.classList.contains('p08')), p09 = panels[panels.length - 1];
-    const nodeX = Math.round(p00._w * 0.56);
+    const pt = p00.offsetTop, nodeL = Math.round(p00._w * 0.56), nodeX = p00._x + nodeL, yl = y - pt;   // panel-local coords for the hero svg
     // hero sources (in the track svg, panel 00 coordinates == track coordinates)
     const srcX = Math.round(p00._w - 100), ys = [-96, -32, 32, 96].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
     const heroDia = document.getElementById('hero-dia');
-    heroDia.setAttribute('viewBox', `0 0 ${p00._w} ${H}`); heroDia.setAttribute('width', p00._w); heroDia.setAttribute('height', H);
-    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M${srcX} ${yy} C ${srcX - 140} ${yy}, ${nodeX + 120} ${y}, ${nodeX} ${y}"/>`).join('') + ys.map((yy, i) => `<text x="${srcX + 10}" y="${yy + 4}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeX}" cy="${y}" r="4"/><text x="${nodeX}" y="${y - 14}" text-anchor="middle">하나의 흐름</text>`;
+    const ph = p00.offsetHeight; heroDia.setAttribute('viewBox', `0 0 ${p00._w} ${ph}`); heroDia.setAttribute('width', p00._w); heroDia.setAttribute('height', ph);
+    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M${srcX} ${yy - pt} C ${srcX - 140} ${yy - pt}, ${nodeL + 120} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="${srcX + 10}" y="${yy - pt + 4}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX - 14;
     const d = `M${nodeX} ${y} H${endX}`;
@@ -109,8 +112,8 @@ window.V5 = (function () {
     const ruleLen = Math.min(260, p09._w / 2 - 60), rr = p09.querySelector('.rule.r'); rr.style.left = (p09._w / 2 + 14) + 'px'; rr.style.width = ruleLen + 'px';
     // flag in 08: line → drop → button
     const btn = p08.querySelector('.btn'), br = btn.getBoundingClientRect(), pr = p08.getBoundingClientRect(), bx = br.left - pr.left, by = br.top - pr.top + br.height / 2, flag = document.getElementById('flag');
-    flag.setAttribute('viewBox', `0 0 ${p08._w} ${H}`); flag.setAttribute('width', p08._w); flag.setAttribute('height', H);
-    const fx = bx - 60; flag.innerHTML = `<path d="M${fx} ${y} V${by} H${bx - 26}"/><polygon points="${bx - 26},${by - 6} ${bx - 12},${by} ${bx - 26},${by + 6}"/>`;
+    const p8h = p08.offsetHeight; flag.setAttribute('viewBox', `0 0 ${p08._w} ${p8h}`); flag.setAttribute('width', p08._w); flag.setAttribute('height', p8h);
+    const fx = bx - 60, y8 = y - p08.offsetTop; flag.innerHTML = `<path d="M${fx} ${y8} V${by} H${bx - 26}"/><polygon points="${bx - 26},${by - 6} ${bx - 12},${by} ${bx - 26},${by + 6}"/>`;
     geo = { W, H, y, nodeX, endX, ampX, darkL: p08._x, darkR: p08._x + p08._w, flagX: p08._x + fx };
     tipMin = 120;
   }
