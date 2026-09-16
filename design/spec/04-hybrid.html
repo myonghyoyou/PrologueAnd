@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prologue& 하이브리드 구조 — V2 × V3 와이어프레임</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{--navy:#2B3160;--navy4:#8A96C2;--navy1:#E4E8F4;--b0:#fff;--b50:#FAF9F6;--b100:#F3F1EC;--b200:#E8E5DE;--b300:#D6D2C8;--b500:#8A857A;--b700:#4A4741;--b900:#1C1B18}
+  *{box-sizing:border-box}
+  body{margin:0;background:#ececec;color:var(--b900);font-family:"Pretendard",sans-serif;font-size:14px;line-height:1.6;padding:40px}
+  h1{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
+  .lead{color:var(--b700);margin:0 0 32px;max-width:60rem}
+  h2{font-size:15px;font-weight:600;margin:40px 0 12px}
+  .note{font-size:12px;color:var(--b500);margin-top:8px}
+  /* frame */
+  .frame{background:var(--b50);border:1px solid #cfcfcf;position:relative;overflow:hidden}
+  .hdr{height:40px;display:flex;align-items:center;padding:0 24px 0 80px;font-size:12px;border-bottom:1px dashed var(--b300)}
+  .hdr b{font-family:Georgia,serif;font-weight:400;font-size:16px}
+  .hdr span{margin-left:auto;color:var(--b500)}
+  .sec{position:relative;padding:28px 40px 28px 112px;border-bottom:1px dashed var(--b300)}
+  .sec .tag{position:absolute;left:12px;top:10px;font-size:11px;color:var(--b500)}
+  .hero{height:300px}
+  .hero .t{font-size:32px;font-weight:600;letter-spacing:-.03em;line-height:1.1;max-width:14em}
+  .hero .t em{font-style:normal;color:var(--navy)}
+  .hero .l{color:var(--b700);max-width:28rem;margin:12px 0}
+  .btn{display:inline-block;padding:8px 14px;background:var(--navy);color:#fff;border-radius:2px;font-size:12px;margin-right:6px}
+  .btn.o{background:transparent;color:var(--b900);border:1px solid var(--b900)}
+  /* strip */
+  .strip{background:var(--b100);padding:0;height:420px;overflow:hidden}
+  .strip .track{display:flex;gap:16px;padding:52px 24px 24px 112px;height:100%;transform:translateX(-6%)}
+  .strip .pan{flex:none;background:var(--b0);border:1px solid var(--b200);border-radius:2px;position:relative;padding:28px 28px;overflow:hidden}
+  .strip .pan .cap{position:absolute;left:0;top:-22px;font-size:11px;color:var(--b500)}
+  .strip .pan.title{width:280px}
+  .strip .pan.title .num{color:var(--navy);font-size:11px}
+  .strip .pan.title h3{font-size:22px;font-weight:600;letter-spacing:-.02em;margin:6px 0 0;line-height:1.2}
+  .strip .pan.title .hint{position:absolute;bottom:24px;left:28px;font-size:12px;color:var(--b500)}
+  .strip .pan.pj{width:640px}
+  .strip .pan.pj h3{font-size:44px;font-weight:600;letter-spacing:-.03em;margin:0;line-height:1.05;position:relative;z-index:2;max-width:8em}
+  .strip .pan.pj h3 i{font-family:Georgia,serif;font-style:normal;font-weight:400;color:var(--navy);margin-right:.15em}
+  .strip .pan.pj .prob{position:absolute;left:28px;bottom:28px;z-index:2;max-width:16rem}
+  .strip .pan.pj .prob b{display:block;color:var(--navy);font-size:11px;margin-bottom:2px}
+  .strip .pan.pj .prob span{font-size:12px;color:var(--b700)}
+  .strip .pan.pj .shot{position:absolute;right:28px;top:100px;width:200px;height:125px;background:var(--b0);border:1px solid var(--b900);padding:4px}
+  .strip .pan.pj .shot div{height:100%;background:repeating-linear-gradient(45deg,var(--b200) 0 4px,var(--b0) 4px 12px)}
+  .strip .pan.pj .shot i{position:absolute;right:6px;bottom:6px;font-size:10px;font-style:normal;color:var(--b500)}
+  .strip .pan.pj .cs{position:absolute;right:28px;bottom:28px;font-size:12px;color:var(--navy);font-weight:500}
+  .shape{position:absolute;z-index:1}
+  .shape.c{border-radius:50%;background:var(--navy1)}
+  .strip .pan.tail{width:180px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--navy);font-weight:500}
+  .prog{position:absolute;left:112px;top:34px;display:flex;gap:4px}
+  .prog i{display:block;width:28px;height:3px;background:var(--b300)}
+  .prog i.on{background:var(--navy)}
+  .how{height:170px}
+  .how .steps{display:flex;gap:16px;border-top:1px solid var(--b200);padding-top:12px}
+  .how .steps div{flex:1;font-size:12px}
+  .how .steps b{display:block;font-size:11px;color:var(--navy);margin-bottom:24px}
+  .contact{background:#151A33;color:var(--b50);height:220px}
+  .contact .t{font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1.1;max-width:12em}
+  .contact .l{color:var(--navy4);max-width:28rem;margin:10px 0 16px}
+  .contact .btn{background:var(--b50);color:#151A33}
+  .foot{height:110px;position:relative}
+  .foot .cap{position:absolute;left:0;right:0;top:64px;text-align:center;font-size:11px;color:var(--b500)}
+  /* line overlay */
+  .line{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:visible}
+  .line path{fill:none;stroke:var(--navy);stroke-width:1.5}
+  .line path.faint{stroke:var(--navy4);stroke-width:1}
+  .line path.white{stroke:var(--b50)}
+  .line .amp{font-family:Georgia,serif;font-size:22px;fill:var(--navy)}
+  .line .lbl{font-family:Pretendard,sans-serif;font-size:10px;fill:var(--b500)}
+  .line .flag{fill:var(--b50)}
+  .line .dark{fill:var(--b50)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+  table{border-collapse:collapse;width:100%;font-size:12px;background:var(--b0)}
+  th,td{text-align:left;padding:8px 10px;border:1px solid var(--b200);vertical-align:top}
+  th{background:var(--b100);font-weight:600}
+  .mob{width:300px;background:var(--b50);border:1px solid #cfcfcf;padding:12px;font-size:11px}
+  .mob .p{background:var(--b0);border:1px solid var(--b200);padding:12px;margin-top:10px;position:relative;overflow:hidden}
+  .mob .p h4{margin:0 0 6px;font-size:16px;letter-spacing:-.02em}
+  .mob .p h4 i{font-family:Georgia,serif;font-style:normal;font-weight:400;color:var(--navy)}
+  .mob .p .sh{height:80px;background:repeating-linear-gradient(45deg,var(--b200) 0 4px,var(--b0) 4px 12px);border:1px solid var(--b900);margin:8px 0}
+  .mob .p .shape{width:70px;height:70px;right:-20px;bottom:-20px}
+  .step-anat{background:var(--b0);border:1px solid var(--b200);padding:16px;font-size:12px}
+  .step-anat ol{margin:0;padding-left:18px}
+</style>
+</head>
+<body>
+<h1>하이브리드 구조 — V3 세로 골격 + V2 가로 포스터 스트립(섹션 01)</h1>
+<p class="lead">회색 와이어프레임. 세로 한 장(V3)은 그대로 두고, "01 문제 &amp; 사례"만 화면에 고정된 채 가로로 넘기는 포스터 스트립(V2·D2 합본형)으로 바꾼다. 한 선(S1)이 Hero에서 내려와 스트립을 가로로 관통한 뒤 다시 내려가 푸터의 <b>&amp;</b>에 닿는다. 근거는 docs/16_hybrid_structure.md.</p>
+
+<h2>Home (데스크톱 1440) — 스트립은 두 번째 장이 보이는 시점</h2>
+<div class="frame" id="home">
+  <div class="hdr"><b>Prologue</b><span>Projects &nbsp; 문의</span></div>
+  <div class="sec hero"><span class="tag">Hero · 처음 · 100vh</span>
+    <div class="t">복잡한 업무를<br><em>단순한 제품</em>으로 바꿉니다.</div>
+    <div class="l">만들기 전에, 무엇이 불편한지부터 정리합니다. 그리고 실제로 쓰이는 끝까지 함께합니다.</div>
+    <span class="btn">프로젝트 문의</span><span class="btn o">작업 보기</span>
+  </div>
+  <div class="sec strip"><span class="tag">01 문제 &amp; 사례 · pin · 세로 스크롤 = 가로 이동</span>
+    <div class="prog"><i></i><i class="on"></i><i></i><i></i></div>
+    <div class="track">
+      <div class="pan title"><span class="cap">01</span><span class="num">01</span><h3>이런 문제를<br>이렇게 풀었습니다</h3><span class="hint">오른쪽으로 넘기세요 →</span></div>
+      <div class="pan pj"><span class="cap">01 / 04 · 흩어진 요청</span>
+        <span class="shape c" style="width:150px;height:150px;left:250px;top:-30px"></span><span class="shape c" style="width:90px;height:90px;left:420px;top:60px"></span><span class="shape c" style="width:60px;height:60px;left:210px;top:170px"></span><span class="shape c" style="width:110px;height:110px;left:330px;top:210px"></span>
+        <h3><i>&amp;</i>Por favor, Harry</h3>
+        <div class="prob"><b>문제 01 &amp; 흩어진 요청</b><span>엑셀, 메신저, 이메일, 구두 요청으로 업무가 흩어져 있어요.</span></div>
+        <div class="shot"><div></div><i>16:10</i></div>
+        <span class="cs">Case Study →</span>
+      </div>
+      <div class="pan pj"><span class="cap">02 / 04 · 불편한 기존 시스템</span>
+        <span class="shape" style="left:240px;top:40px;width:260px;height:200px;background:repeating-linear-gradient(0deg,var(--navy1) 0 14px,transparent 14px 20px),repeating-linear-gradient(90deg,var(--navy1) 0 14px,transparent 14px 20px)"></span>
+        <h3><i>&amp;</i>병원 UI/UX 고도화</h3>
+        <div class="prob"><b>문제 02 &amp; 불편한 기존 시스템</b><span>기능은 있는데 직원들이 쓰기 어렵고 화면이 복잡해요.</span></div>
+        <div class="shot"><div></div><i>재구성 화면</i></div>
+        <span class="cs">Case Study →</span>
+      </div>
+      <div class="pan tail">Projects 전체 보기 →</div>
+    </div>
+  </div>
+  <div class="sec how"><span class="tag">02 일하는 방식</span>
+    <div class="steps"><div><b>01</b>Understand</div><div><b>02</b>Simplify</div><div><b>03</b>Design</div><div><b>04</b>Build</div><div><b>05</b>Improve · 출시 후에도</div></div>
+  </div>
+  <div class="sec contact"><span class="tag" style="color:var(--navy4)">03 문의 · 끝 · navy-950</span>
+    <div class="t">지금 하시는 업무를<br>알려주세요.</div>
+    <div class="l">이 페이지의 끝이 프로젝트의 시작입니다. 2영업일 안에 답변.</div>
+    <span class="btn">프로젝트 문의하기</span>
+  </div>
+  <div class="sec foot"><span class="tag">푸터 · 로고 아랫줄 — &amp; —</span><div class="cap">Prologue&amp; — and, 그리고 end. 처음과 끝을 함께합니다.</div></div>
+
+  <!-- S1 line path over the whole frame -->
+  <svg class="line" id="ln"></svg>
+</div>
+<p class="note">굵은 남색 선 = S1 한 선(그려진 부분), 옅은 선 = 아직 안 그려진 안내선. 스트립 안에서는 선이 패널 중앙 높이를 가로로 지나며, 각 패널의 밝은 도형(문제의 인상) 위로 그 프로젝트의 before→after 미니 다이어그램이 선 위에 그려진다. <b>&amp;</b>는 선 끝을 따라 이동한다. 스트립 구간에서 선 끝은 화면 x = 50vw에 고정되고 트랙이 그 아래로 흐른다(세로 구간의 50vh 규칙과 대응). 선은 세로 위 / 가로 / 세로 아래 3구간으로 나눠 그린다.</p>
+
+<h2>스트립 한 장의 해부 · 진행 · 모바일</h2>
+<div class="grid3">
+  <div class="step-anat">
+    <b>패널(D2 합본형) 구성 요소</b>
+    <ol>
+      <li>패널 위 캡션 <code>01 / 04 · 흩어진 요청</code> (Caption 13, bone-500)</li>
+      <li>헤드라인 = <code>&amp; 프로젝트명</code> (Display, 2줄 이하 7.8rem, &amp;만 Didone) — S3</li>
+      <li>밝은 면 도형(navy-100) — 문제의 인상. 글자를 덮어도 됨(밝으니까)</li>
+      <li>S1 선이 도형을 관통하며 미니 다이어그램(navy-400 → navy-800, 플래그) 그림</li>
+      <li>왼쪽 아래 문제 블록: <code>문제 01 &amp; 흩어진 요청</code> + 한 줄 (navy-800 / bone-700) — S3 조인</li>
+      <li>오른쪽 스크린샷 16:10 매트(bone-0 6px + bone-900 1px). mockup이면 "재구성 화면"</li>
+      <li>오른쪽 아래 <code>Case Study →</code>. 패널 전체가 링크 → <code>/projects/[slug]</code></li>
+    </ol>
+    <p class="note">패널 = 카드가 아니라 편집물의 지면: 평평, bone-0, 1px bone-200, 2px, 그림자 없음. 스트립 배경 bone-100.</p>
+  </div>
+  <div class="step-anat">
+    <b>이동·진행 (V2 실측 계승)</b>
+    <table style="margin-top:8px">
+      <tr><th>항목</th><th>값</th></tr>
+      <tr><td>pin</td><td>start: 헤더 아래(top+=64), 길이 = 트랙 폭 − 100vw, 1px = 1px. 이 프로젝트 첫 도입(ScrollTrigger)</td></tr>
+      <tr><td>관성</td><td>Lenis lerp 0.1 (별도 가로 lerp 없음)</td></tr>
+      <tr><td>휠 한 칸</td><td>확인 필요(100 / 140px). 임시 140 → 패널당 약 9칸</td></tr>
+      <tr><td>속도 축소(zoom)</td><td>없음</td></tr>
+      <tr><td>커서</td><td>기본 커서. 패널 호버 시 링크 밑줄·매트 테두리 navy</td></tr>
+      <tr><td>진행</td><td>스트립 상단 칸 N개(현재 navy-800) + 패널 캡션 <code>0n / 0N</code>. 현재 장 = 패널 왼쪽 가장자리가 50vw를 지난 장</td></tr>
+      <tr><td>건너뛰기</td><td>표제·꼬리 패널 "02 일하는 방식으로 →" (pin 끝으로 scrollTo). 키보드는 범위 밖</td></tr>
+      <tr><td>reduced-motion</td><td>모바일과 같은 세로 스택</td></tr>
+    </table>
+  </div>
+  <div class="mob">
+    <div style="display:flex;justify-content:space-between"><b style="font-family:Georgia,serif;font-weight:400;font-size:14px">Prologue&amp;</b><span>02 / 04</span></div>
+    <div style="margin-top:14px;border-top:1px solid var(--b200);padding-top:8px"><b style="color:var(--navy)">01</b> 이런 문제를 이렇게 풀었습니다</div>
+    <div class="p"><span class="shape c"></span><div style="color:var(--b500);font-size:10px">01 / 04 · 흩어진 요청</div><h4><i>&amp;</i> Por favor, Harry</h4><div class="sh"></div><div style="color:var(--navy);font-size:10px">문제 01 · 흩어진 요청</div>엑셀, 메신저, 이메일…<div style="text-align:right;color:var(--navy)">Case Study →</div></div>
+    <div class="p"><span class="shape" style="background:repeating-linear-gradient(0deg,var(--navy1) 0 8px,transparent 8px 12px),repeating-linear-gradient(90deg,var(--navy1) 0 8px,transparent 8px 12px)"></span><div style="color:var(--b500);font-size:10px">02 / 04 · 불편한 기존 시스템</div><h4><i>&amp;</i> 병원 UI/UX 고도화</h4><div class="sh"></div>…</div>
+    <p class="note">모바일·reduced-motion: pin 없음, 세로 스택. 선·마커 숨김. 스냅 없음.</p>
+  </div>
+</div>
+
+<h2>V2에서 가져온 것 / 버린 것</h2>
+<div class="grid2">
+  <table>
+    <tr><th>가져옴</th><th>어디에</th></tr>
+    <tr><td>패널 문법: 문장 하나 + 도형 하나</td><td>스트립 패널 4장</td></tr>
+    <tr><td>가로 관성 넘김</td><td>섹션 01 pin 구간 (Lenis)</td></tr>
+    <tr><td>헤드라인 줄 수별 크기(7.8 / 6.8rem)</td><td>패널 헤드라인</td></tr>
+    <tr><td>도형이 글자를 덮는 대담함</td><td>navy-100 밝은 면으로 (덮어도 읽힘)</td></tr>
+    <tr><td>필름 스트립(진행)</td><td>스트립 상단 칸 4개로 축소</td></tr>
+    <tr><td>휠 실측값(100~140px/칸)</td><td>그대로</td></tr>
+    <tr><td>D2 합본형(헤드라인 = 프로젝트명, 문제는 안에)</td><td>그대로</td></tr>
+  </table>
+  <table>
+    <tr><th>버림</th><th>이유</th></tr>
+    <tr><td>12장 전체 가로화</td><td>질문 순서·문의 1클릭·S1/S2/S4가 세로 골격을 요구</td></tr>
+    <tr><td>회색 바탕 + 흰 카드, 하늘색</td><td>13 컬러셋으로 통일 (bone-100 / bone-0 / navy-100)</td></tr>
+    <tr><td>커스텀 + 커서</td><td>14 결정. B2B 방문자에게 기본 커서</td></tr>
+    <tr><td>이동 속도 축소(zoom)</td><td>인터랙션 종류 초과, "확대 없음" 원칙</td></tr>
+    <tr><td>가운데 시트 상세</td><td>Case Study는 고유 URL 페이지(공유·검색)</td></tr>
+    <tr><td>모바일 scroll-snap</td><td>세로 한 장 안에서 다른 섹션과 리듬 충돌</td></tr>
+  </table>
+</div>
+
+<script>
+  // draw the S1 line over the Home frame: hero → down → strip (horizontal) → down → contact (flag) → footer &
+  const f = document.getElementById('home'), svg = document.getElementById('ln');
+  const R = el => { const a = el.getBoundingClientRect(), b = f.getBoundingClientRect(); return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height }; };
+  const W = f.clientWidth, H = f.clientHeight; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('width', W); svg.setAttribute('height', H);
+  const hero = R(f.querySelector('.hero')), strip = R(f.querySelector('.strip')), how = R(f.querySelector('.how')), con = R(f.querySelector('.contact')), foot = R(f.querySelector('.foot'));
+  const pans = [...f.querySelectorAll('.strip .pan')].map(R);
+  const rx = 48, heroY = hero.y + hero.h * 0.72, nodeX = W * 0.56, sy = strip.y + strip.h * 0.58, ampX = W / 2 + 36, ampY = foot.y + 36, btn = R(f.querySelector('.contact .btn'));
+  const r = 16;
+  // main drawn path (through the strip: rail → panel centre height → across the visible panels)
+  const visEnd = pans[2].x + pans[2].w * 0.25; // "drawn up to the middle of panel 2"
+  const d = `M${nodeX} ${heroY} H${rx + r} Q${rx} ${heroY} ${rx} ${heroY + r} V${sy - r} Q${rx} ${sy} ${rx + r} ${sy} H${visEnd}`;
+  const rest = `M${visEnd} ${sy} H${pans[3].x + pans[3].w} M${rx} ${sy} V${ampY - r} Q${rx} ${ampY} ${rx + r} ${ampY} H${ampX - 26}`;
+  // sources
+  const srcX = W - 100, ys = [-60, -20, 20, 60];
+  const srcs = ys.map(o => `<path class="faint" d="M${srcX} ${heroY + o} C ${srcX - 120} ${heroY + o}, ${nodeX + 80} ${heroY}, ${nodeX} ${heroY}"/>`).join('');
+  const mini = pans.slice(1, 3).map((p, i) => { const x0 = p.x + 150, x1 = p.x + p.w - 260; return `<path class="faint" d="M${x0} ${sy - 40} C ${x0 + 60} ${sy - 40}, ${x0 + 60} ${sy}, ${x0 + 120} ${sy} M${x0} ${sy + 40} C ${x0 + 60} ${sy + 40}, ${x0 + 60} ${sy}, ${x0 + 120} ${sy}"/><circle cx="${x0 + 120}" cy="${sy}" r="3" fill="#FAF9F6" stroke="#2B3160"/><circle cx="${x0 + 220}" cy="${sy}" r="3" fill="#FAF9F6" stroke="#2B3160"/><polygon points="${x1},${sy - 5} ${x1 + 12},${sy} ${x1},${sy + 5}" fill="#2B3160"/>`; }).join('');
+  const labels = `<text class="lbl" x="${rx + 12}" y="${strip.y + 14}">01</text><text class="lbl" x="${rx + 12}" y="${how.y + 16}">02</text><text class="lbl" x="${rx + 12}" y="${con.y + 16}" fill="#AEB7D6">&amp;</text>`;
+  const flag = `<path class="white" d="M${rx} ${btn.y + btn.h / 2} H${btn.x - 24}"/><polygon class="flag" points="${btn.x - 24},${btn.y + btn.h / 2 - 5} ${btn.x - 12},${btn.y + btn.h / 2} ${btn.x - 24},${btn.y + btn.h / 2 + 5}"/>`;
+  const seat = `<line x1="${ampX + 26}" y1="${ampY}" x2="${ampX + 200}" y2="${ampY}" stroke="#D6D2C8"/><text class="amp" x="${ampX - 8}" y="${ampY + 8}" fill="#B3AEA3">&amp;</text>`;
+  svg.innerHTML = srcs + `<path class="faint" d="${rest}"/>` + `<path d="${d}"/>` + mini + `<circle cx="${nodeX}" cy="${heroY}" r="3.5" fill="#FAF9F6" stroke="#2B3160"/>` + `<circle cx="${visEnd}" cy="${sy}" r="13" fill="#fff"/><text class="amp" x="${visEnd - 8}" y="${sy + 8}">&amp;</text>` + labels + flag + seat
+    + `<text class="lbl" x="${nodeX - 30}" y="${heroY - 10}">하나의 흐름</text><text class="lbl" x="${srcX + 6}" y="${heroY - 56}">전화</text><text class="lbl" x="${srcX + 6}" y="${heroY - 16}">메신저</text><text class="lbl" x="${srcX + 6}" y="${heroY + 24}">이메일</text><text class="lbl" x="${srcX + 6}" y="${heroY + 64}">직접 방문</text>`;
+  // white segment of the vertical line inside the dark contact section
+  svg.innerHTML += `<path class="white" d="M${rx} ${con.y} V${con.y + con.h}"/>`;
+</script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prologue& 가로 전용 구조 — 스트립 지도</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{--navy:#2B3160;--navy4:#8A96C2;--navy3:#AEB7D6;--navy1:#E4E8F4;--navy950:#151A33;--b0:#fff;--b50:#FAF9F6;--b100:#F3F1EC;--b200:#E8E5DE;--b300:#D6D2C8;--b500:#8A857A;--b700:#4A4741;--b900:#1C1B18}
+  *{box-sizing:border-box}
+  body{margin:0;background:#ececec;color:var(--b900);font-family:"Pretendard",sans-serif;font-size:14px;line-height:1.6;padding:40px}
+  h1{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
+  .lead{color:var(--b700);margin:0 0 28px;max-width:62rem}
+  h2{font-size:15px;font-weight:600;margin:40px 0 12px}
+  .note{font-size:12px;color:var(--b500);margin-top:8px}
+  /* map: 1vw = 1.6px → 784vw = 1254px */
+  .map{position:relative;background:var(--b100);border:1px solid #cfcfcf;height:280px;overflow:hidden}
+  .map .hdr{position:absolute;left:0;right:0;top:0;height:26px;display:flex;align-items:center;padding:0 12px;font-size:10px;border-bottom:1px dashed var(--b300);z-index:3;background:rgba(250,249,246,.9)}
+  .map .hdr b{font-family:Georgia,serif;font-weight:400;font-size:12px}
+  .map .hdr .pm{margin-left:auto;margin-right:auto;display:flex;gap:2px}
+  .map .hdr .pm i{display:block;height:3px;background:var(--b300)}
+  .map .hdr .pm i.done{background:var(--navy4)}.map .hdr .pm i.on{background:var(--navy)}
+  .map .hdr span.nav{font-size:10px;color:var(--b500)}
+  .track{position:absolute;left:0;top:26px;bottom:0;display:flex;align-items:stretch}
+  .pan{position:relative;flex:none;padding:14px 12px;font-size:10px;overflow:hidden}
+  .pan.page{background:var(--b0);border:1px solid var(--b200);border-radius:2px;margin:18px 6px}
+  .pan .no{position:absolute;left:12px;top:6px;font-size:9px;color:var(--b500)}
+  .pan.page .no{top:-14px;left:0}
+  .pan h3{margin:0;font-size:15px;font-weight:600;letter-spacing:-.03em;line-height:1.1;position:relative;z-index:2}
+  .pan h3 i{font-family:Georgia,serif;font-style:normal;font-weight:400;color:var(--navy);margin-right:.12em}
+  .pan h3 em{font-style:normal;color:var(--navy)}
+  .pan p{margin:4px 0 0;color:var(--b700);font-size:9px;max-width:14em;position:relative;z-index:2}
+  .pan .btn{display:inline-block;margin-top:6px;padding:3px 7px;background:var(--navy);color:#fff;border-radius:2px;font-size:8px}
+  .pan .shape{position:absolute;background:var(--navy1);z-index:1}
+  .pan .shot{position:absolute;right:12px;top:60px;width:56px;height:35px;border:1px solid var(--b900);background:repeating-linear-gradient(45deg,var(--b200) 0 3px,var(--b0) 3px 8px)}
+  .pan .prob{position:absolute;left:12px;bottom:12px;font-size:8px;color:var(--navy);z-index:2}
+  .pan.dark{background:var(--navy950);color:var(--b50)}
+  .pan.dark p{color:var(--navy3)}
+  .pan.dark .btn{background:var(--b50);color:var(--navy950)}
+  .pan.tail .cap{position:absolute;left:0;right:0;top:66%;text-align:center;font-size:8px;color:var(--b500)}
+  .line{position:absolute;left:0;top:26px;width:100%;height:calc(100% - 26px);pointer-events:none;z-index:4;overflow:visible}
+  .line path{fill:none;stroke:var(--navy);stroke-width:1.5}
+  .line .faint{stroke:var(--navy4);stroke-width:1}
+  .line .white{stroke:var(--b50)}
+  .line .lbl{font-family:Pretendard;font-size:8px;fill:var(--b500)}
+  .line .amp{font-family:Georgia,serif;font-size:16px;fill:var(--navy)}
+  .vp{position:absolute;top:26px;bottom:0;border:2px solid #C0392B;pointer-events:none;z-index:5}
+  .vp span{position:absolute;left:0;top:-16px;font-size:9px;color:#C0392B;background:#fff;padding:0 4px}
+  .grid3{display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:24px}
+  .box{background:var(--b0);border:1px solid var(--b200);padding:16px;font-size:12px}
+  .box ol{margin:0;padding-left:18px}
+  table{border-collapse:collapse;width:100%;font-size:12px;background:var(--b0)}
+  th,td{text-align:left;padding:7px 10px;border:1px solid var(--b200);vertical-align:top}
+  th{background:var(--b100);font-weight:600}
+  .mob{width:100%;max-width:280px;background:var(--b50);border:1px solid #cfcfcf;padding:10px;font-size:11px}
+  .mob .p{background:var(--b0);border:1px solid var(--b200);padding:10px;margin-top:8px}
+  .mob .p.f{background:transparent;border:0;padding:6px 0}
+  .mob .p.d{background:var(--navy950);color:var(--b50)}
+  .mob b.h{display:block;font-size:14px;letter-spacing:-.02em}
+  .mob i{font-family:Georgia,serif;font-style:normal;color:var(--navy)}
+  /* panel 06 anatomy */
+  .p06{background:var(--b50);border:1px solid #cfcfcf;height:230px;position:relative;padding:20px 24px;font-size:12px}
+  .p06 .rule{border-top:1px solid var(--b200);padding-top:6px}
+  .p06 .rule b{color:var(--navy);font-size:11px;margin-right:8px}
+  .p06 svg{position:absolute;left:0;right:0;top:80px;width:100%;height:100px;overflow:visible}
+  .p06 text{font-family:Pretendard;font-size:10px;fill:var(--b700)}
+  .p06 text.c{font-size:8px;fill:var(--b500)}
+  .p06 .about{position:absolute;left:24px;right:24px;bottom:14px;font-size:10px;color:var(--b700);display:flex;gap:24px}
+</style>
+</head>
+<body>
+<h1>가로 전용 구조 — 세로 스크롤 없는 Rauno형 (V5 후보)</h1>
+<p class="lead">데스크톱에서 페이지는 가로 한 줄이다. 첫 패널이 로고 윗줄 <b>Prologue</b>, 마지막 패널이 아랫줄 <b>— &amp; —</b>. 한 선(S1)이 굽힘 없이 처음부터 끝까지 지나가고, 헤더에서 떨어진 <b>&amp;</b>가 선 끝(화면 x 50vw)에 붙어 여행한다. 근거는 docs/17_horizontal_only.md.</p>
+
+<h2>스트립 지도 — 10장, 약 7.8화면 (1vw = 1.6px 축소, 빨간 테두리 = 현재 화면)</h2>
+<div class="map" id="map">
+  <div class="hdr"><b>Prologue</b>
+    <div class="pm"><i class="done" style="width:26px"></i><i class="done" style="width:11px"></i><i class="on" style="width:22px"></i><i style="width:22px"></i><i style="width:22px"></i><i style="width:22px"></i><i style="width:26px"></i><i style="width:11px"></i><i style="width:26px"></i><i style="width:16px"></i></div>
+    <span class="nav">Projects &nbsp; 문의</span></div>
+  <div class="track" id="track">
+    <div class="pan" style="width:160px"><span class="no">00 · Prologue · 처음</span><h3 style="margin-top:14px">복잡한 업무를<br><em>단순한 제품</em>으로<br>바꿉니다.</h3><p>만들기 전에, 무엇이 불편한지부터 정리합니다.</p><span class="btn">프로젝트 문의</span> <span style="font-size:8px;color:var(--b500)">작업 보기 →</span></div>
+    <div class="pan page" style="width:58px"><span class="no">01</span><b style="font-size:9px;color:var(--navy)">01</b><h3 style="font-size:11px;margin-top:4px">이런 문제를<br>이렇게<br>풀었습니다</h3></div>
+    <div class="pan page pj" style="width:122px"><span class="no">02 / 04 · 흩어진 요청</span><span class="shape" style="width:40px;height:40px;border-radius:50%;left:50px;top:-6px"></span><span class="shape" style="width:24px;height:24px;border-radius:50%;left:92px;top:34px"></span><span class="shape" style="width:30px;height:30px;border-radius:50%;left:40px;top:62px"></span><h3><i>&amp;</i>Por favor,<br>Harry</h3><div class="shot"></div><div class="prob">문제 01 &amp; 흩어진 요청</div></div>
+    <div class="pan page pj" style="width:122px"><span class="no">03 / 04 · 불편한 시스템</span><span class="shape" style="width:60px;height:50px;left:48px;top:20px;background:repeating-linear-gradient(0deg,var(--navy1) 0 5px,transparent 5px 8px),repeating-linear-gradient(90deg,var(--navy1) 0 5px,transparent 5px 8px)"></span><h3><i>&amp;</i>병원 UI/UX<br>고도화</h3><div class="shot"></div><div class="prob">문제 02 &amp; 불편한 시스템</div></div>
+    <div class="pan page pj" style="width:122px"><span class="no">04 / 04 · 종이·수작업</span><span class="shape" style="width:44px;height:56px;left:50px;top:14px;transform:rotate(-8deg)"></span><span class="shape" style="width:44px;height:56px;left:62px;top:24px;background:var(--b0);border:1px solid var(--b900);transform:rotate(6deg)"></span><h3><i>&amp;</i>Daeryun<br>Learning Hub</h3><div class="shot"></div><div class="prob">문제 03 &amp; 종이·수작업</div></div>
+    <div class="pan page pj" style="width:122px"><span class="no">05 / 04 · 아이디어</span><span class="shape" style="width:56px;height:56px;left:48px;top:14px;border-radius:50%;background:transparent;border:12px solid var(--navy1)"></span><h3><i>&amp;</i>Custom<br>Commerce</h3><div class="shot"></div><div class="prob">문제 04 &amp; 아이디어</div></div>
+    <div class="pan" style="width:160px"><span class="no">06 · 02 처음부터 끝까지, 다섯 단계</span><h3 style="margin-top:14px;font-size:12px">처음부터 끝까지,<br>다섯 단계</h3><p style="margin-top:70px;font-size:8px">Prologue&amp;은 화면을 구현하는 것보다 왜 이 기능이 필요한지를 먼저 고민합니다.</p></div>
+    <div class="pan page" style="width:58px"><span class="no">07</span><p style="margin:0;font-size:8px">대표 4개 외<br>작업 2건</p><p style="font-size:8px;color:var(--navy)">Projects<br>전체 보기 →</p></div>
+    <div class="pan dark" style="width:160px"><span class="no" style="color:var(--navy3)">08 · 문의 · 끝</span><h3 style="margin-top:14px;color:var(--b50)">지금 하시는<br><em style="color:var(--navy3)">업무</em>를<br>알려주세요.</h3><p>이 페이지의 끝이 프로젝트의 시작입니다.</p><span class="btn">프로젝트 문의하기</span></div>
+    <div class="pan tail" style="width:96px"><span class="no">09 · — &amp; —</span><div class="cap">Prologue&amp; — and, 그리고 end.<br>처음과 끝을 함께합니다.</div></div>
+  </div>
+  <svg class="line" id="ln"></svg>
+  <div class="vp" id="vp" style="left:262px;width:160px"><span>화면 (100vw = 160px)</span></div>
+</div>
+<p class="note">헤더 중앙의 칸 = 진행 지도(패널 폭에 비례, 지나온 칸 navy-400 · 현재 칸 navy-800). 00·06·08·09는 배경과 같은 면(100vw), 01~05·07은 "지면"(bone-0, 1px) — 포스터와 본문 면이 번갈아 리듬을 만든다. 08 구간에서 선은 흰색.</p>
+
+<h2>패널 06 해부 — 선이 곧 프로세스</h2>
+<div class="p06">
+  <div class="rule"><b>02</b><b style="color:var(--b900);font-size:14px">처음부터 끝까지, 다섯 단계</b></div>
+  <svg viewBox="0 0 1000 100" preserveAspectRatio="none">
+    <line x1="0" y1="40" x2="1000" y2="40" stroke="#2B3160" stroke-width="1.5"/>
+    <g id="nodes"></g>
+  </svg>
+  <div class="about"><span style="flex:1.4">Prologue&amp;은 화면을 구현하는 것보다 왜 이 기능이 필요한지, 업무 자체를 더 단순하게 만들 수 없는지를 먼저 고민합니다. 기획·설계·개발을 한 사람이 맡아 처음 정리한 문제가 끝까지 흐트러지지 않습니다.</span><span style="flex:1;color:var(--b500)">잘 맞는 일 — 기존 시스템 UX·Workflow 개선 / 업무의 웹 시스템화 / 아이디어 → MVP / 반복 입력 자동화</span></div>
+</div>
+<p class="note">노드 5개가 S1 선 위에 놓인다. 마커(&amp;)가 노드를 지나는 순간 노드가 채워진다. 첫 노드 칩 "처음 — 만들기 전에 정리", 끝 노드 칩 "끝 — 출시 후에도".</p>
+
+<h2>동작 · 시트 · 모바일</h2>
+<div class="grid3">
+  <table>
+    <tr><th>항목</th><th>값</th></tr>
+    <tr><td>스크롤</td><td>Lenis 가로 모드 (<code>orientation:'horizontal', gestureOrientation:'both'</code>), 네이티브 <code>overflow-x</code> 래퍼. 세로 휠·트랙패드 → 가로. V2 transform 엔진은 쓰지 않음</td></tr>
+    <tr><td>덕분에 공짜</td><td>해시 <code>#p06</code>, ←/→/Home/End, Tab 포커스 스크롤, 찾기, 스크린리더 순서, 스크롤바</td></tr>
+    <tr><td>휠 한 칸</td><td>확인 필요 100/140px (임시 140, <code>wheelMultiplier</code>)</td></tr>
+    <tr><td>선·마커</td><td>트랙 폭 SVG 하나, y = 58vh. 그려진 길이 = scrollLeft + 50vw. 마커 fixed (50vw, 58vh). 09에서 착석</td></tr>
+    <tr><td>진행 지도</td><td>헤더 중앙, 폭 비례 칸. 현재 칸 = 50vw가 속한 패널. 호버 라벨·클릭 이동</td></tr>
+    <tr><td>Projects</td><td>가운데 시트(56rem, 내부 세로 스크롤), URL <code>/projects</code></td></tr>
+    <tr><td>Case Study</td><td>가운데 시트(V2 11 §3 결정), 내부에 V3 <code>case.html</code> 본문, URL <code>/projects/[slug]</code>. 10단계 가로 챕터안은 "피로" 기각 이력으로 제외(확인 항목)</td></tr>
+    <tr><td>reduced-motion</td><td>Lenis 없음. Shift+휠·트랙패드·키보드·스크롤바로 가로 이동. 선 최종 상태</td></tr>
+  </table>
+  <div class="box">
+    <b>V3·A와 비교해 이기는 것 / 지는 것</b>
+    <table style="margin-top:8px">
+      <tr><th>이김</th><th>짐</th></tr>
+      <tr><td>Rauno 충실도(구조 전체)</td><td>"내 문제가 몇 장 뒤인가" — 진행 지도에 의존</td></tr>
+      <tr><td>S1·S2를 문자 그대로(선이 축, 로고가 양 끝)</td><td>가로 스크롤 학습 비용(B2B 담당자)</td></tr>
+      <tr><td>새 기술 없음(pin 불필요), 14 §3.6 무충돌</td><td>모바일과 구조가 갈라짐(세로 스택)</td></tr>
+      <tr><td>V2 12장 → 10장, 7.8화면</td><td>읽기는 결국 시트(세로)</td></tr>
+    </table>
+    <p class="note">세 안의 위치: V3(읽기 최적) — A(절충) — 가로 전용(인상 최적)</p>
+  </div>
+  <div class="mob">
+    <div style="display:flex;justify-content:space-between"><b style="font-family:Georgia,serif;font-weight:400;font-size:13px">Prologue&amp;</b><span>03 / 10</span></div>
+    <div class="p f"><b class="h">복잡한 업무를 <i style="color:var(--navy)">단순한 제품</i>으로 바꿉니다.</b><div style="font-size:9px;color:var(--b500)">00 · 처음</div></div>
+    <div class="p"><div style="font-size:9px;color:var(--b500)">01</div>이런 문제를 이렇게 풀었습니다</div>
+    <div class="p"><div style="font-size:9px;color:var(--b500)">02 / 04</div><b class="h"><i>&amp;</i> Por favor, Harry</b><div style="height:50px;border:1px solid var(--b900);margin:6px 0;background:repeating-linear-gradient(45deg,var(--b200) 0 3px,var(--b0) 3px 8px)"></div><span style="color:var(--navy);font-size:9px">문제 01 &amp; 흩어진 요청</span></div>
+    <div class="p" style="color:var(--b500)">03 · 04 · 05 …</div>
+    <div class="p f"><b class="h" style="font-size:12px">처음부터 끝까지, 다섯 단계</b><div style="font-size:9px;color:var(--b500)">06 · 세로 목록</div></div>
+    <div class="p d"><b class="h">지금 하시는 업무를 알려주세요.</b><div style="font-size:9px;color:var(--navy3)">08 · 끝</div></div>
+    <div class="p f" style="text-align:center;font-size:9px;color:var(--b500)">— <i>&amp;</i> — · 09</div>
+    <p class="note">모바일(≤1023): 세로 스택, 선·마커 없음. "세로 없음"은 데스크톱의 성질.</p>
+  </div>
+</div>
+
+<script>
+  // strip line across the map + marker at viewport centre
+  const map = document.getElementById('map'), track = document.getElementById('track'), svg = document.getElementById('ln');
+  const W = track.scrollWidth, H = map.clientHeight - 26; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('width', W); svg.setAttribute('height', H);
+  const pans = [...track.children].map(p => ({ x: p.offsetLeft, w: p.offsetWidth, dark: p.classList.contains('dark'), tail: p.classList.contains('tail'), pj: p.classList.contains('pj') }));
+  const y = Math.round(H * 0.58), nodeX = pans[0].x + 95, vp = document.getElementById('vp'), tipX = vp.offsetLeft + 80; // 50vw of the red viewport
+  const tail = pans[pans.length - 1], ampX = tail.x + tail.w / 2, dark = pans.find(p => p.dark);
+  let s = '';
+  // sources in 00
+  [-24, -8, 8, 24].forEach(o => s += `<path class="faint" d="M${nodeX + 40} ${y + o} C ${nodeX + 20} ${y + o}, ${nodeX + 20} ${y}, ${nodeX} ${y}"/>`);
+  s += `<path class="faint" d="M${tipX} ${y} H${ampX - 14}"/>`;                       // undrawn guide
+  s += `<path d="M${nodeX} ${y} H${tipX}"/>`;                                          // drawn
+  s += `<path class="white" d="M${dark.x} ${y} H${dark.x + dark.w}" stroke-dasharray="3 3"/>`; // dark section (white line)
+  pans.filter(p => p.pj).forEach(p => { const x0 = p.x + 28, x1 = p.x + p.w - 16; s += `<path class="faint" d="M${x0} ${y - 14} C ${x0 + 16} ${y - 14}, ${x0 + 16} ${y}, ${x0 + 30} ${y} M${x0} ${y + 14} C ${x0 + 16} ${y + 14}, ${x0 + 16} ${y}, ${x0 + 30} ${y}"/><circle cx="${x0 + 30}" cy="${y}" r="2" fill="#FAF9F6" stroke="#2B3160"/><polygon points="${x1 - 8},${y - 3} ${x1},${y} ${x1 - 8},${y + 3}" fill="#2B3160"/>`; });
+  const p06 = pans[6]; for (let i = 0; i < 5; i++) { const x = p06.x + 20 + i * 30; s += `<circle cx="${x}" cy="${y}" r="2.5" fill="#FAF9F6" stroke="#2B3160"/>`; }
+  const btnY = y + 26; s += `<path class="white" d="M${dark.x + 8} ${btnY} H${dark.x + 8}"/>`;
+  s += `<line x1="${ampX + 14}" y1="${y}" x2="${ampX + 40}" y2="${y}" stroke="#D6D2C8"/><text class="amp" x="${ampX - 6}" y="${y + 6}" fill="#B3AEA3">&amp;</text>`;
+  s += `<circle cx="${nodeX}" cy="${y}" r="2.5" fill="#FAF9F6" stroke="#2B3160"/><circle cx="${tipX}" cy="${y}" r="10" fill="#fff"/><text class="amp" x="${tipX - 6}" y="${y + 6}">&amp;</text>`;
+  svg.innerHTML = s;
+  // panel 06 anatomy nodes
+  const names = ['Understand', 'Simplify', 'Design', 'Build', 'Improve'], chips = ['처음 — 만들기 전에 정리', '안 되는 건 미리', '화면 전에 흐름부터', '직접 설계·개발', '끝 — 출시 후에도'];
+  document.getElementById('nodes').innerHTML = names.map((n, i) => { const x = 100 + i * 200; return `<circle cx="${x}" cy="40" r="5" fill="${i < 3 ? '#2B3160' : '#FAF9F6'}" stroke="#2B3160" stroke-width="1.5"/><text x="${x}" y="24" text-anchor="middle">0${i + 1} ${n}</text><text class="c" x="${x}" y="64" text-anchor="middle">${chips[i]}</text>`; }).join('');
+</script>
+</body>
+</html>

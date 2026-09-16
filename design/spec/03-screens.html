@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prologue& 화면 설계 — 와이어프레임</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  /* Gray wireframes. No color decisions here — structure, order, sizes and copy only. */
+  *{box-sizing:border-box}
+  body{margin:0;background:#E9E9E9;color:#222;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;font-size:13px;line-height:1.5}
+  .wrap{max-width:1500px;margin:0 auto;padding:2rem 1.5rem 5rem}
+  h1{font-size:20px;margin:0 0 .3rem}
+  .lead{color:#666;margin:0 0 1.6rem}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;align-items:start}
+  .shot{background:#fff;border:1px solid #BDBDBD}
+  .shot .cap{padding:.5rem .8rem;border-bottom:1px solid #BDBDBD;font-size:12px;color:#666;background:#F4F4F4}
+  .page{padding:1rem 1.2rem}
+  .box{border:1px solid #9E9E9E;background:#F7F7F7;padding:.5rem .7rem;margin:.4rem 0;font-size:12px;color:#444}
+  .box.img{background:repeating-linear-gradient(45deg,#EEE 0 8px,#E2E2E2 8px 16px);color:#666;text-align:center}
+  .box.dark{background:#555;color:#eee;border-color:#555}
+  .box.btn{display:inline-block;background:#333;color:#fff;border-color:#333;padding:.45rem .8rem;margin-right:.3rem}
+  .box.btn.o{background:#fff;color:#333;border-color:#333}
+  .h{font-size:22px;font-weight:600;letter-spacing:-.02em;margin:.3rem 0}
+  .h.big{font-size:30px}
+  .sub{color:#666;font-size:12px}
+  .hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #BDBDBD;padding:.5rem 0;margin-bottom:.8rem;font-size:12px}
+  .hdr span+span{margin-left:1rem}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start}
+  .cols3{display:grid;grid-template-columns:2rem 1fr 1.4fr;gap:.8rem;align-items:start;border-top:1px solid #BDBDBD;padding:.7rem 0}
+  .sec{border-top:1px solid #BDBDBD;padding:.8rem 0;margin-top:.8rem}
+  .sec .n{font-size:11px;color:#888;letter-spacing:.06em}
+  .rail{position:absolute;left:.4rem;top:50%;display:flex;flex-direction:column;gap:5px}
+  .rail i{width:7px;height:7px;border-radius:50%;border:1px solid #888;display:block}
+  .rail i.on{background:#333;border-color:#333}
+  .rel{position:relative}
+  .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem}
+  .steps .box{margin:0}
+  .tabs{display:flex;gap:.4rem;margin:.6rem 0}
+  .tabs span{border:1px solid #9E9E9E;padding:.3rem .6rem;font-size:12px}
+  .tabs span.on{background:#333;color:#fff;border-color:#333}
+  .row{display:grid;grid-template-columns:2rem 1fr 1fr 1fr 6rem;gap:.8rem;align-items:center;border-top:1px solid #BDBDBD;padding:.6rem 0}
+  .mobile{width:300px}
+  .note{font-size:12px;color:#555;padding:.6rem .8rem;border-top:1px solid #BDBDBD;background:#FAFAFA}
+  .vh{font-size:10px;color:#999;text-align:right}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>화면 설계 — 와이어프레임</h1>
+  <p class="lead">색·서체 결정 없이 구조·순서·크기·카피만. 방문자 질문 순서(무엇을 하는가 → 내 문제를 풀어봤는가 → 믿을 만한가 → 어떻게 연락하는가)를 세로 한 장으로. 근거는 docs/15_screen_design.md.</p>
+
+  <div class="grid">
+    <!-- HOME -->
+    <div class="shot">
+      <div class="cap">Home — 세로 한 장 (데스크톱 1440) · 왼쪽 진행 레일 4점</div>
+      <div class="page rel">
+        <div class="rail"><i class="on"></i><i></i><i></i><i></i></div>
+        <div class="hdr"><span><b>Prologue&</b> (로고)</span><span><span>Projects</span><span>문의</span></span></div>
+        <div class="cols">
+          <div><div class="h big">복잡한 업무를<br><u>단순한 제품</u>으로 바꿉니다.</div><p class="sub">업무 프로세스를 분석하고, 불필요한 단계를 줄이고, 더 나은 UX를 설계해 실제 사용할 수 있는 웹 제품으로 구현합니다.</p><span class="box btn">프로젝트 문의</span><span class="box btn o">작업 보기</span></div>
+          <div class="box img" style="height:150px;display:grid;place-items:center">히어로 다이어그램<br>엉킨 4선 → 한 선 → 플래그 (로드 시 그려짐)</div>
+        </div>
+        <div class="vh">1 · 100vh</div>
+
+        <div class="sec"><div class="n">01 — 이런 문제를 이렇게 풀었습니다</div>
+          <div class="cols3"><span class="sub">01</span><div><b>흩어진 요청</b><br><span class="sub">엑셀·메신저·이메일·구두 요청으로 흩어진 업무</span></div><div><b>Por favor, Harry</b> <span class="sub">Workflow Design · Internal Tool</span><br><span class="sub">요청 경로 4 → 1. 진행상황 문의 0회.</span><div class="box img" style="height:54px">스크린샷 16:10</div><span class="sub">Case Study →</span></div></div>
+          <div class="cols3"><span class="sub">02</span><div><b>불편한 기존 시스템</b><br><span class="sub">기능은 있는데 쓰기 어려운 화면</span></div><div><b>병원 UI/UX 고도화</b><br><span class="sub">읽는 순서대로 배치, 입력 동선 절반.</span><div class="box img" style="height:54px">스크린샷</div><span class="sub">Case Study →</span></div></div>
+          <div class="cols3"><span class="sub">03</span><div><b>종이·수작업</b><br><span class="sub">그대로 옮기면 안 되는 디지털화</span></div><div><b>Daeryun Learning Hub</b><br><span class="sub">1,220문항, 즉시 채점·오답관리.</span><div class="box img" style="height:54px">스크린샷</div><span class="sub">Case Study →</span></div></div>
+          <div class="cols3"><span class="sub">04</span><div><b>제품이 필요한 아이디어</b><br><span class="sub">구조와 화면이 없는 아이디어</span></div><div><b>Custom Commerce</b><br><span class="sub">탐색→구매→주문→운영 전체 흐름.</span><div class="box img" style="height:54px">스크린샷</div><span class="sub">Case Study →</span></div></div>
+          <p class="sub" style="margin:.6rem 0 0">Projects 전체 보기 →</p>
+        </div>
+        <div class="vh">2 · 행당 약 40vh, 행 전체 클릭</div>
+
+        <div class="sec"><div class="n">02 — 일하는 방식</div>
+          <div class="steps"><div class="box"><b>Understand</b><br>업무 이해<br><span class="sub">현장 인터뷰</span></div><div class="box"><b>Simplify</b><br>단계 삭제<br><span class="sub">기능보다 제거</span></div><div class="box"><b>Design</b><br>흐름·UX<br><span class="sub">추가 견적 없음</span></div><div class="box"><b>Build</b><br>제품으로<br><span class="sub">Mockup 대체 가능</span></div><div class="box"><b>Improve</b><br>쓰면서 개선<br><span class="sub">1개월 무상</span></div></div>
+          <p class="sub" style="margin:.8rem 0 0"><b>B2B Product Engineer.</b> 소개 3줄 + 잘 맞는 일 목록(사내 시스템 개선 · 엑셀/종이 업무의 웹화 · MVP)</p>
+        </div>
+        <div class="vh">3 · 60vh</div>
+
+        <div class="box dark" style="padding:1rem"><div class="h" style="color:#fff">지금 하시는 업무를 알려주세요.</div><span class="sub" style="color:#ccc">현재 방식과 가장 불편한 점 한 줄이면 충분합니다. 2영업일 안에 답변.</span><br><span class="box btn o" style="margin-top:.5rem">프로젝트 문의하기 (서랍)</span> <span class="sub" style="color:#ccc">hello@prologue.and</span></div>
+        <div class="vh">4 · 70vh 반전</div>
+        <div class="hdr" style="border:0;border-top:1px solid #BDBDBD;margin-top:.6rem"><span>로고 · Projects · 이메일</span><span>© Prologue&</span></div>
+      </div>
+      <div class="note">동선: 첫 화면 → 문의 1클릭 / 내 문제 → 사례 스크롤 1~2회 / 섹션 2의 사례는 대표 4개만, 나머지는 Projects</div>
+    </div>
+
+    <div>
+      <!-- PROJECTS -->
+      <div class="shot" style="margin-bottom:1.6rem">
+        <div class="cap">Projects — 전체 목록, 문제 유형 필터</div>
+        <div class="page">
+          <div class="hdr"><span><b>Prologue&</b></span><span><span><u>Projects</u></span><span>문의</span></span></div>
+          <div class="h">Projects</div><p class="sub" style="margin:0">문제 유형별로 정리한 작업 기록 · 6건</p>
+          <div class="tabs"><span class="on">전체</span><span>흩어진 요청</span><span>불편한 시스템</span><span>종이·수작업</span><span>아이디어</span></div>
+          <div class="row"><span class="sub">01</span><b>Por favor, Harry</b><span class="sub">흩어진 요청 · 2025 · 대표</span><span class="sub">요청 경로 4 → 1</span><div class="box img" style="margin:0;height:38px"></div></div>
+          <div class="row"><span class="sub">02</span><b>Daeryun Learning Hub</b><span class="sub">종이·수작업 · 2025 · 대표</span><span class="sub">1,220문항 웹화</span><div class="box img" style="margin:0;height:38px"></div></div>
+          <div class="row"><span class="sub">03</span><b>병원 UI/UX 고도화</b><span class="sub">불편한 시스템 · 2024–25 · 대표</span><span class="sub">입력 동선 절반</span><div class="box img" style="margin:0;height:38px"></div></div>
+          <div class="row"><span class="sub">04</span><b>Custom Commerce</b><span class="sub">아이디어 · 2025 · 대표</span><span class="sub">전체 흐름 직접 구축</span><div class="box img" style="margin:0;height:38px"></div></div>
+          <div class="row"><span class="sub">05</span><b>견적서 자동화</b><span class="sub">종이·수작업 · 2024</span><span class="sub">입력 12회 → 1회</span><div class="box img" style="margin:0;height:38px"></div></div>
+          <div class="row"><span class="sub">06</span><b>교대 근무표</b><span class="sub">흩어진 요청 · 2024</span><span class="sub">카톡 공지 → 알림</span><div class="box img" style="margin:0;height:38px"></div></div>
+        </div>
+        <div class="note">행(카드 아님) · 호버 배경 · 빈 상태: "이 유형의 작업은 준비 중입니다" + 문의 버튼 · Notion Order 정렬, 미공개 제외</div>
+      </div>
+
+      <!-- CASE STUDY -->
+      <div class="shot">
+        <div class="cap">Case Study — /projects/[slug] (고유 URL)</div>
+        <div class="page rel">
+          <div class="hdr" style="background:#F4F4F4;padding:.5rem"><span>← Projects &nbsp; <b>Por favor, Harry</b></span><span class="box btn" style="margin:0;padding:.3rem .6rem">이 프로젝트를 보고 문의</span></div>
+          <span class="sub">흩어진 요청</span>
+          <div class="h">흩어진 업무 요청을 하나의 Workflow로</div>
+          <div class="cols" style="grid-template-columns:repeat(4,1fr);gap:.4rem"><div class="box"><span class="sub">역할</span><br>기획·설계·개발</div><div class="box"><span class="sub">기간</span><br>2025</div><div class="box"><span class="sub">사용자</span><br>사내 12명</div><div class="box"><span class="sub">공개</span><br>full</div></div>
+          <div class="box img" style="height:90px;display:grid;place-items:center">대표 스크린샷 (매트 안)</div>
+          <div class="cols" style="grid-template-columns:2rem 1fr;margin-top:.6rem">
+            <div class="sub" style="line-height:2.2">01<br>02<br><b>03</b><br>04<br><b>05</b><br>06<br>07<br>08<br>09<br>10</div>
+            <div>
+              <div class="box"><b>01 Overview</b> — 한 줄 정의 · 역할 · 기간</div>
+              <div class="box"><b>02 Problem</b> — 기존 문제</div>
+              <div class="box img" style="height:52px">03 Existing Workflow — 다이어그램 (Before)</div>
+              <div class="box"><b>04 Insight</b> — ToDo가 아니라 요청 구조의 문제였습니다 (크게)</div>
+              <div class="box img" style="height:52px">05 Redesign — 같은 좌표계, Before→After 변형(scrub)</div>
+              <div class="box"><b>06 Solution</b> — 화면·기능</div>
+              <div class="box img" style="height:40px">07 Before / After 스크린샷 쌍</div>
+              <div class="box"><b>08 Impact</b> — 숫자 3개 크게 (4→1, 0회, 1.8일)</div>
+              <div class="box"><b>09 What I Learned</b></div>
+              <div class="box"><b>10 CTA</b> — 서랍(프로젝트 첨부) · Built with · 이전/다음</div>
+            </div>
+          </div>
+        </div>
+        <div class="note">상단 바 고정: 문의 상시 1클릭 · 왼쪽 번호 레일 클릭 이동 · mockup 공개 범위면 "재구성 화면" 캡션</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:1.6rem;grid-template-columns:1fr 300px 300px">
+    <!-- DRAWER -->
+    <div class="shot">
+      <div class="cap">문의 서랍 — 전역, 2단계 → 접수됨</div>
+      <div class="page">
+        <div class="cols" style="grid-template-columns:1fr 1fr 1fr">
+          <div><div class="h" style="font-size:16px">1 / 2 현재 업무</div><div class="box">Por favor, Harry를 보고 문의합니다 · 해제</div><div class="box">현재 어떤 업무를 하고 있나요? (장문)</div><div class="box">도구: [엑셀][종이][카톡][이메일][기존 시스템]</div><div class="box">가장 불편한 부분은? (장문)</div><div class="box">사용자 수 ▾ · 반복 빈도 ▾ · 기존/신규 ▾</div><span class="box btn">다음</span></div>
+          <div><div class="h" style="font-size:16px">2 / 2 목표·연락처</div><div class="box">원하는 결과 (선택)</div><div class="box">희망 일정 ▾ · 예산 ▾</div><div class="box">이메일 (필수) · 전화 (선택)</div><span class="box btn o">이전</span><span class="box btn">문의 보내기</span><p class="sub">이메일 + 문의 시트에 저장, 2영업일 안에 답변</p></div>
+          <div><div class="h" style="font-size:16px">접수됨</div><div class="box" style="text-align:center;padding:1.2rem">▶<br><b>접수됐습니다</b><br><span class="sub">2영업일 안에 답변드립니다</span></div><p class="sub">실패 시: 원인 + 이메일 주소 직접 표기</p></div>
+        </div>
+      </div>
+      <div class="note">트리거: 헤더 문의 · Hero 버튼 · 섹션 4 · Case Study 상단 바·10 CTA · /contact. 숨김: 유입 경로·참조 slug·시각</div>
+    </div>
+    <!-- MOBILE HOME -->
+    <div class="shot mobile">
+      <div class="cap">모바일 Home (400)</div>
+      <div class="page">
+        <div class="hdr"><span><b>P&</b></span><span>01/04 · 문의</span></div>
+        <div class="h" style="font-size:18px">복잡한 업무를<br>단순한 제품으로<br>바꿉니다.</div>
+        <div class="box img" style="height:70px">다이어그램(축소)</div>
+        <span class="box btn" style="display:block;text-align:center">프로젝트 문의</span><span class="box btn o" style="display:block;text-align:center">작업 보기</span>
+        <div class="sec"><div class="n">01</div><b>흩어진 요청</b><br><span class="sub">상황 한 줄</span><div class="box img" style="height:60px">스크린샷 전폭</div><b>Por favor, Harry</b><br><span class="sub">결과 2줄 · Case Study →</span></div>
+        <div class="sec"><div class="n">02 일하는 방식</div><div class="box">Understand</div><div class="box">Simplify</div><div class="box">Design …</div></div>
+        <div class="box dark">문의 (반전)</div>
+      </div>
+    </div>
+    <!-- MOBILE CASE -->
+    <div class="shot mobile">
+      <div class="cap">모바일 Case Study</div>
+      <div class="page">
+        <div class="hdr" style="background:#F4F4F4"><span>← · Harry · 03/10</span><span class="box btn" style="margin:0;padding:.25rem .5rem">문의</span></div>
+        <div class="h" style="font-size:18px">흩어진 업무 요청을 하나의 Workflow로</div>
+        <div class="box img" style="height:70px">대표 스크린샷</div>
+        <div class="box">역할 · 기간 · 사용자 · 공개</div>
+        <div class="box">02 Problem</div>
+        <div class="box img" style="height:50px">03 Before 다이어그램</div>
+        <div class="box"><b>04 Insight</b> 크게</div>
+        <div class="box img" style="height:50px">05 After</div>
+        <div class="box">… 10 CTA (서랍 전체 화면)</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

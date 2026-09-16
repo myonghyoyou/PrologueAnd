@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prologue& 디자인 컨셉 — 구조적 편집물 (구성 요소 시트)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{--navy-950:#151A33;--navy-900:#1F2447;--navy-800:#2B3160;--navy-700:#3B4478;--navy-400:#8A96C2;--navy-300:#AEB7D6;--navy-100:#E4E8F4;
+    --bone-0:#FFFFFF;--bone-50:#FAF9F6;--bone-100:#F3F1EC;--bone-200:#E8E5DE;--bone-300:#D6D2C8;--bone-500:#8A857A;--bone-700:#4A4741;--bone-900:#1C1B18;--signal:#3B6FE0;--signal-soft:#DCEBFB;--success:#2E7D5B;
+    --sans:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bone-50);color:var(--bone-900);font-family:var(--sans);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1200px;margin:0 auto;padding:3rem 24px 6rem}
+  .sec{padding:2.4rem 0;border-top:1px solid var(--bone-200);display:grid;grid-template-columns:3rem 1fr;gap:1rem}
+  .sec .n{font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--bone-500);padding-top:.5rem}
+  .sec h2{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0 0 1.2rem;line-height:1.25}
+  .cap{font-size:13px;font-weight:500;letter-spacing:.01em;color:var(--bone-500)}
+  .body{color:var(--bone-700);max-width:34rem}
+  .display{font-size:64px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:0 0 .6rem}
+  .display em{font-style:normal;color:var(--navy-800)}
+  .h1{font-size:40px;font-weight:600;letter-spacing:-.025em;line-height:1.15;margin:0}
+  .h2{font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1.25;margin:0}
+  .lead{font-size:19px;line-height:1.6;color:var(--bone-700);max-width:30rem;margin:0}
+  .type-row{display:grid;grid-template-columns:10rem 1fr;gap:1rem;align-items:baseline;padding:.6rem 0;border-top:1px solid var(--bone-200)}
+  .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.15rem;background:var(--navy-800);color:#fff;font-size:15px;line-height:1;border-radius:2px;border:1px solid var(--navy-800);cursor:pointer;transition:background .15s}
+  .btn:hover{background:var(--navy-700)}
+  .btn.o{background:transparent;color:var(--bone-900);border-color:var(--bone-900)}
+  .btn.o:hover{background:var(--bone-100)}
+  a.link{color:var(--bone-900);text-decoration:underline;text-decoration-color:var(--bone-300);text-underline-offset:4px;transition:text-decoration-color .15s}
+  a.link:hover{text-decoration-color:var(--signal)}
+  .tag{display:inline-block;padding:.2rem .55rem;background:var(--navy-100);color:var(--navy-800);font-size:13px;font-weight:500;border-radius:2px;margin-right:.3rem}
+  .badge{display:inline-block;padding:.2rem .55rem;font-size:13px;font-weight:500;border-radius:2px;background:#DFF0E8;color:var(--success)}
+  input,select,textarea{font:inherit;padding:.7rem .8rem;border:1px solid var(--bone-300);background:var(--bone-0);border-radius:2px;color:var(--bone-900);width:100%}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--signal);outline-offset:1px;border-color:var(--signal)}
+  .chips{display:flex;flex-wrap:wrap;gap:.4rem}
+  .chips label{display:inline-flex;gap:.4rem;align-items:center;padding:.45rem .7rem;border:1px solid var(--bone-300);border-radius:2px;font-size:14px;cursor:pointer}
+  .chips label:has(input:checked){border-color:var(--navy-800);background:var(--navy-100)}
+  .chips input{width:auto}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+  .frame{border:1px solid var(--bone-900);background:var(--bone-0);padding:6px}
+  .frame div{aspect-ratio:16/10;background:linear-gradient(180deg,var(--bone-100),var(--bone-0))}
+  .dia{border:1px solid var(--bone-200);background:var(--bone-0);padding:1rem}
+  .dia svg{width:100%;height:auto;display:block}
+  .row{display:grid;grid-template-columns:2.5rem 1fr 1fr 2fr;gap:1.2rem;padding:1.2rem 0;border-top:1px solid var(--bone-200);align-items:start}
+  .row:hover{background:var(--bone-100);margin:0 -1rem;padding-left:1rem;padding-right:1rem}
+  .row .t{font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1.25}
+  .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:1.2rem}
+  .steps div{border-top:1px solid var(--bone-900);padding-top:.7rem}
+  .steps b{display:block;font-weight:600;font-size:16px}
+  .steps span{display:block;font-size:14px;color:var(--bone-700)}
+  .steps em{display:inline-block;font-style:normal;font-size:13px;color:var(--bone-500);margin-top:.4rem}
+  .rail{display:flex;flex-direction:column;gap:6px;width:14px}
+  .rail i{display:block;width:8px;height:8px;border-radius:50%;border:1px solid var(--bone-300);background:var(--bone-50)}
+  .rail i.on{background:var(--navy-800);border-color:var(--navy-800)}
+  .drawer{border:1px solid var(--bone-200);background:var(--bone-50);box-shadow:0 24px 48px -24px rgba(28,27,24,.35);padding:1.4rem;max-width:26rem}
+  .drawer h3{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0 0 1rem}
+  .drawer label{display:block;font-size:13px;color:var(--bone-700);margin:.9rem 0 .3rem}
+  .dont{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;font-size:14px;color:var(--bone-700)}
+  .dont div{border-top:1px solid var(--bone-200);padding-top:.6rem}
+  .dont b{display:block;color:var(--bone-900);font-weight:600}
+  .dark{background:var(--navy-950);color:var(--bone-50);padding:2rem;margin:0 -24px}
+  .dark .display{font-size:40px}
+  .dark p{color:var(--navy-300);max-width:30rem}
+  .dark .btn{background:var(--bone-50);color:var(--navy-900);border-color:var(--bone-50)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="cap">디자인 컨셉 · 구성 요소 시트</p>
+  <h1 class="h1" style="margin-bottom:.6rem">구조적 편집물</h1>
+  <p class="lead">잘 편집된 제안서처럼 읽히는 사이트. 큰 타이포와 여백에 눈에 보이는 구조(괘선·번호·정렬 축·단선 다이어그램)를 더한다. 표면은 평평하고 장식은 없다. 근거는 docs/14_design_concept.md.</p>
+
+  <div class="sec"><span class="n">01</span><div>
+    <h2>타이포그래피 — 크기 3단계, 굵기 2종, 색 3종</h2>
+    <div class="type-row"><span class="cap">Display 64 / 600</span><p class="display">복잡한 업무를<br><em>단순한 제품</em>으로 바꿉니다.</p></div>
+    <div class="type-row"><span class="cap">H1 40 / 600</span><p class="h1">흩어진 업무 요청을 하나의 Workflow로</p></div>
+    <div class="type-row"><span class="cap">H2 24 / 600</span><p class="h2">요청이 네 곳에서 들어왔습니다</p></div>
+    <div class="type-row"><span class="cap">Body L 19 / 400</span><p class="lead">업무 프로세스를 분석하고, 불필요한 단계를 줄이고, 더 나은 UX를 설계해 실제 사용할 수 있는 웹 제품으로 구현합니다.</p></div>
+    <div class="type-row"><span class="cap">Body 16 / 400</span><p class="body" style="margin:0">요청자는 요구를 충분히 정리하지 않은 채 전달하는 경우가 많았고, 받는 사람은 그것을 다시 정리하거나 기억해야 했습니다. 업무 중 걸려오는 전화와 자리로 찾아오는 요청 때문에 몰입이 자주 끊겼습니다.</p></div>
+    <div class="type-row"><span class="cap">Caption 13 / 500</span><p class="cap" style="margin:0">Workflow Design · Product Thinking · 2025 · 기획·설계·개발</p></div>
+  </div></div>
+
+  <div class="sec"><span class="n">02</span><div>
+    <h2>버튼 · 링크 · 태그 · 배지</h2>
+    <p><span class="btn">프로젝트 문의하기</span> <span class="btn o">Case Study 읽기</span> &nbsp; <a class="link" href="#">Projects 전체 보기</a> &nbsp; <span class="tag">Workflow Design</span><span class="tag">Internal Tool</span> &nbsp; <span class="badge">접수됨</span></p>
+    <p class="cap">1차 버튼 navy-800, 호버 navy-700. 2차 버튼 투명 + bone-900 테두리. 링크는 밑줄, 호버 시 밑줄이 signal. 모서리 2px.</p>
+  </div></div>
+
+  <div class="sec"><span class="n">03</span><div>
+    <h2>섹션 헤더 · 프로젝트 행 · 단계</h2>
+    <div class="row"><span class="cap">01</span><div class="t">Por favor, Harry</div><div><span class="tag">흩어진 요청</span><p class="body" style="font-size:14px;margin:.5rem 0 0">전화·메신저·이메일·방문으로 흩어지던 요청을 개인 링크 하나로. 요청 경로 4 → 1.</p><p style="margin:.6rem 0 0"><a class="link" href="#">Case Study</a></p></div><div class="frame"><div></div></div></div>
+    <div class="row"><span class="cap">02</span><div class="t">Daeryun Learning Hub</div><div><span class="tag">종이·수작업</span><p class="body" style="font-size:14px;margin:.5rem 0 0">1,220문항 종이 문제집을 즉시 채점·오답관리가 되는 학습 경험으로.</p><p style="margin:.6rem 0 0"><a class="link" href="#">Case Study</a></p></div><div class="frame"><div></div></div></div>
+    <p class="cap" style="margin:1.4rem 0 .8rem">일하는 방식 — 다섯 단계, 각 단계에 고객 불안 즉답</p>
+    <div class="steps"><div><b>Understand</b><span>현재 업무와 사용자를 이해</span><em>현장 인터뷰 포함</em></div><div><b>Simplify</b><span>불필요한 단계와 중복 제거</span><em>기능 추가보다 단계 삭제</em></div><div><b>Design</b><span>Workflow·정보구조·UX 설계</span><em>범위 확정 후 추가 견적 없음</em></div><div><b>Build</b><span>실제 사용할 수 있는 제품으로</span><em>화면 공개 불가 시 Mockup 대체</em></div><div><b>Improve</b><span>사용 후 반복 개선</span><em>오픈 후 1개월 무상</em></div></div>
+  </div></div>
+
+  <div class="sec"><span class="n">04</span><div>
+    <h2>다이어그램 — 서명 요소</h2>
+    <div class="grid2">
+      <div class="dia"><p class="cap" style="margin:0 0 .6rem">기존 흐름 (navy-400, 1px)</p><svg viewBox="0 0 480 130"><g fill="none" stroke="#8A96C2" stroke-width="1"><path d="M20 20 C 130 20, 150 65, 250 65"/><path d="M20 50 C 130 50, 150 65, 250 65"/><path d="M20 80 C 130 80, 150 65, 250 65"/><path d="M20 110 C 130 110, 150 65, 250 65"/><path d="M250 65 L 330 65"/></g><rect x="330" y="45" width="120" height="40" fill="#FAF9F6" stroke="#8A96C2"/><g font-family="Pretendard" font-size="11" fill="#8A857A"><text x="20" y="14">전화</text><text x="20" y="44">메신저</text><text x="20" y="74">이메일</text><text x="20" y="104">직접 방문</text><text x="390" y="70" text-anchor="middle" fill="#4A4741">담당자가 정리·기억</text></g></svg></div>
+      <div class="dia"><p class="cap" style="margin:0 0 .6rem">재설계 (navy-800, 1.5px, 도착점 플래그)</p><svg viewBox="0 0 480 130"><path d="M20 65 L 440 65" stroke="#2B3160" stroke-width="1.5" fill="none"/><g fill="#FAF9F6" stroke="#2B3160" stroke-width="1.5"><circle cx="90" cy="65" r="4"/><circle cx="190" cy="65" r="4"/><circle cx="290" cy="65" r="4"/><circle cx="380" cy="65" r="4"/></g><polygon points="440,57 458,65 440,73" fill="#2B3160"/><g font-family="Pretendard" font-size="11" fill="#4A4741" text-anchor="middle"><text x="90" y="90">개인 링크</text><text x="190" y="90">요청폼</text><text x="290" y="90">심사 Queue</text><text x="380" y="90">약속일</text><text x="449" y="95">공유</text></g></svg></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><span class="n">05</span><div>
+    <h2>입력 · 문의 서랍 · 진행 레일</h2>
+    <div class="grid2">
+      <div class="drawer"><h3>프로젝트 문의</h3><label>현재 어떤 업무를 하고 있나요?</label><textarea rows="3" placeholder="예: 거래처 단가표를 엑셀로 관리하고 카톡으로 요청을 받아요"></textarea><label>지금 어떤 도구를 사용하고 있나요?</label><div class="chips"><label><input type="checkbox" checked>엑셀</label><label><input type="checkbox">종이</label><label><input type="checkbox">카톡·메신저</label><label><input type="checkbox">이메일</label><label><input type="checkbox">기존 시스템</label></div><label>이 업무를 몇 명이 사용하나요?</label><select><option>1~5명</option><option>6~20명</option><option>21~100명</option></select><p style="margin:1.2rem 0 0"><span class="btn">다음</span> <span class="cap" style="margin-left:.6rem">1 / 2 — 현재 업무</span></p></div>
+      <div><p class="cap">진행 레일 — 왼쪽 고정, 현재 섹션 채움, 클릭 이동</p><div class="rail"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div><p class="cap" style="margin-top:2rem">그림자는 서랍·모달 한 종류: 0 24px 48px -24px rgba(28,27,24,.35)</p><p class="cap">모서리 2px · 테두리 1px · 입력창 포커스 signal 2px 링</p></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><span class="n">06</span><div>
+    <h2>반전 섹션 — 네이비를 면으로 쓰는 유일한 곳</h2>
+    <div class="dark"><p class="display">지금 하시는 업무를 알려주세요.</p><p>현재 방식과 가장 불편한 점 한 줄이면 충분합니다. 2영업일 안에 답변드립니다.</p><span class="btn">프로젝트 문의하기</span></div>
+  </div></div>
+
+  <div class="sec"><span class="n">07</span><div>
+    <h2>하지 않는 것</h2>
+    <div class="dont"><div><b>카드·둥근 모서리·카드 그림자</b>배경 층위(bone-50/100)로 묶는다</div><div><b>격자·노이즈·그라데이션·블러</b>표면은 평평하다</div><div><b>아이콘 세트·일러스트·사진</b>그림은 다이어그램 하나</div><div><b>대문자 eyebrow</b>라벨은 문장형 캡션</div><div><b>섹션 페이드업·호버 확대·커스텀 커서</b>모션은 응답으로만</div><div><b>기기 목업·기울인 스크린샷</b>1px 테두리 매트 안에 정면으로</div></div>
+  </div></div>
+</div>
+</body>
+</html>
