@@ -1,0 +1,64 @@
+/* v4 — 하이브리드: v3 위에 섹션 01 가로 포스터 스트립(pin) */
+#strip{position:relative;z-index:9;background:var(--bone-100)}       /* above #line (6) so segment ① hides behind the pinned strip */
+.strip-pin{position:relative;height:calc(100vh - 64px);overflow:hidden}
+.strip-top{position:absolute;left:112px;right:40px;top:24px;z-index:5;display:flex;align-items:center;gap:16px}
+.strip-top .num{color:var(--navy-800)}
+.strip-top .cap{margin-left:auto}
+.prog{display:flex;gap:4px}
+.prog i{display:block;width:32px;height:3px;background:var(--bone-300);transition:background .2s}
+.prog i.done{background:var(--navy-400)}
+.prog i.on{background:var(--navy-800)}
+.track{position:absolute;left:0;top:64px;bottom:24px;display:flex;gap:24px;padding:0 40px 0 112px;will-change:transform}
+.pan{position:relative;flex:none;background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;overflow:hidden}
+.pan.title{width:44vw;padding:40px}
+.pan.title .num{display:block;color:var(--navy-800);margin-bottom:12px}
+.pan.title .h1{max-width:9em}
+.pan.title .hint{position:absolute;left:40px;bottom:40px;display:flex;gap:24px}
+.pan.title .hint .cap{font-weight:500}
+.pan.pj{width:min(84vw,1280px);padding:40px}
+.pan .pcap{position:absolute;left:40px;top:16px;font-size:12px;font-weight:500;color:var(--bone-500)}
+.pan.pj h2{position:relative;z-index:2;font-size:7.8rem;font-weight:600;letter-spacing:-.035em;line-height:1;margin:22px 0 0;max-width:7.2em}
+.pan.pj.lg h2{font-size:6.8rem}
+.pan.pj.md h2{font-size:5.6rem}
+.pan.pj h2 .amp{font-size:.9em;margin-right:.14em;color:var(--navy-800)}
+.pan.pj .prob{position:absolute;left:40px;bottom:40px;z-index:2;max-width:22rem}
+.pan.pj .prob b{display:block;font-size:13px;font-weight:500;color:var(--navy-800);margin-bottom:4px}
+.pan.pj .prob b .amp{font-size:14px;margin:0 .15em}
+.pan.pj .prob span{font-size:15px;color:var(--bone-700)}
+.pan.pj .shape-area{position:absolute;left:38%;top:6%;width:60%;height:88%}
+.pan.pj .nums{position:absolute;right:40px;bottom:40px;z-index:2;flex-direction:row;gap:32px}
+.pan.pj .nums b{font-size:40px}
+.pan.pj .cs{position:absolute;right:40px;top:40px;z-index:2;font-size:14px;font-weight:500;color:var(--navy-800)}
+.pan.pj:hover .cs{text-decoration:underline;text-decoration-color:var(--signal);text-underline-offset:4px}
+.pan.tail{width:24vw;padding:40px;display:flex;flex-direction:column;justify-content:center;gap:16px;background:transparent;border:0}
+.pan.tail a{font-size:16px;font-weight:500;color:var(--navy-800)}
+.track-line{position:absolute;left:var(--rail-x);right:0;top:0;bottom:0;overflow:hidden;pointer-events:none;z-index:3}
+.track-line svg{position:absolute;left:calc(-1 * var(--rail-x));top:0;overflow:visible;will-change:transform}
+.track-line .guide{fill:none;stroke:var(--navy-200);stroke-width:1}
+.track-line .ink{fill:none;stroke:var(--navy-800);stroke-width:1.5;stroke-linejoin:round}
+.stub{position:absolute;left:0;top:0;width:120px;height:100%;overflow:visible;pointer-events:none;z-index:3}
+.stub path{fill:none;stroke:var(--navy-800);stroke-width:1.5}
+.stub .g{stroke:var(--navy-200);stroke-width:1}
+#how{padding-top:128px}
+#how .sec-head{position:relative}
+@media (max-width:1023px){
+  #strip{z-index:auto}
+  .strip-pin{height:auto;overflow:visible;padding:0 24px 64px}
+  .strip-top{position:static;padding:24px 0 16px;border-top:1px solid var(--bone-200)}
+  .strip-top .cap,.prog{display:none}
+  .track{position:static;display:block;padding:0}
+  .pan{width:auto!important;margin-bottom:16px}
+  .pan.title{padding:24px}
+  .pan.title .hint{position:static;margin-top:16px}
+  .pan.pj{padding:24px;min-height:auto}
+  .pan.pj h2{font-size:2.6rem!important;margin:16px 0 8px;max-width:none}
+  .pan.pj .prob,.pan.pj .nums,.pan.pj .cs{position:static}
+  .pan.pj .prob{margin:8px 0 16px}
+  .pan.pj .nums{gap:24px;margin-top:12px}
+  .pan.pj .nums b{font-size:28px}
+  .pan.pj .shape-area{left:40%;top:0;width:60%;height:60%;opacity:.7}
+  .pan.pj .mdia{position:relative;z-index:1;margin-top:8px}
+  .pan.tail{padding:16px 0}
+  .track-line,.stub{display:none}
+  #how{padding-top:0}
+}

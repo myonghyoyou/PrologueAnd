@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects — Prologue&</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="v3.css">
+</head>
+<body>
+
+<header class="hdr">
+  <a class="brand" href="index.html" aria-label="Prologue&">Prologue<span class="bamp">&amp;</span></a>
+  <nav>
+    <a href="projects.html" style="color:var(--navy-800)">Projects</a>
+    <button type="button" data-open-drawer>문의</button>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="page-head">
+      <h1 class="h1">Projects</h1>
+      <p class="lead">문제 유형별로 정리한 작업 기록. 브랜드명 뒤의 빈칸을 채운 것들입니다.</p>
+      <p class="cap cnt"><span id="cnt"></span> · 최근 갱신 2026-09-16</p>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div id="list"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="logo-bottom"><span class="rule r" style="left:0;right:0;width:auto;background:var(--bone-900)"></span></div>
+    <p class="foot-cap">Prologue<span class="amp">&amp;</span> — and, 그리고 end. 처음과 끝을 함께합니다.</p>
+    <div class="foot-row">
+      <nav><a href="projects.html">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav>
+      <span>© 2026 Prologue&amp;</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script src="v3.js"></script>
+<script>
+  const tabs = [{ key: 'all', name: '전체' }].concat(V3.problems.map(p => ({ key: p.key, name: p.name })));
+  const params = new URLSearchParams(location.search);
+  let cur = params.get('type') || 'all';
+  function render() {
+    document.getElementById('tabs').innerHTML = tabs.map(t => `<button type="button" class="${t.key === cur ? 'on' : ''}" data-key="${t.key}">${t.name}</button>`).join('');
+    const items = V3.projects.filter(p => cur === 'all' || p.problem === cur).sort((a, b) => a.order - b.order);
+    document.getElementById('cnt').textContent = `${items.length}건`;
+    document.getElementById('list').innerHTML = items.length ? items.map((p, i) => `
+      <a class="prow" href="case.html?p=${p.slug}">
+        <span class="num">${String(p.order).padStart(2, '0')}</span>
+        <div>
+          <div class="h2"><span class="amp">&amp;</span>${p.title}</div>
+          <div class="meta">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}<span>${p.year}</span><span>${V3.problem(p.problem).name}</span>${p.featured ? '<span style="color:var(--navy-800)">대표</span>' : ''}</div>
+          <p class="res">${p.tagline}</p>
+        </div>
+        <div class="shot ph">화면 이미지<br>공개 범위 확인 후</div>
+      </a>`).join('')
+      : `<div class="empty"><p>이 유형의 작업은 준비 중입니다.<br>비슷한 문제가 있다면 문의해 주세요.</p><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a></div>`;
+  }
+  document.getElementById('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; cur = b.dataset.key; history.replaceState(null, '', cur === 'all' ? 'projects.html' : `projects.html?type=${cur}`); render(); });
+  render();
+  V3.initLenis();
+  V3.drawer.init();
+</script>
+</body>
+</html>

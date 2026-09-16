@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prologue& 시안 비교 — V3 · V4 · V5</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  body{margin:0;background:#FAF9F6;color:#1C1B18;font-family:Pretendard,sans-serif;padding:48px 40px;line-height:1.6}
+  h1{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0 0 8px}
+  p{color:#4A4741;max-width:60rem;margin:0 0 28px}
+  .g{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1200px}
+  .c{background:#fff;border:1px solid #E8E5DE;border-radius:2px;padding:20px}
+  .c b{display:block;font-size:17px;margin-bottom:6px}
+  .c small{display:block;color:#8A857A;margin-bottom:12px}
+  .c ul{margin:0 0 14px;padding-left:18px;font-size:13px;color:#4A4741}
+  .c a.btn{display:inline-block;padding:9px 14px;background:#2B3160;color:#fff;border-radius:2px;font-size:13px;text-decoration:none;margin-right:6px}
+  .c a.o{background:transparent;color:#1C1B18;border:1px solid #1C1B18}
+  .s{margin-top:32px;font-size:13px;color:#8A857A}
+  .s a{color:#2B3160}
+</style>
+</head>
+<body>
+<h1>시안 비교 — 구조 3안</h1>
+<p>컬러셋(13)·컨셉(14)·브랜드명 And/End 장치(S1~S4)는 셋이 같다. 다른 것은 <b>구조</b>뿐. 홈 프로젝트 패널에는 화면 캡처를 넣지 않고 도형 + 미니 다이어그램 + 결과 숫자로 채운다(2026-09-16). 데스크톱 1440 기준, 모바일은 셋 다 세로 스택.</p>
+<div class="g">
+  <div class="c"><b>V3 · 세로 한 장</b><small>docs/15 · 읽기 최적</small>
+    <ul><li>Hero → 01 문제 & 사례(행 4개) → 02 다섯 단계 → 03 문의 → 푸터</li><li>한 선이 왼쪽 레일로 내려가 푸터 — & — 에 도착</li><li>Projects · Case Study는 페이지</li></ul>
+    <a class="btn" href="v3/index.html">열기</a><a class="btn o" href="v3/case.html?p=por-favor-harry">Case Study</a></div>
+  <div class="c"><b>V4 · 하이브리드</b><small>docs/16 · 절충 — 섹션 01만 가로 포스터 스트립(pin)</small>
+    <ul><li>V3 골격 그대로, 01이 화면에 고정된 채 세로 스크롤 = 가로 이동</li><li>선이 스트립을 가로로 관통(3구간), 스트립 끝에서 돌아와 다시 내려감</li><li>ScrollTrigger pin — 이 프로젝트 첫 도입</li></ul>
+    <a class="btn" href="v4/index.html">열기</a></div>
+  <div class="c"><b>V5 · 가로 전용</b><small>docs/17 · 인상 최적 — 세로 스크롤 없음</small>
+    <ul><li>10장: Prologue → 01 → 문제&사례 4 → 다섯 단계(선 위 노드) → Projects → 문의 → — & —</li><li>첫 패널 = 로고 윗줄, 마지막 패널 = 아랫줄. 선은 굽힘 없는 한 줄</li><li>휠·트랙패드·←/→·Home/End, 헤더 진행 지도, Projects·Case Study는 가운데 시트</li></ul>
+    <a class="btn" href="v5/index.html">열기</a></div>
+</div>
+<p class="s">결정 시트: <a href="../spec/01-colorset.html">01 컬러셋</a> · <a href="../spec/02-concept.html">02 컨셉</a> · <a href="../spec/03-screens.html">03 화면</a> · <a href="../spec/04-hybrid.html">04 하이브리드</a> · <a href="../spec/05-horizontal.html">05 가로 전용</a> &nbsp;|&nbsp; 이전: <a href="v2/index.html">v2 D 포스터형</a></p>
+</body>
+</html>
