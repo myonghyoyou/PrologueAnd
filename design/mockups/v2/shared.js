@@ -13,23 +13,33 @@ window.P = (function () {
   ];
   P.projects = [
     { slug: 'por-favor-harry', title: 'Por favor, Harry', tagline: '흩어진 업무 요청을 하나의 Workflow로', problem: 'scattered',
-      tags: ['Workflow Design', 'Product Thinking', 'Internal Tool'], role: '기획·설계·개발', period: '2025', disclosure: 'full', order: 1,
+      tags: ['Workflow Design', 'Product Thinking', 'Internal Tool'], role: '기획·설계·개발', period: '2025', disclosure: 'full', order: 1, featured: true,
       insight: 'ToDo 관리의 문제가 아니라 요청 Workflow의 문제였습니다.',
       before: ['전화', '메신저', '이메일', '직접 방문'], after: ['개인 링크', '구조화된 요청폼', '하나의 심사 Queue', '약속일 확정', '상태 자동 공유'] },
     { slug: 'daeryun-learning-hub', title: 'Daeryun Learning Hub', tagline: '1,220개의 종이 문제를 새로운 학습 경험으로', problem: 'paper',
-      tags: ['Digital Transformation', 'UX', 'Web Application'], role: '기획·설계·개발', period: '2025', disclosure: 'anonymized', order: 2,
+      tags: ['Digital Transformation', 'UX', 'Web Application'], role: '기획·설계·개발', period: '2025', disclosure: 'anonymized', order: 2, featured: true,
       insight: '디지털 전환은 복사가 아니라, 매체 때문에 생긴 제약을 걷어내는 일입니다.',
       before: ['문제', '문제', '문제', '정답지'], after: ['문제', '답변', '즉시 채점', '해설·재도전', '다음 문제'] },
     { slug: 'hospital-ux', title: '병원 UI/UX 고도화', tagline: '복잡한 업무 화면을 더 빠르게 읽고 처리하도록', problem: 'legacy',
-      tags: ['Enterprise UX', 'Legacy Improvement', 'UI Redesign'], role: 'UX 설계·프론트', period: '2024–2025', disclosure: 'mockup', order: 3,
+      tags: ['Enterprise UX', 'Legacy Improvement', 'UI Redesign'], role: 'UX 설계·프론트', period: '2024–2025', disclosure: 'mockup', order: 3, featured: true,
       insight: '업무 시스템에서는 예쁨보다 읽는 순서와 업무 맥락이 먼저입니다.',
       before: ['정보 과밀', '위계 없음', '입력 동선 길다'], after: ['읽는 순서대로 배치', '위계 3단계', '입력 동선 절반'] },
     { slug: 'custom-commerce', title: 'Custom Commerce', tagline: '기성 쇼핑몰 프레임워크 없이 처음부터 구축한 Commerce Product', problem: 'idea',
-      tags: ['Product Engineering', 'Commerce', 'End-to-End Flow'], role: '설계·개발', period: '2025', disclosure: 'full', order: 4,
+      tags: ['Product Engineering', 'Commerce', 'End-to-End Flow'], role: '설계·개발', period: '2025', disclosure: 'full', order: 4, featured: true,
       insight: '쇼핑몰은 상품 페이지 하나가 아니라 탐색 → 구매 → 주문 → 운영이 이어진 하나의 흐름입니다.',
-      before: ['아이디어', '기성 솔루션의 한계'], after: ['탐색', '구매', '주문', '운영', '관리자'] }
+      before: ['아이디어', '기성 솔루션의 한계'], after: ['탐색', '구매', '주문', '운영', '관리자'] },
+    /* non-featured: appear in the Projects list only, never on the main strip */
+    { slug: 'quote-sheet', title: '견적서 자동화', tagline: '엑셀 견적서 12종을 입력 한 번으로', problem: 'paper',
+      tags: ['Automation', 'Internal Tool'], role: '설계·개발', period: '2024', disclosure: 'anonymized', order: 5, featured: false,
+      insight: '양식이 12개인 게 아니라 입력이 12번인 게 문제였습니다.',
+      before: ['양식 고르기', '복사', '수정', '검토'], after: ['입력 1회', '자동 생성'] },
+    { slug: 'shift-board', title: '교대 근무표', tagline: '카톡으로 돌던 근무표를 한 화면으로', problem: 'scattered',
+      tags: ['Workflow Design', 'Mobile'], role: '기획·개발', period: '2024', disclosure: 'mockup', order: 6, featured: false,
+      insight: '근무표는 문서가 아니라 알림이어야 했습니다.',
+      before: ['카톡 공지', '캡처', '개인 메모'], after: ['한 화면', '변경 알림'] }
   ];
-  P.projectFor = key => P.projects.find(p => p.problem === key);
+  P.featured = () => P.projects.filter(p => p.featured).sort((a, b) => a.order - b.order);
+  P.projectFor = key => P.projects.find(p => p.problem === key && p.featured) || P.projects.find(p => p.problem === key);
   P.project = slug => P.projects.find(p => p.slug === slug);
   P.problem = key => P.problems.find(p => p.key === key);
 
@@ -73,7 +83,7 @@ window.P = (function () {
     for (let i = 0; i < count; i++) html += `<button type="button" data-i="${i}" aria-label="${i + 1}"><i></i></button>`;
     container.innerHTML = html + '<b></b>';
     const bars = [...container.querySelectorAll('i')]; const box = container.querySelector('b');
-    box.style.position = 'absolute'; container.style.position = 'relative';
+    box.style.position = 'absolute'; if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
     if (onSelect) container.addEventListener('click', e => { const b = e.target.closest('button'); if (b) onSelect(+b.dataset.i); });
     const api = { set(i) { bars.forEach((b, k) => { b.classList.toggle('on', k === i); b.classList.toggle('done', k < i); }); const t = bars[i]; if (t) { box.style.left = (t.offsetLeft - 10) + 'px'; box.style.top = '0'; } } };
     api.set(0); return api;
@@ -141,9 +151,9 @@ window.P = (function () {
       stepLbl.textContent = step === 1 ? '1 / 2 — 현재 업무' : step === 2 ? '2 / 2 — 목표와 연락처' : '접수됨'; next.textContent = step === 2 ? '문의 보내기' : '다음'; };
     next.addEventListener('click', () => { if (step === 1) step = 2; else if (step === 2) step = 3; render(); });
     prev.addEventListener('click', () => { step = 1; render(); });
-    d.querySelector('[data-close]').addEventListener('click', P.closeDrawer);
+    d.querySelector('[data-close]').addEventListener('click', () => P.closeDrawer());
     d.querySelector('[data-unlink]').addEventListener('click', () => { ctx.hidden = true; });
-    dim.addEventListener('click', P.closeDrawer);
+    dim.addEventListener('click', () => P.closeDrawer());
     document.addEventListener('keydown', e => { if (e.key === 'Escape') P.closeDrawer(); });
     document.addEventListener('click', e => { const b = e.target.closest('[data-open-drawer]'); if (b) { e.preventDefault(); P.openDrawer({ project: b.dataset.project, message: b.dataset.message }); } });
     P.openDrawer = function (o) { o = o || {}; step = 1; render();

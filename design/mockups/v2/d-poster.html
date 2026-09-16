@@ -4,221 +4,393 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>D 포스터형 — Prologue&</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="shared.css">
 <style>
-  /* ===== structure D: horizontal posters (Rauno-faithful). One typeface, huge type, one big flat shape per panel. ===== */
-  :root{--g:#ECEDF0;--paper:#FFFFFF;--ink:#111318;--navy:#2B3160;--sky:#7DB6F2;--steel:#7A8AA6;
+  /* ===== D: horizontal posters (Rauno-faithful). One typeface, huge type, one flat shape per panel. Spec: docs/11 ===== */
+  :root{--g:#ECEDF0;--paper:#FFFFFF;--ink:#111318;--navy:#2B3160;--sky:#7DB6F2;--steel:#7A8AA6;--end-bg:#2B3160;--end-fg:#FFFFFF;
     --pw:min(1240px,84vw);--ph:min(760px,74vh);--gap:36px}
+  /* palettes (docs/12 §6): --sky = the light shape that may sit under text, --navy = the dark shape that never does */
+  html[data-c="2"]{--g:#EDE9E2;--paper:#FBF9F5;--ink:#1E1B18;--sky:#D4C9B0;--navy:#9E7B56;--steel:#8C857A;--end-bg:#3A3430;--end-fg:#FBF9F5}
+  html[data-c="3"]{--g:#F2F0EC;--paper:#FFFFFF;--ink:#111318;--sky:#F4C8B0;--navy:#CC6B50;--steel:#8A8580;--end-bg:#CC6B50;--end-fg:#FFFFFF}
+  html[data-c="4"]{--g:#ECECEC;--paper:#FFFFFF;--ink:#000000;--sky:#FFE14D;--navy:#FF6B1A;--steel:#7A7A7A;--end-bg:#111111;--end-fg:#FFFFFF}
+  html[data-c="5"]{--g:#EAEFEE;--paper:#FFFFFF;--ink:#0F1A1C;--sky:#9FD3C7;--navy:#0F4C5C;--steel:#6F8583;--end-bg:#0F4C5C;--end-fg:#FFFFFF}
   html{font-size:16px}
   body{background:var(--g);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;overflow:hidden;height:100vh;-webkit-font-smoothing:antialiased}
   .has-crosshair body{cursor:none}
 
-  /* tiny plus cursor (Rauno) instead of full-screen lines */
-  #plus{position:fixed;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;pointer-events:none;z-index:60;opacity:0;transition:opacity .2s,transform .15s}
-  #plus::before,#plus::after{content:"";position:absolute;background:var(--ink)}
-  #plus::before{left:8px;top:0;width:1px;height:18px}
-  #plus::after{top:8px;left:0;width:18px;height:1px}
+  /* plus cursor: the cross rotates/scales, the label does not */
+  #plus{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;z-index:60;opacity:0;transition:opacity .2s}
   #plus.on{opacity:1}
-  #plus.hot{transform:rotate(45deg) scale(1.4)}
-  #plus span{position:absolute;left:24px;top:-2px;font-size:11px;font-weight:500;white-space:nowrap;background:var(--ink);color:#fff;padding:.25rem .45rem;opacity:0;transition:opacity .15s}
-  #plus.hot span{opacity:1}
+  #plus i{position:absolute;left:-9px;top:-9px;width:18px;height:18px;transition:transform .15s}
+  #plus i::before,#plus i::after{content:"";position:absolute;background:var(--ink)}
+  #plus i::before{left:8px;top:0;width:1px;height:18px}
+  #plus i::after{top:8px;left:0;width:18px;height:1px}
+  #plus.hot i{transform:rotate(45deg) scale(1.4)}
+  #plus span{position:absolute;left:18px;top:-11px;font-size:11px;font-weight:500;white-space:nowrap;background:var(--ink);color:#fff;padding:.25rem .45rem;opacity:0;transition:opacity .15s}
+  #plus.hot.lbl span{opacity:1}
 
-  .top{position:fixed;left:0;right:0;top:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:20;pointer-events:none}
+  .top{position:fixed;left:0;right:0;top:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:40;pointer-events:none}
   .top>*{pointer-events:auto}
   .top img{height:30px;width:auto;display:block}
   .top nav{display:flex;gap:1.4rem;font-size:13px;color:var(--steel)}
-  .top nav a:hover{color:var(--ink)}
-  #strip{position:fixed;left:50%;top:26px;transform:translateX(-50%);z-index:20}
+  .top nav a:hover,.top nav a.on{color:var(--ink)}
+  #strip{position:fixed;left:50%;top:26px;transform:translateX(-50%);z-index:40}
+  #strip.p-progress i{background:#C9CED9}
+  #strip.p-progress i.on{background:var(--ink)}
+  #strip.p-progress i.done{background:var(--steel)}
+  #counter{display:none}
 
-  /* the strip */
-  #rail{position:absolute;left:0;top:0;height:100vh;display:flex;align-items:center;padding:0 calc((100vw - var(--pw)) / 2);gap:var(--gap);will-change:transform}
-  .panel{position:relative;flex:0 0 var(--pw);height:var(--ph);background:var(--paper);overflow:hidden}
+  .stage{position:fixed;inset:0;overflow:hidden}
+  .rail{position:absolute;left:0;top:0;height:100vh;display:flex;align-items:center;padding:0 calc((100vw - var(--pw)) / 2);gap:var(--gap);will-change:transform}
+
+  .panel{position:relative;flex:0 0 var(--pw);height:var(--ph);background:var(--paper)}
+  .panel .pan{position:absolute;inset:0;overflow:hidden}
+  .panel.xl h1{font-size:clamp(3.6rem,8.6vw,7.8rem)}
+  .panel.lg h1{font-size:clamp(3.2rem,7.4vw,6.8rem)}
   .panel .cap{position:absolute;left:0;top:-26px;font-size:12px;color:var(--steel);white-space:nowrap}
   .panel .cap b{color:var(--ink);font-weight:500;margin-right:.6rem}
-  .panel h1,.panel h2{position:absolute;margin:0;font-weight:500;letter-spacing:-.035em;line-height:1.02;font-size:clamp(3rem,7.2vw,6.6rem);word-break:keep-all;z-index:2}
-  .panel h1{left:6%;top:12%}
+  .panel h1{position:absolute;left:6%;top:8%;margin:0;font-weight:500;letter-spacing:-.035em;line-height:1.02;font-size:clamp(2.6rem,6vw,5.6rem);word-break:keep-all;z-index:2}
   .panel h1 i{font-style:normal;display:block}
   .panel h1 i.in{padding-left:.8em}
-  .panel .sm{position:absolute;left:6%;bottom:9%;font-size:clamp(1rem,1.3vw,1.2rem);color:var(--steel);max-width:26rem;line-height:1.5;z-index:2;word-break:keep-all}
+  .panel h1.m{display:none}
+  .panel .sm{position:absolute;left:6%;bottom:7%;font-size:clamp(1rem,1.3vw,1.2rem);color:var(--steel);max-width:26rem;line-height:1.5;z-index:2;word-break:keep-all}
   .panel .sm b{color:var(--ink);font-weight:500}
-  .panel[data-view]{cursor:none}
+  .panel .go{position:absolute;right:6%;bottom:9%;font-size:.95rem;z-index:2;display:inline-flex;align-items:center;gap:.5rem}
+  .panel .go::after{content:"";width:0;height:0;border-left:9px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent}
 
-  /* shapes */
   .sh{position:absolute;z-index:1}
   .circle{border-radius:50%}
-  .sky{background:var(--sky)} .nv{background:var(--navy)} .bk{background:var(--ink)}
+  .sky{background:var(--sky)} .nv{background:var(--navy)}
   .tri{width:0;height:0;border-top:var(--t) solid transparent;border-bottom:var(--t) solid transparent;border-left:var(--w) solid var(--navy)}
   .scribble{fill:none;stroke:var(--sky);stroke-width:34;stroke-linecap:round;stroke-linejoin:round}
   .dots{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
-  .dots i{display:block;aspect-ratio:1;background:var(--navy)}
+  .dots i{display:block;aspect-ratio:1;background:var(--sky)}
   .ring{border:26px solid var(--sky);border-radius:50%}
   .lines path{fill:none;stroke:var(--navy);stroke-width:22;stroke-linecap:round}
   .lines path.s{stroke:var(--sky)}
+  .frame{background:#fff;border:1px solid var(--ink)}
   .steps5{position:absolute;left:6%;right:6%;bottom:16%;display:flex;justify-content:space-between;z-index:2}
   .steps5 div{text-align:center;width:16%}
   .steps5 i{display:block;width:clamp(36px,4.6vw,64px);aspect-ratio:1;border-radius:50%;background:var(--navy);margin:0 auto 14px}
   .steps5 div:nth-child(3) i{background:var(--sky)}
   .steps5 b{display:block;font-weight:500;font-size:clamp(.9rem,1.2vw,1.1rem)}
   .steps5 span{display:block;font-size:.8rem;color:var(--steel)}
+  .panel.end{background:var(--end-bg);color:var(--end-fg)}
+  .panel.end .sm{color:var(--end-fg);opacity:.75}
+  .panel.end .sm b{color:var(--end-fg)}
+  .panel.project h1{font-size:clamp(2.6rem,6vw,5.4rem)}
 
-  .panel.end{background:var(--navy);color:#fff}
-  .panel.end .sm{color:rgba(255,255,255,.7)}
-  .panel.end .sm b{color:#fff}
+  /* D2 merged: problem headline + representative project in one panel */
+  .panel.merged .pj{position:absolute;right:6%;bottom:9%;z-index:2;text-align:right;max-width:46%}
+  .panel.merged .pj em{display:block;font-style:normal;font-size:.8rem;color:var(--steel);margin-bottom:.4rem}
+  .panel.merged .pj b{display:block;font-weight:500;font-size:clamp(1.5rem,2.6vw,2.4rem);letter-spacing:-.03em;line-height:1.1;word-break:keep-all}
+  .panel.merged .pj span{display:block;margin-top:.4rem;font-size:.95rem;color:var(--steel);word-break:keep-all}
+  .panel.merged .sm{max-width:24rem;color:var(--ink)}
+  .panel.merged .sm .go{position:static;display:inline-flex;margin-top:.6rem;color:var(--steel)}
+  /* D3 fullbleed: panels fill the viewport, caption moves inside */
+  html[data-v="3"]{--pw:100vw;--ph:100vh;--gap:0}
+  html[data-v="3"] .rail{padding:0}
+  html[data-v="3"] .panel{border-right:1px solid var(--g)}
+  html[data-v="3"] .panel .cap{top:72px;left:6%}
+  html[data-v="3"] .panel h1{top:16%}
+  html[data-v="3"] .panel.xl h1{font-size:clamp(4rem,9.4vw,9rem)}
+  html[data-v="3"] .panel.lg h1{font-size:clamp(3.4rem,8vw,7.6rem)}
+  html[data-v="3"] .panel .sm{bottom:10%;font-size:clamp(1.05rem,1.4vw,1.3rem)}
+  html[data-v="3"] .panel.merged .pj{bottom:10%}
+  html[data-v="3"] .panel.end{background:var(--paper);color:var(--ink)}
+  html[data-v="3"] .panel.end .sm{color:var(--steel)} html[data-v="3"] .panel.end .sm b{color:var(--ink)}
+  html[data-v="3"] .hint{bottom:34px}
 
-  .panel.project .t{position:absolute;left:6%;top:11%;z-index:2}
-  .panel.project h2{position:static;font-size:clamp(2.6rem,6vw,5.4rem)}
-  .panel.project .tag{display:block;margin-top:1rem;font-size:clamp(1rem,1.3vw,1.2rem);color:var(--steel);max-width:26rem;line-height:1.45;word-break:keep-all}
-  .panel.project .go{position:absolute;left:6%;bottom:9%;font-size:.95rem;z-index:2;display:inline-flex;align-items:center;gap:.5rem}
-  .panel.project .go::after{content:"";width:0;height:0;border-left:9px solid var(--ink);border-top:5px solid transparent;border-bottom:5px solid transparent}
+  /* ===== screenshot element shared by the four directions ===== */
+  .shotwrap{position:absolute;z-index:1;overflow:hidden;background:#fff}
+  .shotwrap img{display:block;width:100%;height:auto}
+  .panel.merged .lines{display:none}
+  /* S1 Rauno Gray — tilted screenshot card overlapping the headline */
+  html[data-s="1"] .shotwrap{right:3%;top:8%;width:48%;transform:rotate(-5deg);border:1px solid var(--ink)}
+  html[data-s="1"] .panel.merged .pj{max-width:40%}
+  /* S2 Editorial Warm — serif headline, centered, framed screenshot with caption */
+  html[data-s="2"] .panel h1{font-family:"Noto Serif KR","Pretendard",serif;font-weight:500;letter-spacing:-.01em;line-height:1.12;left:6%;right:6%;text-align:center;top:7%}
+  html[data-s="2"] .panel h1 i.in{padding-left:0}
+  html[data-s="2"] .panel.xl h1{font-size:clamp(2.8rem,5.6vw,5rem)} html[data-s="2"] .panel.lg h1{font-size:clamp(2.8rem,5.6vw,5rem)} html[data-s="2"] .panel h1{font-size:clamp(2.4rem,4.8vw,4.4rem)}
+  html[data-s="2"] .shotwrap{left:50%;top:41%;width:36%;transform:translateX(-50%);border:1px solid var(--ink);padding:5px;background:var(--paper)}
+  html[data-s="2"] .panel.merged .pj{left:6%;right:6%;bottom:13%;max-width:none;text-align:center}
+  html[data-s="2"] .panel.merged .pj em,html[data-s="2"] .panel.merged .pj b,html[data-s="2"] .panel.merged .pj span{display:inline}
+  html[data-s="2"] .panel.merged .pj b{font-size:1.05rem;margin:0 .4rem}
+  html[data-s="2"] .panel.merged .pj span{font-size:.9rem}
+  html[data-s="2"] .panel .sm{left:6%;right:6%;bottom:3.5%;max-width:none;text-align:center}
+  html[data-s="2"] .panel .sm br{display:none} html[data-s="2"] .panel .sm .go{margin-left:1rem}
+  html[data-s="2"] .panel .cap{left:50%;transform:translateX(-50%)}
+  html[data-s="2"] .panel .scribble{stroke-width:22}
+  html[data-s="2"] .steps5{bottom:14%}
+  html[data-s="2"] .side .pb h1,html[data-s="2"] #p-drawer .hd h2,html[data-s="2"] .biglist b{font-family:"Noto Serif KR",serif;font-weight:500;letter-spacing:-.01em}
+  /* S3 Swiss Bold — heavy type, right half is a full-bleed screenshot, text overlaps it */
+  html[data-s="3"] .panel h1{font-weight:800;letter-spacing:-.05em;line-height:.95;top:7%;left:5%;z-index:3}
+  html[data-s="3"] .panel.xl h1{font-size:clamp(4rem,9.4vw,8.8rem)} html[data-s="3"] .panel.lg h1{font-size:clamp(3.4rem,8vw,7.6rem)}
+  html[data-s="3"] .shotwrap{right:0;top:0;width:52%;height:100%}
+  html[data-s="3"] .shotwrap img{height:100%;width:100%;object-fit:cover;object-position:left top}
+  html[data-s="3"] .panel.merged .pj{left:5%;right:auto;bottom:8%;max-width:38%;text-align:left}
+  html[data-s="3"] .panel.merged .pj b{font-weight:800;letter-spacing:-.04em}
+  html[data-s="3"] .panel .sm{left:5%;bottom:30%;max-width:38%}
+  html[data-s="3"] .panel .sm b{font-weight:800}
+  html[data-s="3"] .biglist b{font-weight:800;letter-spacing:-.04em}
+  html[data-s="3"] .side .pb h1{font-weight:800;letter-spacing:-.045em}
+  /* S4 Product Teal — restrained size, browser-framed screenshot, information-forward */
+  html[data-s="4"] .panel h1{font-weight:600;letter-spacing:-.03em;line-height:1.05;top:9%;left:5%}
+  html[data-s="4"] .panel.xl h1,html[data-s="4"] .panel.lg h1,html[data-s="4"] .panel h1{font-size:clamp(2.2rem,3.8vw,3.4rem)}
+  html[data-s="4"] .panel.merged .pj{left:5%;right:auto;top:34%;bottom:auto;max-width:36%;text-align:left}
+  html[data-s="4"] .panel.merged .pj b{font-size:clamp(1.2rem,1.7vw,1.5rem)}
+  html[data-s="4"] .panel .sm{left:5%;bottom:8%;max-width:36%}
+  html[data-s="4"] .shotwrap{right:5%;top:9%;width:56%;border:1px solid var(--ink);padding-top:26px}
+  html[data-s="4"] .shotwrap::before{content:"";position:absolute;left:0;right:0;top:0;height:26px;border-bottom:1px solid var(--ink);background:radial-gradient(circle at 14px 13px,var(--steel) 4px,transparent 5px),radial-gradient(circle at 30px 13px,var(--steel) 4px,transparent 5px),radial-gradient(circle at 46px 13px,var(--steel) 4px,transparent 5px)}
+  html[data-s="4"] .panel .sh.scribble,html[data-s="4"] .panel svg.sh{width:52%;right:6%;left:auto;top:6%}
+  html[data-s="4"] .panel .tri{--w:min(360px,28vw)!important;--t:min(180px,14vw)!important;left:auto!important;right:8%!important}
+  html[data-s="4"] .steps5{bottom:18%}
+  html[data-s="4"] .steps5 i{width:clamp(28px,3.4vw,44px)}
 
-  .hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);font-size:12px;color:var(--steel);z-index:20;transition:opacity .4s}
+  .hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);font-size:12px;color:var(--steel);z-index:40;transition:opacity .4s}
   .hint.off{opacity:0}
 
-  /* panels over the strip */
-  .side{position:fixed;top:0;right:0;bottom:0;width:min(34rem,100vw);background:var(--paper);border-left:1px solid var(--ink);z-index:30;transform:translateX(102%);transition:transform .45s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+  /* side panels: list (big-type) and case detail (reading layout) */
+  .side{position:fixed;top:0;right:0;bottom:0;width:min(40rem,100vw);background:var(--paper);z-index:50;transform:translateX(102%);transition:transform .45s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+  .side.wide{width:min(52rem,100vw)}
+  /* case detail: centered sheet, fades and settles in */
+  .side.center{left:50%;top:4vh;bottom:4vh;right:auto;width:min(56rem,92vw);transform:translate(-50%,0) scale(.985);opacity:0;transition:opacity .35s ease,transform .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+  .side.center.on{transform:translate(-50%,0) scale(1);opacity:1;pointer-events:auto}
+  .side.center .ph{padding:1.4rem 2.6rem 1rem}
   .side.on{transform:none}
-  .side .ph{display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.5rem;border-bottom:1px solid #E1E3EA}
-  .side .ph b{font-weight:600;font-size:1.1rem}
-  .side .ph button{font-size:.85rem;color:var(--steel)}
-  .side .pb{flex:1;overflow:auto;padding:1.4rem 1.5rem 3rem}
-  .p-work .grid{grid-template-columns:1fr 1fr}
-  .p-work .it .thumb{background:var(--navy)}
+  .side .ph{display:flex;justify-content:space-between;align-items:center;padding:1.4rem 2.6rem 1rem}
+  .side .ph b{font-weight:500;font-size:13px;color:var(--steel)}
+  .side .ph button{font-size:13px;color:var(--steel)}
+  .side .pb{flex:1;overflow:auto;padding:0 2.6rem 4rem}
+  #sideDim{position:fixed;inset:0;background:rgba(17,19,24,.25);z-index:49;opacity:0;pointer-events:none;transition:opacity .35s}
+  html.side-open #sideDim{opacity:1;pointer-events:auto}
+  .biglist a{display:block;padding:1.4rem 0;border-top:1px solid var(--ink)}
+  .biglist a:last-child{border-bottom:1px solid var(--ink)}
+  .biglist b{display:block;font-weight:500;font-size:clamp(1.8rem,3vw,2.6rem);letter-spacing:-.03em;line-height:1.05;word-break:keep-all}
+  .biglist span{display:block;margin-top:.5rem;font-size:.95rem;color:var(--steel);word-break:keep-all}
+  .biglist small{display:block;margin-top:.4rem;font-size:12px;color:var(--steel)}
+
+  /* case detail: one poster-like header, then a calm reading column */
+  .detail .hero{position:relative;height:16rem;background:var(--g);overflow:hidden;margin:0 0 2rem}
+  .detail .hero svg{position:absolute;right:-4%;top:0;width:70%;height:100%}
+  .detail .hero .cap{position:absolute;left:1.6rem;top:1.2rem;font-size:12px;color:var(--steel)}
+  .detail h1{font-weight:500;font-size:clamp(2rem,3.4vw,3rem);letter-spacing:-.035em;line-height:1.08;margin:0 0 .6rem;word-break:keep-all;max-width:18ch}
+  .detail .tags{margin:0 0 2rem;color:var(--steel);font-size:.95rem}
+  .detail section{display:grid;grid-template-columns:8rem 1fr;gap:1.4rem;padding:1.4rem 0;border-top:1px solid var(--ink)}
+  .detail section h2{margin:0;font-size:.85rem;font-weight:500;color:var(--steel)}
+  .detail section h2 small{display:block;font-size:.72rem;color:var(--steel);opacity:.7}
+  .detail section p{margin:0 0 .7rem;font-size:1rem;line-height:1.7;word-break:keep-all;max-width:34rem}
+  .detail section .q{font-size:1.5rem;font-weight:500;letter-spacing:-.025em;line-height:1.3;color:var(--ink)}
+  .detail .flow{display:flex;flex-wrap:wrap;gap:.35rem;margin:.2rem 0 .8rem}
+  .detail .flow span{border:1px solid var(--ink);padding:.4rem .6rem;font-size:.82rem}
+  .detail .flow span.g{background:var(--sky);border-color:var(--sky)}
+  .detail .flow em{align-self:center;color:var(--steel);font-style:normal}
+  .detail .btn{background:var(--ink);color:#fff;border-color:var(--ink);margin-top:.4rem}
+  .detail .built{font-size:.8rem;color:var(--steel);margin-top:2rem}
+
+  /* drawer in D grammar */
+  #p-drawer{border-left:0}
+  #p-drawer .hd h2{font-size:2rem;letter-spacing:-.03em;font-weight:500}
+  #p-drawer textarea,#p-drawer input,#p-drawer select{border-color:var(--ink)}
+  #p-drawer .chips label{border-color:var(--ink)}
+  #p-drawer .btn{background:var(--ink);color:#fff;border-color:var(--ink)}
+  #p-drawer .btn:not(.primary){background:transparent;color:var(--ink)}
+
+  /* mockup-only tuning control */
+  #tune{position:fixed;right:22px;bottom:18px;z-index:45;display:flex;gap:4px;align-items:center;background:#111318;border-radius:999px;padding:4px;font-size:12px;color:#C9CED9}
+  #tune span.l{padding:0 .5rem 0 .7rem;color:#8A90A2}
+  #tune button{padding:.35rem .7rem;border-radius:999px}
+  #tune button.on{background:#fff;color:#111318}
+  #tune button.on[data-zoom]{background:var(--sky)}
+  #tune .sep{width:1px;height:16px;background:#3A3F4E;margin:0 .3rem}
 
   @media (max-width:760px){
     :root{--pw:calc(100vw - 32px);--ph:78vh;--gap:16px}
+    html{scroll-snap-type:y mandatory}
     body{overflow:auto;height:auto}
-    #rail{position:static;height:auto;flex-direction:column;padding:88px 16px 60px;gap:44px;transform:none!important}
-    .panel{flex:none;width:100%}
-    .panel h1,.panel h2,.panel.project h2{font-size:clamp(2.4rem,11vw,3.4rem)}
+    .stage{position:static;overflow:visible}
+    .rail{position:static;height:auto;flex-direction:column;padding:104px 16px 60px;gap:44px;transform:none!important}
+    .panel{flex:none;width:100%;scroll-snap-align:start;scroll-margin-top:72px}
+    .panel h1,.panel.project h1{font-size:clamp(2.4rem,11vw,3.4rem)}
+    .panel h1.d{display:none}.panel h1.m{display:block}
     .panel .cap{top:-22px}
     .panel .sm{max-width:none;right:6%}
-    #strip,.hint,#plus{display:none}
+    .panel .go{right:auto;left:6%;bottom:3.5%}
+    #strip,.hint,#plus,#tune{display:none}
+    #counter{display:block;position:fixed;left:50%;top:22px;transform:translateX(-50%);font-size:12px;color:var(--steel);z-index:40}
     .steps5{left:6%;right:6%;bottom:12%}
     .steps5 span{display:none}
-    .side{width:100vw}
-    .p-work .grid{grid-template-columns:1fr}
+    .panel.merged .sm{bottom:32%}
+    .panel.merged .pj{left:6%;right:6%;bottom:5%;max-width:none;text-align:left}
+    .side,.side.wide{width:100vw}
+    .side.center{top:0;bottom:0;width:100vw;transform:translate(-50%,0) scale(.985)}
+    .side.center.on{transform:translate(-50%,0) scale(1)}
+    .side .ph{padding:1.2rem 1.3rem .8rem}
+    .side .pb{padding:0 1.3rem 3rem}
+    .detail section{grid-template-columns:1fr;gap:.4rem}
+    .detail .hero{height:11rem}
   }
 </style>
 </head>
 <body>
-<div id="plus"><span></span></div>
+<div id="plus"><i></i><span></span></div>
 <div class="top">
   <a href="#" id="home"><img src="../../../data/images/logo/png/%5Bcolor%5DP%26%20black.png" alt="Prologue&"></a>
-  <nav><a href="#" id="toWork">Work</a><a href="#" id="toList" data-view="목록">목록</a><a href="#" data-open-drawer data-view="문의">문의</a></nav>
+  <nav><a href="#" id="toList" data-view="Projects">Projects</a><a href="#" data-open-drawer data-view="문의">문의</a></nav>
 </div>
 <div id="strip"></div>
+<div id="counter">01 / 12</div>
 <div class="hint" id="hint">휠을 돌리면 옆으로 넘어갑니다</div>
 
-<div id="rail">
-  <!-- 01 -->
-  <section class="panel" data-cap="Prologue&">
+<div class="stage" id="mainStage"><div class="rail" id="mainRail">
+  <section class="panel">
     <span class="cap"><b>01</b>Prologue&</span>
-    <h1><i>복잡한</i><i class="in">업무를</i><i>단순한</i><i class="in">제품으로</i><i>바꿉니다.</i></h1>
-    <svg class="sh" style="right:-4%;top:-6%;width:62%;height:112%" viewBox="0 0 600 600"><path class="scribble" d="M120 300 C 80 120, 330 60, 400 180 S 560 380, 380 470 S 90 520, 150 330 S 330 130, 460 260 S 470 480, 300 430 S 170 250, 300 210 S 480 300, 410 400"/></svg>
+    <h1 class="d"><i>복잡한</i><i class="in">업무를</i><i>단순한</i><i class="in">제품으로</i><i>바꿉니다.</i></h1>
+    <h1 class="m"><i>복잡한 업무를</i><i class="in">단순한 제품으로</i><i>바꿉니다.</i></h1>
+    <svg class="sh" style="left:8%;top:-12%;width:82%;height:124%" viewBox="0 0 600 600"><path class="scribble" d="M120 300 C 80 120, 330 60, 400 180 S 560 380, 380 470 S 90 520, 150 330 S 330 130, 460 260 S 470 480, 300 430 S 170 250, 300 210 S 480 300, 410 400"/></svg>
     <p class="sm"><b>B2B Product Engineer.</b> 업무 프로세스를 분석하고, 불필요한 단계를 줄이고, 실제 쓸 수 있는 웹 제품으로 구현합니다.</p>
   </section>
-  <!-- 02 -->
-  <section class="panel" data-cap="Prologue&">
+  <section class="panel">
     <span class="cap"><b>02</b>Prologue&</span>
     <h1><i>&amp;</i><i class="in">그 다음 장을</i><i>엽니다.</i></h1>
-    <i class="sh tri" style="--w:min(520px,42vw);--t:min(260px,21vw);right:0;top:50%;transform:translateY(-50%)"></i>
+    <i class="sh tri" style="--w:min(560px,46vw);--t:min(280px,23vw);left:40%;top:50%;transform:translateY(-50%);border-left-color:var(--sky)"></i>
     <p class="sm">Prologue는 시작, &amp;는 이어짐. 지금 쓰는 방식이 <b>다음 장</b>으로 넘어가도록 만듭니다.</p>
   </section>
-  <!-- 03~06 problems (rendered by JS) -->
   <div id="problems" style="display:contents"></div>
-  <!-- 07~10 projects (rendered by JS) -->
   <div id="projects" style="display:contents"></div>
-  <!-- 11 -->
   <section class="panel">
     <span class="cap"><b>11</b>일하는 방식</span>
     <h1><i>다섯</i><i class="in">정거장.</i></h1>
     <div class="steps5"><div><i></i><b>Understand</b><span>업무를 이해</span></div><div><i></i><b>Simplify</b><span>단계를 뺀다</span></div><div><i></i><b>Design</b><span>흐름을 설계</span></div><div><i></i><b>Build</b><span>제품으로</span></div><div><i></i><b>Improve</b><span>쓰면서 고침</span></div></div>
   </section>
-  <!-- 12 -->
   <section class="panel end" data-view="문의" data-open-drawer>
     <span class="cap"><b>12</b>문의</span>
     <h1><i>지금 하시는</i><i class="in">업무를</i><i>알려주세요.</i></h1>
-    <i class="sh tri" style="--w:min(380px,30vw);--t:min(190px,15vw);right:8%;bottom:8%;border-left-color:var(--sky)"></i>
+    <i class="sh tri" style="--w:min(420px,34vw);--t:min(210px,17vw);left:42%;top:26%;border-left-color:var(--sky)"></i>
     <p class="sm"><b>2영업일 안에 답변.</b> 현재 방식과 가장 불편한 점 한 줄이면 충분합니다.</p>
   </section>
-</div>
+</div></div>
 
-<aside class="side" id="listPanel"><div class="ph"><b>Work</b><button type="button" data-close-side>닫기</button></div><div class="pb"><div id="worklist"></div></div></aside>
-<aside class="side" id="casePanel"><div class="ph"><b>Por favor, Harry</b><button type="button" data-close-side>닫기</button></div><div class="pb p-case" id="caseBody"></div></aside>
+<div id="sideDim"></div>
+<aside class="side" id="listPanel"><div class="ph"><b>Projects · Notion DB에서 읽음</b><button type="button" data-close-side>닫기</button></div><div class="pb"><div class="biglist" id="biglist"></div></div></aside>
+<aside class="side wide center" id="casePanel"><div class="ph"><b id="caseCap">Case Study</b><button type="button" data-close-side>닫기</button></div><div class="pb detail" id="caseBody"></div></aside>
+
+<div id="tune"><span class="l">휠 한 칸</span><button type="button" data-speed="1.0">100px</button><button type="button" data-speed="1.4">140px</button><button type="button" data-speed="2.0">200px</button><span class="sep"></span><button type="button" data-zoom>이동 중 축소</button></div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="shared.js"></script>
 <script>
   P.initDrawer();
-  document.getElementById('caseBody').innerHTML = P.caseHTML();
+  const Q = new URLSearchParams(location.search); const V = +(Q.get('v') || 2); document.documentElement.dataset.v = V; const S = +(Q.get('s') || 1); document.documentElement.dataset.s = S; const C = +(Q.get('c') || { 1: 1, 2: 2, 3: 4, 4: 5 }[S] || 1); document.documentElement.dataset.c = C;
   const isMobile = matchMedia('(max-width:760px)').matches;
+  /* headline: '/' splits lines; a segment longer than 4 words is chunked so nothing overflows the panel */
+  const H = t => { const segs = t.split('/').map(x => x.trim()).flatMap(seg => { const w = seg.split(/\s+/); if (w.length <= 4) return [seg]; const out = []; for (let i = 0; i < w.length; i += 3) out.push(w.slice(i, i + 3).join(' ')); return out; }); return segs.slice(0, 5).map((w, k) => `<i class="${k % 2 ? 'in' : ''}">${w}</i>`).join(''); };
 
-  /* problem posters: one line + one shape each */
+  /* ---- main strip content ---- */
   const shapes = [
-    `<i class="sh circle sky" style="width:22%;aspect-ratio:1;right:30%;top:14%"></i><i class="sh circle sky" style="width:14%;aspect-ratio:1;right:10%;top:52%"></i><i class="sh circle sky" style="width:9%;aspect-ratio:1;right:44%;bottom:12%"></i><i class="sh circle sky" style="width:6%;aspect-ratio:1;right:22%;bottom:30%"></i>`,
-    `<div class="sh dots" style="right:6%;top:10%;width:46%">${'<i></i>'.repeat(84)}</div>`,
-    `<i class="sh sky" style="width:34%;height:70%;right:10%;top:15%;transform:rotate(-8deg)"></i><i class="sh" style="width:34%;height:70%;right:14%;top:12%;transform:rotate(4deg);background:#fff;border:1px solid var(--ink)"></i>`,
-    `<i class="sh ring" style="width:40%;aspect-ratio:1;right:8%;top:12%"></i>`
+    `<i class="sh circle sky" style="width:28%;aspect-ratio:1;left:34%;top:2%"></i><i class="sh circle sky" style="width:15%;aspect-ratio:1;left:66%;top:46%"></i><i class="sh circle sky" style="width:10%;aspect-ratio:1;left:24%;top:58%"></i><i class="sh circle sky" style="width:6%;aspect-ratio:1;left:80%;top:14%"></i>`,
+    `<div class="sh dots" style="left:30%;top:12%;width:56%">${'<i></i>'.repeat(84)}</div>`,
+    `<i class="sh sky" style="width:32%;height:68%;left:38%;top:14%;transform:rotate(-8deg)"></i><i class="sh frame" style="width:32%;height:68%;left:43%;top:10%;transform:rotate(4deg)"></i>`,
+    `<i class="sh ring" style="width:46%;aspect-ratio:1;left:30%;top:4%"></i>`
   ];
-  const short = ['흩어진 요청', '불편한 시스템', '종이·수작업', '아이디어'];
-  document.getElementById('problems').innerHTML = P.problems.map((pr, i) => `
-    <section class="panel" data-problem="${pr.key}">
-      <span class="cap"><b>0${i + 3}</b>Problem 0${i + 1}</span>
-      <h1>${short[i].split(' ').map((w, k) => `<i class="${k ? 'in' : ''}">${w}</i>`).join('')}</h1>
-      ${shapes[i]}
-      <p class="sm">${pr.desc}</p>
+  const short = ['흩어진 / 요청', '불편한 / 시스템', '종이· / 수작업', '아이디어'];
+  if (V === 1) document.getElementById('problems').innerHTML = P.problems.map((pr, i) => `
+    <section class="panel" data-problem="${pr.key}" data-view="사례 보기">
+      <span class="cap"><b>0${i + 3}</b>Problem 0${i + 1}</span><h1>${H(short[i])}</h1>${shapes[i]}<p class="sm">${pr.desc}</p>
     </section>`).join('');
-
-  /* project posters: title huge + the project's before→after lines as a shape */
-  const big = p => { const n = p.before.length; const paths = p.before.map((_, i) => { const y = 60 + i * (480 / Math.max(n - 1, 1)); return `<path d="M0 ${y} C 260 ${y}, 300 300, 520 300" class="${i % 2 ? 's' : ''}"/>`; }).join(''); return `<svg class="sh lines" style="right:-2%;top:0;width:58%;height:100%" viewBox="0 0 640 600" preserveAspectRatio="xMaxYMid meet">${paths}<path d="M520 300 L 640 300"/></svg>`; };
-  document.getElementById('projects').innerHTML = P.projects.map((p, i) => `
+  const linesShape = (p, style) => { const n = p.before.length; const paths = p.before.map((_, i) => { const y = 60 + i * (480 / Math.max(n - 1, 1)); return `<path d="M0 ${y} C 260 ${y}, 300 300, 520 300" class="${i % 2 ? 's' : ''}"/>`; }).join(''); return `<svg class="sh lines" style="${style || 'left:27%;top:0;width:75%;height:100%'}" viewBox="0 0 640 600" preserveAspectRatio="xMaxYMid meet">${paths}<path d="M520 300 L 640 300"/></svg>`; };
+  const titleBreak = t => t.replace(', ', ', / ').replace(' Learning', ' / Learning').replace(' UI/UX', ' / UI/UX').replace('Custom Commerce', 'Custom / Commerce');
+  /* the strip shows only the featured projects (one per problem type) — the Projects list holds everything */
+  if (V === 1) document.getElementById('projects').innerHTML = P.featured().map((p, i) => `
     <section class="panel project" data-slug="${p.slug}" data-view="Case Study">
-      <span class="cap"><b>0${i + 7}</b>Work 0${i + 1} · ${P.problem(p.problem).name}</span>
-      <div class="t"><h2>${p.title.replace(', ', ',<br>').replace(' Learning', '<br>Learning').replace(' UI/UX', '<br>UI/UX')}</h2><span class="tag">${p.tagline}</span></div>
-      ${big(p)}
-      <span class="go">Case Study</span>
+      <span class="cap"><b>0${i + 7}</b>Project 0${i + 1} · ${P.problem(p.problem).name}</span><h1>${H(titleBreak(p.title))}</h1>${linesShape(p)}<p class="sm">${p.tagline}</p><span class="go">Case Study</span>
     </section>`).join('');
+  /* D2/D3: one panel per problem type — the problem is the headline, the representative project sits bottom-right */
+  if (V !== 1) document.getElementById('problems').innerHTML = P.problems.map((pr, i) => { const p = P.projectFor(pr.key); return `
+    <section class="panel merged" data-slug="${p.slug}" data-view="Case Study">
+      <span class="cap"><b>0${i + 3}</b>Project 0${i + 1} · Problem 0${i + 1}</span><h1>${H(titleBreak(p.title))}</h1>${linesShape(p, 'left:22%;top:-4%;width:70%;height:82%')}<div class="shotwrap"><img src="img/${p.slug}.png" alt="${p.title} 화면"></div>
+      <p class="sm">${p.tagline}<br><span class="go">Case Study</span></p>
+      <div class="pj"><em>이런 문제에서</em><b>${short[i].replace(' / ', ' ')}</b><span>${pr.desc}</span></div>
+    </section>`; }).join('');
+  /* renumber the trailing panels for the shorter strip */
+  if (V !== 1) { const caps = [...document.querySelectorAll('#mainRail > .panel')].slice(-2); caps[0].querySelector('.cap b').textContent = '07'; caps[1].querySelector('.cap b').textContent = '08'; }
 
-  /* horizontal strip with inertia */
-  const rail = document.getElementById('rail'), panels = [...rail.querySelectorAll('.panel')];
-  let target = 0, cur = 0, max = 0, idx = 0;
-  const strip = P.progress(document.getElementById('strip'), panels.length, i => goTo(i));
-  const step = () => panels[1].offsetLeft - panels[0].offsetLeft;
-  const measure = () => { max = rail.scrollWidth - innerWidth; };
-  function goTo(i) { target = Math.min(max, Math.max(0, panels[i].offsetLeft - panels[0].offsetLeft)); }
-  function tick() { cur += (target - cur) * .09; rail.style.transform = `translate3d(${-cur}px,0,0)`; const i = Math.round(cur / step()); if (i !== idx && i >= 0 && i < panels.length) { idx = i; strip.set(i); } requestAnimationFrame(tick); }
-  if (!isMobile) {
-    measure(); window.addEventListener('resize', () => { measure(); goTo(idx); });
-    window.addEventListener('wheel', e => { if (document.documentElement.classList.contains('drawer-open') || document.querySelector('.side.on')) return; e.preventDefault(); target = Math.min(max, Math.max(0, target + (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) * 1.4)); document.getElementById('hint').classList.add('off'); }, { passive: false });
-    window.addEventListener('keydown', e => { if (e.key === 'ArrowRight') goTo(Math.min(panels.length - 1, idx + 1)); if (e.key === 'ArrowLeft') goTo(Math.max(0, idx - 1)); });
-    let drag = null;
-    rail.addEventListener('pointerdown', e => { if (e.target.closest('a,button')) return; drag = { x: e.clientX, t: target, moved: false }; });
-    window.addEventListener('pointermove', e => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 4) drag.moved = true; target = Math.min(max, Math.max(0, drag.t - dx)); });
-    window.addEventListener('pointerup', () => { if (drag && drag.moved) rail.dataset.dragged = '1'; setTimeout(() => delete rail.dataset.dragged, 50); drag = null; });
-    tick();
-    /* intro: panels rise */
-    if (window.gsap && !matchMedia('(prefers-reduced-motion:reduce)').matches) gsap.from(panels.slice(0, 3), { y: 30, opacity: 0, duration: .7, stagger: .12, ease: 'power3.out' });
-  }
+  /* wrap panel content so shapes clip but the caption above the panel stays visible; size headline by line count */
+  function wrapPanels(root) { root.querySelectorAll('.panel').forEach(p => { if (p.querySelector(':scope > .pan')) return; const pan = document.createElement('div'); pan.className = 'pan'; [...p.children].forEach(c => { if (!c.classList.contains('cap')) pan.appendChild(c); }); p.appendChild(pan);
+    const h = p.querySelector('h1.d') || p.querySelector('h1'); const n = h ? h.querySelectorAll('i').length : 0; if (n && n <= 2) p.classList.add('xl'); else if (n === 3) p.classList.add('lg'); }); }
+  wrapPanels(document.getElementById('mainRail'));
 
-  /* plus cursor with label */
+  /* ---- tuning (mockup only) ---- */
+  const TUNE = { speed: 1.4, zoom: false };
+  try { Object.assign(TUNE, JSON.parse(localStorage.getItem('d-tune') || '{}')); } catch (e) {}
+
+  /* ---- strip engine ---- */
+  const rail = document.getElementById('mainRail');
+  const main = { panels: [...rail.querySelectorAll('.panel')], target: 0, cur: 0, max: 0, idx: 0, z: 1 };
+  main.refresh = () => { main.max = Math.max(0, rail.scrollWidth - innerWidth); };
+  main.step = () => main.panels[1].offsetLeft - main.panels[0].offsetLeft;
+  main.goTo = i => { main.target = Math.min(main.max, Math.max(0, main.panels[i].offsetLeft - main.panels[0].offsetLeft)); };
+  main.by = d => { main.target = Math.min(main.max, Math.max(0, main.target + d)); };
+  main.tick = () => { const prev = main.cur; main.cur += (main.target - main.cur) * .09; const v = Math.abs(main.cur - prev);
+    /* zoom-out while moving: scale about the point currently under the viewport center, so the view never shifts when scale returns to 1 */
+    const zt = TUNE.zoom ? Math.max(.9, 1 - v / 260) : 1; main.z += (zt - main.z) * .12;
+    rail.style.transformOrigin = `${main.cur + innerWidth / 2}px 50vh`;
+    rail.style.transform = `translate3d(${-main.cur}px,0,0)` + (TUNE.zoom ? ` scale(${main.z.toFixed(4)})` : '');
+    const i = Math.round(main.cur / main.step()); if (i !== main.idx && i >= 0 && i < main.panels.length) { main.idx = i; strip.set(i); } };
+  main.refresh();
+  const strip = P.progress(document.getElementById('strip'), main.panels.length, i => main.goTo(i));
+  const counter = document.getElementById('counter');
+
+  /* ---- plus cursor: label lives outside the rotating cross; "none" state is debounced while moving ---- */
   const plus = document.getElementById('plus'), pl = plus.querySelector('span');
-  if (matchMedia('(hover:hover) and (pointer:fine)').matches && !isMobile) {
-    document.addEventListener('mousemove', e => { document.documentElement.classList.add('has-crosshair'); plus.classList.add('on'); plus.style.transform = ''; plus.style.left = e.clientX + 'px'; plus.style.top = e.clientY + 'px';
-      const t = e.target.closest('[data-view],a,button'); plus.classList.toggle('hot', !!t); if (t) pl.textContent = t.dataset.view || '열기'; });
-    document.addEventListener('mouseleave', () => plus.classList.remove('on'));
+  const mouse = { x: -1, y: -1 }; let offTimer = null;
+  function refreshHot() { if (mouse.x < 0) return; const el = document.elementFromPoint(mouse.x, mouse.y); const t = el && el.closest('[data-view],a,button');
+    if (t) { clearTimeout(offTimer); offTimer = null; plus.classList.add('hot'); const v = t.closest('[data-view]'); pl.textContent = v ? v.dataset.view : ''; plus.classList.toggle('lbl', !!v); }
+    else if (!offTimer) offTimer = setTimeout(() => { plus.classList.remove('hot'); offTimer = null; }, 220); }
+
+  if (!isMobile) {
+    window.addEventListener('resize', () => { main.refresh(); main.goTo(main.idx); });
+    window.addEventListener('wheel', e => { if (document.documentElement.classList.contains('drawer-open') || document.documentElement.classList.contains('side-open')) return; e.preventDefault(); main.by((Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) * TUNE.speed); document.getElementById('hint').classList.add('off'); }, { passive: false });
+    window.addEventListener('keydown', e => { if (e.key === 'ArrowRight') main.goTo(Math.min(main.panels.length - 1, main.idx + 1)); if (e.key === 'ArrowLeft') main.goTo(Math.max(0, main.idx - 1)); if (e.key === 'Escape') closeSide(); });
+    let drag = null;
+    document.addEventListener('pointerdown', e => { if (e.target.closest('a,button,.side,#p-drawer,#tune')) return; if (!e.target.closest('.rail')) return; drag = { x: e.clientX, t: main.target, moved: false }; });
+    window.addEventListener('pointermove', e => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 4) drag.moved = true; main.target = Math.min(main.max, Math.max(0, drag.t - dx)); });
+    window.addEventListener('pointerup', () => { if (drag && drag.moved) document.body.dataset.dragged = '1'; setTimeout(() => delete document.body.dataset.dragged, 50); drag = null; });
+    (function loop() { main.tick(); if (Math.abs(main.target - main.cur) > .5) refreshHot(); requestAnimationFrame(loop); })();
+    if (window.gsap && !matchMedia('(prefers-reduced-motion:reduce)').matches) gsap.from(main.panels.slice(0, 3), { y: 30, opacity: 0, duration: .7, stagger: .12, ease: 'power3.out' });
+    if (matchMedia('(hover:hover) and (pointer:fine)').matches) {
+      document.addEventListener('mousemove', e => { document.documentElement.classList.add('has-crosshair'); plus.classList.add('on'); plus.style.left = e.clientX + 'px'; plus.style.top = e.clientY + 'px'; mouse.x = e.clientX; mouse.y = e.clientY; refreshHot(); });
+      document.addEventListener('mouseleave', () => plus.classList.remove('on'));
+    }
+    /* tuning UI */
+    const box = document.getElementById('tune');
+    const paint = () => { box.querySelectorAll('[data-speed]').forEach(b => b.classList.toggle('on', +b.dataset.speed === TUNE.speed)); box.querySelector('[data-zoom]').classList.toggle('on', TUNE.zoom); };
+    box.addEventListener('click', e => { const sp = e.target.closest('[data-speed]'); if (sp) TUNE.speed = +sp.dataset.speed; if (e.target.closest('[data-zoom]')) TUNE.zoom = !TUNE.zoom; try { localStorage.setItem('d-tune', JSON.stringify(TUNE)); } catch (err) {} paint(); });
+    paint();
+  } else {
+    const upd = () => { let best = 0, bd = 1e9; main.panels.forEach((p, i) => { const d = Math.abs(p.getBoundingClientRect().top - 72); if (d < bd) { bd = d; best = i; } }); counter.textContent = `${String(best + 1).padStart(2, '0')} / ${String(main.panels.length).padStart(2, '0')}`; };
+    window.addEventListener('scroll', upd, { passive: true });
   }
 
-  /* open things */
-  const openSide = id => { document.querySelectorAll('.side').forEach(p => p.classList.toggle('on', p.id === id)); };
-  const closeSides = () => document.querySelectorAll('.side').forEach(p => p.classList.remove('on'));
-  rail.addEventListener('click', e => { if (rail.dataset.dragged) return; const pj = e.target.closest('.panel.project'); if (pj) { openSide('casePanel'); return; } const pr = e.target.closest('.panel[data-problem]'); if (pr) goTo(6 + P.projects.findIndex(p => p.problem === pr.dataset.problem)); });
-  document.addEventListener('click', e => { if (e.target.closest('[data-close-side]')) closeSides(); });
-  document.getElementById('toWork').addEventListener('click', e => { e.preventDefault(); closeSides(); if (isMobile) panels[6].scrollIntoView({ behavior: 'smooth' }); else goTo(6); });
+  /* ---- side panels: list + case detail ---- */
+  const openSide = id => { document.querySelectorAll('.side').forEach(p => p.classList.toggle('on', p.id === id)); document.documentElement.classList.add('side-open'); setTimeout(refreshHot, 500); };
+  const closeSide = () => { document.querySelectorAll('.side').forEach(p => p.classList.remove('on')); document.documentElement.classList.remove('side-open'); setTimeout(refreshHot, 500); };
+  function openCase(slug) { const p = P.project(slug); document.getElementById('caseCap').textContent = `Case Study · ${p.title}`;
+    document.getElementById('caseBody').innerHTML = `<div class="hero"${p.featured ? ' style="height:auto"' : ''}>${p.featured ? `<img src="img/${p.slug}.png" alt="" style="display:block;width:100%;height:auto">` : `<span class="cap">Project · ${P.problem(p.problem).name}</span>${linesShape(p, 'right:-4%;top:0;width:70%;height:100%')}`}</div>` + P.caseHTML();
+    document.getElementById('caseBody').scrollTop = 0; openSide('casePanel'); }
+  document.addEventListener('click', e => {
+    if (document.body.dataset.dragged) return;
+    if (e.target.closest('[data-close-side]') || e.target.id === 'sideDim') { closeSide(); return; }
+    const pj = e.target.closest('.panel.project,.panel.merged'); if (pj) { openCase(pj.dataset.slug); return; }
+    const pr = e.target.closest('.panel[data-problem]'); if (pr) { const i = 6 + P.featured().findIndex(p => p.slug === P.projectFor(pr.dataset.problem).slug); if (isMobile) main.panels[i].scrollIntoView({ behavior: 'smooth' }); else main.goTo(i); return; }
+    const li = e.target.closest('[data-open-case]'); if (li) { e.preventDefault(); openCase(li.dataset.openCase); }
+  });
   document.getElementById('toList').addEventListener('click', e => { e.preventDefault(); openSide('listPanel'); });
-  document.getElementById('home').addEventListener('click', e => { e.preventDefault(); closeSides(); if (isMobile) window.scrollTo({ top: 0, behavior: 'smooth' }); else goTo(0); });
-  P.renderWork(document.getElementById('worklist'), { mode: 'grid', onOpen: () => openSide('casePanel') });
-  if (isMobile) P.initLenis();
+  document.getElementById('home').addEventListener('click', e => { e.preventDefault(); closeSide(); if (isMobile) window.scrollTo({ top: 0, behavior: 'smooth' }); else main.goTo(0); });
+  document.getElementById('biglist').innerHTML = P.projects.slice().sort((a, b) => a.order - b.order).map((p, i) => `<a href="#" data-open-case="${p.slug}" data-view="Case Study"><b>${p.title}</b><span>${p.tagline}</span><small>${String(i + 1).padStart(2, '0')} · ${P.problem(p.problem).name} · ${p.period}${p.featured ? ' · 대표' : ''}</small></a>`).join('');
 </script>
 </body>
 </html>

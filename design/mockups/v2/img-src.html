@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>placeholder product screens</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  /* Four believable product screens, 1280x800 each, used as placeholder imagery until real screenshots are cleared. */
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;color:#111318;background:#fff;-webkit-font-smoothing:antialiased}
+  .screen{width:1280px;height:800px;overflow:hidden;position:relative;display:none}
+  .screen.on{display:block}
+  .topbar{height:56px;display:flex;align-items:center;gap:1.4rem;padding:0 1.4rem;border-bottom:1px solid #E1E3EA;font-size:14px}
+  .topbar b{font-weight:600}
+  .topbar .sp{flex:1}
+  .topbar .av{width:28px;height:28px;border-radius:50%;background:#2B3160}
+  .side{position:absolute;left:0;top:56px;bottom:0;width:220px;border-right:1px solid #E1E3EA;padding:1.2rem 1rem;font-size:14px;background:#FAFAFC}
+  .side div{padding:.5rem .7rem;border-radius:6px;color:#5B6072}
+  .side div.on{background:#fff;color:#111318;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .main{position:absolute;left:220px;top:56px;right:0;bottom:0;padding:1.6rem 2rem}
+  h2{margin:0 0 .3rem;font-size:22px;font-weight:700;letter-spacing:-.02em}
+  .sub{color:#7A8AA6;font-size:13px;margin:0 0 1.4rem}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border:1px solid #E1E3EA;border-radius:8px;overflow:hidden}
+  th,td{text-align:left;padding:.8rem 1rem;border-bottom:1px solid #EEF0F4}
+  th{font-size:12px;color:#7A8AA6;font-weight:500;background:#FAFAFC}
+  .st{display:inline-block;padding:.2rem .55rem;border-radius:999px;font-size:12px;border:1px solid #E1E3EA}
+  .st.w{color:#8A6D0B;background:#FFF6D6;border-color:#F1E2A3}.st.g{color:#2B3160;background:#E8ECF7;border-color:#C9D0E6}.st.d{color:#7A8AA6}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.4rem}
+  .kpi div{border:1px solid #E1E3EA;border-radius:8px;padding:1rem 1.1rem}
+  .kpi b{display:block;font-size:26px;font-weight:700;letter-spacing:-.02em}
+  .kpi span{font-size:12px;color:#7A8AA6}
+  .btn{display:inline-block;padding:.55rem .9rem;border-radius:6px;background:#111318;color:#fff;font-size:13px;font-weight:500}
+  .btn.o{background:#fff;color:#111318;border:1px solid #D9DCE3}
+
+  /* quiz */
+  .quiz{background:#F5F7FB;height:100%;display:grid;place-items:center}
+  .card{width:720px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(17,19,24,.08);padding:2.2rem 2.4rem}
+  .prog{height:6px;background:#EEF0F4;border-radius:3px;margin-bottom:1.6rem}.prog i{display:block;width:38%;height:100%;background:#2B3160;border-radius:3px}
+  .q{font-size:22px;font-weight:600;line-height:1.5;margin:0 0 1.4rem;letter-spacing:-.01em}
+  .opt{display:grid;gap:.6rem}
+  .opt div{border:1px solid #D9DCE3;border-radius:10px;padding:.9rem 1.1rem;font-size:16px;display:flex;gap:.8rem;align-items:center}
+  .opt div i{width:26px;height:26px;border-radius:50%;border:1px solid #D9DCE3;display:grid;place-items:center;font-size:12px;font-style:normal;color:#7A8AA6}
+  .opt div.pick{border-color:#2B3160;background:#F3F5FB}.opt div.pick i{background:#2B3160;color:#fff;border-color:#2B3160}
+  .qft{display:flex;justify-content:space-between;align-items:center;margin-top:1.6rem;font-size:13px;color:#7A8AA6}
+  .hud{position:absolute;top:24px;left:0;right:0;display:flex;justify-content:center;gap:2rem;font-size:13px;color:#5B6072}
+
+  /* hospital */
+  .tabs{display:flex;gap:1.6rem;border-bottom:1px solid #E1E3EA;margin-bottom:1.2rem;font-size:14px}
+  .tabs span{padding:.6rem 0;color:#7A8AA6}.tabs span.on{color:#111318;border-bottom:2px solid #111318;font-weight:600}
+  .form{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem 1.2rem;margin-bottom:1.4rem}
+  .f label{display:block;font-size:12px;color:#5B6072;margin-bottom:.25rem}
+  .f div{border:1px solid #D9DCE3;border-radius:6px;padding:.55rem .7rem;font-size:14px;background:#fff}
+  .f div.ro{background:#F7F8FA;color:#5B6072}
+  .pt{display:flex;gap:1.2rem;align-items:center;margin-bottom:1rem;font-size:14px}
+  .pt b{font-size:18px;font-weight:700}
+  .pt span{color:#7A8AA6}
+  .warn{display:inline-block;padding:.2rem .55rem;border-radius:4px;background:#FDECEC;color:#B42318;font-size:12px;font-weight:500}
+
+  /* commerce */
+  .shop{height:100%}
+  .nav{height:64px;display:flex;align-items:center;padding:0 3rem;gap:2.2rem;font-size:14px;border-bottom:1px solid #EEF0F4}
+  .nav b{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-right:1rem}
+  .nav .sp{flex:1}
+  .pd{display:grid;grid-template-columns:1.1fr 1fr;gap:3rem;padding:2.4rem 3rem}
+  .gal{display:grid;grid-template-columns:80px 1fr;gap:.8rem}
+  .gal .th{display:grid;gap:.6rem}.gal .th i{display:block;aspect-ratio:1;border-radius:8px;background:#E6E9F0}.gal .th i:first-child{outline:2px solid #111318}
+  .gal .big{aspect-ratio:1;border-radius:12px;background:linear-gradient(135deg,#DFE5F2,#F3F5FA);position:relative}
+  .gal .big::after{content:"";position:absolute;left:22%;top:18%;width:56%;height:64%;border-radius:14px;background:#2B3160;opacity:.9}
+  .info h1{font-size:28px;font-weight:700;letter-spacing:-.02em;margin:0 0 .4rem}
+  .info .price{font-size:24px;font-weight:600;margin:.4rem 0 1.2rem}
+  .info .price s{color:#7A8AA6;font-size:16px;font-weight:400;margin-left:.6rem}
+  .sel{margin-bottom:1rem}.sel label{display:block;font-size:12px;color:#5B6072;margin-bottom:.4rem}
+  .sel div{display:flex;gap:.5rem}.sel div span{border:1px solid #D9DCE3;border-radius:6px;padding:.5rem .8rem;font-size:14px}.sel div span.on{border-color:#111318;font-weight:600}
+  .cta{display:flex;gap:.6rem;margin-top:1.4rem}.cta .btn{flex:1;text-align:center;padding:.9rem}
+  .meta{margin-top:1.4rem;font-size:13px;color:#5B6072;line-height:1.8}
+</style>
+</head>
+<body>
+<!-- 1. request queue -->
+<div class="screen" id="por-favor-harry">
+  <div class="topbar"><b>Por favor, Harry</b><span>요청 Queue</span><span class="sp"></span><span>2026.09.16 (수)</span><span class="av"></span></div>
+  <div class="side"><div class="on">심사 Queue</div><div>진행 중</div><div>완료</div><div>요청자 링크</div><div>Dashboard</div><div>설정</div></div>
+  <div class="main">
+    <h2>심사 대기</h2><p class="sub">오늘 들어온 요청 6건 · 되묻기 필요 0건 · 평균 처리 1.8일</p>
+    <div class="kpi"><div><b>6</b><span>오늘 접수</span></div><div><b>3</b><span>진행 중</span></div><div><b>1.8일</b><span>평균 처리</span></div><div><b>0</b><span>진행상황 문의</span></div></div>
+    <table><thead><tr><th>번호</th><th>요청자</th><th>내용</th><th>희망일</th><th>상태</th><th></th></tr></thead><tbody>
+      <tr><td>#0846</td><td>영업 1팀 김OO</td><td>거래처 단가표 양식 변경</td><td>09.18</td><td><span class="st w">심사 대기</span></td><td><span class="btn">수락</span> <span class="btn o">보류</span></td></tr>
+      <tr><td>#0845</td><td>총무 박OO</td><td>비품 신청 화면 필수값 추가</td><td>09.20</td><td><span class="st w">심사 대기</span></td><td><span class="btn">수락</span> <span class="btn o">보류</span></td></tr>
+      <tr><td>#0844</td><td>품질 이OO</td><td>검사 결과 엑셀 내보내기</td><td>09.22</td><td><span class="st g">진행 중 · 09.19 약속</span></td><td><span class="btn o">상태 공유됨</span></td></tr>
+      <tr><td>#0843</td><td>생산 최OO</td><td>작업지시서 인쇄 여백 수정</td><td>09.16</td><td><span class="st g">진행 중 · 09.17 약속</span></td><td><span class="btn o">상태 공유됨</span></td></tr>
+      <tr><td>#0842</td><td>인사 정OO</td><td>휴가 신청서 승인 흐름 변경</td><td>09.25</td><td><span class="st d">완료</span></td><td><span class="btn o">요청자 확인</span></td></tr>
+      <tr><td>#0841</td><td>구매 한OO</td><td>발주서 자동 번호 부여</td><td>09.12</td><td><span class="st d">완료</span></td><td><span class="btn o">요청자 확인</span></td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<!-- 2. quiz -->
+<div class="screen" id="daeryun-learning-hub">
+  <div class="quiz">
+    <div class="hud"><span>기술직군 · 3단원</span><span>문항 19 / 50</span><span>정답률 84%</span></div>
+    <div class="card">
+      <div class="prog"><i></i></div>
+      <p class="q">배관 용접부의 비파괴 검사 중, 표면 결함 검출에 가장 적합한 방법은?</p>
+      <div class="opt"><div><i>1</i>초음파 탐상(UT)</div><div class="pick"><i>2</i>침투 탐상(PT)</div><div><i>3</i>방사선 투과(RT)</div><div><i>4</i>와전류 탐상(ET)</div></div>
+      <div class="qft"><span>틀린 문제는 자동으로 오답노트에 저장됩니다</span><span class="btn">답안 제출</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. hospital -->
+<div class="screen" id="hospital-ux">
+  <div class="topbar"><b>외래 진료 관리</b><span>접수</span><span>진료</span><span>수납</span><span class="sp"></span><span>내과 3진료실</span><span class="av"></span></div>
+  <div class="side"><div>대기 환자 12</div><div class="on">진료 중</div><div>처방</div><div>검사 결과</div><div>예약</div><div>통계</div></div>
+  <div class="main">
+    <div class="pt"><b>김OO</b><span>F · 72세 · 1954.03.12</span><span class="warn">항응고제 복용</span><span>초진 2019.04 · 최근 2026.08.30</span></div>
+    <div class="tabs"><span class="on">기본 정보</span><span>진료 기록</span><span>처방 이력</span><span>검사 결과</span><span>예약</span></div>
+    <div class="form">
+      <div class="f"><label>주 호소</label><div>어지럼증, 3일 전부터</div></div>
+      <div class="f"><label>혈압</label><div>142 / 88</div></div>
+      <div class="f"><label>맥박</label><div>76</div></div>
+      <div class="f"><label>진단명</label><div>양성 발작성 체위성 현훈 (H81.1)</div></div>
+      <div class="f"><label>담당의</label><div class="ro">내과 · 이OO</div></div>
+      <div class="f"><label>다음 예약</label><div>2026.09.30 10:30</div></div>
+    </div>
+    <h2 style="font-size:16px">최근 처방</h2>
+    <table><thead><tr><th>일자</th><th>약품</th><th>용량</th><th>기간</th><th>상태</th></tr></thead><tbody>
+      <tr><td>2026.08.30</td><td>베타히스틴 24mg</td><td>1정 · 1일 2회</td><td>14일</td><td><span class="st g">복용 중</span></td></tr>
+      <tr><td>2026.08.30</td><td>디멘히드리네이트 50mg</td><td>1정 · 필요 시</td><td>7일</td><td><span class="st d">종료</span></td></tr>
+      <tr><td>2026.07.12</td><td>와파린 2mg</td><td>1정 · 1일 1회</td><td>90일</td><td><span class="st w">모니터링</span></td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<!-- 4. commerce -->
+<div class="screen" id="custom-commerce">
+  <div class="shop">
+    <div class="nav"><b>ATELIER</b><span>New</span><span>Objects</span><span>Lighting</span><span>Textile</span><span class="sp"></span><span>검색</span><span>로그인</span><span>장바구니 (2)</span></div>
+    <div class="pd">
+      <div class="gal"><div class="th"><i></i><i></i><i></i><i></i></div><div class="big"></div></div>
+      <div class="info">
+        <div style="font-size:13px;color:#7A8AA6;margin-bottom:.4rem">Lighting · 테이블 램프</div>
+        <h1>Arc Table Lamp — Navy</h1>
+        <div class="price">189,000원 <s>219,000원</s></div>
+        <div class="sel"><label>색상</label><div><span class="on">Navy</span><span>Sand</span><span>Charcoal</span></div></div>
+        <div class="sel"><label>전구</label><div><span class="on">2700K 포함</span><span>미포함</span></div></div>
+        <div class="cta"><span class="btn o">장바구니</span><span class="btn">바로 구매</span></div>
+        <div class="meta">무료 배송 · 09.18 도착 예정<br>재고 7개 · 14일 이내 교환·환불<br>리뷰 128개 · 4.8</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const p = new URLSearchParams(location.search).get('p') || 'por-favor-harry';
+  document.getElementById(p).classList.add('on');
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prologue& v2 구조 × 시각 언어 비교</title>
+<title>Prologue& D2 — 디자인 방향 비교</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
   :root{--ink:#111318;--navy:#2B3160;--steel:#7A8AA6;--rule:#E1E3EA;--bg:#F4F5F8}
@@ -14,10 +14,10 @@
   .top h1{font-size:15px;margin:0 1rem 0 0;font-weight:700}
   .grp{display:flex;align-items:center;gap:.3rem}
   .grp small{color:var(--steel);margin-right:.3rem}
-  .grp button{border:1px solid var(--rule);background:#fff;padding:.45rem .8rem;border-radius:4px;cursor:pointer;font:inherit;font-size:13px}
-  #structs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-  #themes button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-  #modes button.on{border-color:var(--ink)}
+  .grp button{border:1px solid var(--rule);background:#fff;padding:.45rem .8rem;border-radius:4px;cursor:pointer;font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:.45rem}
+  .grp button i{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.08)}
+  #pals button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  #vers button.on,#modes button.on{border-color:var(--ink)}
   .top .open{margin-left:auto;font-size:13px;color:var(--navy)}
   .stage{display:grid;grid-template-columns:1fr 440px;gap:1.2rem;padding:1.2rem;align-items:start}
   .stage.single{grid-template-columns:1fr}
@@ -28,78 +28,65 @@
   .desktop iframe{width:1440px;height:900px;border:0;transform-origin:0 0;display:block}
   .mobile .vp{display:flex;justify-content:center;background:#EEF0F4;padding:1rem 0}
   .mobile iframe{width:400px;height:860px;border:0;display:block}
-  .matrix{display:grid;grid-template-columns:8rem repeat(3,1fr);gap:.8rem;padding:1.2rem;align-items:start}
-  .matrix .hd{font-weight:600;font-size:13px;padding:.4rem 0;color:var(--steel)}
-  .matrix .rh{font-weight:600;font-size:13px;padding-top:2.4rem}
-  .matrix .rh small{display:block;font-weight:400;color:var(--steel)}
-  .matrix .cell{background:#fff;border:1px solid var(--rule);border-radius:6px;overflow:hidden}
-  .matrix .cell .cap{padding:.4rem .7rem;border-bottom:1px solid var(--rule);font-size:12px;color:var(--steel);display:flex;justify-content:space-between}
-  .matrix .cell .vp{overflow:hidden;height:300px;position:relative}
-  .matrix .cell iframe{width:1440px;height:900px;border:0;transform-origin:0 0;display:block;pointer-events:none}
-  .desc{margin:0 1.2rem 1.2rem;background:#fff;border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
-  .desc h2{font-size:14px;margin:0 0 .4rem}
-  .desc p{margin:0 0 .4rem;color:#3A3F4E}
-  .desc small{color:var(--steel)}
-  .criteria{margin:0 1.2rem 2rem;background:#fff;border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem}
-  .criteria h2{font-size:14px;margin:0 0 .6rem}
-  .criteria table{border-collapse:collapse;width:100%;font-size:13px}
-  .criteria th,.criteria td{border-top:1px solid var(--rule);padding:.45rem .5rem;text-align:left;vertical-align:top}
-  .criteria th{color:var(--steel);font-weight:500;width:9rem}
+  .all{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;padding:1.2rem}
+  .all .cell{background:#fff;border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+  .all .cell .cap{padding:.4rem .7rem;border-bottom:1px solid var(--rule);font-size:12px;color:var(--steel);display:flex;justify-content:space-between}
+  .all .cell .vp{overflow:hidden;position:relative}
+  .all .cell iframe{width:1440px;height:900px;border:0;transform-origin:0 0;display:block;pointer-events:none}
+  .desc{margin:0 1.2rem 1.2rem;background:#fff;border:1px solid var(--rule);border-radius:6px;padding:1rem 1.2rem}
+  .desc table{border-collapse:collapse;width:100%;font-size:13px}
+  .desc th,.desc td{border-top:1px solid var(--rule);padding:.5rem .5rem;text-align:left;vertical-align:top}
+  .desc th{color:var(--steel);font-weight:500}
+  .sw{display:inline-flex;gap:3px;vertical-align:middle}
+  .sw i{width:16px;height:16px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.08)}
   .note{margin:0 1.2rem 1.2rem;font-size:12px;color:var(--steel)}
 </style>
 </head>
 <body>
   <div class="top">
-    <h1>Prologue& v2 — 구조 × 시각 언어</h1>
-    <div class="grp" id="structs"><small>구조</small><button data-s="a-tool.html" class="on">A 도구형</button><button data-s="b-canvas.html">B 도면형</button><button data-s="c-line.html">C 서사형</button><button data-s="d-poster.html">D 포스터형</button></div>
-    <div class="grp" id="themes"><small>시각 언어</small><button data-t="product" class="on">제품 UI풍</button><button data-t="blueprint">설계도풍</button><button data-t="editorial">편집물풍</button></div>
-    <div class="grp" id="modes"><small>보기</small><button data-mode="both" class="on">데스크톱 + 모바일</button><button data-mode="single">데스크톱만</button><button data-mode="matrix">9개 한눈에</button></div>
-    <a class="open" id="open" href="a-tool.html?theme=product" target="_blank">새 탭에서 열기 ↗</a>
+    <h1>Prologue& D2 — 디자인 방향</h1>
+    <div class="grp" id="pals"><small>방향</small></div>
+    <div class="grp" id="vers"><small>구조</small><button data-v="2" class="on">D2 합본</button><button data-v="1">D1 분리</button><button data-v="3">D3 풀블리드</button></div>
+    <div class="grp" id="modes"><small>보기</small><button data-mode="both" class="on">데스크톱 + 모바일</button><button data-mode="single">데스크톱만</button><button data-mode="all">4개 한눈에</button></div>
+    <a class="open" id="open" href="d-poster.html?v=2&s=1" target="_blank">새 탭에서 열기 ↗</a>
   </div>
 
   <div class="stage" id="stage">
-    <div class="device desktop"><div class="cap"><span>데스크톱 1440×900 (스크롤·드래그·휠 동작)</span><span id="scaleLabel"></span></div><div class="vp" id="dvp"><iframe id="dframe" src="a-tool.html?theme=product" title="데스크톱"></iframe></div></div>
-    <div class="device mobile"><div class="cap"><span>모바일 400×860</span><span>실제 크기</span></div><div class="vp"><iframe id="mframe" src="a-tool.html?theme=product" title="모바일"></iframe></div></div>
+    <div class="device desktop"><div class="cap"><span>데스크톱 1440×900</span><span id="scaleLabel"></span></div><div class="vp" id="dvp"><iframe id="dframe" src="d-poster.html?v=2&s=1" title="데스크톱"></iframe></div></div>
+    <div class="device mobile"><div class="cap"><span>모바일 400×860</span><span>실제 크기</span></div><div class="vp"><iframe id="mframe" src="d-poster.html?v=2&s=1" title="모바일"></iframe></div></div>
   </div>
-
-  <div class="matrix" id="matrix" hidden></div>
+  <div class="all" id="all" hidden></div>
 
   <div class="desc">
-    <div><h2>구조 A · B · C · D</h2><p><b>A 도구형</b> — 문제를 고르면 요청 카드가 접수 → 분석 → 재설계 → 제품을 지나 문의 서랍이 열림.<br><b>B 도면형</b> — 한 장의 도면 위 노드·선. 휠·드래그 이동, Ctrl+휠 확대.<br><b>C 서사형</b> — 선 하나가 페이지를 관통. 매듭·정거장·삼각 플래그.<br><b>D 포스터형</b> — Rauno 원형. 회색 바탕 위 흰 패널을 가로로 넘김, 패널마다 문장 하나 + 도형 하나, 서체 하나. 옷은 고정.</p></div>
-    <div><h2>시각 언어 3종</h2><p><b>제품 UI풍</b> — Pretendard, 밝은 회색 표면 + 흰 패널, 모노스페이스 라벨, 4px 모서리.<br><b>설계도풍</b> — 트레이싱지, 네이비 1px 선, 코너 틱, Didone 헤드라인, 대문자 라벨.<br><b>편집물풍</b> — 순백, Didone + Noto Serif KR, 검정 헤어라인, 넓은 여백, 세리프 라벨.</p></div>
-    <div><h2>보는 법</h2><p>구조와 시각 언어를 각각 골라 9가지 조합을 봅니다. 각 시안 하단의 알약 스위치로도 옷을 바꿀 수 있습니다. "9개 한눈에"는 첫 화면만 축소해 나란히 보여줍니다.</p><small>공통: 메뉴는 로고·Work·문의뿐, 문의 서랍, Notion DB 가정 4건, 커서 십자선(데스크톱), Lenis. CDN이라 온라인 필요.</small></div>
-  </div>
-
-  <div class="criteria">
-    <h2>비교 기준 (10_v2_structure_concepts.md §5)</h2>
     <table>
-      <tr><th>규격 탈피</th><td>첫 화면을 보고 "빌더로 만든 사이트"라고 느끼는가</td></tr>
-      <tr><th>문의 도달</th><td>첫 화면에서 문의 서랍까지 몇 번의 조작이 필요한가 (목표 3회 이하)</td></tr>
-      <tr><th>브랜드 증명</th><td>구조 자체가 "복잡한 업무 → 단순한 제품"을 설명하는가</td></tr>
-      <tr><th>모바일</th><td>400px에서 같은 인상이 유지되는가, 폴백이 자연스러운가</td></tr>
-      <tr><th>5초 테스트</th><td>5초 보고 "무엇을 하는 브랜드인지" 말할 수 있는가</td></tr>
-      <tr><th>확장성</th><td>병원 UI/UX·Custom Commerce에도 같은 구조가 적용되는가</td></tr>
-      <tr><th>공수</th><td>Week 1~6 안에 이 구조로 만들 수 있는가</td></tr>
+      <tr><th>#</th><th>이름</th><th>색</th><th>서체</th><th>정렬·크기</th><th>이미지 처리</th></tr>
+      <tr id="row1"></tr><tr id="row2"></tr><tr id="row3"></tr><tr id="row4"></tr>
     </table>
   </div>
+  <p class="note">D2 구조는 고정. 각 방향은 `d-poster.html?s=1..4`로 색·서체·정렬·크기·이미지 처리가 한 세트로 바뀝니다. 이미지는 임시(제품 화면 HTML을 캡처한 img/*.png). 근거는 docs/12 §6·§8.</p>
 
 <script>
-  const S = [['a-tool.html', 'A 도구형'], ['b-canvas.html', 'B 도면형'], ['c-line.html', 'C 서사형'], ['d-poster.html', 'D 포스터형']], T = [['product', '제품 UI풍'], ['blueprint', '설계도풍'], ['editorial', '편집물풍']];
-  let s = S[0][0], t = T[0][0];
-  const dframe = document.getElementById('dframe'), mframe = document.getElementById('mframe'), open = document.getElementById('open'), stage = document.getElementById('stage'), matrix = document.getElementById('matrix');
-  const url = (s, t) => s === 'd-poster.html' ? s : `${s}?theme=${t}`;
-  function apply() { const u = url(s, t); dframe.src = u; mframe.src = u; open.href = u; document.querySelectorAll('#structs button').forEach(b => b.classList.toggle('on', b.dataset.s === s)); document.querySelectorAll('#themes button').forEach(b => { b.classList.toggle('on', b.dataset.t === t); b.disabled = s === 'd-poster.html'; b.style.opacity = s === 'd-poster.html' ? .35 : 1; }); }
+  const STY = [
+    { n: 1, name: 'Rauno Gray', sw: ['#ECEDF0', '#7DB6F2', '#2B3160'], color: '회색 + 하늘 + 네이비', font: 'Pretendard 500, 자간 -3.5%', layout: '좌측 계단식, 초대형', img: '기울인 스크린샷 카드가 헤드라인을 덮음' },
+    { n: 2, name: 'Editorial Warm', sw: ['#EDE9E2', '#D4C9B0', '#9E7B56'], color: 'Cloud Dancer 웜톤', font: '헤드라인 Noto Serif KR 500 + 본문 Pretendard', layout: '중앙 정렬, 한 단계 작게, 여백 넓게', img: '얇은 검정 액자 + 캡션' },
+    { n: 3, name: 'Swiss Bold', sw: ['#ECECEC', '#FFE14D', '#000000'], color: '회색 + 노랑 + 검정', font: 'Pretendard 800, 자간 -5%, 행간 0.95', layout: '좌측 꽉 채움, 최대 크기', img: '오른쪽 절반 풀블리드, 글자가 이미지 위로' },
+    { n: 4, name: 'Product Teal', sw: ['#EAEFEE', '#9FD3C7', '#0F4C5C'], color: '틸 계열', font: 'Pretendard 600', layout: '작고 정돈된 위계, 정보 많음', img: '브라우저 프레임 안에 크게' }
+  ];
+  let sN = 1, v = 2;
+  const url = () => `d-poster.html?v=${v}&s=${sN}`;
+  const dframe = document.getElementById('dframe'), mframe = document.getElementById('mframe'), open = document.getElementById('open'), stage = document.getElementById('stage'), all = document.getElementById('all');
+  document.getElementById('pals').innerHTML += STY.map(p => `<button data-s="${p.n}" class="${p.n === 1 ? 'on' : ''}"><i style="background:${p.sw[1]}"></i>S${p.n} ${p.name}</button>`).join('');
+  STY.forEach(p => { document.getElementById('row' + p.n).innerHTML = `<td>S${p.n}</td><td><b>${p.name}</b></td><td><span class="sw">${p.sw.map(x => `<i style="background:${x}" title="${x}"></i>`).join('')}</span> ${p.color}</td><td>${p.font}</td><td>${p.layout}</td><td>${p.img}</td>`; });
+  function apply() { dframe.src = url(); mframe.src = url(); open.href = url(); document.querySelectorAll('#pals button').forEach(b => b.classList.toggle('on', +b.dataset.s === sN)); document.querySelectorAll('#vers button').forEach(b => b.classList.toggle('on', +b.dataset.v === v)); }
   function fit() { const vp = document.getElementById('dvp'); const k = Math.min(1, vp.clientWidth / 1440); dframe.style.transform = `scale(${k})`; vp.style.height = (900 * k) + 'px'; document.getElementById('scaleLabel').textContent = Math.round(k * 100) + '%'; }
-  document.getElementById('structs').addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (b) { s = b.dataset.s; apply(); } });
-  document.getElementById('themes').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (b) { t = b.dataset.t; apply(); } });
-  document.getElementById('modes').addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if (!b) return; document.querySelectorAll('#modes button').forEach(x => x.classList.toggle('on', x === b));
-    const m = b.dataset.mode; stage.hidden = m === 'matrix'; matrix.hidden = m !== 'matrix'; stage.className = 'stage' + (m === 'single' ? ' single' : '');
-    if (m === 'matrix' && !matrix.children.length) { let h = '<div></div>' + T.map(x => `<div class="hd">${x[1]}</div>`).join('');
-      S.forEach(st => { if (st[0] === 'd-poster.html') { h += `<div class="rh">${st[1]}<small>옷 고정 (Rauno 원형)</small></div><div class="cell" style="grid-column:span 3"><div class="cap"><span>${st[1]}</span><a href="${st[0]}" target="_blank">열기 ↗</a></div><div class="vp"><iframe src="${st[0]}" title="${st[1]}"></iframe></div></div>`; return; } h += `<div class="rh">${st[1]}</div>` + T.map(th => `<div class="cell"><div class="cap"><span>${st[1]} × ${th[1]}</span><a href="${url(st[0], th[0])}" target="_blank">열기 ↗</a></div><div class="vp"><iframe src="${url(st[0], th[0])}" title="${st[1]} ${th[1]}"></iframe></div></div>`).join(''); });
-      matrix.innerHTML = h; fitMatrix(); }
-    if (m !== 'matrix') fit(); });
-  function fitMatrix() { matrix.querySelectorAll('.cell .vp').forEach(vp => { const f = vp.querySelector('iframe'); const k = vp.clientWidth / 1440; f.style.transform = `scale(${k})`; vp.style.height = (900 * k) + 'px'; }); }
-  window.addEventListener('resize', () => { fit(); if (!matrix.hidden) fitMatrix(); });
+  function fitAll() { all.querySelectorAll('.vp').forEach(vp => { const f = vp.querySelector('iframe'); const k = vp.clientWidth / 1440; f.style.transform = `scale(${k})`; vp.style.height = (900 * k) + 'px'; }); }
+  document.getElementById('pals').addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (b) { sN = +b.dataset.s; apply(); } });
+  document.getElementById('vers').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) { v = +b.dataset.v; apply(); } });
+  document.getElementById('modes').addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if (!b) return; document.querySelectorAll('#modes button').forEach(x => x.classList.toggle('on', x === b)); const m = b.dataset.mode;
+    stage.hidden = m === 'all'; all.hidden = m !== 'all'; stage.className = 'stage' + (m === 'single' ? ' single' : '');
+    if (m === 'all') { all.style.gridTemplateColumns = 'repeat(2,1fr)'; all.innerHTML = STY.map(p => `<div class="cell"><div class="cap"><span>S${p.n} ${p.name}</span><a href="d-poster.html?v=${v}&s=${p.n}" target="_blank">열기 ↗</a></div><div class="vp"><iframe src="d-poster.html?v=${v}&s=${p.n}" title="S${p.n}"></iframe></div></div>`).join(''); fitAll(); }
+    if (m !== 'all') fit(); });
+  window.addEventListener('resize', () => { fit(); if (!all.hidden) fitAll(); });
   apply(); fit();
 </script>
 </body>
