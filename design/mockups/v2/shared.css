@@ -68,12 +68,12 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 #p-crosshair .coord{position:absolute;right:1rem;bottom:3.4rem;font:400 11px/1 "JetBrains Mono",ui-monospace,monospace;color:var(--steel);letter-spacing:.04em}
 .has-crosshair body,.has-crosshair a,.has-crosshair button,.has-crosshair [data-view]{cursor:none}
 
-/* ---------- progress strip ---------- */
-.p-progress{display:flex;gap:4px;align-items:flex-end;height:14px}
-.p-progress i{display:block;width:2px;height:8px;background:var(--line);transition:height .25s,background .25s}
+/* ---------- progress strip (film strip: the current tick is a taller black bar) ---------- */
+.p-progress{display:flex;gap:4px;align-items:center;height:14px}
+.p-progress i{display:block;width:2px;height:8px;background:var(--line);transition:height .25s,background .2s}
 .p-progress i.on{height:14px;background:var(--ink)}
 .p-progress i.done{background:var(--steel)}
-.p-progress b{display:block;width:22px;height:14px;border:1.5px solid var(--ink);transition:left .35s cubic-bezier(.2,.8,.2,1)}
+.p-progress b{display:none}
 .p-progress button{display:contents}
 
 /* ---------- drawer ---------- */
