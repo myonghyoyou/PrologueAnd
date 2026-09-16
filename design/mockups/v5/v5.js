@@ -67,6 +67,7 @@ window.V5 = (function () {
       gsap.ticker.add(t => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0);
     }
     hline = document.getElementById('hline');
+    { const k = localStorage.getItem('v5-size') || 'm', S = { s: ['min(960px,64vw)', 'min(580px,62vh)'], m: ['min(1100px,74vw)', 'min(680px,72vh)'], l: ['min(1240px,84vw)', 'min(760px,74vh)'] }; document.documentElement.style.setProperty('--pw', S[k][0]); document.documentElement.style.setProperty('--ph', S[k][1]); }
     build();
     const marker = document.getElementById('marker');
     document.getElementById('pmap').addEventListener('click', e => { const i = e.target.closest('i'); if (i) V.goTo(panels[+i.dataset.i].offsetLeft - (panels[+i.dataset.i].classList.contains('page') ? 12 : 0)); });
@@ -78,6 +79,11 @@ window.V5 = (function () {
     intro(!!target || reduced || sl() > innerWidth * 0.3);
     (lenis ? lenis.on.bind(lenis) : wrap.addEventListener.bind(wrap))('scroll', render);
     if (lenis) gsap.ticker.add(tick);
+    // panel size presets (mockup): s / m / l(V2 84vw×74vh)
+    const SIZES = { s: ['min(960px,64vw)', 'min(580px,62vh)'], m: ['min(1100px,74vw)', 'min(680px,72vh)'], l: ['min(1240px,84vw)', 'min(760px,74vh)'] };
+    const applySize = k => { const [pw, ph] = SIZES[k] || SIZES.m; document.documentElement.style.setProperty('--pw', pw); document.documentElement.style.setProperty('--ph', ph); document.querySelectorAll('#sizeSeg button').forEach(b => b.classList.toggle('on', b.dataset.size === k)); localStorage.setItem('v5-size', k); };
+    applySize(localStorage.getItem('v5-size') || 'm');
+    document.getElementById('sizeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const cur = current(); applySize(b.dataset.size); build(); if (lenis) lenis.resize(); V.goTo(panels[cur].offsetLeft - 12, true); render(); });
     // zoom toggle (mockup)
     const tg = document.getElementById('zoomToggle'), info = document.getElementById('zoomInfo');
     if (tg) { tg.checked = ZOOM.on; const upd = () => info.textContent = ZOOM.on ? `최대 ${Math.round(ZOOM.max * 100)}% · 속도 ${ZOOM.vel} · ease ${ZOOM.ease}` : '끔'; upd(); tg.addEventListener('change', () => { ZOOM.on = tg.checked; localStorage.setItem('v5-zoom', ZOOM.on ? 'on' : 'off'); upd(); }); }
