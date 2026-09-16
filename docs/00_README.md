@@ -49,6 +49,18 @@
 ### `09_interaction_references.md`
 유명 브랜드 8개 사이트의 인터랙션을 실제로 열어 검토한 결과. 공통 패턴, Prologue& 페이지별 인터랙션 지도, 화려함 예산, 기술 선택(GSAP ScrollTrigger 등)을 정리한다.
 
+### `10_v2_structure_concepts.md` · `11_d_poster_design.md` · `12_color_concept_research.md`
+v2 구조 시안 A/B/C/D와 D 포스터형 문법, 컬러·컨셉 리서치. 과정 기록(현재 결정은 13~15가 대체).
+
+### `13_colorset.md` · `14_design_concept.md` · `15_screen_design.md`
+시안 밖에서 따로 내린 결정 3건 — 컬러셋(딥 네이비 + 웜 본), 디자인 컨셉(구조적 편집물, 브랜드명 And/End 반영, 서명 장치 S1~S4), 화면 설계(세로 한 장 랜딩 + Projects + Case Study + 문의 서랍). 확인 시트 `design/spec/01~03`, 합본 시안 `design/mockups/v3/`.
+
+### `16_hybrid_structure.md`
+V2(Rauno 가로 포스터)와 V3(세로 편집물)를 섞는 구조 설계. 추천 A안: V3 세로 골격 + 섹션 01만 가로 포스터 스트립(pin), 한 선(S1)이 스트립을 관통. 와이어프레임 `design/spec/04-hybrid.html`.
+
+### `17_horizontal_only.md`
+세로 스크롤 없이 가로만 있는 Rauno형 구조 설계(V5 후보). 10장 스트립, Lenis 가로 모드, 선이 축·로고가 양 끝, Projects·Case Study는 가운데 시트. `16` A안과 병렬 후보. 지도 `design/spec/05-horizontal.html`.
+
 ---
 
 ## PRD 작성 시 가장 중요한 전제

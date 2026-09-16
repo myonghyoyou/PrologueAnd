@@ -9,16 +9,29 @@
 - [x] PRD 작성 → `07_PRD.md`
 - [x] 기술 스택 결정 → Next.js (App Router) + MDX, Vercel 배포 (`07_PRD.md` §8)
 - [x] 문의 수신 방식 결정 → 이메일 알림 + Google Sheets 적재 (`07_PRD.md` §6.3)
-- [ ] 디자인 방향 결정 → 후보 5안 정리 완료 (`08_design_directions.md`), 시안 제작 후 확정
+- [x] 디자인 방향 결정 → 컬러 13 · 컨셉 14 · 구조 V5 가로 전용(17), 시안 `design/mockups/v5/` 다듬는 중
   - [x] 안별 시안 제작 → `design/mockups/index.html` (5안, 데스크톱 1200px·모바일 400px 비교)
   - [x] 인터랙션 방향 결정 → Rauno 계열 + Lenis, 사이트 전체 5종 (`09_interaction_references.md` §8)
   - [x] 1차 시안 피드백: 빌더 템플릿 느낌 → 구조 재설계 (`10_v2_structure_concepts.md`)
   - [x] v2 구조 시안 A·B·C 제작 → `design/mockups/v2/index.html` (동작하는 인터랙션 포함)
   - [x] 시각 언어 3종을 A·B·C 전부에 적용 → 3×3 = 9조합, 허브의 "9개 한눈에" 모드
   - [x] 피드백 "Rauno 느낌이 아님" → D 포스터형(Rauno 원형 재현) 추가 (`10` §3.4)
-  - [ ] v2 시안 브라우저 검증 (데스크톱 1440·모바일 400) — 브라우저 확장 연결 후 진행
-  - [ ] A·B·C 비교 후 구조 확정, `10` §6에 결정 기록
-  - [ ] 확정 구조에 시각 언어 다듬기 → 디자인 방향 확정
+  - [x] 구조 확정 → **D 포스터형** (`10` §6, 2026-09-16)
+  - [ ] D 브라우저 검증 (데스크톱 1440·모바일 400) — 브라우저 확장 연결 후 진행
+  - [x] D 디벨롭 → D1/D2/D3 비교 후 **D2 합본형 채택** (2026-09-16)
+  - [x] 컬러·컨셉 리서치 (`12_color_concept_research.md`) → D2 컬러 변형 시안 S1~S4 제작
+  - [x] 외부 피드백 "템플릿에 덧붙이는 느낌" → 시안 밖에서 1·2·3을 따로 결정 (2026-09-16)
+    - [x] 1. 컬러셋 → 딥 네이비 + 웜 본 (`13_colorset.md`, `design/spec/01-colorset.html`)
+    - [x] 2. 디자인 컨셉 → 구조적 편집물 (`14_design_concept.md`, `design/spec/02-concept.html`)
+    - [x] 3. 화면 설계 → 세로 한 장 랜딩 + Projects + Case Study + 문의 서랍, D2 대체 (`15_screen_design.md`, `design/spec/03-screens.html`)
+    - [x] 브랜드명 의미(Prologue And / End — 처음과 끝을 함께) 반영 + 서명 장치 S1~S4 채택 (`14` §1·§3.7)
+  - [x] 4. 합본 시안 제작 → `design/mockups/v3/` (index·projects·case, 데스크톱 1440·모바일 400 확인)
+  - [x] 사용자 요청 "V2(Rauno)와 V3를 섞는 구조" → 하이브리드 설계 A안 (`16_hybrid_structure.md`, `design/spec/04-hybrid.html`) — 승인 대기
+  - [x] 사용자 요청 "세로 없이 가로만" → 가로 전용 설계 (`17_horizontal_only.md`, `design/spec/05-horizontal.html`) — A안과 병렬 후보
+  - [x] 홈 프로젝트 패널에 화면 캡처 없음 결정 → 도형 + 미니 다이어그램 + 결과 숫자(`14` §3.5, `panels.js`)
+  - [x] 구조 3안 전부 시안 제작 → `design/mockups/compare.html` (v3 세로 · v4 하이브리드 · v5 가로 전용)
+  - [x] 구조 확정 → **V5 가로 전용**(2026-09-16) + 이동 중 축소 추가(`17` §3.9)
+  - [ ] v5 다듬기(휠 체감·축소 강도·모바일 확인) → 시안 확정 → 구현 착수
 - [x] Prologue& 로고/워드마크 사용 방식 결정 → 변형별 용도·최소 크기 규칙 (`07_PRD.md` §7.2)
 - [ ] 공개/IP 범위 확인 → 프로젝트별 체크리스트는 아래 Week 1 §2, 결과는 MDX `disclosure` 필드에 기록
 
