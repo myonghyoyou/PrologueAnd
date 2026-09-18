@@ -226,7 +226,7 @@ footer{padding:96px 0 40px}
 .tabs button{padding:12px 14px;font-size:14px;font-weight:500;color:var(--bone-500);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
 .tabs button:hover{color:var(--bone-900)}
 .tabs button.on{color:var(--navy-800);border-color:var(--navy-800)}
-.prow{display:grid;grid-template-columns:48px 1fr 200px;gap:24px;align-items:start;padding:32px 16px;margin:0 -16px;border-bottom:1px solid var(--bone-200);transition:background .15s}
+.prow{display:grid;grid-template-columns:48px 1fr;gap:24px;align-items:start;padding:32px 16px;margin:0 -16px;border-bottom:1px solid var(--bone-200);transition:background .15s}
 .prow:hover{background:var(--bone-100)}
 .prow .num{padding-top:6px}
 .prow .h2 .amp{font-size:.9em;margin-right:.18em}
@@ -376,6 +376,19 @@ footer{padding:96px 0 40px}
   .row .vis{grid-template-columns:1fr 90px;min-height:120px}
   .nums b{font-size:26px}
 }
+
+/* ---------- Case Study: 텍스트 목록 (이미지 없음, 2026-09-18) ---------- */
+.steps-list{list-style:none;margin:0 0 16px;padding:0;counter-reset:st}
+.steps-list li{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--bone-200);counter-increment:st}
+.steps-list li:before{content:counter(st,decimal-leading-zero);font-size:12px;font-weight:500;color:var(--navy-800);letter-spacing:.04em;padding-top:4px}
+.steps-list.plain li:before{content:"·";text-align:center;color:var(--bone-400)}
+.steps-list li b{display:block;font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--bone-900)}
+.steps-list li span{display:block;font-size:14px;color:var(--bone-700);margin-top:2px}
+.ba{border-collapse:collapse;width:100%;font-size:14px;margin-bottom:16px}
+.ba th{text-align:left;font-weight:500;color:var(--bone-500);padding:8px 10px 8px 0;border-bottom:1px solid var(--bone-300);font-size:13px}
+.ba td{padding:10px 10px 10px 0;border-bottom:1px solid var(--bone-200);vertical-align:top;color:var(--bone-700)}
+.ba td:first-child{color:var(--bone-500);width:96px}
+.ba td:last-child{color:var(--navy-800);font-weight:500}
 
 /* v4 — 하이브리드: v3 위에 섹션 01 가로 포스터 스트립(pin) */
 #strip{position:relative;z-index:9;background:var(--bone-100)}       /* above #line (6) so segment ① hides behind the pinned strip */
