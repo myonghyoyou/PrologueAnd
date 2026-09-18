@@ -402,3 +402,33 @@ html.embed .prow .num{display:block;padding-top:4px}
 html.embed .prow .h2{font-size:20px}
 html.embed .prow .meta{margin:6px 0 8px}
 html.embed .prow .res{font-size:14px}
+
+/* ---------- 목록 ↔ 상세 전환 (docs/20: A 제목 공유 요소 + D 번호 레일 그리기) ---------- */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vt-out .15s ease-out both}
+::view-transition-new(root){animation:vt-in .25s cubic-bezier(.2,.8,.2,1) both}
+@keyframes vt-out{to{opacity:0}}
+@keyframes vt-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+::view-transition-group(pj-title){animation-duration:.35s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-old(pj-title),::view-transition-new(pj-title){animation:none;mix-blend-mode:normal;height:100%}
+.case-head .h1{view-transition-name:pj-title}
+.prow.vt .h2{view-transition-name:pj-title}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+/* embed: 상세의 번호 레일을 시트 안에서도 보이게 + 도착 후 01→10 그려짐 */
+html.embed .case-body{grid-template-columns:64px 1fr;gap:16px}
+html.embed .nrail{display:block;top:16px}
+html.embed .nrail li{opacity:0;animation:rail-in .32s cubic-bezier(.2,.8,.2,1) forwards}
+html.embed .nrail li i{transform-origin:left;transform:scaleX(0);animation:rail-line .32s cubic-bezier(.2,.8,.2,1) forwards}
+html.embed .nrail li:nth-child(1),html.embed .nrail li:nth-child(1) i{animation-delay:.30s}
+html.embed .nrail li:nth-child(2),html.embed .nrail li:nth-child(2) i{animation-delay:.34s}
+html.embed .nrail li:nth-child(3),html.embed .nrail li:nth-child(3) i{animation-delay:.38s}
+html.embed .nrail li:nth-child(4),html.embed .nrail li:nth-child(4) i{animation-delay:.42s}
+html.embed .nrail li:nth-child(5),html.embed .nrail li:nth-child(5) i{animation-delay:.46s}
+html.embed .nrail li:nth-child(6),html.embed .nrail li:nth-child(6) i{animation-delay:.50s}
+html.embed .nrail li:nth-child(7),html.embed .nrail li:nth-child(7) i{animation-delay:.54s}
+html.embed .nrail li:nth-child(8),html.embed .nrail li:nth-child(8) i{animation-delay:.58s}
+html.embed .nrail li:nth-child(9),html.embed .nrail li:nth-child(9) i{animation-delay:.62s}
+html.embed .nrail li:nth-child(10),html.embed .nrail li:nth-child(10) i{animation-delay:.66s}
+@keyframes rail-in{to{opacity:1}}
+@keyframes rail-line{to{transform:scaleX(1)}}
+html.embed .cs{max-width:none}
