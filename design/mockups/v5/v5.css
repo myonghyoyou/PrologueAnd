@@ -96,7 +96,10 @@ body{overflow:hidden}
 #sheet.on{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
 #sheet{display:flex;flex-direction:column}
 #sheet .sh{flex:none;display:flex;align-items:center;justify-content:space-between;padding:16px 20px 16px 28px;border-bottom:1px solid var(--bone-200);background:var(--bone-50)}
-#sheet .sh .brand{font-size:20px}
+#sheet .sh .brand{font-size:20px;flex:1}
+#sheet .sh .back{font-size:13px;font-weight:500;color:var(--bone-600);padding:6px 10px 6px 0;margin-right:12px;border-right:1px solid var(--bone-200)}
+#sheet .sh .back:hover{color:var(--navy-800)}
+#sheet .sh .back[hidden]{display:none}
 #sheet .sh .brand .amp{margin:0 .22em}
 #sheet .sh .brand .who{font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:-.01em}
 #sheet .sb{flex:1;min-height:0}

@@ -396,6 +396,24 @@ html.embed .page-head{padding-top:32px}
 html.embed .case-head{padding-top:32px}
 html.embed .nrail{top:24px}
 
+/* embed: 스크롤바 (13 토큰) */
+html.embed{scrollbar-width:thin;scrollbar-color:var(--bone-300) var(--bone-50)}
+html.embed::-webkit-scrollbar{width:8px;height:8px}
+html.embed::-webkit-scrollbar-track{background:var(--bone-50)}
+html.embed::-webkit-scrollbar-thumb{background:var(--bone-300);border-radius:2px;border:2px solid var(--bone-50)}
+html.embed::-webkit-scrollbar-thumb:hover{background:var(--bone-400)}
+/* embed: Projects 목록 — 행 상하 패딩 축소, 좌우 확대 */
+html.embed .wrap{padding:0 36px}
+html.embed .page-head{padding:28px 0 12px}
+html.embed .page-head .lead{margin-top:10px}
+html.embed .page-head .cnt{margin-top:12px}
+html.embed .prow{grid-template-columns:40px 1fr;gap:16px;padding:16px 28px;margin:0 -28px;border-bottom:1px solid var(--bone-200)}
+html.embed .prow:hover{background:var(--bone-100)}
+html.embed .prow .num{display:block;padding-top:4px}
+html.embed .prow .h2{font-size:20px}
+html.embed .prow .meta{margin:6px 0 8px}
+html.embed .prow .res{font-size:14px}
+
 /* v4 — 하이브리드: v3 위에 섹션 01 가로 포스터 스트립(pin) */
 #strip{position:relative;z-index:9;background:var(--bone-100)}       /* above #line (6) so segment ① hides behind the pinned strip */
 .strip-pin{position:relative;height:calc(100vh - 64px);overflow:hidden}
@@ -559,7 +577,10 @@ body{overflow:hidden}
 #sheet.on{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
 #sheet{display:flex;flex-direction:column}
 #sheet .sh{flex:none;display:flex;align-items:center;justify-content:space-between;padding:16px 20px 16px 28px;border-bottom:1px solid var(--bone-200);background:var(--bone-50)}
-#sheet .sh .brand{font-size:20px}
+#sheet .sh .brand{font-size:20px;flex:1}
+#sheet .sh .back{font-size:13px;font-weight:500;color:var(--bone-600);padding:6px 10px 6px 0;margin-right:12px;border-right:1px solid var(--bone-200)}
+#sheet .sh .back:hover{color:var(--navy-800)}
+#sheet .sh .back[hidden]{display:none}
 #sheet .sh .brand .amp{margin:0 .22em}
 #sheet .sh .brand .who{font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:-.01em}
 #sheet .sb{flex:1;min-height:0}
@@ -603,7 +624,7 @@ body{overflow:hidden}
   <a class="brand" href="#p00" aria-label="Prologue&">Prologue<span class="bamp">&amp;</span></a>
   <div class="pmap" id="pmap"></div>
   <nav>
-    <a href="#" data-sheet="../v3/projects.html?v=202609181607&embed=1">Projects</a>
+    <a href="#" data-sheet="../v3/projects.html?v=202609181615&embed=1">Projects</a>
     <button type="button" data-open-drawer>문의</button>
   </nav>
   <span class="mob-pos">01 / 09</span>
@@ -652,7 +673,7 @@ body{overflow:hidden}
     <section class="hp p06" id="p06">
       <div class="shape-area"><div class="shape squares"><i style="left:44%;top:6%;width:16%;height:22%"></i><i style="left:66%;top:16%;width:16%;height:22%"></i><i style="left:52%;top:44%;width:16%;height:22%"></i><i style="left:78%;top:50%;width:16%;height:22%"></i><i style="left:36%;top:60%;width:12%;height:16%"></i><i style="left:88%;top:2%;width:10%;height:14%"></i></div></div>
       <div class="txt"><h2 class="hl hl2">작업<br><span id="restN">6</span>건.</h2><p class="sub1">문제 유형별로 정리한 Case Study — 무엇이 불편했고 어떻게 바꿨는지.</p></div>
-      <div class="below"><a class="btn" href="#" data-sheet="../v3/projects.html?v=202609181607&embed=1">Projects 열기 <i class="tri"></i></a></div>
+      <div class="below"><a class="btn" href="#" data-sheet="../v3/projects.html?v=202609181615&embed=1">Projects 열기 <i class="tri"></i></a></div>
     </section>
     <!-- 07 문의 · 끝 -->
     <section class="hp p07 dark" id="p07">
@@ -664,7 +685,7 @@ body{overflow:hidden}
       <span class="rule r"></span><span class="seat"></span>
       <p class="foot-top">Prologue</p>
       <p class="foot-cap">and, 그리고 end. 처음과 끝을 함께합니다.</p>
-      <div class="foot-row"><nav><a href="#" data-sheet="../v3/projects.html?v=202609181607&embed=1">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></div>
+      <div class="foot-row"><nav><a href="#" data-sheet="../v3/projects.html?v=202609181615&embed=1">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></div>
     </section>
     <svg id="hline" aria-hidden="true"></svg>
     <div id="hline-dark" aria-hidden="true"></div>
@@ -675,7 +696,7 @@ body{overflow:hidden}
 <div id="tune"><label><input type="checkbox" id="zoomToggle"> 이동 중 축소</label><span class="cap" id="zoomInfo"></span><span class="sep"></span><span class="cap">패널</span><div class="seg" id="sizeSeg"><button type="button" data-size="s">작게</button><button type="button" data-size="m">보통</button><button type="button" data-size="l">V2</button><button type="button" data-size="xl">처음(크게)</button></div><span class="sep"></span><button type="button" class="mob-btn" id="mobBtn">모바일 보기</button></div>
 <div id="mob-preview"><div class="phone"><div class="bar"><span>iPhone 390 × 844</span><button type="button" id="mobClose" aria-label="닫기">×</button></div><iframe id="mobFrame" title="모바일 미리보기"></iframe></div></div>
 <div id="sheet-bd"></div>
-<div id="sheet" aria-label="상세"><div class="sh"><div class="brand">Prologue<span class="amp">&amp;</span><span class="who" id="sheetTitle">Projects</span></div><button class="close" aria-label="닫기">×</button></div><div class="sb"><div class="sheet-note"><span class="amp">&amp;</span><b>Projects · Case Study</b><p>이 단일 파일 시안에는 상세 시트가 포함되어 있지 않습니다.<br>전체 시안: design/mockups/v5/index.html</p></div></div></div>
+<div id="sheet" aria-label="상세"><div class="sh"><button type="button" class="back" id="sheetBack" hidden>← Projects</button><div class="brand">Prologue<span class="amp">&amp;</span><span class="who" id="sheetTitle">Projects</span></div><button class="close" aria-label="닫기">×</button></div><div class="sb"><div class="sheet-note"><span class="amp">&amp;</span><b>Projects · Case Study</b><p>이 단일 파일 시안에는 상세 시트가 포함되어 있지 않습니다.<br>전체 시안: design/mockups/v5/index.html</p></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
@@ -1102,9 +1123,9 @@ window.V5 = (function () {
     document.getElementById('sheet-bd').addEventListener('click', () => V.closeSheet());
     document.addEventListener('keydown', e => { if (e.key === 'Escape') V.closeSheet(); });
   };
-  const sheetTitle = () => { const f = document.getElementById('sheet-frame'); let t = 'Projects'; try { const d = f.contentDocument; if (d && d.title) t = d.title.replace(/^Prologue\s*&\s*/, '').replace(/\s*[—-]\s*Prologue&.*$/, ''); } catch (e) {} document.getElementById('sheetTitle').textContent = t; };
+  const sheetTitle = () => { const f = document.getElementById('sheet-frame'); let t = 'Projects'; try { const d = f.contentDocument; if (d && d.title) t = d.title.replace(/^Prologue\s*&\s*/, '').replace(/\s*[—-]\s*Prologue&.*$/, ''); } catch (e) {} document.getElementById('sheetTitle').textContent = t; const isCase = /case\.html/.test(f.getAttribute('src') || '') || (() => { try { return /case\.html/.test(f.contentWindow.location.pathname); } catch (e) { return false; } })(); document.getElementById('sheetBack').hidden = !isCase; };
   V.openSheet = src => { const f = document.getElementById('sheet-frame'); if (f.getAttribute('src') !== src) { f.src = src; } document.getElementById('sheet').classList.add('on'); document.getElementById('sheet-bd').classList.add('on'); sheetTitle(); };
-  document.addEventListener('DOMContentLoaded', () => { const f = document.getElementById('sheet-frame'); if (f) f.addEventListener('load', sheetTitle); });
+  document.addEventListener('DOMContentLoaded', () => { const f = document.getElementById('sheet-frame'); if (f) f.addEventListener('load', sheetTitle); const b = document.getElementById('sheetBack'); if (b) b.addEventListener('click', () => { const w = f.contentWindow; try { if (w.history.length > 1) { w.history.back(); return; } } catch (e) {} f.src = '../v3/projects.html?embed=1&v=' + Date.now(); }); });
   V.closeSheet = () => { document.getElementById('sheet').classList.remove('on'); document.getElementById('sheet-bd').classList.remove('on'); };
 
   /* ---------- scrolling ---------- */

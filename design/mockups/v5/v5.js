@@ -62,9 +62,9 @@ window.V5 = (function () {
     document.getElementById('sheet-bd').addEventListener('click', () => V.closeSheet());
     document.addEventListener('keydown', e => { if (e.key === 'Escape') V.closeSheet(); });
   };
-  const sheetTitle = () => { const f = document.getElementById('sheet-frame'); let t = 'Projects'; try { const d = f.contentDocument; if (d && d.title) t = d.title.replace(/^Prologue\s*&\s*/, '').replace(/\s*[—-]\s*Prologue&.*$/, ''); } catch (e) {} document.getElementById('sheetTitle').textContent = t; };
+  const sheetTitle = () => { const f = document.getElementById('sheet-frame'); let t = 'Projects'; try { const d = f.contentDocument; if (d && d.title) t = d.title.replace(/^Prologue\s*&\s*/, '').replace(/\s*[—-]\s*Prologue&.*$/, ''); } catch (e) {} document.getElementById('sheetTitle').textContent = t; const isCase = /case\.html/.test(f.getAttribute('src') || '') || (() => { try { return /case\.html/.test(f.contentWindow.location.pathname); } catch (e) { return false; } })(); document.getElementById('sheetBack').hidden = !isCase; };
   V.openSheet = src => { const f = document.getElementById('sheet-frame'); if (f.getAttribute('src') !== src) { f.src = src; } document.getElementById('sheet').classList.add('on'); document.getElementById('sheet-bd').classList.add('on'); sheetTitle(); };
-  document.addEventListener('DOMContentLoaded', () => { const f = document.getElementById('sheet-frame'); if (f) f.addEventListener('load', sheetTitle); });
+  document.addEventListener('DOMContentLoaded', () => { const f = document.getElementById('sheet-frame'); if (f) f.addEventListener('load', sheetTitle); const b = document.getElementById('sheetBack'); if (b) b.addEventListener('click', () => { const w = f.contentWindow; try { if (w.history.length > 1) { w.history.back(); return; } } catch (e) {} f.src = '../v3/projects.html?embed=1&v=' + Date.now(); }); });
   V.closeSheet = () => { document.getElementById('sheet').classList.remove('on'); document.getElementById('sheet-bd').classList.remove('on'); };
 
   /* ---------- scrolling ---------- */
