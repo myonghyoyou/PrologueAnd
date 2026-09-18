@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prologue& V6 경로 시안 — 세계 지도</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../mockups/v3/v3.css">
+<style>
+  body{background:#ececec;padding:32px 40px;line-height:1.5}
+  h1{font-size:22px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
+  .lead{color:var(--bone-700);margin:0 0 20px;max-width:64rem;font-size:14px}
+  .row{display:flex;gap:24px;align-items:flex-start}
+  .map{flex:none;background:var(--bone-100);border:1px solid #cfcfcf;position:relative}
+  .map svg{display:block}
+  .path{fill:none;stroke:var(--navy-800);stroke-width:2}
+  .knot{fill:none;stroke:var(--navy-400);stroke-width:1.5}
+  .pan{fill:var(--bone-0);stroke:var(--bone-300);stroke-width:1}
+  .pan.dark{fill:var(--navy-950);stroke:var(--navy-900)}
+  .dot{fill:var(--bone-50);stroke:var(--navy-800);stroke-width:2}
+  .vp{fill:none;stroke:#C0392B;stroke-width:1;stroke-dasharray:6 6;opacity:.45}
+  .lbl{font-family:var(--sans);font-size:22px;font-weight:600;fill:var(--bone-900)}
+  .lbl.w{fill:var(--bone-50)}
+  .num{font-family:var(--sans);font-size:16px;font-weight:500;fill:var(--navy-800)}
+  .amp{font-family:var(--serif);font-size:60px;fill:var(--navy-800)}
+  .side{flex:1;min-width:280px;font-size:13px}
+  .side h2{font-size:14px;font-weight:600;margin:0 0 8px}
+  table{border-collapse:collapse;width:100%;background:var(--bone-0);font-size:12px;margin-bottom:16px}
+  th,td{text-align:left;padding:5px 8px;border:1px solid var(--bone-200)}
+  th{background:var(--bone-100);font-weight:600}
+  .ok{color:var(--success);font-weight:600}.bad{color:var(--error);font-weight:600}
+  .note{font-size:12px;color:var(--bone-500)}
+</style>
+</head>
+<body>
+<h1>V6 경로 시안 — 세계 전체(2800×5100)를 한 화면에</h1>
+<p class="lead">회색 바탕이 세계, 굵은 남색 선이 경로(한 개의 path), 점이 장면. 흰 상자는 판(760×460)이 점의 바깥쪽에 붙는 자리. 빨간 점선은 그 점에 카메라가 섰을 때의 화면(1440×900)이다. 오른쪽 표는 docs/22 §10의 검증(다음 점 가시성·판 겹침·점 간 거리)을 실제 좌표로 계산한 결과.</p>
+<div class="row">
+  <div class="map" id="map"><svg id="svg"></svg></div>
+  <div class="side">
+    <h2>점(장면)</h2><table id="pts"><tr><th>#</th><th>장면</th><th>x, y</th><th>t (경로 길이)</th><th>이전 점과 거리</th><th>다음 점 가시</th></tr></table>
+    <h2>겹침 검사</h2><table id="ov"><tr><th>판</th><th>다른 판</th><th>선 관통</th></tr></table>
+    <p class="note">거리 목표 900~1400(무엇을 안 300~350). 가시 = 다음 점이 현재 화면의 1.2배 안. 선 관통 = 자기 점 앞뒤 220px을 뺀 경로 샘플이 판 상자 안에 들어오는 수.</p>
+  </div>
+</div>
+<script>
+  // ---------- world & points (docs/22 §3.3) ----------
+  const W = 2800, H = 5100, VW = 1440, VH = 900;
+  const scenes = [
+    { n: 'Prologue', x: 1500, y: 520, knot: true },
+    { n: '처음', x: 2200, y: 1100 },
+    { n: '&', x: 1300, y: 1600 },
+    { n: '끝까지', x: 2000, y: 2050 },
+    { n: '회사든, 개인이든', x: 1150, y: 2550 },
+    { n: '무엇을', x: 1700, y: 3000, group: [[1700, 3000], [1950, 3120], [2200, 3240]], panelAt: [1950, 2760] },
+    { n: 'Projects', x: 1300, y: 3750 },
+    { n: '문의', x: 2100, y: 4250, dark: true },
+    { n: '— & —', x: 1500, y: 4800, end: true }
+  ];
+  const knotBox = { x: 1150, y: 310, w: 700, h: 420 };
+  const knotEnd = [1780, 700];
+  const nodes = [knotEnd, [2200, 1100], [1300, 1600], [2000, 2050], [1150, 2550], [1700, 3000], [1950, 3120], [2200, 3240], [1300, 3750], [2100, 4250], [1500, 4800]];
+  // Catmull-Rom → cubic bezier (C1)
+  function crPath(p, k = 0.5) {
+    let d = `M${p[0][0]} ${p[0][1]}`;
+    for (let i = 0; i < p.length - 1; i++) {
+      const p0 = p[i - 1] || p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] || p[i + 1];
+      const c1 = [p1[0] + (p2[0] - p0[0]) * k / 3, p1[1] + (p2[1] - p0[1]) * k / 3];
+      const c2 = [p2[0] - (p3[0] - p1[0]) * k / 3, p2[1] - (p3[1] - p1[1]) * k / 3];
+      d += ` C ${c1[0].toFixed(1)} ${c1[1].toFixed(1)}, ${c2[0].toFixed(1)} ${c2[1].toFixed(1)}, ${p2[0]} ${p2[1]}`;
+    }
+    return d;
+  }
+  // tangle: scribble inside knotBox, starting outside top-left, ending at knotEnd (tangent → next)
+  const kb = knotBox, kx = (f) => kb.x + kb.w * f, ky = (f) => kb.y + kb.h * f;
+  const knot = `M${kx(-0.15)} ${ky(-0.1)} C ${kx(0.2)} ${ky(-0.05)}, ${kx(0.45)} ${ky(0.35)}, ${kx(0.7)} ${ky(0.15)} S ${kx(0.95)} ${ky(0.45)}, ${kx(0.6)} ${ky(0.6)} S ${kx(0.05)} ${ky(0.5)}, ${kx(0.3)} ${ky(0.25)} S ${kx(0.85)} ${ky(0.05)}, ${kx(0.8)} ${ky(0.5)} S ${kx(0.4)} ${ky(1.05)}, ${kx(0.15)} ${ky(0.75)} S ${kx(0.5)} ${ky(0.1)}, ${kx(0.55)} ${ky(0.45)} S ${kx(0.2)} ${ky(0.95)}, ${kx(0.7)} ${ky(0.85)} C ${kx(0.85)} ${ky(0.82)}, ${kx(0.86)} ${ky(0.9)}, ${knotEnd[0]} ${knotEnd[1]}`;
+  const d = crPath(nodes);
+
+  // ---------- render ----------
+  const scale = 0.2, svg = document.getElementById('svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('width', W * scale); svg.setAttribute('height', H * scale);
+  let out = `<path class="knot" d="${knot}"/><path class="path" id="main" d="${d}"/>`;
+  document.getElementById('map').style.width = (W * scale) + 'px';
+  svg.innerHTML = out;
+  const main = document.getElementById('main'), L = main.getTotalLength();
+  // sample table
+  const S = []; for (let t = 0; t <= L; t += 6) { const p = main.getPointAtLength(t); S.push([p.x, p.y, t]); }
+  const tOf = (x, y) => { let best = S[0], bd = 1e9; for (const s of S) { const dd = (s[0] - x) ** 2 + (s[1] - y) ** 2; if (dd < bd) { bd = dd; best = s; } } return best[2]; };
+  const tangentAt = t => { const a = main.getPointAtLength(Math.max(0, t - 8)), b = main.getPointAtLength(Math.min(L, t + 8)); const dx = b.x - a.x, dy = b.y - a.y, n = Math.hypot(dx, dy) || 1; return [dx / n, dy / n]; };
+  const turnAt = t => { const a = tangentAt(Math.max(0, t - 120)), b = tangentAt(Math.min(L, t + 120)); return a[0] * b[1] - a[1] * b[0]; }; // >0 = turning right(clockwise in screen coords)
+  const PW = 700, PH = 420, GAP = 56;
+  const panels = [];
+  scenes.forEach((s, i) => {
+    if (s.knot || s.end) return;
+    const t = tOf(s.x, s.y), tg = tangentAt(t), turn = turnAt(t);
+    // outer side = opposite of turn direction. normal candidates: left (-ty, tx) / right (ty, -tx)
+    let nx = -tg[1], ny = tg[0]; if (turn > 0) { nx = -nx; ny = -ny; } // if turning right(clockwise), outer = left side
+    const ext = Math.abs(nx) * (PW / 2) + Math.abs(ny) * (PH / 2);
+    let cx = s.x + nx * (GAP + ext), cy = s.y + ny * (GAP + ext);
+    if (s.panelAt) { cx = s.panelAt[0]; cy = s.panelAt[1]; }   // 점 여러 개인 장면은 판 자리를 직접 지정
+    panels.push({ i, s, x: cx - PW / 2, y: cy - PH / 2, w: PW, h: PH, t });
+  });
+  // draw viewports, panels, dots, labels
+  scenes.forEach((s, i) => { out += `<rect class="vp" x="${s.x - VW / 2}" y="${s.y - VH / 2}" width="${VW}" height="${VH}"/>`; });
+  panels.forEach(p => { out += `<rect class="pan${p.s.dark ? ' dark' : ''}" x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="4"/><text class="lbl${p.s.dark ? ' w' : ''}" x="${p.x + 40}" y="${p.y + 70}" style="font-size:44px">${p.s.n}</text>`; });
+  scenes.forEach((s, i) => { const pts = s.group || [[s.x, s.y]]; pts.forEach(([x, y]) => { out += `<circle class="dot" cx="${x}" cy="${y}" r="12"/>`; }); out += `<text class="num" x="${s.x + 22}" y="${s.y - 20}" style="font-size:28px">${i}</text>`; });
+  out += `<text class="lbl" x="${knotBox.x - 720}" y="${knotBox.y + 120}" style="font-size:64px">복잡한 업무를</text><text class="lbl" x="${knotBox.x - 720}" y="${knotBox.y + 200}" style="font-size:64px">단순한 제품으로</text><text class="lbl" x="${knotBox.x - 720}" y="${knotBox.y + 280}" style="font-size:64px">바꿉니다.</text>`;
+  const e = scenes[8]; out += `<text class="amp" x="${e.x - 18}" y="${e.y + 22}" style="font-size:72px">&amp;</text><text class="lbl" x="${e.x - 110}" y="${e.y - 70}" style="font-family:var(--serif);font-weight:400;font-size:64px">Prologue</text><text class="num" x="${e.x - 300}" y="${e.y + 90}" style="font-size:24px;fill:#66625A">and, 그리고 end. 처음과 끝을 함께합니다.</text>`;
+  svg.innerHTML = out;
+
+  // ---------- checks ----------
+  const tbl = document.getElementById('pts'); let prevT = null;
+  scenes.forEach((s, i) => {
+    const pts = s.group || [[s.x, s.y]];
+    pts.forEach(([x, y], k) => {
+      const t = s.knot ? 0 : tOf(x, y);
+      const nxt = (k < pts.length - 1) ? pts[k + 1] : (scenes[i + 1] ? [scenes[i + 1].x, scenes[i + 1].y] : null);
+      const vis = nxt ? (Math.abs(nxt[0] - x) <= VW * 1.2 / 2 + VW * 0.1 && Math.abs(nxt[1] - y) <= VH * 1.2 / 2 + VH * 0.1) : true;
+      const dist = prevT === null ? '—' : Math.round(t - prevT); prevT = t;
+      tbl.insertAdjacentHTML('beforeend', `<tr><td>${i}${pts.length > 1 ? '.' + (k + 1) : ''}</td><td>${s.n}</td><td>${x}, ${y}</td><td>${Math.round(t)}</td><td>${dist}</td><td class="${vis ? 'ok' : 'bad'}">${vis ? '보임' : '안 보임'}</td></tr>`);
+    });
+  });
+  const ov = document.getElementById('ov');
+  panels.forEach(p => {
+    const hitPan = panels.filter(q => q !== p && !(q.x > p.x + p.w || q.x + q.w < p.x || q.y > p.y + p.h || q.y + q.h < p.y)).map(q => q.s.n);
+    const hitLine = S.filter(s => Math.abs(s[2] - p.t) > 220 && s[0] >= p.x && s[0] <= p.x + p.w && s[1] >= p.y && s[1] <= p.y + p.h).length;
+    ov.insertAdjacentHTML('beforeend', `<tr><td>${p.s.n}</td><td class="${hitPan.length ? 'bad' : 'ok'}">${hitPan.length ? hitPan.join(', ') : '없음'}</td><td class="${hitLine ? 'bad' : 'ok'}">${hitLine ? hitLine + '점' : '없음'}</td></tr>`);
+  });
+  window.__report = { L: Math.round(L), rows: [...tbl.rows].slice(1).map(r => [...r.cells].map(c => c.textContent)), ov: [...ov.rows].slice(1).map(r => [...r.cells].map(c => c.textContent)) };
+</script>
+</body>
+</html>
