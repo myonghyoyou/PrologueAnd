@@ -608,13 +608,14 @@ body{overflow:hidden}
       <div class="shape-area"><div class="shape flag"><i></i></div></div>
       <span class="pcap">3 / 3 · 끝 — End</span>
       <div class="txt"><h2 class="hl hl2">출시가 끝이 아니라,<br>쓰이는 데까지.</h2><p class="sub1">Improve — 사용 후에 드러나는 문제를 반복해서 고칩니다. 그래서 Prologue&amp;은 Prologue End이기도 합니다.</p></div>
-      <div class="nodes"><span data-flag>끝</span></div>
+      <div class="nodes"><span>끝</span></div>
     </section>
     <!-- 04 누구를 위해 -->
     <section class="hp p04" id="p04">
       <div class="shape-area"><div class="shape squares"><i style="left:46%;top:4%;width:22%;height:30%"></i><i style="left:72%;top:14%;width:22%;height:30%"></i><i style="left:52%;top:42%;width:22%;height:30%"></i><i style="left:78%;top:50%;width:22%;height:30%"></i></div></div>
       <span class="pcap">누구를 위해</span>
       <div class="txt"><h2 class="hl hl2">회사든,<br>개인이든.</h2><p class="sub1">업무 시스템이 필요한 팀, 나만의 도구가 필요한 개인, 그리고 직접 만드는 서비스. 개발 지식이 없어도 됩니다.</p></div>
+      <div class="nodes"><span>누구나</span></div>
     </section>
     <!-- 05 무엇을 -->
     <section class="hp p05" id="p05">
@@ -1100,7 +1101,7 @@ window.V5 = (function () {
       if (!['ArrowRight', 'ArrowLeft', 'Home', 'End', 'PageDown', 'PageUp', ' '].includes(e.key)) return;
       e.preventDefault();                                             // 네이티브 가로 스크롤 + 우리 이동이 겹치지 않게
       const at = lenis ? lenis.targetScroll : sl();                    // 애니메이션 중이면 목표 위치 기준 → 한 번에 한 점
-      const go = t => { snapping = true; moving = false; gestureFrom = null; lenis ? lenis.scrollTo(t, { duration: 0.9, onComplete: () => { snapping = false; } }) : V.goTo(t); };
+      const go = t => { snapping = true; moving = false; gestureFrom = null; lenis ? lenis.scrollTo(t, { duration: 1.5, onComplete: () => { snapping = false; } }) : V.goTo(t); };
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { const t = snaps.find(v => v > at + 2); if (t !== undefined) go(t); }
       else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { const t = [...snaps].reverse().find(v => v < at - 2); if (t !== undefined) go(t); }
       else if (e.key === 'Home') go(0);
@@ -1137,7 +1138,7 @@ window.V5 = (function () {
     const k = nodeL / 100; // knot spans x 0 → nodeL
     const txtB = p00.querySelector('.txt').getBoundingClientRect().bottom - p00.getBoundingClientRect().top;   // headline block bottom (panel-local)
     const up = Math.max(14, Math.min(52, yl - txtB - 12)), dn = Math.min(84, ph - yl - 44);                      // knot amplitude: never into the text, never out of the panel
-    const knot = `M0 ${yl - up * 0.4} C ${16 * k} ${yl - up}, ${44 * k} ${yl + dn * 0.9}, ${28 * k} ${yl - up * 0.2} S ${8 * k} ${yl + dn}, ${40 * k} ${yl + dn * 0.5} S ${66 * k} ${yl - up}, ${50 * k} ${yl - up * 0.5} S ${30 * k} ${yl + dn * 0.8}, ${64 * k} ${yl + dn * 0.4} S ${86 * k} ${yl - up * 0.9}, ${78 * k} ${yl - up * 0.15} S ${70 * k} ${yl + dn * 0.35}, ${100 * k} ${yl}`;
+    const knot = `M0 ${yl - up * 0.4} C ${16 * k} ${yl - up}, ${44 * k} ${yl + dn * 0.9}, ${28 * k} ${yl - up * 0.2} S ${8 * k} ${yl + dn}, ${40 * k} ${yl + dn * 0.5} S ${66 * k} ${yl - up}, ${50 * k} ${yl - up * 0.5} S ${30 * k} ${yl + dn * 0.8}, ${64 * k} ${yl + dn * 0.4} S ${86 * k} ${yl - up * 0.9}, ${78 * k} ${yl - up * 0.15} C ${84 * k} ${yl + dn * 0.25}, ${90 * k} ${yl}, ${100 * k} ${yl}`;
     heroDia.innerHTML = `<path class="knot" d="${knot}"/>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX;
@@ -1145,7 +1146,7 @@ window.V5 = (function () {
     hline.setAttribute('width', W); hline.setAttribute('height', H); hline.setAttribute('viewBox', `0 0 ${W} ${H}`);
     // shared diagrams on project panels + five nodes in 06
     const dia = panels.filter(p => p.dataset.slug).map(p => `<g class="pd" data-x0="${Math.round(p._x + p._w * 0.40)}" data-x1="${Math.round(p._x + p._w * 0.9)}">${PANELS.diagramSVG(p.dataset.slug, { shared: true, y, x0: Math.round(p._x + p._w * 0.40), node: Math.round(p._x + p._w * 0.56), x1: Math.round(p._x + p._w - 56) })}</g>`).join('');
-    const nodes = panels.flatMap(p => [...p.querySelectorAll('.nodes span')].map(s => { const r = s.getBoundingClientRect(), x = Math.round(p._x + (r.left + r.width / 2 - p.getBoundingClientRect().left)); s.dataset.x = x; return (s.hasAttribute('data-flag') ? `<polygon class="d-flag n6f" data-x="${x}" points="${x - 8},${y - 9} ${x + 10},${y} ${x - 8},${y + 9}"/>` : `<circle class="d-node n6" data-x="${x}" cx="${x}" cy="${y}" r="5"/>`); })).join('');
+    const nodes = panels.flatMap(p => [...p.querySelectorAll('.nodes span')].map(s => { const r = s.getBoundingClientRect(), x = Math.round(p._x + (r.left + r.width / 2 - p.getBoundingClientRect().left)); s.dataset.x = x; return `<circle class="d-node n6" data-x="${x}" cx="${x}" cy="${y}" r="5"/>`; })).join('');
     hline.innerHTML = `<path class="guide" d="${d}"/><path class="ink" d="${d}"/>${dia}${nodes}`;
     ink = hline.querySelector('.ink'); lineLen = ink.getTotalLength(); ink.style.strokeDasharray = lineLen; ink.style.strokeDashoffset = lineLen;
     hline.querySelectorAll('.pd').forEach(g => PANELS.prep(g));
@@ -1165,7 +1166,7 @@ window.V5 = (function () {
       else snaps.push(i === 0 ? 0 : p._x - 12);
     });
     snaps = [...new Set(snaps.map(v => Math.max(0, Math.min(limit, Math.round(v)))))].sort((a, b) => a - b);
-    tipMin = 40;
+    tipMin = 0;
   }
   const current = () => { const c = sl() + innerWidth * 0.5; let i = 0; panels.forEach((p, k) => { if (p._x <= c) i = k; }); return i; };
 
@@ -1173,12 +1174,17 @@ window.V5 = (function () {
     const s = sl(), vw = innerWidth, maxS = geo.W - vw;
     let tipX;
     if (!launched) tipX = geo.nodeX + animTip;
-    else { const k = Math.max(0, Math.min(1, (s - (maxS - vw)) / vw)); tipX = s + vw * 0.5 + k * (geo.endX - (maxS + vw * 0.5)); tipX = Math.max(geo.nodeX + tipMin, Math.min(geo.endX, tipX)); }
+    else {
+      const k = Math.max(0, Math.min(1, (s - (maxS - vw)) / vw));                       // 끝: 마지막 화면에서 & 자리까지 달려감
+      const lead = (vw * 0.5 - geo.nodeX) * Math.max(0, 1 - s / 600);                   // 시작: 첫 600px 동안 선의 시작점에서 화면 중앙으로 옮겨감
+      tipX = s + vw * 0.5 - lead + k * (geo.endX - (maxS + vw * 0.5));
+      tipX = Math.max(geo.nodeX + tipMin, Math.min(geo.endX, tipX));
+    }
     const len = tipX - geo.nodeX;
     ink.style.strokeDashoffset = lineLen - len; const dkInk = document.querySelector('#hline-dark .ink'); if (dkInk) dkInk.style.strokeDashoffset = lineLen - len;
     hline.querySelectorAll('.pd').forEach(g => PANELS.progress(g, Math.min(1, Math.max(0, (tipX - +g.dataset.x0) / (+g.dataset.x1 - +g.dataset.x0)))));
     hline.querySelectorAll('.n6').forEach(n => n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6');
-    document.querySelectorAll('.nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x)); hline.querySelectorAll('.n6f').forEach(f => f.style.opacity = tipX >= +f.dataset.x ? 1 : 0.25);
+    document.querySelectorAll('.nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x));
     const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched || !lenis) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);
@@ -1197,7 +1203,7 @@ window.V5 = (function () {
     gsap.timeline({ delay: 0.2 })
       .to(srcs, { strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut' })
       .to(texts, { opacity: 1, duration: 0.3 }, '-=0.3')
-      .to({ v: 0 }, { v: tipMin, duration: 1.0, ease: 'power2.inOut', onUpdate() { animTip = this.targets()[0].v; render(); } }, '-=0.2')
+      .call(() => { animTip = 0; render(); })
       .call(() => {
         const from = bamp.getBoundingClientRect(), ghost = marker.cloneNode(true); ghost.id = 'marker-ghost'; ghost.style.opacity = 1; document.body.appendChild(ghost); brand.classList.add('amp-gone');
         gsap.fromTo(ghost, { x: from.left + from.width / 2, y: from.top + from.height / 2, scale: 0.75 }, { x: geo.nodeX + tipMin - sl(), y: geo.y, scale: 1, duration: 0.9, ease: 'power3.inOut', onComplete() { ghost.remove(); marker.style.opacity = 1; launched = true; render(); } });
