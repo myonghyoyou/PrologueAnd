@@ -1069,7 +1069,17 @@ window.V5 = (function () {
     const marker = document.getElementById('marker');
     document.getElementById('pmap').addEventListener('click', e => { const i = e.target.closest('i'); if (i) V.goTo(panels[+i.dataset.i].offsetLeft - (panels[+i.dataset.i].classList.contains('page') ? 12 : 0)); });
     document.querySelectorAll('[data-go]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); V.goTo(document.getElementById(a.dataset.go).offsetLeft - 12); }));
-    addEventListener('keydown', e => { if (document.getElementById('sheet').classList.contains('on')) return; const cur = current(); if (e.key === 'ArrowRight' && cur < panels.length - 1) V.goTo(panels[cur + 1].offsetLeft - 12); if (e.key === 'ArrowLeft' && cur > 0) V.goTo(panels[cur - 1].offsetLeft - 12); if (e.key === 'Home') V.goTo(0); if (e.key === 'End') V.goTo(track.scrollWidth); });
+    const idxAt = x => { const c = x + innerWidth * 0.5; let i = 0; panels.forEach((p, k) => { if (p._x <= c) i = k; }); return i; };
+    addEventListener('keydown', e => {
+      if (document.getElementById('sheet').classList.contains('on')) return;
+      if (!['ArrowRight', 'ArrowLeft', 'Home', 'End', 'PageDown', 'PageUp', ' '].includes(e.key)) return;
+      e.preventDefault();                                             // 네이티브 가로 스크롤 + 우리 이동이 겹치지 않게
+      const cur = idxAt(lenis ? lenis.targetScroll : sl());           // 애니메이션 중이면 목표 위치 기준 → 한 번에 한 장
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { if (cur < panels.length - 1) V.goTo(panels[cur + 1]._x - 12); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { if (cur > 0) V.goTo(panels[cur - 1]._x - 12); }
+      else if (e.key === 'Home') V.goTo(0);
+      else if (e.key === 'End') V.goTo(track.scrollWidth);
+    });
     // hash → start position (skip intro)
     const hash = location.hash.replace('#', ''); const target = hash && document.getElementById(hash);
     if (target) { wrap.scrollLeft = target.offsetLeft - 12; }
@@ -1098,9 +1108,11 @@ window.V5 = (function () {
     // S1: 엉킨 선 뭉치(복잡한 업무)에서 한 가닥이 풀려 나와 바닥선(단순한 제품)이 된다 — docs/19 §3
     const heroDia = document.getElementById('hero-dia');
     const ph = p00.offsetHeight; heroDia.setAttribute('viewBox', `0 0 ${p00._w} ${ph}`); heroDia.setAttribute('width', p00._w); heroDia.setAttribute('height', ph);
-    const k = nodeL / 100; // knot spans x 0 → nodeL, wobbling around the line
-    const knot = `M0 ${yl - 26} C ${16 * k} ${yl - 120}, ${44 * k} ${yl + 70}, ${28 * k} ${yl - 6} S ${8 * k} ${yl + 80}, ${40 * k} ${yl + 40} S ${66 * k} ${yl - 110}, ${50 * k} ${yl - 30} S ${30 * k} ${yl + 60}, ${64 * k} ${yl + 34} S ${86 * k} ${yl - 60}, ${78 * k} ${yl - 8} S ${70 * k} ${yl + 30}, ${100 * k} ${yl}`;
-    heroDia.innerHTML = `<path class="knot" d="${knot}"/><text x="${Math.round(10 * k)}" y="${yl - 128}">복잡한 업무</text><text x="${nodeL + 12}" y="${yl - 12}">단순한 제품</text>`;
+    const k = nodeL / 100; // knot spans x 0 → nodeL
+    const txtB = p00.querySelector('.txt').getBoundingClientRect().bottom - p00.getBoundingClientRect().top;   // headline block bottom (panel-local)
+    const up = Math.max(14, Math.min(52, yl - txtB - 12)), dn = Math.min(84, ph - yl - 44);                      // knot amplitude: never into the text, never out of the panel
+    const knot = `M0 ${yl - up * 0.4} C ${16 * k} ${yl - up}, ${44 * k} ${yl + dn * 0.9}, ${28 * k} ${yl - up * 0.2} S ${8 * k} ${yl + dn}, ${40 * k} ${yl + dn * 0.5} S ${66 * k} ${yl - up}, ${50 * k} ${yl - up * 0.5} S ${30 * k} ${yl + dn * 0.8}, ${64 * k} ${yl + dn * 0.4} S ${86 * k} ${yl - up * 0.9}, ${78 * k} ${yl - up * 0.15} S ${70 * k} ${yl + dn * 0.35}, ${100 * k} ${yl}`;
+    heroDia.innerHTML = `<path class="knot" d="${knot}"/><text x="${Math.round(6 * k)}" y="${yl + dn + 16}">복잡한 업무</text><text x="${nodeL + 12}" y="${yl - 10}">단순한 제품</text>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX - 14;
     const d = `M${nodeX} ${y} H${endX}`;
