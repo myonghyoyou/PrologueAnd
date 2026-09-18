@@ -454,10 +454,10 @@ body{overflow:hidden}
 .hp .pcap{position:absolute;left:40px;top:16px;font-size:12px;font-weight:500;color:var(--bone-500)}
 /* 00 Prologue */
 .p00{padding:40px}
-.p00 .inner{position:absolute;left:40px;top:48px;max-width:calc(100% - 200px);z-index:2}
+.p00 .inner{position:absolute;left:40px;top:40px;max-width:calc(100% - 120px);z-index:2}
 .p00 .display,.p08 .display{font-size:56px}
 .p00 .lead{margin-top:28px}
-.p00 .cta{display:flex;gap:12px;margin-top:36px}
+.p00 .cta{position:absolute;left:40px;bottom:40px;display:flex;gap:12px;margin:0;z-index:2}
 .p00 .hint{position:absolute;right:40px;bottom:40px;font-size:13px;color:var(--bone-500)}
 #hero-dia{position:absolute;inset:0;pointer-events:none;overflow:visible}
 #hero-dia text{font-family:var(--sans);font-size:12px;font-weight:500;fill:var(--bone-500)}
@@ -468,8 +468,8 @@ body{overflow:hidden}
 .p01 .num{display:block;color:var(--navy-800);margin-bottom:12px}
 .p01 .h1{max-width:9em}
 .p01 .cap.b{position:absolute;left:40px;bottom:40px}
-.p01 .probs{list-style:none;margin:0;padding:0;position:absolute;left:40px;right:40px;top:calc(var(--ly) + 28px);display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
-.p01 .probs li{border-top:1px solid var(--navy-800);padding-top:12px;background:var(--bone-0);position:relative;z-index:2}
+.p01 .probs{list-style:none;margin:0;padding:0;position:absolute;left:40px;right:40px;top:calc(var(--ly) + 1px);display:grid;grid-template-columns:repeat(4,1fr);gap:24px}   /* 선이 항목의 윗줄 역할 */
+.p01 .probs li{padding-top:26px;position:relative;z-index:1}
 .p01 .probs b{display:block;font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--navy-800);margin-bottom:6px}
 .p01 .probs span{display:block;font-size:19px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
 .p01 .probs small{display:block;font-size:13px;color:var(--bone-700);line-height:1.5}
@@ -576,7 +576,8 @@ body{overflow:hidden}
   .p00{min-height:auto;padding:24px}
   .p00 .inner{position:static;max-width:none}
   .p00 .hint,#hero-dia{display:none}
-  .p00 .cta{flex-direction:column}
+  .p00 .cta{position:static;flex-direction:column;margin-top:24px}
+  .p01 .probs li{border-top:1px solid var(--navy-800);padding-top:12px}
   .p01 .cap.b,.p07 .btn{position:static;display:inline-block;margin-top:16px}
   .p01 .probs{position:static;grid-template-columns:1fr;gap:12px;margin-top:16px}
   .p06 .sec-head,.p06 .steps,.p06 .about{position:static}
@@ -622,8 +623,8 @@ body{overflow:hidden}
       <div class="inner">
         <h1 class="display">복잡한 업무를<br><em>단순한 제품</em>으로 바꿉니다.</h1>
         <p class="lead">만들기 전에, 무엇이 불편한지부터 정리합니다. 그리고 실제로 쓰이는 끝까지 함께합니다.</p>
-        <div class="cta"><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a><a class="btn o" href="#p07" data-go="p07">작업 보기 →</a></div>
       </div>
+      <div class="cta"><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a><a class="btn o" href="#p07" data-go="p07">작업 보기 →</a></div>
       <div class="hint">→ 넘기세요 (휠 · 트랙패드 · 방향키)</div>
     </section>
     <!-- 01 표제 -->
@@ -1140,10 +1141,11 @@ window.V5 = (function () {
     const p00 = panels[0], p08 = panels.find(p => p.classList.contains('p08')), p09 = panels[panels.length - 1];
     const pt = p00.offsetTop, nodeL = Math.round(p00._w * 0.56), nodeX = p00._x + nodeL, yl = y - pt;   // panel-local coords for the hero svg
     // hero sources (in the track svg, panel 00 coordinates == track coordinates)
-    const srcX = Math.round(p00._w - 100), ys = [-96, -32, 32, 96].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
+    // 4 sources start at the panel's LEFT edge, fan in to the node, then the one line runs right
+    const ys = [-60, -20, 20, 60].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
     const heroDia = document.getElementById('hero-dia');
     const ph = p00.offsetHeight; heroDia.setAttribute('viewBox', `0 0 ${p00._w} ${ph}`); heroDia.setAttribute('width', p00._w); heroDia.setAttribute('height', ph);
-    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M${srcX} ${yy - pt} C ${srcX - 140} ${yy - pt}, ${nodeL + 120} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="${srcX + 10}" y="${yy - pt + 4}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
+    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M0 ${yy - pt} C ${Math.round(nodeL * 0.45)} ${yy - pt}, ${Math.round(nodeL * 0.7)} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="44" y="${yy - pt - 6}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX - 14;
     const d = `M${nodeX} ${y} H${endX}`;

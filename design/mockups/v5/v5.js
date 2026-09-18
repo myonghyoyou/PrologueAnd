@@ -99,10 +99,11 @@ window.V5 = (function () {
     const p00 = panels[0], p08 = panels.find(p => p.classList.contains('p08')), p09 = panels[panels.length - 1];
     const pt = p00.offsetTop, nodeL = Math.round(p00._w * 0.56), nodeX = p00._x + nodeL, yl = y - pt;   // panel-local coords for the hero svg
     // hero sources (in the track svg, panel 00 coordinates == track coordinates)
-    const srcX = Math.round(p00._w - 100), ys = [-96, -32, 32, 96].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
+    // 4 sources start at the panel's LEFT edge, fan in to the node, then the one line runs right
+    const ys = [-60, -20, 20, 60].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
     const heroDia = document.getElementById('hero-dia');
     const ph = p00.offsetHeight; heroDia.setAttribute('viewBox', `0 0 ${p00._w} ${ph}`); heroDia.setAttribute('width', p00._w); heroDia.setAttribute('height', ph);
-    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M${srcX} ${yy - pt} C ${srcX - 140} ${yy - pt}, ${nodeL + 120} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="${srcX + 10}" y="${yy - pt + 4}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
+    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M0 ${yy - pt} C ${Math.round(nodeL * 0.45)} ${yy - pt}, ${Math.round(nodeL * 0.7)} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="44" y="${yy - pt - 6}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX - 14;
     const d = `M${nodeX} ${y} H${endX}`;

@@ -10,10 +10,10 @@ body{overflow:hidden}
 .hp .pcap{position:absolute;left:40px;top:16px;font-size:12px;font-weight:500;color:var(--bone-500)}
 /* 00 Prologue */
 .p00{padding:40px}
-.p00 .inner{position:absolute;left:40px;top:48px;max-width:calc(100% - 200px);z-index:2}
+.p00 .inner{position:absolute;left:40px;top:40px;max-width:calc(100% - 120px);z-index:2}
 .p00 .display,.p08 .display{font-size:56px}
 .p00 .lead{margin-top:28px}
-.p00 .cta{display:flex;gap:12px;margin-top:36px}
+.p00 .cta{position:absolute;left:40px;bottom:40px;display:flex;gap:12px;margin:0;z-index:2}
 .p00 .hint{position:absolute;right:40px;bottom:40px;font-size:13px;color:var(--bone-500)}
 #hero-dia{position:absolute;inset:0;pointer-events:none;overflow:visible}
 #hero-dia text{font-family:var(--sans);font-size:12px;font-weight:500;fill:var(--bone-500)}
@@ -24,8 +24,8 @@ body{overflow:hidden}
 .p01 .num{display:block;color:var(--navy-800);margin-bottom:12px}
 .p01 .h1{max-width:9em}
 .p01 .cap.b{position:absolute;left:40px;bottom:40px}
-.p01 .probs{list-style:none;margin:0;padding:0;position:absolute;left:40px;right:40px;top:calc(var(--ly) + 28px);display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
-.p01 .probs li{border-top:1px solid var(--navy-800);padding-top:12px;background:var(--bone-0);position:relative;z-index:2}
+.p01 .probs{list-style:none;margin:0;padding:0;position:absolute;left:40px;right:40px;top:calc(var(--ly) + 1px);display:grid;grid-template-columns:repeat(4,1fr);gap:24px}   /* 선이 항목의 윗줄 역할 */
+.p01 .probs li{padding-top:26px;position:relative;z-index:1}
 .p01 .probs b{display:block;font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--navy-800);margin-bottom:6px}
 .p01 .probs span{display:block;font-size:19px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
 .p01 .probs small{display:block;font-size:13px;color:var(--bone-700);line-height:1.5}
@@ -132,7 +132,8 @@ body{overflow:hidden}
   .p00{min-height:auto;padding:24px}
   .p00 .inner{position:static;max-width:none}
   .p00 .hint,#hero-dia{display:none}
-  .p00 .cta{flex-direction:column}
+  .p00 .cta{position:static;flex-direction:column;margin-top:24px}
+  .p01 .probs li{border-top:1px solid var(--navy-800);padding-top:12px}
   .p01 .cap.b,.p07 .btn{position:static;display:inline-block;margin-top:16px}
   .p01 .probs{position:static;grid-template-columns:1fr;gap:12px;margin-top:16px}
   .p06 .sec-head,.p06 .steps,.p06 .about{position:static}
