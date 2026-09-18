@@ -384,3 +384,21 @@ html.embed .hdr,html.embed .topbar,html.embed footer{display:none}
 html.embed .page-head{padding-top:32px}
 html.embed .case-head{padding-top:32px}
 html.embed .nrail{top:24px}
+
+/* embed: 스크롤바 (13 토큰) */
+html.embed{scrollbar-width:thin;scrollbar-color:var(--bone-300) var(--bone-50)}
+html.embed::-webkit-scrollbar{width:8px;height:8px}
+html.embed::-webkit-scrollbar-track{background:var(--bone-50)}
+html.embed::-webkit-scrollbar-thumb{background:var(--bone-300);border-radius:2px;border:2px solid var(--bone-50)}
+html.embed::-webkit-scrollbar-thumb:hover{background:var(--bone-400)}
+/* embed: Projects 목록 — 행 상하 패딩 축소, 좌우 확대 */
+html.embed .wrap{padding:0 36px}
+html.embed .page-head{padding:28px 0 12px}
+html.embed .page-head .lead{margin-top:10px}
+html.embed .page-head .cnt{margin-top:12px}
+html.embed .prow{grid-template-columns:40px 1fr;gap:16px;padding:16px 28px;margin:0 -28px;border-bottom:1px solid var(--bone-200)}
+html.embed .prow:hover{background:var(--bone-100)}
+html.embed .prow .num{display:block;padding-top:4px}
+html.embed .prow .h2{font-size:20px}
+html.embed .prow .meta{margin:6px 0 8px}
+html.embed .prow .res{font-size:14px}
