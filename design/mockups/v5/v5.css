@@ -41,7 +41,8 @@ body{overflow:hidden}
 .hp.pan.pj{width:var(--pw)}
 /* 06 five steps on the line */
 .p06{padding:40px}
-.p06 .sec-head{position:absolute;left:40px;right:40px;top:40px;margin:0}
+.p06 .sec-head{position:absolute;left:40px;right:40px;top:40px;margin:0;border:0;padding:0}
+.p06 .intro{position:absolute;left:40px;top:104px;max-width:36rem;margin:0;font-size:15px;line-height:1.6;color:var(--bone-700)}
 .p06 .steps{position:absolute;left:40px;right:40px;top:calc(var(--ly) - 84px);display:grid;grid-template-columns:repeat(5,1fr);gap:24px;border:0}
 .p06 .step{padding-top:0;text-align:center;display:grid;grid-template-rows:60px 48px auto;align-content:start}   /* 가운데 48px = 선이 지나는 레인, 글자 없음 */
 .p06 .step .top{display:flex;flex-direction:column;justify-content:flex-end;gap:6px}
@@ -50,10 +51,6 @@ body{overflow:hidden}
 .p06 .step .num:after{display:none}
 .p06 .step .bot{padding-top:6px}
 .p06 .step p{margin:0 0 8px;font-size:13px;color:var(--bone-700);min-height:60px}
-.p06 .about{position:absolute;left:40px;right:40px;bottom:40px;margin:0;padding-top:20px;grid-template-columns:7fr 5fr}
-.p06 .about .lead{font-size:16px}
-.p06 .about .body{font-size:14px}
-.p06 .about li{padding:6px 0;font-size:13px}
 /* 08 contact (dark) */
 .p08{background:var(--navy-950);border-color:var(--navy-900);color:var(--bone-50)}
 .p08 .inner{position:absolute;left:40px;top:40px;max-width:calc(100% - 200px)}
@@ -84,7 +81,7 @@ body{overflow:hidden}
   .p00 .display,.p08 .display{font-size:46px}.p00 .lead,.p08 .lead{margin-top:18px;font-size:17px}.p00 .cta,.p08 .cta{margin-top:24px}
   .hp.pan.pj h2{font-size:5.6rem!important}.hp.pan.pj .nums b{font-size:32px}
   .p06 .step p{min-height:0;font-size:12px}.p06 .step h3{font-size:16px}
-  .p06 .about{grid-template-columns:1fr}.p06 .about .body,.p06 .about>div:last-child{display:none}.p06 .about .lead{font-size:14px;max-width:40rem}
+  .p06 .intro{font-size:13px;top:96px}
 }
 /* tune (mockup only) */
 #tune{position:fixed;right:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bone-0);border:1px solid var(--bone-300);border-radius:2px;font-size:12px}
@@ -136,14 +133,14 @@ body{overflow:hidden}
   .p01 .probs li{border-top:1px solid var(--navy-800);padding-top:12px}
   .p01 .cap.b,.p07 .btn{position:static;display:inline-block;margin-top:16px}
   .p01 .probs{position:static;grid-template-columns:1fr;gap:12px;margin-top:16px}
-  .p06 .sec-head,.p06 .steps,.p06 .about{position:static}
+  .p06 .sec-head,.p06 .steps,.p06 .intro{position:static}
+  .p06 .intro{margin:12px 0 0;max-width:none}
   .p06 .steps{grid-template-columns:1fr;gap:0;margin-top:16px}
   .p06 .step{text-align:left;padding:16px 0;border-bottom:1px solid var(--bone-200);display:block}
   .p06 .step .lane{display:none}
   .p06 .step .top{flex-direction:row;align-items:baseline;gap:10px}
   .p06 .step .bot{padding-top:6px}
   .p06 .step p{height:auto}
-  .p06 .about{margin-top:40px;grid-template-columns:1fr}
   .p08{padding:32px 24px}
   .p08 .inner{position:static;max-width:none}
   .p08 .cta{flex-direction:column;align-items:flex-start}
