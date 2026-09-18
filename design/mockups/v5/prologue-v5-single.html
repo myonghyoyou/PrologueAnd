@@ -576,8 +576,6 @@ body{overflow:hidden}
 .nodes span.on{color:var(--bone-900)}
 /* 08 — & — */
 .p08 .seat{position:absolute;left:50%;top:var(--ly);width:44px;height:44px;margin:-22px 0 0 -22px}
-.p08 .rule{position:absolute;top:var(--ly);height:1px;background:var(--bone-300);transition:background .4s}
-.p08.done .rule{background:var(--navy-800)}
 .p08 .foot-top{position:absolute;left:0;right:0;top:calc(var(--ly) - 92px);text-align:center;margin:0;font-family:var(--serif);font-size:44px;line-height:1;letter-spacing:.005em;color:var(--bone-900);font-optical-sizing:none;font-variation-settings:"opsz" 24}
 .p08 .foot-cap{position:absolute;left:0;right:0;top:calc(var(--ly) + 36px);text-align:center;font-size:14px;color:var(--bone-600);margin:0}
 .p08 .foot-cap{top:calc(var(--ly) + 28px)}
@@ -619,8 +617,6 @@ body{overflow:hidden}
 .hdr .pmap i.done{background:var(--navy-400)}
 .hdr .pmap i.on{background:var(--navy-800)}
 .hdr .pmap i:hover:after{content:attr(data-l);position:absolute;left:0;top:8px;font-size:11px;font-weight:500;color:var(--bone-700);white-space:nowrap}
-.hdr.on-dark{background:linear-gradient(var(--navy-950) 70%,rgba(21,26,51,0))}
-.hdr.on-dark .pmap i{background:var(--navy-700)}.hdr.on-dark .pmap i.done{background:var(--navy-400)}.hdr.on-dark .pmap i.on{background:var(--bone-50)}
 /* ---- sheet (Projects · Case Study) ---- */
 #sheet-bd{position:fixed;inset:0;background:rgba(28,27,24,.45);opacity:0;pointer-events:none;transition:opacity .35s;z-index:45}
 #sheet-bd.on{opacity:1;pointer-events:auto}
@@ -675,7 +671,7 @@ body{overflow:hidden}
   <a class="brand" href="#p00" aria-label="Prologue&">Prologue<span class="bamp">&amp;</span></a>
   <div class="pmap" id="pmap"></div>
   <nav>
-    <a href="#" data-sheet="../v3/projects.html?v=202609181701&embed=1">Projects</a>
+    <a href="#" data-sheet="../v3/projects.html?v=202609181704&embed=1">Projects</a>
     <button type="button" data-open-drawer>문의</button>
   </nav>
   <span class="mob-pos">01 / 09</span>
@@ -724,7 +720,7 @@ body{overflow:hidden}
     <section class="hp p06" id="p06">
       <div class="shape-area"><div class="shape squares"><i style="left:44%;top:6%;width:16%;height:22%"></i><i style="left:66%;top:16%;width:16%;height:22%"></i><i style="left:52%;top:44%;width:16%;height:22%"></i><i style="left:78%;top:50%;width:16%;height:22%"></i><i style="left:36%;top:60%;width:12%;height:16%"></i><i style="left:88%;top:2%;width:10%;height:14%"></i></div></div>
       <div class="txt"><h2 class="hl hl2">작업<br><span id="restN">6</span>건.</h2><p class="sub1">문제 유형별로 정리한 Case Study — 무엇이 불편했고 어떻게 바꿨는지.</p></div>
-      <div class="below"><a class="btn" href="#" data-sheet="../v3/projects.html?v=202609181701&embed=1">Projects 열기 <i class="tri"></i></a></div>
+      <div class="below"><a class="btn" href="#" data-sheet="../v3/projects.html?v=202609181704&embed=1">Projects 열기 <i class="tri"></i></a></div>
     </section>
     <!-- 07 문의 · 끝 -->
     <section class="hp p07 dark" id="p07">
@@ -733,10 +729,10 @@ body{overflow:hidden}
     </section>
     <!-- 08 — & — -->
     <section class="hp p08" id="p08">
-      <span class="rule r"></span><span class="seat"></span>
+      <span class="seat"></span>
       <p class="foot-top">Prologue</p>
       <p class="foot-cap">and, 그리고 end. 처음과 끝을 함께합니다.</p>
-      <div class="foot-row"><nav><a href="#" data-sheet="../v3/projects.html?v=202609181701&embed=1">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></div>
+      <div class="foot-row"><nav><a href="#" data-sheet="../v3/projects.html?v=202609181704&embed=1">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></div>
     </section>
     <svg id="hline" aria-hidden="true"></svg>
     <div id="hline-dark" aria-hidden="true"></div>
@@ -1254,7 +1250,7 @@ window.V5 = (function () {
     heroDia.innerHTML = `<path class="knot" d="${knot}"/>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX;
-    const d = `M${nodeX} ${y} H${endX}`;
+    const d = `M${nodeX} ${y} H${ampX - 34}`;   // 선은 & 자리 34px 앞에서 끝남 (붙어 보이지 않게)
     hline.setAttribute('width', W); hline.setAttribute('height', H); hline.setAttribute('viewBox', `0 0 ${W} ${H}`);
     // shared diagrams on project panels + five nodes in 06
     const dia = panels.filter(p => p.dataset.slug).map(p => `<g class="pd" data-x0="${Math.round(p._x + p._w * 0.40)}" data-x1="${Math.round(p._x + p._w * 0.9)}">${PANELS.diagramSVG(p.dataset.slug, { shared: true, y, x0: Math.round(p._x + p._w * 0.40), node: Math.round(p._x + p._w * 0.56), x1: Math.round(p._x + p._w - 56) })}</g>`).join('');
@@ -1266,7 +1262,6 @@ window.V5 = (function () {
     const dk = document.getElementById('hline-dark'); dk.style.left = p08._x + 'px'; dk.style.width = p08._w + 'px';
     dk.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="left:${-p08._x}px"><path class="guide" d="${d}"/><path class="ink" d="${d}" style="stroke-dasharray:${lineLen};stroke-dashoffset:${lineLen}"/></svg>`;
     // 09 rules
-    const ruleLen = Math.min(260, p09._w / 2 - 60), rr = p09.querySelector('.rule.r'); rr.style.left = (p09._w / 2 + 14) + 'px'; rr.style.width = ruleLen + 'px';
     geo = { W, H, y, nodeX, endX, ampX, darkL: p08._x, darkR: p08._x + p08._w };
     // snap targets (scrollLeft values): panels with nodes → each node under the marker (50vw); others → panel start; last → end
     const vw = innerWidth, limit = W - vw;
@@ -1296,12 +1291,11 @@ window.V5 = (function () {
     const len = tipX - geo.nodeX;
     ink.style.strokeDashoffset = lineLen - len; const dkInk = document.querySelector('#hline-dark .ink'); if (dkInk) dkInk.style.strokeDashoffset = lineLen - len;
     hline.querySelectorAll('.pd').forEach(g => PANELS.progress(g, Math.min(1, Math.max(0, (tipX - +g.dataset.x0) / (+g.dataset.x1 - +g.dataset.x0)))));
-    hline.querySelectorAll('.n6').forEach(n => n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6');
+    hline.querySelectorAll('.n6').forEach(n => { n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6'; n.style.opacity = Math.abs(tipX - +n.dataset.x) < 16 ? 0 : 1; });   // &가 점 위에 오면 점은 숨김(&가 점이 됨)
     document.querySelectorAll('.nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x));
     const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);
-    const hdr = document.querySelector('.hdr'); hdr.classList.toggle('on-dark', s + 40 >= geo.darkL && s + 40 < geo.darkR - vw * 0.2);
     const cur = current(); document.querySelectorAll('#pmap i').forEach((b, i) => { b.classList.toggle('on', i === cur); b.classList.toggle('done', i < cur); });
     const id = panels[cur].id; if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
   }
