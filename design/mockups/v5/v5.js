@@ -5,7 +5,7 @@ window.V5 = (function () {
   const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const desktop = () => matchMedia('(min-width:1024px)').matches;
   const LS = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
-  const LINE = () => { const p0 = document.getElementById('p00'); return p0.offsetTop + Math.round(p0.offsetHeight * 0.62); }; // 선 높이 = 패널 상단 + 62% (선 레인: 글자와 겹치지 않게)
+  const LINE = () => { const p0 = document.getElementById('p00'); return p0.offsetTop + Math.round(p0.offsetHeight * 0.80); }; // 바닥선(L1): 패널 상단 + 80%
   let wrap, track, lenis = null, panels = [], hline, ink, guide, lineLen = 0, geo = {}, launched = false, animTip = 0, tipMin = 0;
   /* 이동 중 축소 (V2 계승): 속도에 비례해 트랙을 최대 ZOOM.max 만큼 축소, 기준점은 매 프레임 화면 중심 */
   const ZOOM = { max: 0.12, vel: 28, ease: 0.18, on: !reduced && LS.get('v5-zoom') !== 'off' };   // 시안 조정: ?zoom=0.10&vel=30 (max = 최대 축소율, vel = 최대 축소에 이르는 속도 px/frame)
@@ -22,31 +22,24 @@ window.V5 = (function () {
     document.getElementById('marker').style.transform = `translate(${mx}px, ${my}px) scale(${z})`;
   }
 
-  /* ---------- markup: project panels 02~05, panel 07 list, progress map ---------- */
+  /* ---------- markup: 문제 4장(01~04) 생성, 진행 지도 ---------- */
+  const SHAPE_OF = { scattered: 'circles', legacy: 'grid', paper: 'papers', idea: 'ring' };
+  const TITLE_OF = { scattered: '흩어진<br>요청', legacy: '불편한<br>시스템', paper: '종이·<br>수작업', idea: '아이디어' };
+  const SUB_OF = { scattered: '엑셀·메신저·이메일·구두 요청으로 흩어진 업무', legacy: '기능은 있는데 쓰기 어렵고 복잡한 화면', paper: '그대로 옮기면 안 될 것 같은 디지털화', idea: '구조와 화면이 아직 없는 제품' };
   V.build = function () {
     wrap = document.getElementById('hwrap'); track = document.getElementById('htrack');
-    const SHOW_PROJECTS = false; // 2026-09-18 사용자 결정: 대시보드(스트립)에 프로젝트 패널을 깔지 않는다. 프로젝트는 Projects 시트에서만
-    const feats = SHOW_PROJECTS ? V3.featured() : [], N = feats.length, p06 = document.getElementById('p06');
-    feats.forEach((p, i) => {
-      const pr = V3.problem(p.problem), d = PANELS.get(p.slug), lg = p.title.length > 16 ? 'lg' : '';
-      const el = document.createElement('a'); el.className = `hp page pan pj ${lg}`; el.id = 'p' + String(i + 2).padStart(2, '0'); el.href = `../v3/case.html?p=${p.slug}`; el.dataset.slug = p.slug; el.dataset.sheet = el.href;
-      el.innerHTML = `<span class="pcap">${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')} · ${pr.name}</span><span class="cs">Case Study →</span>
-        <div class="shape-area">${PANELS.shapeHTML(d.shape)}</div><h2><span class="amp">&amp;</span>${p.title}</h2>
-        <div class="mdia">${PANELS.diagramSVG(p.slug, { w: 360, h: 130, x0: 64 })}</div>
-        <div class="prob"><b>문제 ${String(i + 1).padStart(2, '0')}<span class="amp">&amp;</span>${pr.name}</b><span>${pr.desc}</span></div>${PANELS.numsHTML(p.slug)}`;
-      track.insertBefore(el, p06);
+    const probs = V3.problems, N = probs.length, p05 = document.getElementById('p05');
+    probs.forEach((pr, i) => {
+      const el = document.createElement('a'); el.className = 'hp prob'; el.id = 'p' + String(i + 1).padStart(2, '0'); el.href = `../v3/projects.html?type=${pr.key}`; el.dataset.sheet = el.href;
+      el.innerHTML = `<div class="shape-area">${PANELS.shapeHTML(SHAPE_OF[pr.key])}</div><span class="pcap">${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')} · 문제</span>
+        <div class="txt"><h2 class="hl hl2">${TITLE_OF[pr.key]}</h2><p class="sub1">${SUB_OF[pr.key]}</p></div><span class="more">이 문제의 사례 →</span>`;
+      track.insertBefore(el, p05);
     });
-    const rest = V3.projects.filter(p => !p.featured);
     document.getElementById('restN').textContent = V3.projects.length;
     panels = [...track.querySelectorAll('.hp')];
-    const labels = ['Prologue', '01 문제', ...feats.map((p, i) => `문제 0${i + 1} · ${p.title}`), '02 다섯 단계', 'Projects', '문의', '&'];
+    const labels = ['Prologue', ...probs.map(pr => pr.name), '다섯 단계', 'Projects', '문의', '&'];
     document.getElementById('pmap').innerHTML = panels.map((el, i) => `<i data-i="${i}" data-l="${labels[i] || ''}"></i>`).join('');
-    if (!desktop()) {
-      track.querySelectorAll('.mdia').forEach(m => PANELS.prep(m));
-      const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { const m = e.target, t0 = performance.now(); const step = now => { const t = Math.min(1, (now - t0) / 1100); PANELS.progress(m, t); if (t < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); io.unobserve(m); } }), { threshold: 0.4 });
-      track.querySelectorAll('.mdia').forEach(m => io.observe(m));
-      V3.initMobilePos(panels.map(p => p.id));
-    } else track.querySelectorAll('.mdia').forEach(m => m.style.display = 'none');
+    if (!desktop()) V3.initMobilePos(panels.map(p => p.id));
     // sheets
     document.addEventListener('click', e => { const t = e.target.closest('[data-sheet]'); if (!t) return; e.preventDefault(); V.openSheet(t.dataset.sheet); });
     document.getElementById('sheet').querySelector('.close').addEventListener('click', () => V.closeSheet());
@@ -96,22 +89,22 @@ window.V5 = (function () {
     const W = track.scrollWidth, H = innerHeight, y = LINE();
     document.documentElement.style.setProperty('--ly', (y - document.getElementById('p00').offsetTop) + 'px');
     panels.forEach(p => { p._x = p.offsetLeft; p._w = p.offsetWidth; });
-    const p00 = panels[0], p08 = panels.find(p => p.classList.contains('p08')), p09 = panels[panels.length - 1];
+    const p00 = panels[0], p08 = panels.find(p => p.classList.contains('dark')), p09 = panels[panels.length - 1];
     const pt = p00.offsetTop, nodeL = Math.round(p00._w * 0.56), nodeX = p00._x + nodeL, yl = y - pt;   // panel-local coords for the hero svg
     // hero sources (in the track svg, panel 00 coordinates == track coordinates)
     // 4 sources start at the panel's LEFT edge, fan in to the node, then the one line runs right
-    const ys = [-60, -20, 20, 60].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
+    const ys = [14, 40, 66, 92].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
     const heroDia = document.getElementById('hero-dia');
     const ph = p00.offsetHeight; heroDia.setAttribute('viewBox', `0 0 ${p00._w} ${ph}`); heroDia.setAttribute('width', p00._w); heroDia.setAttribute('height', ph);
-    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M0 ${yy - pt} C ${Math.round(nodeL * 0.45)} ${yy - pt}, ${Math.round(nodeL * 0.7)} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="44" y="${yy - pt - 6}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
+    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M0 ${yy - pt} C ${Math.round(nodeL * 0.5)} ${yy - pt}, ${Math.round(nodeL * 0.72)} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="10" y="${yy - pt - 5}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX - 14;
     const d = `M${nodeX} ${y} H${endX}`;
     hline.setAttribute('width', W); hline.setAttribute('height', H); hline.setAttribute('viewBox', `0 0 ${W} ${H}`);
     // shared diagrams on project panels + five nodes in 06
     const dia = panels.filter(p => p.dataset.slug).map(p => `<g class="pd" data-x0="${Math.round(p._x + p._w * 0.40)}" data-x1="${Math.round(p._x + p._w * 0.9)}">${PANELS.diagramSVG(p.dataset.slug, { shared: true, y, x0: Math.round(p._x + p._w * 0.40), node: Math.round(p._x + p._w * 0.56), x1: Math.round(p._x + p._w - 56) })}</g>`).join('');
-    const p06 = document.getElementById('p06'), steps = [...p06.querySelectorAll('.step')];
-    const nodes = steps.map((s, i) => { const r = s.getBoundingClientRect(), x = Math.round(p06._x + (r.left + r.width / 2 - p06.getBoundingClientRect().left)); return `<circle class="d-node n6" data-x="${x}" cx="${x}" cy="${y}" r="5"/>`; }).join('');
+    const p05 = document.getElementById('p05'), steps = [...p05.querySelectorAll('.nodes span')];
+    const nodes = steps.map((s, i) => { const r = s.getBoundingClientRect(), x = Math.round(p05._x + (r.left + r.width / 2 - p05.getBoundingClientRect().left)); s.dataset.x = x; return `<circle class="d-node n6" data-x="${x}" cx="${x}" cy="${y}" r="5"/>`; }).join('');
     hline.innerHTML = `<path class="guide" d="${d}"/><path class="ink" d="${d}"/>${dia}${nodes}`;
     ink = hline.querySelector('.ink'); lineLen = ink.getTotalLength(); ink.style.strokeDasharray = lineLen; ink.style.strokeDashoffset = lineLen;
     hline.querySelectorAll('.pd').forEach(g => PANELS.prep(g));
@@ -138,6 +131,7 @@ window.V5 = (function () {
     ink.style.strokeDashoffset = lineLen - len; const dkInk = document.querySelector('#hline-dark .ink'); if (dkInk) dkInk.style.strokeDashoffset = lineLen - len;
     hline.querySelectorAll('.pd').forEach(g => PANELS.progress(g, Math.min(1, Math.max(0, (tipX - +g.dataset.x0) / (+g.dataset.x1 - +g.dataset.x0)))));
     hline.querySelectorAll('.n6').forEach(n => n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6');
+    document.querySelectorAll('#nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x));
     const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched || !lenis) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);

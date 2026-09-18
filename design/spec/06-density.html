@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prologue& 패널 밀도 수정안 비교</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../mockups/v3/v3.css">
+<style>
+  body{background:#ececec;padding:40px;line-height:1.5}
+  h1{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
+  .lead{color:var(--bone-700);margin:0 0 32px;max-width:64rem}
+  h2{font-size:16px;font-weight:600;margin:48px 0 4px}
+  .desc{font-size:13px;color:var(--bone-600);margin:0 0 14px;max-width:64rem}
+  .row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .frame{zoom:.5;display:flex;gap:24px;padding:24px;background:var(--bone-100);overflow-x:auto}
+  .pan{position:relative;flex:none;width:968px;height:600px;background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;overflow:hidden;padding:40px;font-family:var(--sans)}
+  .pan.dark{background:var(--navy-950);border-color:var(--navy-900);color:var(--bone-50)}
+  .cap{position:absolute;left:40px;top:16px;font-size:12px;font-weight:500;color:var(--bone-500)}
+  .line{position:absolute;left:0;right:0;height:0;border-top:1.5px solid var(--navy-800);z-index:3}
+  .line.g{border-top:1px solid var(--navy-200)}
+  .line .amp{position:absolute;left:50%;top:-22px;width:44px;height:44px;margin-left:-22px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:30px;color:var(--navy-800);background:var(--bone-0);border-radius:50%}
+  .dark .line .amp{color:var(--bone-50);background:var(--navy-950)}
+  .dark .line{border-color:var(--bone-50)}
+  .lane{position:absolute;left:0;right:0;height:48px;margin-top:-24px;background:repeating-linear-gradient(45deg,rgba(192,57,43,.10) 0 6px,transparent 6px 12px);z-index:2;pointer-events:none}
+  .lane:after{content:"선 레인 48px";position:absolute;right:12px;top:14px;font-size:11px;color:#C0392B}
+  /* big type (V2 rule) */
+  .d5{font-size:5.6rem;font-weight:600;letter-spacing:-.035em;line-height:1.02;margin:0}
+  .d68{font-size:6.8rem;font-weight:600;letter-spacing:-.035em;line-height:1.02;margin:0}
+  .d78{font-size:7.8rem;font-weight:600;letter-spacing:-.035em;line-height:1.02;margin:0}
+  .sub1{font-size:1.2rem;color:var(--bone-700);margin:20px 0 0;max-width:34rem}
+  .dark .sub1{color:var(--navy-300)}
+  .shape{position:absolute;inset:0;pointer-events:none;z-index:0}
+  .shape i{position:absolute;display:block;background:var(--navy-100);border-radius:2px}
+  .txt{position:relative;z-index:2}
+  .btns{position:absolute;left:40px;bottom:40px;display:flex;gap:12px;z-index:2}
+  .num{color:var(--navy-800)}
+  .small{font-size:15px;color:var(--bone-700)}
+  .lbl{position:absolute;font-size:12px;font-weight:500;color:var(--bone-500)}
+  /* current (v5) */
+  .cur .display{font-size:46px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:0}
+  .cur .lead2{font-size:17px;color:var(--bone-700);max-width:30rem;margin-top:18px}
+  .cur .probs{position:absolute;left:40px;right:40px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;list-style:none;margin:0;padding:0}
+  .cur .probs li{padding-top:26px}
+  .cur .probs b{display:block;font-size:13px;color:var(--navy-800);font-weight:500;margin-bottom:6px}
+  .cur .probs span{display:block;font-size:19px;font-weight:600;margin-bottom:6px}
+  .cur .probs small{display:block;font-size:13px;color:var(--bone-700)}
+  .cur .h1{font-size:40px;font-weight:600;letter-spacing:-.025em;margin:0}
+  .cur .intro{position:absolute;left:40px;top:104px;max-width:36rem;font-size:15px;color:var(--bone-700);margin:0}
+  .cur .steps{position:absolute;left:40px;right:40px;display:grid;grid-template-columns:repeat(5,1fr);gap:24px;text-align:center}
+  .cur .steps .t{height:60px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;font-weight:600;font-size:19px}
+  .cur .steps .t small{font-size:13px;font-weight:500;color:var(--navy-800)}
+  .cur .steps .b{margin-top:48px;font-size:13px;color:var(--bone-700)}
+  /* A / B / C shared */
+  .nodes{position:absolute;left:40px;right:40px;display:flex;justify-content:space-between;z-index:3}
+  .nodes span{position:relative;font-size:1.2rem;font-weight:500;color:var(--bone-700);padding-top:18px}
+  .nodes span:before{content:"";position:absolute;left:50%;top:-6px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--bone-50);border:1.5px solid var(--navy-800)}
+  .nodes span.on:before{background:var(--navy-800)}
+  .words{position:absolute;left:40px;right:40px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;z-index:3}
+  .words div{padding-top:16px;font-size:1.4rem;font-weight:600;letter-spacing:-.01em}
+  .words div small{display:block;font-size:13px;font-weight:500;color:var(--navy-800);margin-bottom:4px}
+  .col2{position:absolute;right:40px;top:120px;width:34%;z-index:2}
+  .col2 div{border-top:1px solid var(--bone-200);padding:10px 0;font-size:14px;color:var(--bone-700)}
+  .col2 div b{display:block;font-size:15px;color:var(--bone-900);margin-bottom:2px}
+  .col2 div em{color:var(--navy-800);font-size:12px;font-weight:500;margin-right:6px}
+  .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 6px;border-radius:2px;background:var(--navy-800);color:#fff;margin-right:8px;vertical-align:middle}
+  .flag{position:absolute;height:0;border-top:1.5px solid var(--bone-50)}
+  .flag:after{content:"";position:absolute;right:-12px;top:-6px;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:12px solid var(--bone-50)}
+</style>
+</head>
+<body>
+<h1>패널 밀도 수정안 — 시각 비교</h1>
+<p class="lead">모든 판은 실제 크기(968×600, 창 1152×720의 "처음(크게)")를 50%로 축소한 것. 글꼴·색·도형은 v3 토큰 그대로. 빨간 빗금 = 지금의 "선 레인"(글자 금지 띠). 근거 문서 docs/18_panel_density_options.md.</p>
+
+<h2>현재 (V5, 선 62% 레인)</h2>
+<p class="desc">헤드라인 46px, 요소 여러 개, 도형 없음, 레인이 판을 위아래로 가름. 문제 패널의 가장 큰 글자는 19px.</p>
+<div class="frame cur">
+  <div class="pan"><span class="cap">00 · Prologue</span>
+    <div class="txt" style="margin-top:0"><h1 class="display">복잡한 업무를<br><em>단순한 제품</em>으로 바꿉니다.</h1><p class="lead2">만들기 전에, 무엇이 불편한지부터 정리합니다. 그리고 실제로 쓰이는 끝까지 함께합니다.</p></div>
+    <div class="lane" style="top:372px"></div><div class="line" style="top:372px"><span class="amp">&amp;</span></div>
+    <div class="btns"><span class="btn">프로젝트 문의</span><span class="btn o">작업 보기 →</span></div>
+  </div>
+  <div class="pan"><span class="cap">01 · 문제</span>
+    <span class="num" style="font-size:13px;font-weight:500;letter-spacing:.04em">01</span><h2 class="h1" style="margin-top:12px">이런 문제를<br>다룹니다</h2>
+    <div class="lane" style="top:372px"></div><div class="line" style="top:372px"><span class="amp">&amp;</span></div>
+    <ol class="probs" style="top:373px"><li><b>01</b><span>흩어진 요청</span><small>엑셀, 메신저, 이메일, 구두 요청으로 업무가 흩어져 있어요.</small></li><li><b>02</b><span>불편한 기존 시스템</span><small>기능은 있는데 직원들이 쓰기 어렵고 화면이 복잡해요.</small></li><li><b>03</b><span>종이·수작업</span><small>디지털화하고 싶지만 그대로 옮기면 안 될 것 같아요.</small></li><li><b>04</b><span>제품이 필요한 아이디어</span><small>아이디어는 있는데 구조와 화면이 없어요.</small></li></ol>
+  </div>
+  <div class="pan"><span class="cap">02 · 다섯 단계</span>
+    <span class="num" style="font-size:13px;font-weight:500;letter-spacing:.04em">02</span><h2 class="h1" style="margin-top:12px">처음부터 끝까지, 다섯 단계</h2>
+    <p class="intro">화면을 구현하는 것보다 왜 이 기능이 필요한지, 업무 자체를 더 단순하게 만들 수 없는지를 먼저 고민합니다. 기획·설계·개발을 한 사람이 맡아 처음 정리한 문제가 끝까지 흐트러지지 않습니다.</p>
+    <div class="lane" style="top:372px"></div><div class="line" style="top:372px"><span class="amp">&amp;</span></div>
+    <div class="steps" style="top:288px"><div><div class="t"><small>01</small>Understand</div><div class="b">현재 업무와 사용자를 이해합니다. 왜 불편한지부터.</div></div><div><div class="t"><small>02</small>Simplify</div><div class="b">불필요한 단계와 중복을 제거합니다.</div></div><div><div class="t"><small>03</small>Design</div><div class="b">Workflow, 정보구조, UX를 설계합니다.</div></div><div><div class="t"><small>04</small>Build</div><div class="b">실제 사용할 수 있는 제품으로 구현합니다.</div></div><div><div class="t"><small>05</small>Improve</div><div class="b">사용 후 발견되는 문제를 반복 개선합니다.</div></div></div>
+  </div>
+</div>
+
+<h2><span class="tag">권장</span>A · D 문법 완전 복원 + L1 바닥선 (9장)</h2>
+<p class="desc">문장 하나(7.8rem) + 도형 하나. 문제 4유형이 각각 한 장(V2 도형 재사용). 선은 판의 바닥(80%)에서 흐르고 항목·노드가 그 위에 올라앉는다. 설명은 시트로.</p>
+<div class="frame">
+  <div class="pan"><span class="cap">00 · Prologue</span>
+    <div class="shape"><i style="width:34%;padding-top:34%;left:48%;top:-8%;border-radius:50%"></i><i style="width:18%;padding-top:18%;left:78%;top:34%;border-radius:50%"></i><i style="width:12%;padding-top:12%;left:40%;top:44%;border-radius:50%"></i></div>
+    <div class="txt"><h1 class="d68">복잡한 업무를<br>단순한 제품으로<br>바꿉니다.</h1><p class="sub1">만들기 전에 정리하고, 쓰이는 끝까지 함께합니다.</p></div>
+    <div class="line g" style="top:480px"></div><div class="line" style="top:480px;right:auto;width:60%"><span class="amp" style="left:100%">&amp;</span></div>
+    <div class="btns" style="bottom:auto;top:500px"><span class="btn">프로젝트 문의</span><span class="btn o">작업 보기 →</span></div>
+  </div>
+  <div class="pan"><span class="cap">01 / 04 · 문제</span>
+    <div class="shape circles"><i style="width:46%;padding-top:46%;left:34%;top:-12%;border-radius:50%"></i><i style="width:24%;padding-top:24%;left:74%;top:30%;border-radius:50%"></i><i style="width:16%;padding-top:16%;left:26%;top:58%;border-radius:50%"></i><i style="width:30%;padding-top:30%;left:52%;top:62%;border-radius:50%"></i></div>
+    <div class="txt"><h1 class="d78">흩어진<br>요청</h1><p class="sub1">엑셀·메신저·이메일·구두 요청으로 흩어진 업무</p></div>
+    <div class="line" style="top:480px"><span class="amp">&amp;</span></div>
+    <span class="lbl" style="left:40px;top:492px">Case Study →</span>
+  </div>
+  <div class="pan"><span class="cap">02 / 04 · 문제</span>
+    <div class="shape"><i style="left:38%;top:8%;width:58%;height:84%;background:repeating-linear-gradient(0deg,var(--navy-100) 0 14px,transparent 14px 20px),repeating-linear-gradient(90deg,var(--navy-100) 0 14px,transparent 14px 20px)"></i></div>
+    <div class="txt"><h1 class="d78">불편한<br>시스템</h1><p class="sub1">기능은 있는데 쓰기 어렵고 복잡한 화면</p></div>
+    <div class="line" style="top:480px"><span class="amp">&amp;</span></div>
+  </div>
+  <div class="pan"><span class="cap">05 · 다섯 단계</span>
+    <div class="shape"><i style="width:40%;padding-top:40%;left:55%;top:8%;border-radius:50%"></i></div>
+    <div class="txt"><h1 class="d78">처음부터<br>끝까지.</h1></div>
+    <div class="line" style="top:480px"><span class="amp">&amp;</span></div>
+    <div class="nodes" style="top:480px"><span class="on">Understand</span><span class="on">Simplify</span><span>Design</span><span>Build</span><span>Improve</span></div>
+  </div>
+  <div class="pan"><span class="cap">06 · Projects</span>
+    <div class="shape"><i style="left:50%;top:10%;width:14%;height:18%"></i><i style="left:68%;top:20%;width:14%;height:18%"></i><i style="left:56%;top:44%;width:14%;height:18%"></i><i style="left:78%;top:52%;width:14%;height:18%"></i></div>
+    <div class="txt"><h1 class="d78">작업<br>6건.</h1><p class="sub1">문제 유형별 Case Study</p></div>
+    <div class="line" style="top:480px"><span class="amp">&amp;</span></div>
+    <div class="btns" style="bottom:auto;top:500px"><span class="btn">Projects 열기</span></div>
+  </div>
+  <div class="pan dark"><span class="cap" style="color:var(--navy-300)">07 · 문의</span>
+    <div class="txt"><h1 class="d68">지금 하시는<br>업무를<br>알려주세요.</h1><p class="sub1">이 페이지의 끝이 프로젝트의 시작입니다 · 2영업일 안에 답변</p></div>
+    <div class="line" style="top:480px"><span class="amp">&amp;</span></div>
+    <div class="flag" style="left:0;width:34px;top:524px"></div>
+    <div class="btns" style="bottom:auto;top:500px;left:60px"><span class="btn" style="background:var(--bone-50);color:var(--navy-900)">프로젝트 문의하기</span></div>
+  </div>
+</div>
+
+<h2>B · 포스터화 (6장 유지)</h2>
+<p class="desc">장 수는 그대로, 각 장을 문장 하나로 압축. 문제 4개는 바닥선 위에 단어만, 설명·칩 삭제.</p>
+<div class="frame">
+  <div class="pan"><span class="cap">01 · 문제</span>
+    <div class="shape"><i style="width:20%;padding-top:20%;left:58%;top:6%;border-radius:50%"></i><i style="left:80%;top:14%;width:14%;height:20%;background:repeating-linear-gradient(0deg,var(--navy-100) 0 10px,transparent 10px 14px),repeating-linear-gradient(90deg,var(--navy-100) 0 10px,transparent 10px 14px)"></i><i style="left:62%;top:38%;width:12%;height:16%;transform:rotate(-7deg)"></i><i style="width:16%;padding-top:16%;left:80%;top:42%;border-radius:50%;background:transparent;border:12px solid var(--navy-100)"></i></div>
+    <div class="txt"><h1 class="d78">이런 문제를<br>다룹니다.</h1></div>
+    <div class="line" style="top:480px"><span class="amp">&amp;</span></div>
+    <div class="words" style="top:482px"><div><small>01</small>흩어진 요청</div><div><small>02</small>불편한 시스템</div><div><small>03</small>종이·수작업</div><div><small>04</small>아이디어</div></div>
+  </div>
+  <div class="pan"><span class="cap">02 · 다섯 단계</span>
+    <div class="shape"><i style="width:40%;padding-top:40%;left:55%;top:8%;border-radius:50%"></i></div>
+    <div class="txt"><h1 class="d78">처음부터<br>끝까지.</h1></div>
+    <div class="line" style="top:480px"><span class="amp">&amp;</span></div>
+    <div class="nodes" style="top:480px"><span class="on">Understand</span><span class="on">Simplify</span><span>Design</span><span>Build</span><span>Improve</span></div>
+  </div>
+</div>
+
+<h2>C · 2단 포스터 (큰 문장 + 정보 열)</h2>
+<p class="desc">왼쪽 62% 큰 문장 + 오른쪽 34% 작은 정보 열. 정보는 모두 남지만 한 판에 두 문법.</p>
+<div class="frame">
+  <div class="pan"><span class="cap">01 · 문제</span>
+    <div class="shape"><i style="width:36%;padding-top:36%;left:20%;top:30%;border-radius:50%"></i></div>
+    <div class="txt" style="width:60%"><h1 class="d68">이런<br>문제를<br>다룹니다.</h1></div>
+    <div class="col2"><div><em>01</em><b>흩어진 요청</b>엑셀, 메신저, 이메일, 구두 요청으로 업무가 흩어져 있어요.</div><div><em>02</em><b>불편한 기존 시스템</b>기능은 있는데 직원들이 쓰기 어렵고 화면이 복잡해요.</div><div><em>03</em><b>종이·수작업</b>디지털화하고 싶지만 그대로 옮기면 안 될 것 같아요.</div><div><em>04</em><b>제품이 필요한 아이디어</b>아이디어는 있는데 구조와 화면이 없어요.</div></div>
+    <div class="line" style="top:480px"><span class="amp">&amp;</span></div>
+  </div>
+  <div class="pan"><span class="cap">02 · 다섯 단계</span>
+    <div class="shape"><i style="width:36%;padding-top:36%;left:22%;top:32%;border-radius:50%"></i></div>
+    <div class="txt" style="width:60%"><h1 class="d68">처음부터<br>끝까지,<br>다섯 단계.</h1></div>
+    <div class="col2" style="top:80px"><div><em>01</em><b>Understand</b>현재 업무와 사용자를 이해합니다.</div><div><em>02</em><b>Simplify</b>불필요한 단계와 중복을 제거합니다.</div><div><em>03</em><b>Design</b>Workflow, 정보구조, UX를 설계합니다.</div><div><em>04</em><b>Build</b>실제 사용할 수 있는 제품으로 구현합니다.</div><div><em>05</em><b>Improve</b>사용 후 발견되는 문제를 반복 개선합니다.</div></div>
+    <div class="line" style="top:480px"><span class="amp">&amp;</span></div>
+  </div>
+</div>
+
+<h2>E · 최소 변경 (도형만 + 바닥선)</h2>
+<p class="desc">타이포 그대로(46px), 큰 도형만 추가하고 선을 바닥으로. 여백 인상의 절반만 해결됨을 비교용으로.</p>
+<div class="frame cur">
+  <div class="pan"><span class="cap">01 · 문제</span>
+    <div class="shape"><i style="width:46%;padding-top:46%;left:44%;top:-10%;border-radius:50%"></i><i style="width:22%;padding-top:22%;left:74%;top:40%;border-radius:50%"></i></div>
+    <span class="num" style="font-size:13px;font-weight:500;letter-spacing:.04em;position:relative;z-index:2">01</span><h2 class="h1" style="margin-top:12px;position:relative;z-index:2">이런 문제를<br>다룹니다</h2>
+    <div class="line" style="top:480px"><span class="amp">&amp;</span></div>
+    <ol class="probs" style="top:340px"><li><b>01</b><span>흩어진 요청</span><small>엑셀, 메신저, 이메일, 구두 요청으로 업무가 흩어져 있어요.</small></li><li><b>02</b><span>불편한 기존 시스템</span><small>기능은 있는데 직원들이 쓰기 어렵고 화면이 복잡해요.</small></li><li><b>03</b><span>종이·수작업</span><small>디지털화하고 싶지만 그대로 옮기면 안 될 것 같아요.</small></li><li><b>04</b><span>제품이 필요한 아이디어</span><small>아이디어는 있는데 구조와 화면이 없어요.</small></li></ol>
+  </div>
+</div>
+<p class="desc" style="margin-top:32px">D(가변 폭)는 판의 폭이 달라지는 안이라 이 시트에 넣지 않았다 — "패널 크기 일치" 결정과 충돌.</p>
+</body>
+</html>

@@ -442,78 +442,60 @@ footer{padding:96px 0 40px}
   #how{padding-top:0}
 }
 
-/* v5 — 가로 전용: 세로 스크롤 없음(데스크톱). v3.css 토큰·구성 요소 + v4.css 패널 위에 얹는다 */
+/* v5 — 가로 전용 · D 포스터 문법 복원(docs/18 A안) + 바닥선(L1). v3.css 토큰 위에 얹는다 */
 html,body{height:100%}
 body{overflow:hidden}
 .hwrap{position:fixed;inset:0;overflow-x:auto;overflow-y:hidden;background:var(--bone-100)}
 .hwrap::-webkit-scrollbar{height:0}
-.htrack{position:relative;display:flex;height:100%;align-items:stretch}
-:root{--pw:min(1100px,74vw);--ph:min(680px,72vh);--ly:0px}   /* V2 비율(84vw×74vh)보다 한 단계 작게, 세로 중앙 */
-.htrack{width:max-content;padding:0 16px;align-items:center}   /* max-content: 끝 패널의 여백까지 스크롤 폭에 포함 */
-.hp{position:relative;flex:none;width:var(--pw);height:var(--ph);margin:32px 12px 0;background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;overflow:hidden}
-.hp .pcap{position:absolute;left:40px;top:16px;font-size:12px;font-weight:500;color:var(--bone-500)}
-/* 00 Prologue */
-.p00{padding:40px}
-.p00 .inner{position:absolute;left:40px;top:40px;max-width:calc(100% - 120px);z-index:2}
-.p00 .display,.p08 .display{font-size:56px}
-.p00 .lead{margin-top:28px}
-.p00 .cta{position:absolute;left:40px;bottom:40px;display:flex;gap:12px;margin:0;z-index:2}
-.p00 .hint{position:absolute;right:40px;bottom:40px;font-size:13px;color:var(--bone-500)}
-#hero-dia{position:absolute;inset:0;pointer-events:none;overflow:visible}
-#hero-dia text{font-family:var(--sans);font-size:12px;font-weight:500;fill:var(--bone-500)}
+:root{--pw:min(1100px,74vw);--ph:min(680px,72vh);--ly:0px;--pad:clamp(32px,4vw,52px)}
+.htrack{position:relative;display:flex;width:max-content;height:100%;align-items:center;padding:0 16px}   /* max-content: 끝 패널 여백까지 스크롤 폭에 포함 */
+.hp{position:relative;flex:none;width:var(--pw);height:var(--ph);margin:32px 12px 0;padding:var(--pad);background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;overflow:hidden}
+.hp.dark{background:var(--navy-950);border-color:var(--navy-900);color:var(--bone-50)}
+.hp .pcap{position:absolute;left:var(--pad);top:16px;font-size:12px;font-weight:500;color:var(--bone-500);z-index:2}
+.hp.dark .pcap{color:var(--navy-300)}
+/* ---- 포스터 타이포 (V2 규칙): 2줄 이하 7.8rem / 3줄 6.8rem ---- */
+.hp .txt{position:relative;z-index:2;padding-top:24px}
+.hl{font-weight:600;letter-spacing:-.035em;line-height:1.02;margin:0;word-break:keep-all;color:var(--bone-900)}
+.hl em{font-style:normal;color:var(--navy-800)}
+.hl2{font-size:clamp(3.6rem,8.6vw,7.8rem)}
+.hl3{font-size:clamp(3.2rem,7.4vw,6.8rem)}
+.hl .amp{font-size:.9em;margin-right:.12em}
+.hp.dark .hl{color:var(--bone-50)}
+.hp.dark .hl em{color:var(--navy-300)}
+.sub1{font-size:1.2rem;line-height:1.5;color:var(--bone-700);margin:20px 0 0;max-width:42rem}
+.hp.dark .sub1{color:var(--navy-300)}
+/* ---- 도형: 밝은 면이 글자를 덮는다 (D 문법 4) ---- */
+.shape-area{position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.shape.squares i{border-radius:2px}
+/* ---- 바닥선(L1) 아래 구역: 버튼·라벨 ---- */
+.below{position:absolute;left:var(--pad);top:calc(var(--ly) + 22px);display:flex;align-items:center;gap:12px;z-index:3}
+.below.right{left:auto;right:var(--pad)}
+.below .mail{color:var(--navy-300);font-size:14px}
+.hp .hint{position:absolute;right:var(--pad);top:16px;font-size:12px;color:var(--bone-500);z-index:2}
+/* 00 hero */
+#hero-dia{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:2}
+#hero-dia text{font-family:var(--sans);font-size:11px;font-weight:500;fill:var(--bone-500)}
 #hero-dia .src{fill:none;stroke:var(--navy-400);stroke-width:1}
 #hero-dia .node{fill:var(--bone-50);stroke:var(--navy-800)}
-/* 01 · 07 small pages */
-.p01{padding:40px}
-.p01 .num{display:block;color:var(--navy-800);margin-bottom:12px}
-.p01 .h1{max-width:9em}
-.p01 .cap.b{position:absolute;left:40px;bottom:40px}
-.p01 .probs{list-style:none;margin:0;padding:0;position:absolute;left:40px;right:40px;top:calc(var(--ly) + 1px);display:grid;grid-template-columns:repeat(4,1fr);gap:24px}   /* 선이 항목의 윗줄 역할 */
-.p01 .probs li{padding-top:26px;position:relative;z-index:1}
-.p01 .probs b{display:block;font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--navy-800);margin-bottom:6px}
-.p01 .probs span{display:block;font-size:19px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
-.p01 .probs small{display:block;font-size:13px;color:var(--bone-700);line-height:1.5}
-.p07 .lead{margin-top:16px}
-.p07 .btn{position:absolute;left:40px;bottom:40px}
-.p07{padding:40px}
-.p07 .num{display:block;color:var(--navy-800);margin-bottom:12px}
-.p07 ul{list-style:none;margin:16px 0 0;padding:0}
-.p07 li{padding:10px 0;border-top:1px solid var(--bone-200);font-size:15px}
-.p07 li .amp{font-size:.9em;margin-right:.2em}
-.p07 .link{position:absolute;left:40px;bottom:40px}
-/* 02~05 project panels: reuse .pan.pj rules from v4.css (width overridden) */
-.hp.pan.pj{width:var(--pw)}
-/* 06 five steps on the line */
-.p06{padding:40px}
-.p06 .sec-head{position:absolute;left:40px;right:40px;top:40px;margin:0;border:0;padding:0}
-.p06 .intro{position:absolute;left:40px;top:104px;max-width:36rem;margin:0;font-size:15px;line-height:1.6;color:var(--bone-700)}
-.p06 .steps{position:absolute;left:40px;right:40px;top:calc(var(--ly) - 84px);display:grid;grid-template-columns:repeat(5,1fr);gap:24px;border:0}
-.p06 .step{padding-top:0;text-align:center;display:grid;grid-template-rows:60px 48px auto;align-content:start}   /* 가운데 48px = 선이 지나는 레인, 글자 없음 */
-.p06 .step .top{display:flex;flex-direction:column;justify-content:flex-end;gap:6px}
-.p06 .step h3{font-size:19px;font-weight:600;margin:0}
-.p06 .step .num{display:block;margin:0}
-.p06 .step .num:after{display:none}
-.p06 .step .bot{padding-top:6px}
-.p06 .step p{margin:0 0 8px;font-size:13px;color:var(--bone-700);min-height:60px}
-/* 08 contact (dark) */
-.p08{background:var(--navy-950);border-color:var(--navy-900);color:var(--bone-50)}
-.p08 .inner{position:absolute;left:40px;top:40px;max-width:calc(100% - 200px)}
-.p08 .display{color:var(--bone-50)}
-.p08 .display em{color:var(--navy-300)}
-.p08 .lead{color:var(--navy-300);margin-top:28px}
-.p08 .cta{display:flex;align-items:center;gap:24px;margin-top:36px}
-.p08 .btn{background:var(--bone-50);color:var(--navy-900)}
-.p08 .mail{color:var(--navy-300);font-size:14px}
-#flag{position:absolute;inset:0;pointer-events:none;overflow:visible;opacity:0;transition:opacity .35s}
+/* 01~04 문제 */
+.hp.prob .more{position:absolute;left:var(--pad);top:calc(var(--ly) + 22px);font-size:14px;font-weight:500;color:var(--navy-800);z-index:3;white-space:nowrap}
+.hp.prob:hover .more{text-decoration:underline;text-decoration-color:var(--signal);text-underline-offset:4px}
+/* 05 다섯 단계: 노드는 선 위(svg), 단어는 선 아래 */
+.nodes{position:absolute;left:var(--pad);right:var(--pad);top:calc(var(--ly) + 24px);display:flex;justify-content:space-between;z-index:3}
+.nodes span{position:relative;font-size:1.2rem;font-weight:500;color:var(--bone-700);text-align:center;flex:1}
+.nodes span[data-chip]:after{content:attr(data-chip);display:block;font-size:12px;color:var(--navy-800);margin-top:4px}
+.nodes span.on{color:var(--bone-900)}
+/* 07 문의 */
+#flag{position:absolute;inset:0;pointer-events:none;overflow:visible;opacity:0;transition:opacity .35s;z-index:3}
 #flag path{fill:none;stroke:var(--bone-50);stroke-width:1.5}#flag polygon{fill:var(--bone-50)}#flag.on{opacity:1}
-/* 09 — & — */
-.p09 .seat{position:absolute;left:50%;top:var(--ly);width:44px;height:44px;margin:-22px 0 0 -22px}
-.p09 .rule{position:absolute;top:var(--ly);height:1px;background:var(--bone-300);transition:background .4s}
-.p09.done .rule{background:var(--navy-800)}
-.p09 .foot-cap{position:absolute;left:0;right:0;top:calc(var(--ly) + 40px);text-align:center;font-size:13px;color:var(--bone-500)}
-.p09 .foot-row{position:absolute;left:40px;right:40px;bottom:40px;margin:0;padding-top:20px;border-top:1px solid var(--bone-200);font-size:13px;color:var(--bone-500);display:flex;justify-content:space-between}
-.p09 .foot-row nav{display:flex;gap:24px}
-/* line */
+/* 08 — & — */
+.p08 .seat{position:absolute;left:50%;top:var(--ly);width:44px;height:44px;margin:-22px 0 0 -22px}
+.p08 .rule{position:absolute;top:var(--ly);height:1px;background:var(--bone-300);transition:background .4s}
+.p08.done .rule{background:var(--navy-800)}
+.p08 .foot-cap{position:absolute;left:0;right:0;top:calc(var(--ly) + 40px);text-align:center;font-size:13px;color:var(--bone-500);margin:0}
+.p08 .foot-row{position:absolute;left:var(--pad);right:var(--pad);top:var(--pad);margin:0;font-size:13px;color:var(--bone-500);display:flex;justify-content:space-between}
+.p08 .foot-row nav{display:flex;gap:24px}
+/* ---- line ---- */
 #hline{position:absolute;left:0;top:0;height:100%;pointer-events:none;z-index:4;overflow:visible}
 #hline .guide{fill:none;stroke:var(--navy-200);stroke-width:1}
 #hline .ink{fill:none;stroke:var(--navy-800);stroke-width:1.5}
@@ -521,13 +503,7 @@ body{overflow:hidden}
 #hline-dark svg{position:absolute;top:0;overflow:visible}
 #hline-dark .guide{fill:none;stroke:var(--navy-800);stroke-width:1}
 #hline-dark .ink{fill:none;stroke:var(--bone-50);stroke-width:1.5}
-@media (max-height:780px){
-  .p00 .display,.p08 .display{font-size:46px}.p00 .lead,.p08 .lead{margin-top:18px;font-size:17px}.p00 .cta,.p08 .cta{margin-top:24px}
-  .hp.pan.pj h2{font-size:5.6rem!important}.hp.pan.pj .nums b{font-size:32px}
-  .p06 .step p{min-height:0;font-size:12px}.p06 .step h3{font-size:16px}
-  .p06 .intro{font-size:13px;top:96px}
-}
-/* tune (mockup only) */
+/* ---- tune (mockup only) ---- */
 #tune{position:fixed;right:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bone-0);border:1px solid var(--bone-300);border-radius:2px;font-size:12px}
 #tune label{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500}
 #tune input{margin:0}
@@ -544,7 +520,7 @@ body{overflow:hidden}
 #mob-preview .bar{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 6px 12px;font-size:12px;color:var(--bone-500);border-bottom:1px solid var(--bone-200);background:var(--bone-50)}
 #mob-preview .bar button{width:28px;height:28px;border:1px solid var(--bone-300);border-radius:2px;font-size:16px;line-height:1}
 #mob-preview iframe{flex:1;width:100%;border:0;display:block;background:var(--bone-50)}
-/* header progress map */
+/* ---- header progress map ---- */
 .hdr{pointer-events:none;background:linear-gradient(var(--bone-100) 70%,rgba(243,241,236,0))}
 .hdr .pmap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:3px;pointer-events:auto}
 .hdr .pmap i{position:relative;display:block;height:3px;background:var(--bone-300);cursor:pointer;transition:background .2s}
@@ -553,47 +529,36 @@ body{overflow:hidden}
 .hdr .pmap i:hover:after{content:attr(data-l);position:absolute;left:0;top:8px;font-size:11px;font-weight:500;color:var(--bone-700);white-space:nowrap}
 .hdr.on-dark{background:linear-gradient(var(--navy-950) 70%,rgba(21,26,51,0))}
 .hdr.on-dark .pmap i{background:var(--navy-700)}.hdr.on-dark .pmap i.done{background:var(--navy-400)}.hdr.on-dark .pmap i.on{background:var(--bone-50)}
-/* sheet (Projects · Case Study) */
+/* ---- sheet (Projects · Case Study) ---- */
 #sheet-bd{position:fixed;inset:0;background:rgba(28,27,24,.45);opacity:0;pointer-events:none;transition:opacity .35s;z-index:45}
 #sheet-bd.on{opacity:1;pointer-events:auto}
 #sheet{position:fixed;left:50%;top:4vh;width:min(56rem,calc(100vw - 48px));height:92vh;transform:translate(-50%,0) scale(.985);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s var(--ease-out);z-index:46;background:var(--bone-50);box-shadow:var(--shadow);border-radius:2px;overflow:hidden}
 #sheet.on{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
 #sheet iframe{width:100%;height:100%;border:0;display:block}
 #sheet .close{position:absolute;right:12px;top:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-50);z-index:2}
+/* ---- mobile: 세로 스택 ---- */
 @media (max-width:1023px){
   html,body{height:auto}
   body{overflow:visible}
   .hdr{background:var(--bone-50);height:calc(56px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px)}
   .hwrap{position:static;overflow:visible;background:var(--bone-50)}
-  .htrack{display:block;height:auto}
-  .htrack{width:auto;padding:calc(72px + env(safe-area-inset-top,0px)) 0 24px}
-  .hp{width:auto!important;height:auto!important;padding:24px;margin:0 16px 16px}
-  .p00 .display,.p08 .display{font-size:38px}
-  #tune{display:none}
-  .p00{min-height:auto;padding:24px}
-  .p00 .inner{position:static;max-width:none}
-  .p00 .hint,#hero-dia{display:none}
-  .p00 .cta{position:static;flex-direction:column;margin-top:24px}
-  .p01 .probs li{border-top:1px solid var(--navy-800);padding-top:12px}
-  .p01 .cap.b,.p07 .btn{position:static;display:inline-block;margin-top:16px}
-  .p01 .probs{position:static;grid-template-columns:1fr;gap:12px;margin-top:16px}
-  .p06 .sec-head,.p06 .steps,.p06 .intro{position:static}
-  .p06 .intro{margin:12px 0 0;max-width:none}
-  .p06 .steps{grid-template-columns:1fr;gap:0;margin-top:16px}
-  .p06 .step{text-align:left;padding:16px 0;border-bottom:1px solid var(--bone-200);display:block}
-  .p06 .step .lane{display:none}
-  .p06 .step .top{flex-direction:row;align-items:baseline;gap:10px}
-  .p06 .step .bot{padding-top:6px}
-  .p06 .step p{height:auto}
-  .p08{padding:32px 24px}
-  .p08 .inner{position:static;max-width:none}
-  .p08 .cta{flex-direction:column;align-items:flex-start}
-  .p09{padding:24px}
-  .p09 .seat,.p09 .rule{display:none}
-  .p09 .foot-cap,.p09 .foot-row{position:static}
-  .p09 .foot-row{flex-direction:column;gap:12px;margin-top:24px}
-  #hline,#hline-dark,#marker,#flag{display:none}
-  .hdr .pmap{display:none}
+  .htrack{display:block;width:auto;height:auto;padding:calc(72px + env(safe-area-inset-top,0px)) 0 24px}
+  .hp{width:auto!important;height:auto!important;min-height:0;padding:24px;margin:0 16px 16px;--pad:24px}
+  .hp .txt{padding-top:20px}
+  .hl2,.hl3{font-size:2.6rem}
+  .sub1{font-size:1rem;margin-top:12px}
+  .shape-area{width:60%;height:60%;left:40%;opacity:.7}
+  .below,.hp.prob .more,.nodes{position:static;margin-top:20px}
+  .below{flex-wrap:wrap}
+  .hp .hint,#hero-dia,#hline,#hline-dark,#marker,#flag{display:none}
+  .nodes{display:grid;grid-template-columns:1fr;gap:8px;text-align:left}
+  .nodes span{text-align:left;padding-left:20px}
+  .nodes span:before{content:"";position:absolute;left:0;top:.55em;width:10px;height:10px;border-radius:50%;background:var(--bone-50);border:1.5px solid var(--navy-800)}
+  .p08 .seat,.p08 .rule{display:none}
+  .p08 .foot-cap,.p08 .foot-row{position:static;text-align:left}
+  .p08 .foot-row{flex-direction:column;gap:12px;margin-top:16px}
+  .p08 .foot-cap{margin-top:24px}
+  .hdr .pmap,#tune{display:none}
   #sheet{left:0;top:0;width:100vw;height:100vh;transform:none}
 }
 
@@ -609,56 +574,44 @@ body{overflow:hidden}
     <a href="#" data-sheet="../v3/projects.html">Projects</a>
     <button type="button" data-open-drawer>문의</button>
   </nav>
-  <span class="mob-pos">01 / 10</span>
+  <span class="mob-pos">01 / 09</span>
 </header>
 
 <div class="hwrap" id="hwrap">
   <div class="htrack" id="htrack">
     <!-- 00 Prologue · 처음 -->
-    <section class="hp page p00" id="p00">
+    <section class="hp p00" id="p00">
       <svg id="hero-dia" aria-hidden="true"></svg>
-      <div class="inner">
-        <h1 class="display">복잡한 업무를<br><em>단순한 제품</em>으로 바꿉니다.</h1>
-        <p class="lead">만들기 전에, 무엇이 불편한지부터 정리합니다. 그리고 실제로 쓰이는 끝까지 함께합니다.</p>
-      </div>
-      <div class="cta"><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a><a class="btn o" href="#p07" data-go="p07">작업 보기 →</a></div>
-      <div class="hint">→ 넘기세요 (휠 · 트랙패드 · 방향키)</div>
+      <div class="shape-area"><div class="shape circles"><i style="width:38%;padding-top:38%;left:56%;top:-14%"></i><i style="width:18%;padding-top:18%;left:86%;top:36%"></i><i style="width:12%;padding-top:12%;left:48%;top:46%"></i></div></div>
+      <span class="pcap">Prologue · 처음</span>
+      <div class="txt"><h1 class="hl hl3">복잡한 업무를<br><em>단순한 제품</em>으로<br>바꿉니다.</h1><p class="sub1">만들기 전에 정리하고, 실제로 쓰이는 끝까지 함께합니다.</p></div>
+      <div class="below right"><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a><a class="btn o" href="#p05" data-go="p05">작업 보기 →</a></div>
+      <span class="hint">→ 넘기세요 (휠 · 트랙패드 · 방향키)</span>
     </section>
-    <!-- 01 표제 -->
-    <section class="hp page p01" id="p01"><span class="num">01</span><div class="h1">이런 문제를<br>다룹니다</div>
-      <ol class="probs">
-        <li><b>01</b><span>흩어진 요청</span><small>엑셀, 메신저, 이메일, 구두 요청으로 업무가 흩어져 있어요.</small></li>
-        <li><b>02</b><span>불편한 기존 시스템</span><small>기능은 있는데 직원들이 쓰기 어렵고 화면이 복잡해요.</small></li>
-        <li><b>03</b><span>종이·수작업</span><small>디지털화하고 싶지만 그대로 옮기면 안 될 것 같아요.</small></li>
-        <li><b>04</b><span>제품이 필요한 아이디어</span><small>아이디어는 있는데 구조와 화면이 없어요.</small></li>
-      </ol>
-      <span class="cap b">사례는 Projects에서 →</span></section>
-    <!-- 02~05 project panels (generated) -->
-    <!-- 06 다섯 단계 -->
-    <section class="hp page p06" id="p06">
-      <div class="sec-head"><span class="num">02</span><h2 class="h1">처음부터 끝까지, 다섯 단계</h2></div>
-      <p class="intro">화면을 구현하는 것보다 왜 이 기능이 필요한지, 업무 자체를 더 단순하게 만들 수 없는지를 먼저 고민합니다. 기획·설계·개발을 한 사람이 맡아 처음 정리한 문제가 끝까지 흐트러지지 않습니다.</p>
-      <div class="steps" id="steps">
-        <div class="step"><div class="top"><span class="num">01</span><h3>Understand</h3></div><div class="lane"></div><div class="bot"><p>현재 업무와 사용자를 이해합니다. 왜 불편한지부터.</p><span class="chip first">처음 — 만들기 전에 정리</span></div></div>
-        <div class="step"><div class="top"><span class="num">02</span><h3>Simplify</h3></div><div class="lane"></div><div class="bot"><p>불필요한 단계와 중복을 제거합니다.</p><span class="chip">안 되는 건 미리 말씀드립니다</span></div></div>
-        <div class="step"><div class="top"><span class="num">03</span><h3>Design</h3></div><div class="lane"></div><div class="bot"><p>Workflow, 정보구조, UX를 설계합니다.</p><span class="chip">화면 전에 흐름부터</span></div></div>
-        <div class="step"><div class="top"><span class="num">04</span><h3>Build</h3></div><div class="lane"></div><div class="bot"><p>실제 사용할 수 있는 제품으로 구현합니다.</p><span class="chip">직접 설계하고 직접 개발</span></div></div>
-        <div class="step"><div class="top"><span class="num">05</span><h3>Improve</h3></div><div class="lane"></div><div class="bot"><p>사용 후 발견되는 문제를 반복 개선합니다.</p><span class="chip last">끝 — 출시 후에도</span></div></div>
-      </div>
+    <!-- 01~04 문제 4장 (generated) -->
+    <!-- 05 다섯 단계 -->
+    <section class="hp p05" id="p05">
+      <div class="shape-area"><div class="shape circles"><i style="width:56%;padding-top:56%;left:40%;top:-6%"></i></div></div>
+      <span class="pcap">02 · 일하는 방식</span>
+      <div class="txt"><h2 class="hl hl2">처음부터<br>끝까지.</h2><p class="sub1">만들기 전에 정리하고, 출시 후에도 고칩니다.</p></div>
+      <div class="nodes" id="nodes"><span data-chip="처음 — 만들기 전에 정리">Understand</span><span>Simplify</span><span>Design</span><span>Build</span><span data-chip="끝 — 출시 후에도">Improve</span></div>
     </section>
-    <!-- 07 Projects -->
-    <section class="hp page p07" id="p07"><span class="num">Projects</span><div class="h1">작업 <span id="restN"></span>건,<br>문제 유형별로</div><p class="lead">흩어진 요청 · 불편한 시스템 · 종이·수작업 · 아이디어. 어떤 문제를 어떻게 풀었는지 Case Study로 정리했습니다.</p><a class="btn" href="#" data-sheet="../v3/projects.html">Projects 열기 <i class="tri"></i></a></section>
-    <!-- 08 문의 · 끝 -->
-    <section class="hp page p08" id="p08">
+    <!-- 06 Projects -->
+    <section class="hp p06" id="p06">
+      <div class="shape-area"><div class="shape squares"><i style="left:44%;top:6%;width:16%;height:22%"></i><i style="left:66%;top:16%;width:16%;height:22%"></i><i style="left:52%;top:44%;width:16%;height:22%"></i><i style="left:78%;top:50%;width:16%;height:22%"></i><i style="left:36%;top:60%;width:12%;height:16%"></i><i style="left:88%;top:2%;width:10%;height:14%"></i></div></div>
+      <span class="pcap">Projects</span>
+      <div class="txt"><h2 class="hl hl2">작업<br><span id="restN">6</span>건.</h2><p class="sub1">문제 유형별로 정리한 Case Study — 무엇이 불편했고 어떻게 바꿨는지.</p></div>
+      <div class="below"><a class="btn" href="#" data-sheet="../v3/projects.html">Projects 열기 <i class="tri"></i></a></div>
+    </section>
+    <!-- 07 문의 · 끝 -->
+    <section class="hp p07 dark" id="p07">
       <svg id="flag" aria-hidden="true"></svg>
-      <div class="inner">
-        <h2 class="display">지금 하시는 <em>업무</em>를<br>알려주세요.</h2>
-        <p class="lead">이 페이지의 끝이 프로젝트의 시작입니다. 현재 방식과 가장 불편한 점 한 줄이면 충분합니다. 2영업일 안에 답변드립니다.</p>
-        <div class="cta"><a class="btn" href="#" data-open-drawer>프로젝트 문의하기 <i class="tri"></i></a><a class="mail" href="mailto:hello@prologue.and">hello@prologue.and</a></div>
-      </div>
+      <span class="pcap">문의 · 끝</span>
+      <div class="txt"><h2 class="hl hl3">지금 하시는<br><em>업무</em>를<br>알려주세요.</h2><p class="sub1">이 페이지의 끝이 프로젝트의 시작입니다. 2영업일 안에 답변드립니다.</p></div>
+      <div class="below" style="left:calc(var(--pad) + 40px)"><a class="btn" href="#" data-open-drawer>프로젝트 문의하기 <i class="tri"></i></a><a class="mail" href="mailto:hello@prologue.and">hello@prologue.and</a></div>
     </section>
-    <!-- 09 — & — -->
-    <section class="hp page p09" id="p09">
+    <!-- 08 — & — -->
+    <section class="hp p08" id="p08">
       <span class="rule r"></span><span class="seat"></span>
       <p class="foot-cap">Prologue<span class="amp">&amp;</span> — and, 그리고 end. 처음과 끝을 함께합니다.</p>
       <div class="foot-row"><nav><a href="#" data-sheet="../v3/projects.html">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></div>
@@ -1041,7 +994,7 @@ window.V5 = (function () {
   const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const desktop = () => matchMedia('(min-width:1024px)').matches;
   const LS = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
-  const LINE = () => { const p0 = document.getElementById('p00'); return p0.offsetTop + Math.round(p0.offsetHeight * 0.62); }; // 선 높이 = 패널 상단 + 62% (선 레인: 글자와 겹치지 않게)
+  const LINE = () => { const p0 = document.getElementById('p00'); return p0.offsetTop + Math.round(p0.offsetHeight * 0.80); }; // 바닥선(L1): 패널 상단 + 80%
   let wrap, track, lenis = null, panels = [], hline, ink, guide, lineLen = 0, geo = {}, launched = false, animTip = 0, tipMin = 0;
   /* 이동 중 축소 (V2 계승): 속도에 비례해 트랙을 최대 ZOOM.max 만큼 축소, 기준점은 매 프레임 화면 중심 */
   const ZOOM = { max: 0.12, vel: 28, ease: 0.18, on: !reduced && LS.get('v5-zoom') !== 'off' };   // 시안 조정: ?zoom=0.10&vel=30 (max = 최대 축소율, vel = 최대 축소에 이르는 속도 px/frame)
@@ -1058,31 +1011,24 @@ window.V5 = (function () {
     document.getElementById('marker').style.transform = `translate(${mx}px, ${my}px) scale(${z})`;
   }
 
-  /* ---------- markup: project panels 02~05, panel 07 list, progress map ---------- */
+  /* ---------- markup: 문제 4장(01~04) 생성, 진행 지도 ---------- */
+  const SHAPE_OF = { scattered: 'circles', legacy: 'grid', paper: 'papers', idea: 'ring' };
+  const TITLE_OF = { scattered: '흩어진<br>요청', legacy: '불편한<br>시스템', paper: '종이·<br>수작업', idea: '아이디어' };
+  const SUB_OF = { scattered: '엑셀·메신저·이메일·구두 요청으로 흩어진 업무', legacy: '기능은 있는데 쓰기 어렵고 복잡한 화면', paper: '그대로 옮기면 안 될 것 같은 디지털화', idea: '구조와 화면이 아직 없는 제품' };
   V.build = function () {
     wrap = document.getElementById('hwrap'); track = document.getElementById('htrack');
-    const SHOW_PROJECTS = false; // 2026-09-18 사용자 결정: 대시보드(스트립)에 프로젝트 패널을 깔지 않는다. 프로젝트는 Projects 시트에서만
-    const feats = SHOW_PROJECTS ? V3.featured() : [], N = feats.length, p06 = document.getElementById('p06');
-    feats.forEach((p, i) => {
-      const pr = V3.problem(p.problem), d = PANELS.get(p.slug), lg = p.title.length > 16 ? 'lg' : '';
-      const el = document.createElement('a'); el.className = `hp page pan pj ${lg}`; el.id = 'p' + String(i + 2).padStart(2, '0'); el.href = `../v3/case.html?p=${p.slug}`; el.dataset.slug = p.slug; el.dataset.sheet = el.href;
-      el.innerHTML = `<span class="pcap">${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')} · ${pr.name}</span><span class="cs">Case Study →</span>
-        <div class="shape-area">${PANELS.shapeHTML(d.shape)}</div><h2><span class="amp">&amp;</span>${p.title}</h2>
-        <div class="mdia">${PANELS.diagramSVG(p.slug, { w: 360, h: 130, x0: 64 })}</div>
-        <div class="prob"><b>문제 ${String(i + 1).padStart(2, '0')}<span class="amp">&amp;</span>${pr.name}</b><span>${pr.desc}</span></div>${PANELS.numsHTML(p.slug)}`;
-      track.insertBefore(el, p06);
+    const probs = V3.problems, N = probs.length, p05 = document.getElementById('p05');
+    probs.forEach((pr, i) => {
+      const el = document.createElement('a'); el.className = 'hp prob'; el.id = 'p' + String(i + 1).padStart(2, '0'); el.href = `../v3/projects.html?type=${pr.key}`; el.dataset.sheet = el.href;
+      el.innerHTML = `<div class="shape-area">${PANELS.shapeHTML(SHAPE_OF[pr.key])}</div><span class="pcap">${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')} · 문제</span>
+        <div class="txt"><h2 class="hl hl2">${TITLE_OF[pr.key]}</h2><p class="sub1">${SUB_OF[pr.key]}</p></div><span class="more">이 문제의 사례 →</span>`;
+      track.insertBefore(el, p05);
     });
-    const rest = V3.projects.filter(p => !p.featured);
     document.getElementById('restN').textContent = V3.projects.length;
     panels = [...track.querySelectorAll('.hp')];
-    const labels = ['Prologue', '01 문제', ...feats.map((p, i) => `문제 0${i + 1} · ${p.title}`), '02 다섯 단계', 'Projects', '문의', '&'];
+    const labels = ['Prologue', ...probs.map(pr => pr.name), '다섯 단계', 'Projects', '문의', '&'];
     document.getElementById('pmap').innerHTML = panels.map((el, i) => `<i data-i="${i}" data-l="${labels[i] || ''}"></i>`).join('');
-    if (!desktop()) {
-      track.querySelectorAll('.mdia').forEach(m => PANELS.prep(m));
-      const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { const m = e.target, t0 = performance.now(); const step = now => { const t = Math.min(1, (now - t0) / 1100); PANELS.progress(m, t); if (t < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); io.unobserve(m); } }), { threshold: 0.4 });
-      track.querySelectorAll('.mdia').forEach(m => io.observe(m));
-      V3.initMobilePos(panels.map(p => p.id));
-    } else track.querySelectorAll('.mdia').forEach(m => m.style.display = 'none');
+    if (!desktop()) V3.initMobilePos(panels.map(p => p.id));
     // sheets
     document.addEventListener('click', e => { const t = e.target.closest('[data-sheet]'); if (!t) return; e.preventDefault(); V.openSheet(t.dataset.sheet); });
     document.getElementById('sheet').querySelector('.close').addEventListener('click', () => V.closeSheet());
@@ -1132,22 +1078,22 @@ window.V5 = (function () {
     const W = track.scrollWidth, H = innerHeight, y = LINE();
     document.documentElement.style.setProperty('--ly', (y - document.getElementById('p00').offsetTop) + 'px');
     panels.forEach(p => { p._x = p.offsetLeft; p._w = p.offsetWidth; });
-    const p00 = panels[0], p08 = panels.find(p => p.classList.contains('p08')), p09 = panels[panels.length - 1];
+    const p00 = panels[0], p08 = panels.find(p => p.classList.contains('dark')), p09 = panels[panels.length - 1];
     const pt = p00.offsetTop, nodeL = Math.round(p00._w * 0.56), nodeX = p00._x + nodeL, yl = y - pt;   // panel-local coords for the hero svg
     // hero sources (in the track svg, panel 00 coordinates == track coordinates)
     // 4 sources start at the panel's LEFT edge, fan in to the node, then the one line runs right
-    const ys = [-60, -20, 20, 60].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
+    const ys = [14, 40, 66, 92].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
     const heroDia = document.getElementById('hero-dia');
     const ph = p00.offsetHeight; heroDia.setAttribute('viewBox', `0 0 ${p00._w} ${ph}`); heroDia.setAttribute('width', p00._w); heroDia.setAttribute('height', ph);
-    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M0 ${yy - pt} C ${Math.round(nodeL * 0.45)} ${yy - pt}, ${Math.round(nodeL * 0.7)} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="44" y="${yy - pt - 6}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
+    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M0 ${yy - pt} C ${Math.round(nodeL * 0.5)} ${yy - pt}, ${Math.round(nodeL * 0.72)} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="10" y="${yy - pt - 5}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX - 14;
     const d = `M${nodeX} ${y} H${endX}`;
     hline.setAttribute('width', W); hline.setAttribute('height', H); hline.setAttribute('viewBox', `0 0 ${W} ${H}`);
     // shared diagrams on project panels + five nodes in 06
     const dia = panels.filter(p => p.dataset.slug).map(p => `<g class="pd" data-x0="${Math.round(p._x + p._w * 0.40)}" data-x1="${Math.round(p._x + p._w * 0.9)}">${PANELS.diagramSVG(p.dataset.slug, { shared: true, y, x0: Math.round(p._x + p._w * 0.40), node: Math.round(p._x + p._w * 0.56), x1: Math.round(p._x + p._w - 56) })}</g>`).join('');
-    const p06 = document.getElementById('p06'), steps = [...p06.querySelectorAll('.step')];
-    const nodes = steps.map((s, i) => { const r = s.getBoundingClientRect(), x = Math.round(p06._x + (r.left + r.width / 2 - p06.getBoundingClientRect().left)); return `<circle class="d-node n6" data-x="${x}" cx="${x}" cy="${y}" r="5"/>`; }).join('');
+    const p05 = document.getElementById('p05'), steps = [...p05.querySelectorAll('.nodes span')];
+    const nodes = steps.map((s, i) => { const r = s.getBoundingClientRect(), x = Math.round(p05._x + (r.left + r.width / 2 - p05.getBoundingClientRect().left)); s.dataset.x = x; return `<circle class="d-node n6" data-x="${x}" cx="${x}" cy="${y}" r="5"/>`; }).join('');
     hline.innerHTML = `<path class="guide" d="${d}"/><path class="ink" d="${d}"/>${dia}${nodes}`;
     ink = hline.querySelector('.ink'); lineLen = ink.getTotalLength(); ink.style.strokeDasharray = lineLen; ink.style.strokeDashoffset = lineLen;
     hline.querySelectorAll('.pd').forEach(g => PANELS.prep(g));
@@ -1174,6 +1120,7 @@ window.V5 = (function () {
     ink.style.strokeDashoffset = lineLen - len; const dkInk = document.querySelector('#hline-dark .ink'); if (dkInk) dkInk.style.strokeDashoffset = lineLen - len;
     hline.querySelectorAll('.pd').forEach(g => PANELS.progress(g, Math.min(1, Math.max(0, (tipX - +g.dataset.x0) / (+g.dataset.x1 - +g.dataset.x0)))));
     hline.querySelectorAll('.n6').forEach(n => n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6');
+    document.querySelectorAll('#nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x));
     const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched || !lenis) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);
