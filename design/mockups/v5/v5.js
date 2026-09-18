@@ -22,22 +22,12 @@ window.V5 = (function () {
     document.getElementById('marker').style.transform = `translate(${mx}px, ${my}px) scale(${z})`;
   }
 
-  /* ---------- markup: 문제 4장(01~04) 생성, 진행 지도 ---------- */
-  const SHAPE_OF = { scattered: 'circles', legacy: 'grid', paper: 'papers', idea: 'ring' };
-  const TITLE_OF = { scattered: '흩어진<br>요청', legacy: '불편한<br>시스템', paper: '종이·<br>수작업', idea: '아이디어' };
-  const SUB_OF = { scattered: '엑셀·메신저·이메일·구두 요청으로 흩어진 업무', legacy: '기능은 있는데 쓰기 어렵고 복잡한 화면', paper: '그대로 옮기면 안 될 것 같은 디지털화', idea: '구조와 화면이 아직 없는 제품' };
+  /* ---------- markup: 진행 지도 ---------- */
   V.build = function () {
     wrap = document.getElementById('hwrap'); track = document.getElementById('htrack');
-    const probs = V3.problems, N = probs.length, p05 = document.getElementById('p05');
-    probs.forEach((pr, i) => {
-      const el = document.createElement('a'); el.className = 'hp prob'; el.id = 'p' + String(i + 1).padStart(2, '0'); el.href = `../v3/projects.html?type=${pr.key}`; el.dataset.sheet = el.href;
-      el.innerHTML = `<div class="shape-area">${PANELS.shapeHTML(SHAPE_OF[pr.key])}</div><span class="pcap">${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')} · 문제</span>
-        <div class="txt"><h2 class="hl hl2">${TITLE_OF[pr.key]}</h2><p class="sub1">${SUB_OF[pr.key]}</p></div><span class="more">이 문제의 사례 →</span>`;
-      track.insertBefore(el, p05);
-    });
     document.getElementById('restN').textContent = V3.projects.length;
     panels = [...track.querySelectorAll('.hp')];
-    const labels = ['Prologue', ...probs.map(pr => pr.name), '다섯 단계', 'Projects', '문의', '&'];
+    const labels = ['Prologue', '처음', '&', '끝까지', '누구를 위해', '무엇을', 'Projects', '문의', '&'];
     document.getElementById('pmap').innerHTML = panels.map((el, i) => `<i data-i="${i}" data-l="${labels[i] || ''}"></i>`).join('');
     if (!desktop()) V3.initMobilePos(panels.map(p => p.id));
     // sheets
@@ -92,19 +82,19 @@ window.V5 = (function () {
     const p00 = panels[0], p08 = panels.find(p => p.classList.contains('dark')), p09 = panels[panels.length - 1];
     const pt = p00.offsetTop, nodeL = Math.round(p00._w * 0.56), nodeX = p00._x + nodeL, yl = y - pt;   // panel-local coords for the hero svg
     // hero sources (in the track svg, panel 00 coordinates == track coordinates)
-    // 4 sources start at the panel's LEFT edge, fan in to the node, then the one line runs right
-    const ys = [14, 40, 66, 92].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
+    // S1: 엉킨 선 뭉치(복잡한 업무)에서 한 가닥이 풀려 나와 바닥선(단순한 제품)이 된다 — docs/19 §3
     const heroDia = document.getElementById('hero-dia');
     const ph = p00.offsetHeight; heroDia.setAttribute('viewBox', `0 0 ${p00._w} ${ph}`); heroDia.setAttribute('width', p00._w); heroDia.setAttribute('height', ph);
-    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M0 ${yy - pt} C ${Math.round(nodeL * 0.5)} ${yy - pt}, ${Math.round(nodeL * 0.72)} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="10" y="${yy - pt - 5}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
+    const k = nodeL / 100; // knot spans x 0 → nodeL, wobbling around the line
+    const knot = `M0 ${yl - 26} C ${16 * k} ${yl - 120}, ${44 * k} ${yl + 70}, ${28 * k} ${yl - 6} S ${8 * k} ${yl + 80}, ${40 * k} ${yl + 40} S ${66 * k} ${yl - 110}, ${50 * k} ${yl - 30} S ${30 * k} ${yl + 60}, ${64 * k} ${yl + 34} S ${86 * k} ${yl - 60}, ${78 * k} ${yl - 8} S ${70 * k} ${yl + 30}, ${100 * k} ${yl}`;
+    heroDia.innerHTML = `<path class="knot" d="${knot}"/><text x="${Math.round(10 * k)}" y="${yl - 128}">복잡한 업무</text><text x="${nodeL + 12}" y="${yl - 12}">단순한 제품</text>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX - 14;
     const d = `M${nodeX} ${y} H${endX}`;
     hline.setAttribute('width', W); hline.setAttribute('height', H); hline.setAttribute('viewBox', `0 0 ${W} ${H}`);
     // shared diagrams on project panels + five nodes in 06
     const dia = panels.filter(p => p.dataset.slug).map(p => `<g class="pd" data-x0="${Math.round(p._x + p._w * 0.40)}" data-x1="${Math.round(p._x + p._w * 0.9)}">${PANELS.diagramSVG(p.dataset.slug, { shared: true, y, x0: Math.round(p._x + p._w * 0.40), node: Math.round(p._x + p._w * 0.56), x1: Math.round(p._x + p._w - 56) })}</g>`).join('');
-    const p05 = document.getElementById('p05'), steps = [...p05.querySelectorAll('.nodes span')];
-    const nodes = steps.map((s, i) => { const r = s.getBoundingClientRect(), x = Math.round(p05._x + (r.left + r.width / 2 - p05.getBoundingClientRect().left)); s.dataset.x = x; return `<circle class="d-node n6" data-x="${x}" cx="${x}" cy="${y}" r="5"/>`; }).join('');
+    const nodes = panels.flatMap(p => [...p.querySelectorAll('.nodes span')].map(s => { const r = s.getBoundingClientRect(), x = Math.round(p._x + (r.left + r.width / 2 - p.getBoundingClientRect().left)); s.dataset.x = x; return (s.hasAttribute('data-flag') ? `<polygon class="d-flag n6f" data-x="${x}" points="${x - 8},${y - 9} ${x + 10},${y} ${x - 8},${y + 9}"/>` : `<circle class="d-node n6" data-x="${x}" cx="${x}" cy="${y}" r="5"/>`); })).join('');
     hline.innerHTML = `<path class="guide" d="${d}"/><path class="ink" d="${d}"/>${dia}${nodes}`;
     ink = hline.querySelector('.ink'); lineLen = ink.getTotalLength(); ink.style.strokeDasharray = lineLen; ink.style.strokeDashoffset = lineLen;
     hline.querySelectorAll('.pd').forEach(g => PANELS.prep(g));
@@ -118,7 +108,7 @@ window.V5 = (function () {
     const p8h = p08.offsetHeight; flag.setAttribute('viewBox', `0 0 ${p08._w} ${p8h}`); flag.setAttribute('width', p08._w); flag.setAttribute('height', p8h);
     const fx = bx - 60, y8 = y - p08.offsetTop; flag.innerHTML = `<path d="M${fx} ${y8} V${by} H${bx - 26}"/><polygon points="${bx - 26},${by - 6} ${bx - 12},${by} ${bx - 26},${by + 6}"/>`;
     geo = { W, H, y, nodeX, endX, ampX, darkL: p08._x, darkR: p08._x + p08._w, flagX: p08._x + fx };
-    tipMin = 120;
+    tipMin = 40;
   }
   const current = () => { const c = sl() + innerWidth * 0.5; let i = 0; panels.forEach((p, k) => { if (p._x <= c) i = k; }); return i; };
 
@@ -131,7 +121,7 @@ window.V5 = (function () {
     ink.style.strokeDashoffset = lineLen - len; const dkInk = document.querySelector('#hline-dark .ink'); if (dkInk) dkInk.style.strokeDashoffset = lineLen - len;
     hline.querySelectorAll('.pd').forEach(g => PANELS.progress(g, Math.min(1, Math.max(0, (tipX - +g.dataset.x0) / (+g.dataset.x1 - +g.dataset.x0)))));
     hline.querySelectorAll('.n6').forEach(n => n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6');
-    document.querySelectorAll('#nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x));
+    document.querySelectorAll('.nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x)); hline.querySelectorAll('.n6f').forEach(f => f.style.opacity = tipX >= +f.dataset.x ? 1 : 0.25);
     const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched || !lenis) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);
@@ -143,13 +133,13 @@ window.V5 = (function () {
 
   function intro(skip) {
     const heroDia = document.getElementById('hero-dia'), marker = document.getElementById('marker'), brand = document.querySelector('.hdr .brand'), bamp = brand.querySelector('.bamp');
-    const srcs = heroDia.querySelectorAll('.src'), texts = heroDia.querySelectorAll('text, .node');
+    const srcs = heroDia.querySelectorAll('.knot'), texts = heroDia.querySelectorAll('text, .node');
     // progress map widths ∝ panel widths
     const tot = panels.reduce((a, p) => a + p._w, 0); document.querySelectorAll('#pmap i').forEach((b, i) => b.style.width = Math.max(6, Math.round(panels[i]._w / tot * 260)) + 'px');
     if (skip || !window.gsap) { launched = true; marker.style.opacity = 1; brand.classList.add('amp-gone'); render(); return; }
     srcs.forEach(sp => { const L = sp.getTotalLength(); sp.style.strokeDasharray = L; sp.style.strokeDashoffset = L; }); texts.forEach(t => t.style.opacity = 0);
     gsap.timeline({ delay: 0.2 })
-      .to(srcs, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.inOut', stagger: 0.06 })
+      .to(srcs, { strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut' })
       .to(texts, { opacity: 1, duration: 0.3 }, '-=0.3')
       .to({ v: 0 }, { v: tipMin, duration: 1.0, ease: 'power2.inOut', onUpdate() { animTip = this.targets()[0].v; render(); } }, '-=0.2')
       .call(() => {
