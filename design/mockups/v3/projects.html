@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="v3.css?v=202609181657">
+<link rel="stylesheet" href="v3.css?v=202609181718">
 </head>
 <body>
 
@@ -23,8 +23,8 @@
   <div class="wrap">
     <div class="page-head">
       <h1 class="h1">Projects</h1>
-      <p class="lead">작업 기록. 브랜드명 뒤의 빈칸을 채운 것들입니다.</p>
-      <p class="cap cnt"><span id="cnt"></span> · 최근 갱신 2026-09-16</p>
+      <p class="lead">지금까지 한 일. 이름 뒤의 빈칸을 채워 온 것들입니다.</p>
+      <p class="cap cnt"><span id="cnt"></span> · 2026-09-16 기준</p>
     </div>
     <div id="list"></div>
   </div>
@@ -42,7 +42,7 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
-<script src="v3.js?v=202609181657"></script>
+<script src="v3.js?v=202609181718"></script>
 <script>
   const EMBED = location.search.includes('embed=1') ? '&embed=1' : '';
   function render() {
@@ -57,7 +57,7 @@
           <p class="res">${p.tagline}</p>
         </div>
       </a>`).join('')
-      : `<div class="empty"><p>이 유형의 작업은 준비 중입니다.<br>비슷한 문제가 있다면 문의해 주세요.</p><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a></div>`;
+      : `<div class="empty"><p>아직 이 유형의 작업이 없습니다.<br>비슷한 고민이 있으면 편하게 물어보세요.</p><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a></div>`;
   }
   render();
   // 전환 A: 클릭한 행의 제목만 공유 요소로(이름은 문서에 하나만). 돌아올 때를 위해 slug 기억
