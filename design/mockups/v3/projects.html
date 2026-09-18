@@ -48,7 +48,7 @@
     const items = V3.projects.slice().sort((a, b) => a.order - b.order);
     document.getElementById('cnt').textContent = `${items.length}건`;
     document.getElementById('list').innerHTML = items.length ? items.map((p, i) => `
-      <a class="prow" href="case.html?p=${p.slug}">
+      <a class="prow" href="case.html?p=${p.slug}&v=202609181604">
         <span class="num">${String(p.order).padStart(2, '0')}</span>
         <div>
           <div class="h2"><span class="amp">&amp;</span>${p.title}</div>
