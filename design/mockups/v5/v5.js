@@ -90,7 +90,8 @@ window.V5 = (function () {
     // wheel / trackpad (A): 이벤트 "스트림"(간격 50ms 이내의 연속 이벤트) 하나 = 노치 하나 = 점 하나.
     //   고해상도 휠·트랙패드는 노치 하나에 이벤트를 수십 개 보내므로, 스트림 시작에 한 번 진행하고 같은 스트림 안에서는 240px 누적마다 한 점만 더 진행.
     //   진행 요청은 버리지 않고 큐에 쌓아 순서대로(입력 유실 없음).
-    let acc = 0, lastEv = 0, pending = 0, lockUntil = 0;
+    const WHEEL = { gap: 80, first: 60, more: 360 };   // 감도: 스트림 묶음 간격(ms) / 첫 점까지 누적(px) / 같은 스트림에서 추가 점당 누적(px). 클수록 둔감
+    let acc = 0, lastEv = 0, pending = 0, lockUntil = 0, stepped = false;
     const request = dir => { const now = performance.now(); if (now < lockUntil) { pending += dir; return; } V.step(dir); lockUntil = now + 160; };
     wrap.addEventListener('wheel', e => {
       e.preventDefault();
@@ -98,9 +99,10 @@ window.V5 = (function () {
       const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
       if (!d) return;
       const now = performance.now(), gap = now - lastEv; lastEv = now;
-      if (gap > 50) { acc = 0; request(d > 0 ? 1 : -1); return; }   // 새 스트림 → 즉시 한 점
+      if (gap > WHEEL.gap) { acc = 0; stepped = false; }                 // 새 스트림
       acc += d;
-      if (Math.abs(acc) >= 240) { request(acc > 0 ? 1 : -1); acc = 0; } // 긴 스와이프 → 240px마다 한 점
+      const need = stepped ? WHEEL.more : WHEEL.first;
+      if (Math.abs(acc) >= need) { request(acc > 0 ? 1 : -1); acc = 0; stepped = true; }
     }, { passive: false });
     gsap.ticker.add(() => { if (pending && performance.now() >= lockUntil) { const dir = Math.sign(pending); pending -= dir; V.step(dir); lockUntil = performance.now() + 160; } });
     // hash → start position (skip intro)
