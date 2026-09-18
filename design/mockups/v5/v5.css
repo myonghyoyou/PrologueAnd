@@ -51,7 +51,7 @@ body{overflow:hidden}
 .p08 .rule{position:absolute;top:var(--ly);height:1px;background:var(--bone-300);transition:background .4s}
 .p08.done .rule{background:var(--navy-800)}
 .p08 .foot-cap{position:absolute;left:0;right:0;top:calc(var(--ly) + 40px);text-align:center;font-size:13px;color:var(--bone-500);margin:0}
-.p08 .foot-row{position:absolute;left:var(--pad);right:var(--pad);top:var(--pad);margin:0;font-size:13px;color:var(--bone-500);display:flex;justify-content:space-between}
+.p08 .foot-row{position:absolute;left:var(--pad);right:var(--pad);bottom:var(--pad);margin:0;padding-top:16px;border-top:1px solid var(--bone-200);font-size:13px;color:var(--bone-500);display:flex;justify-content:space-between}
 .p08 .foot-row nav{display:flex;gap:24px}
 /* ---- line ---- */
 #hline{position:absolute;left:0;top:0;height:100%;pointer-events:none;z-index:4;overflow:visible}
