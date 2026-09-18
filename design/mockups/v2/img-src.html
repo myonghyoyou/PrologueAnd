@@ -73,6 +73,38 @@
   .sel div{display:flex;gap:.5rem}.sel div span{border:1px solid #D9DCE3;border-radius:6px;padding:.5rem .8rem;font-size:14px}.sel div span.on{border-color:#111318;font-weight:600}
   .cta{display:flex;gap:.6rem;margin-top:1.4rem}.cta .btn{flex:1;text-align:center;padding:.9rem}
   .meta{margin-top:1.4rem;font-size:13px;color:#5B6072;line-height:1.8}
+
+  /* request form (requester side) */
+  .reqwrap{height:100%;background:#F5F7FB;display:grid;place-items:center}
+  .req{width:640px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(17,19,24,.08);padding:2rem 2.2rem}
+  .req h3{margin:0 0 .3rem;font-size:20px;font-weight:700;letter-spacing:-.02em}
+  .req .who{font-size:13px;color:#7A8AA6;margin-bottom:1.4rem}
+  .req .fl{margin-bottom:1rem}.req .fl label{display:block;font-size:12px;color:#5B6072;margin-bottom:.35rem}.req .fl label b{color:#B42318;font-weight:500}
+  .req .fl div{border:1px solid #D9DCE3;border-radius:8px;padding:.7rem .9rem;font-size:14px;min-height:42px}
+  .req .fl div.ta{min-height:88px;line-height:1.6}
+  .req .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  .req .chips{display:flex;gap:.5rem;flex-wrap:wrap}.req .chips span{border:1px solid #D9DCE3;border-radius:999px;padding:.35rem .7rem;font-size:13px}.req .chips span.on{background:#2B3160;color:#fff;border-color:#2B3160}
+  .req .foot{display:flex;justify-content:space-between;align-items:center;margin-top:1.4rem;font-size:12px;color:#7A8AA6}
+  /* before: scattered requests */
+  .before{height:100%;background:#E9EBF0;position:relative;overflow:hidden;font-size:13px}
+  .win{position:absolute;background:#fff;border-radius:10px;box-shadow:0 12px 32px rgba(17,19,24,.16);overflow:hidden}
+  .win .tb{height:36px;display:flex;align-items:center;gap:.5rem;padding:0 .9rem;background:#F3F4F7;border-bottom:1px solid #E1E3EA;font-size:12px;color:#5B6072}
+  .win .tb i{width:10px;height:10px;border-radius:50%;background:#D9DCE3;display:inline-block}
+  .chat{padding:1rem;display:grid;gap:.7rem}
+  .chat .msg{max-width:78%;padding:.55rem .8rem;border-radius:12px;background:#F1F2F6;line-height:1.5}
+  .chat .msg.me{margin-left:auto;background:#FBE47A}
+  .chat .t{font-size:11px;color:#9AA0B0}
+  .mail{padding:.8rem 1rem}
+  .mail .m{display:grid;grid-template-columns:120px 1fr 60px;gap:.8rem;padding:.6rem 0;border-bottom:1px solid #EEF0F4}
+  .mail .m b{font-weight:600}.mail .m.un b{color:#111318}.mail .m span{color:#5B6072;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.mail .m em{font-style:normal;color:#9AA0B0;font-size:11px;text-align:right}
+  .note{position:absolute;width:190px;padding:.9rem 1rem;background:#FFF3A8;box-shadow:0 8px 20px rgba(17,19,24,.18);font-size:13px;line-height:1.55;transform:rotate(-3deg)}
+  .note.b{background:#DDEBFF;transform:rotate(2.5deg)}
+  .xls{padding:0}
+  .xls table{border:0;border-radius:0;font-size:12px}
+  .xls td,.xls th{padding:.4rem .6rem;border:1px solid #E6E8EE}
+  .xls th{background:#F3F4F7;color:#5B6072}
+  .phone{position:absolute;width:150px;padding:.7rem .8rem;background:#fff;border-radius:10px;box-shadow:0 8px 20px rgba(17,19,24,.18);font-size:12px}
+  .phone b{display:block;font-size:13px}.phone span{color:#5B6072}
 </style>
 </head>
 <body>
@@ -147,6 +179,35 @@
         <div class="meta">무료 배송 · 09.18 도착 예정<br>재고 7개 · 14일 이내 교환·환불<br>리뷰 128개 · 4.8</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- 5. request form (requester side) -->
+<div class="screen" id="por-favor-harry-form">
+  <div class="reqwrap">
+    <div class="req">
+      <h3>업무 요청</h3><div class="who">요청자: 영업 1팀 김OO · 개인 링크로 접속</div>
+      <div class="fl"><label>무엇이 필요한가요? <b>*</b></label><div>거래처 단가표 양식에 '적용 시작일' 열 추가</div></div>
+      <div class="fl"><label>왜 필요한가요? <b>*</b></label><div class="ta">분기마다 단가가 바뀌는데 현재 양식에는 시작일이 없어 거래처가 옛 단가로 발주하는 일이 반복됩니다. 3분기에만 4건.</div></div>
+      <div class="row"><div class="fl"><label>희망일 <b>*</b></label><div>2026.09.18 (목)</div></div><div class="fl"><label>영향 범위</label><div class="chips"><span class="on">영업 1팀</span><span>거래처 12곳</span><span>회계</span></div></div></div>
+      <div class="fl"><label>첨부</label><div>단가표_2026Q3.xlsx · 현재양식_캡처.png</div></div>
+      <div class="foot"><span>제출하면 심사 Queue에 들어가고, 약속일이 정해지면 알려드립니다</span><span class="btn">요청 보내기</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. before: requests scattered across channels -->
+<div class="screen" id="por-favor-harry-before">
+  <div class="before">
+    <div class="win" style="left:40px;top:40px;width:420px;height:470px"><div class="tb"><i></i><i></i><i></i> 메신저 — 영업 1팀 단톡</div>
+      <div class="chat"><div class="t">오전 9:12</div><div class="msg">단가표 양식에 시작일 좀 넣어주세요 급해요</div><div class="msg">아 그리고 저번에 말한 비품 화면도요</div><div class="msg me">네 확인할게요 (어떤 화면이었죠?)</div><div class="t">오전 11:40</div><div class="msg">품질팀인데요 검사결과 엑셀로 뽑을 수 있게 되나요</div><div class="msg">언제쯤 될까요??</div><div class="msg me">잠시만요 정리해서 말씀드릴게요</div><div class="t">오후 2:05</div><div class="msg">단가표 건 어떻게 됐어요?</div></div></div>
+    <div class="win" style="left:500px;top:90px;width:560px;height:330px"><div class="tb"><i></i><i></i><i></i> 받은편지함 (47)</div>
+      <div class="mail"><div class="m un"><b>총무 박OO</b><span>[요청] 비품 신청 화면 필수값 추가 부탁드립니다</span><em>09.15</em></div><div class="m un"><b>생산 최OO</b><span>RE: RE: 작업지시서 인쇄 여백 — 아직인가요</span><em>09.15</em></div><div class="m"><b>인사 정OO</b><span>휴가 신청서 승인 흐름 변경 건 (첨부 참고)</span><em>09.14</em></div><div class="m un"><b>구매 한OO</b><span>발주서 번호 자동으로 안 되나요</span><em>09.14</em></div><div class="m"><b>영업 1팀 김OO</b><span>Fwd: 단가표 양식 (거래처 회신)</span><em>09.12</em></div><div class="m"><b>품질 이OO</b><span>검사 결과 엑셀 내보내기 문의</span><em>09.11</em></div></div></div>
+    <div class="win xls" style="left:560px;top:450px;width:600px;height:300px"><div class="tb"><i></i><i></i><i></i> 요청정리_최종_진짜최종.xlsx</div>
+      <table><tr><th>#</th><th>누가</th><th>뭘</th><th>언제</th><th>메모</th></tr><tr><td>1</td><td>김OO</td><td>단가표 시작일</td><td>?</td><td>카톡</td></tr><tr><td>2</td><td>박OO</td><td>비품 필수값</td><td>9/20</td><td>메일</td></tr><tr><td>3</td><td>이OO</td><td>검사결과 엑셀</td><td></td><td>카톡, 전화도 옴</td></tr><tr><td>4</td><td>최OO</td><td>인쇄 여백</td><td>급함</td><td>메일 3번</td></tr><tr><td>5</td><td>?</td><td>승인 흐름</td><td></td><td>구두</td></tr></table></div>
+    <div class="note" style="left:1080px;top:60px">최OO 과장님<br>인쇄 여백 → 오늘 중?<br>(전화 2번 옴)</div>
+    <div class="note b" style="left:1090px;top:250px">구매팀 발주번호<br>자동 부여 — 다음 주?</div>
+    <div class="phone" style="left:300px;top:560px"><b>부재중 전화 (3)</b><span>생산 최OO · 오후 1:52</span><br><span>품질 이OO · 오후 1:20</span><br><span>영업 김OO · 오전 10:03</span></div>
   </div>
 </div>
 <script>

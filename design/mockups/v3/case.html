@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="v3.css?v=202609181654">
+<link rel="stylesheet" href="v3.css?v=202609181657">
 </head>
 <body>
 
@@ -32,7 +32,7 @@
     </table>
   </div>
   <div class="case-hero">
-    <div class="shot ph">대표 화면 — 공개 범위 확인 후 게시</div>
+    <div class="shot live" data-p="por-favor-harry" title="심사 Queue — 요청 6건이 한 화면에"><iframe src="../v2/img-src.html?p=por-favor-harry" tabindex="-1" aria-label="심사 Queue — 요청 6건이 한 화면에" loading="lazy"></iframe></div>
   </div>
 
   <div class="case-body">
@@ -52,11 +52,11 @@
       </div>
       <section class="cs" id="s4"><h2><span class="num">04</span>Insight</h2><p class="q">ToDo 관리의 문제가 아니라 요청 Workflow의 문제였습니다.</p></section>
       <section class="cs" id="s5"><h2><span class="num">05</span>Redesign</h2><div class="flow"><span>개인 링크</span><em>→</em><span>구조화된 요청폼</span><em>→</em><span>하나의 심사 Queue</span><em>→</em><span>약속일 확정</span><em>→</em><span class="g">상태 자동 공유</span></div><p>요청 단계에서 필수 정보를 채우게 해 되묻는 일을 없앴고, 심사 Queue에서 한 번에 판단합니다. 약속일이 정해지면 요청자에게 상태가 자동으로 공유됩니다.</p></section>
-      <section class="cs" id="s6"><h2><span class="num">06</span>Solution</h2><p>요청폼 · 심사 Queue · 진행 상태 · 약속일 · Dashboard · 요청자 조회 화면.</p><div class="shot ph">심사 Queue 화면 — 공개 범위 확인 후</div></section>
+      <section class="cs" id="s6"><h2><span class="num">06</span>Solution</h2><p>요청폼 · 심사 Queue · 진행 상태 · 약속일 · Dashboard · 요청자 조회 화면. 아래는 요청자가 보는 요청폼 — 필수 항목을 채워야 보낼 수 있습니다.</p><div class="shot live" data-p="por-favor-harry-form" title="요청폼 — 요청자가 필수 정보를 채워 보냄"><iframe src="../v2/img-src.html?p=por-favor-harry-form" tabindex="-1" aria-label="요청폼 — 요청자가 필수 정보를 채워 보냄" loading="lazy"></iframe></div></section>
       <section class="cs" id="s7"><h2><span class="num">07</span>Before <span class="amp" style="font-size:.9em">&amp;</span> After</h2>
         <div class="pair">
-          <div><span class="cap">Before — 메신저·메일에 흩어진 요청</span><div class="shot ph">Before — 공개 범위 확인 후</div></div>
-          <div><span class="cap">After — 하나의 심사 Queue</span><div class="shot ph">After — 공개 범위 확인 후</div></div>
+          <div><span class="cap">Before — 메신저·메일에 흩어진 요청</span><div class="shot live" data-p="por-favor-harry-before" title="Before — 메신저·메일·엑셀·메모에 흩어진 요청"><iframe src="../v2/img-src.html?p=por-favor-harry-before" tabindex="-1" aria-label="Before — 메신저·메일·엑셀·메모에 흩어진 요청" loading="lazy"></iframe></div></div>
+          <div><span class="cap">After — 하나의 심사 Queue</span><div class="shot live" data-p="por-favor-harry" title="After — 하나의 심사 Queue"><iframe src="../v2/img-src.html?p=por-favor-harry" tabindex="-1" aria-label="After — 하나의 심사 Queue" loading="lazy"></iframe></div></div>
         </div>
         <p style="margin-top:16px">요청 경로 4개 → 1개. 진행 상황 문의 반복 → 요청자가 직접 확인.</p></section>
       <section class="cs" id="s8"><h2><span class="num">08</span>Impact</h2>
@@ -89,7 +89,7 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
-<script src="v3.js?v=202609181654"></script>
+<script src="v3.js?v=202609181657"></script>
 <script>
   /* title from ?p= (other slugs reuse this body; content is the mockup's one case) */
   const slug = new URLSearchParams(location.search).get('p');
@@ -127,6 +127,9 @@
     document.getElementById('tb-pos').textContent = `${String(cur).padStart(2, '0')} / 10`;
   }
   document.querySelectorAll('#nrail li').forEach(li => li.addEventListener('click', () => V3.scrollTo(document.getElementById('s' + li.dataset.i), { offset: -96 })));
+  /* live mock screens: 1280×800 HTML을 매트 폭에 맞춰 축소 */
+  const fitLive = () => document.querySelectorAll('.shot.live').forEach(el => { const w = el.clientWidth - 12; el.style.setProperty('--sc', (w / 1280).toFixed(4)); });
+  fitLive(); addEventListener('resize', fitLive); if (window.ResizeObserver) new ResizeObserver(fitLive).observe(document.body);
   V3.initLenis();
   if (V3.lenis) V3.lenis.on('scroll', onScroll); else addEventListener('scroll', onScroll, { passive: true });
   onScroll();
