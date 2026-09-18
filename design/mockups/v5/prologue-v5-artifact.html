@@ -1172,7 +1172,7 @@ window.V5 = (function () {
     snaps = [...new Set(snaps.map(v => Math.max(0, Math.min(limit, Math.round(v)))))].sort((a, b) => a - b);
     tipMin = 0;
   }
-  const current = () => { const c = sl() + innerWidth * 0.5; let i = 0; panels.forEach((p, k) => { if (p._x <= c) i = k; }); return i; };
+  const current = () => { const c = launched ? st.tipX : sl() + innerWidth * 0.5; let i = 0; panels.forEach((p, k) => { if (p._x <= c) i = k; }); return i; };   // 현재 패널 = &가 있는 패널 (넓은 창에서 끝 패널이 화면 중앙에 못 미쳐도 맞도록)
 
   function render() {
     const s = sl(), vw = innerWidth, maxS = geo.W - vw;
