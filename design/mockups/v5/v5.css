@@ -26,6 +26,13 @@ body{overflow:hidden}
 .p01 .num{display:block;color:var(--navy-800);margin-bottom:12px}
 .p01 .h1{max-width:9em}
 .p01 .cap.b{position:absolute;left:40px;bottom:40px}
+.p01 .probs{list-style:none;margin:0;padding:0;position:absolute;left:40px;right:40px;top:calc(var(--ly) - 8px);display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.p01 .probs li{border-top:1px solid var(--navy-800);padding-top:12px;background:var(--bone-0);position:relative;z-index:2}
+.p01 .probs b{display:block;font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--navy-800);margin-bottom:6px}
+.p01 .probs span{display:block;font-size:19px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
+.p01 .probs small{display:block;font-size:13px;color:var(--bone-700);line-height:1.5}
+.p07 .lead{margin-top:16px}
+.p07 .btn{position:absolute;left:40px;bottom:40px}
 .p07{padding:40px}
 .p07 .num{display:block;color:var(--navy-800);margin-bottom:12px}
 .p07 ul{list-style:none;margin:16px 0 0;padding:0}
@@ -117,7 +124,8 @@ body{overflow:hidden}
   .p00 .sub{position:static;margin-top:24px}
   .p00 .hint,#hero-dia{display:none}
   .p00 .cta{flex-direction:column}
-  .p01 .cap.b,.p07 .link{position:static;display:block;margin-top:16px}
+  .p01 .cap.b,.p07 .btn{position:static;display:inline-block;margin-top:16px}
+  .p01 .probs{position:static;grid-template-columns:1fr;gap:12px;margin-top:16px}
   .p06 .sec-head,.p06 .steps,.p06 .about{position:static}
   .p06 .steps{grid-template-columns:1fr;gap:0;margin-top:16px}
   .p06 .step{text-align:left;padding:16px 0;border-bottom:1px solid var(--bone-200)}

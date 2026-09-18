@@ -24,7 +24,8 @@ window.V5 = (function () {
   /* ---------- markup: project panels 02~05, panel 07 list, progress map ---------- */
   V.build = function () {
     wrap = document.getElementById('hwrap'); track = document.getElementById('htrack');
-    const feats = V3.featured(), N = feats.length, p06 = document.getElementById('p06');
+    const SHOW_PROJECTS = false; // 2026-09-18 사용자 결정: 대시보드(스트립)에 프로젝트 패널을 깔지 않는다. 프로젝트는 Projects 시트에서만
+    const feats = SHOW_PROJECTS ? V3.featured() : [], N = feats.length, p06 = document.getElementById('p06');
     feats.forEach((p, i) => {
       const pr = V3.problem(p.problem), d = PANELS.get(p.slug), lg = p.title.length > 16 ? 'lg' : '';
       const el = document.createElement('a'); el.className = `hp page pan pj ${lg}`; el.id = 'p' + String(i + 2).padStart(2, '0'); el.href = `../v3/case.html?p=${p.slug}`; el.dataset.slug = p.slug; el.dataset.sheet = el.href;
@@ -35,10 +36,9 @@ window.V5 = (function () {
       track.insertBefore(el, p06);
     });
     const rest = V3.projects.filter(p => !p.featured);
-    document.getElementById('restN').textContent = rest.length;
-    document.getElementById('restList').innerHTML = rest.map(p => `<li><span class="amp">&amp;</span>${p.title} <span class="cap">· ${p.year}</span></li>`).join('');
+    document.getElementById('restN').textContent = V3.projects.length;
     panels = [...track.querySelectorAll('.hp')];
-    const labels = ['Prologue', '01', ...feats.map((p, i) => `문제 0${i + 1} · ${p.title}`), '다섯 단계', 'Projects', '문의', '&'];
+    const labels = ['Prologue', '01 문제', ...feats.map((p, i) => `문제 0${i + 1} · ${p.title}`), '02 다섯 단계', 'Projects', '문의', '&'];
     document.getElementById('pmap').innerHTML = panels.map((el, i) => `<i data-i="${i}" data-l="${labels[i] || ''}"></i>`).join('');
     if (!desktop()) {
       track.querySelectorAll('.mdia').forEach(m => PANELS.prep(m));
