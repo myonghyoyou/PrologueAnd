@@ -1013,37 +1013,40 @@ window.V5 = (function () {
   const desktop = () => matchMedia('(min-width:1024px)').matches;
   const LS = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
   const LINE = () => { const p0 = document.getElementById('p00'); return p0.offsetTop + Math.round(p0.offsetHeight * 0.80); }; // 바닥선(L1): 패널 상단 + 80%
-  let wrap, track, lenis = null, panels = [], hline, ink, guide, lineLen = 0, geo = {}, launched = false, animTip = 0, tipMin = 0;
-  let snaps = [], snapping = false, moving = false, idleSince = 0, gestureFrom = null, lastDir = 0;
+  let wrap, track, panels = [], hline, ink, guide, lineLen = 0, geo = {}, launched = false, animTip = 0, tipMin = 0;
+  let snaps = [];
   /* 이동 중 축소 (V2 계승): 속도에 비례해 트랙을 최대 ZOOM.max 만큼 축소, 기준점은 매 프레임 화면 중심 */
   const ZOOM = { max: 0.12, vel: 28, ease: 0.18, on: !reduced && LS.get('v5-zoom') !== 'off' };   // 시안 조정: ?zoom=0.10&vel=30 (max = 최대 축소율, vel = 최대 축소에 이르는 속도 px/frame)
   { const q = new URLSearchParams(location.search); if (q.get('zoom')) ZOOM.max = +q.get('zoom'); if (q.get('vel')) ZOOM.vel = +q.get('vel'); if (q.get('zoom') === '0') ZOOM.on = false; }
   const st = { tipX: 0, s: 0, z: 1 };
-  /* 스냅: 손을 떼면 가장 가까운 점(노드)이 & 아래에 오도록. 같은 점으로 되돌아가지 않고, 움직인 방향의 다음 점으로 */
-  function pickSnap(sl) {
-    if (!snaps.length) return null;
-    let nearest = snaps.reduce((a, b) => Math.abs(b - sl) < Math.abs(a - sl) ? b : a);
-    if (gestureFrom !== null && Math.abs(nearest - gestureFrom) < 2 && Math.abs(sl - gestureFrom) > 24 && lastDir) {
-      const i = snaps.indexOf(nearest), j = Math.max(0, Math.min(snaps.length - 1, i + lastDir));
-      nearest = snaps[j];
-    }
-    return nearest;
+
+  /* ---------- 자체 애니메이터 (B): 속도를 이어받는 임계감쇠 스무딩 — 이동 중 목표가 바뀌어도 끊기지 않고, 도착은 분명하게 ---------- */
+  const anim = { pos: 0, target: 0, vel: 0, active: false, smooth: 0.26 };   // smooth: 도달 감각(초). 0.26 → 약 0.8초에 안착
+  function smoothDamp(cur, to, vel, smoothTime, dt) {
+    const w = 2 / Math.max(0.0001, smoothTime), x = w * dt, e = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+    const ch = cur - to, t = (vel + w * ch) * dt, nv = (vel - w * t) * e;
+    return { pos: to + (ch + t) * e, vel: nv };
   }
-  function doSnap() {
-    const sl0 = sl(), t = pickSnap(sl0);
-    moving = false; gestureFrom = null;
-    if (t === null || Math.abs(t - sl0) < 2) return;
-    snapping = true;
-    lenis.scrollTo(t, { duration: 0.55, onComplete: () => { snapping = false; } });
+  function setTarget(t) { anim.target = Math.max(0, Math.min(geo.W - innerWidth, t)); if (!anim.active) { anim.pos = sl(); anim.active = true; } }
+  function animTick(dtMs) {
+    if (!anim.active) return;
+    const dt = Math.min(0.5, Math.max(0.001, dtMs / 1000));   // 백그라운드 탭(저 fps)에서도 실제 경과 시간만큼 진행
+    const r = smoothDamp(anim.pos, anim.target, anim.vel, anim.smooth, dt);
+    anim.pos = r.pos; anim.vel = r.vel;
+    if (Math.abs(anim.target - anim.pos) < 0.4 && Math.abs(anim.vel) < 6) { anim.pos = anim.target; anim.vel = 0; anim.active = false; }
+    wrap.scrollLeft = anim.pos;
+    render();
   }
-  function tick() {
+  V.step = dir => {                                                   // 다음/이전 점 — 현재 "목표" 기준이라 연속 입력이 정확히 한 점씩 쌓인다
+    const at = anim.active ? anim.target : sl();
+    const t = dir > 0 ? snaps.find(v => v > at + 2) : [...snaps].reverse().find(v => v < at - 2);
+    if (t === undefined) return false; setTarget(t); return true;
+  };
+
+  function tick(time, dtMs) {
     if (!launched) return;
-    const vRaw = lenis ? (lenis.velocity || 0) : 0;
-    if (lenis && !snapping) {
-      if (Math.abs(vRaw) > 0.3) { if (!moving) { moving = true; gestureFrom = pickSnap(sl()); } lastDir = vRaw > 0 ? 1 : -1; idleSince = 0; }
-      else if (moving) { if (!idleSince) idleSince = performance.now(); else if (performance.now() - idleSince > 140) doSnap(); }
-    }
-    const v = Math.abs(vRaw);
+    animTick(dtMs);
+    const v = anim.active ? Math.abs(anim.vel) * (dtMs / 1000) : 0;   // px/frame
     const zt = ZOOM.on ? 1 - Math.min(1, v / ZOOM.vel) * ZOOM.max : 1;
     st.z += (zt - st.z) * ZOOM.ease; if (Math.abs(st.z - zt) < 0.0005) st.z = zt;
     const cx = st.s + innerWidth / 2, cy = innerHeight / 2, z = st.z;
@@ -1066,67 +1069,60 @@ window.V5 = (function () {
     document.getElementById('sheet-bd').addEventListener('click', () => V.closeSheet());
     document.addEventListener('keydown', e => { if (e.key === 'Escape') V.closeSheet(); });
   };
-  V.openSheet = src => { document.getElementById('sheet').classList.add('on'); document.getElementById('sheet-bd').classList.add('on'); if (lenis) lenis.stop(); };
-  V.closeSheet = () => { document.getElementById('sheet').classList.remove('on'); document.getElementById('sheet-bd').classList.remove('on'); if (lenis) lenis.start(); };
+  V.openSheet = src => { document.getElementById('sheet').classList.add('on'); document.getElementById('sheet-bd').classList.add('on'); };
+  V.closeSheet = () => { document.getElementById('sheet').classList.remove('on'); document.getElementById('sheet-bd').classList.remove('on'); };
 
   /* ---------- scrolling ---------- */
   const sl = () => wrap.scrollLeft;
-  V.goTo = (x, immediate) => { if (lenis) { snapping = !immediate; moving = false; gestureFrom = null; lenis.scrollTo(x, { duration: immediate ? 0 : 1.1, immediate: !!immediate, onComplete: () => { snapping = false; } }); } else wrap.scrollTo({ left: x, behavior: immediate ? 'auto' : 'smooth' }); };
+  V.goTo = (x, immediate) => { if (immediate) { anim.active = false; anim.vel = 0; anim.pos = anim.target = x; wrap.scrollLeft = x; render(); } else setTarget(x); };
 
   V.init = function () {
     if (!desktop()) return;
-    if (!reduced && window.Lenis) {
-      lenis = new Lenis({ wrapper: wrap, content: track, orientation: 'horizontal', gestureOrientation: 'both', lerp: 0.1, smoothWheel: false, syncTouch: true, virtualScroll: d => !d.event.type.includes('wheel') });   // 휠은 Lenis가 아예 보지 않게(smoothWheel:false만으로는 휠마다 animate.stop()이 호출돼 이동이 끊김). 휠은 아래에서 직접: 한 번에 한 점
-      V3.lenis = lenis; // drawer stop/start
-      gsap.ticker.add(t => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0);
-    }
+    V3.lenis = null;                                                   // 데스크톱은 Lenis 없이 자체 애니메이터 (휠·키 = 점 단위)
+    gsap.ticker.lagSmoothing(0);
     hline = document.getElementById('hline');
     { const k = LS.get('v5-size') || 'm', S = { s: ['min(960px,64vw)', 'min(580px,62vh)'], m: ['min(1100px,74vw)', 'min(680px,72vh)'], l: ['min(1240px,84vw)', 'min(760px,74vh)'], xl: ['min(1280px,84vw)', 'calc(100vh - 120px)'] }; document.documentElement.style.setProperty('--pw', S[k][0]); document.documentElement.style.setProperty('--ph', S[k][1]); }
     build();
-    const marker = document.getElementById('marker');
-    document.getElementById('pmap').addEventListener('click', e => { const i = e.target.closest('i'); if (i) V.goTo(panels[+i.dataset.i].offsetLeft - (panels[+i.dataset.i].classList.contains('page') ? 12 : 0)); });
-    document.querySelectorAll('[data-go]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); V.goTo(document.getElementById(a.dataset.go).offsetLeft - 12); }));
-    const idxAt = x => { const c = x + innerWidth * 0.5; let i = 0; panels.forEach((p, k) => { if (p._x <= c) i = k; }); return i; };
+    document.getElementById('pmap').addEventListener('click', e => { const i = e.target.closest('i'); if (!i) return; const p = panels[+i.dataset.i]; const ns = p.querySelector('.nodes span'); setTarget(ns ? +ns.dataset.x - innerWidth / 2 : (+i.dataset.i === 0 ? 0 : +i.dataset.i === panels.length - 1 ? geo.W - innerWidth : p._x + p._w / 2 - innerWidth / 2)); });
+    document.querySelectorAll('[data-go]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const p = document.getElementById(a.dataset.go); setTarget(p.offsetLeft + p.offsetWidth / 2 - innerWidth / 2); }));
     addEventListener('keydown', e => {
       if (document.getElementById('sheet').classList.contains('on')) return;
       if (!['ArrowRight', 'ArrowLeft', 'Home', 'End', 'PageDown', 'PageUp', ' '].includes(e.key)) return;
-      e.preventDefault();                                             // 네이티브 가로 스크롤 + 우리 이동이 겹치지 않게
-      const at = lenis ? lenis.targetScroll : sl();                    // 애니메이션 중이면 목표 위치 기준 → 한 번에 한 점
-      const go = t => { snapping = true; moving = false; gestureFrom = null; lenis ? lenis.scrollTo(t, { lerp: 0.075, onComplete: () => { snapping = false; } }) : V.goTo(t); };
+      e.preventDefault();
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') V.step(1);
       else if (e.key === 'ArrowLeft' || e.key === 'PageUp') V.step(-1);
-      else if (e.key === 'Home') go(0);
-      else if (e.key === 'End') go(snaps[snaps.length - 1]);
+      else if (e.key === 'Home') setTarget(0);
+      else if (e.key === 'End') setTarget(snaps[snaps.length - 1]);
     });
-    // wheel / trackpad: 한 제스처 = 한 점 (키보드와 같은 이동)
-    V.step = dir => { const at = lenis ? lenis.targetScroll : sl(); const t = dir > 0 ? snaps.find(v => v > at + 2) : [...snaps].reverse().find(v => v < at - 2); if (t === undefined) return false; snapping = true; moving = false; gestureFrom = null; if (lenis) lenis.scrollTo(t, { lerp: 0.075, onComplete: () => { snapping = false; } }); else wrap.scrollTo({ left: t, behavior: 'smooth' }); return true; };   // lerp 방식: 이동 중 다음 점으로 목표를 바꿔도 끊기지 않고 이어짐
-    let acc = 0, lockUntil = 0;
+    // wheel / trackpad (A): 노치 하나 = 점 하나. 묶음 창(220ms) 안의 추가 노치는 버리지 않고 큐에 쌓아 순서대로 진행
+    let acc = 0, lockUntil = 0, pending = 0;
     wrap.addEventListener('wheel', e => {
       e.preventDefault();
       if (document.getElementById('sheet').classList.contains('on')) return;
-      const now = performance.now(); if (now < lockUntil) return;
       const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
       acc += d;
-      if (Math.abs(acc) < 24) return;                      // 트랙패드 미세 입력 무시
+      if (Math.abs(acc) < 12) return;
       const dir = acc > 0 ? 1 : -1; acc = 0;
-      if (V.step(dir)) lockUntil = now + 320;              // 휠 한 칸의 연속 이벤트 묶음. 그 뒤 입력은 다음 점으로 목표만 갱신(부드럽게 이어짐)
+      const now = performance.now();
+      if (now < lockUntil) { pending += dir; return; }
+      V.step(dir); lockUntil = now + 220;
     }, { passive: false });
+    gsap.ticker.add(() => { if (pending && performance.now() >= lockUntil) { const dir = Math.sign(pending); pending -= dir; V.step(dir); lockUntil = performance.now() + 220; } });
     // hash → start position (skip intro)
     const hash = location.hash.replace('#', ''); const target = hash && document.getElementById(hash);
     if (target) { wrap.scrollLeft = target.offsetLeft - 12; }
     intro(!!target || reduced || sl() > innerWidth * 0.3);
-    (lenis ? lenis.on.bind(lenis) : wrap.addEventListener.bind(wrap))('scroll', render);
-    if (lenis) gsap.ticker.add(tick);
+    wrap.addEventListener('scroll', () => { if (!anim.active) render(); }, { passive: true });
+    gsap.ticker.add(tick);
     // panel size presets (mockup): s / m / l(V2 84vw×74vh)
     const SIZES = { s: ['min(960px,64vw)', 'min(580px,62vh)'], m: ['min(1100px,74vw)', 'min(680px,72vh)'], l: ['min(1240px,84vw)', 'min(760px,74vh)'], xl: ['min(1280px,84vw)', 'calc(100vh - 120px)'] };
     const applySize = k => { const [pw, ph] = SIZES[k] || SIZES.m; document.documentElement.style.setProperty('--pw', pw); document.documentElement.style.setProperty('--ph', ph); document.querySelectorAll('#sizeSeg button').forEach(b => b.classList.toggle('on', b.dataset.size === k)); LS.set('v5-size', k); };
     applySize(LS.get('v5-size') || 'm');
-    document.getElementById('sizeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const cur = current(); applySize(b.dataset.size); build(); if (lenis) lenis.resize(); V.goTo(panels[cur].offsetLeft - 12, true); render(); });
+    document.getElementById('sizeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const cur = current(); applySize(b.dataset.size); build(); const p = panels[cur]; V.goTo(cur === 0 ? 0 : cur === panels.length - 1 ? geo.W - innerWidth : p._x + p._w / 2 - innerWidth / 2, true); });
     // zoom toggle (mockup)
     const tg = document.getElementById('zoomToggle'), info = document.getElementById('zoomInfo');
     if (tg) { tg.checked = ZOOM.on; const upd = () => info.textContent = ZOOM.on ? `최대 ${Math.round(ZOOM.max * 100)}% · 속도 ${ZOOM.vel} · ease ${ZOOM.ease}` : '끔'; upd(); tg.addEventListener('change', () => { ZOOM.on = tg.checked; LS.set('v5-zoom', ZOOM.on ? 'on' : 'off'); upd(); }); }
-    addEventListener('resize', () => { build(); render(); if (lenis) lenis.resize(); });
-    if (lenis) lenis.resize();
+    addEventListener('resize', () => { build(); render(); });
   };
 
   function build() {
@@ -1190,7 +1186,7 @@ window.V5 = (function () {
     hline.querySelectorAll('.pd').forEach(g => PANELS.progress(g, Math.min(1, Math.max(0, (tipX - +g.dataset.x0) / (+g.dataset.x1 - +g.dataset.x0)))));
     hline.querySelectorAll('.n6').forEach(n => n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6');
     document.querySelectorAll('.nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x));
-    const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched || !lenis) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
+    const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);
     const hdr = document.querySelector('.hdr'); hdr.classList.toggle('on-dark', s + 40 >= geo.darkL && s + 40 < geo.darkR - vw * 0.2);
