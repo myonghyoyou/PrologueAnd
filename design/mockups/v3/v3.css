@@ -410,7 +410,10 @@ html.embed .prow .res{font-size:14px}
 @keyframes vt-out{to{opacity:0}}
 @keyframes vt-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 ::view-transition-group(pj-title){animation-duration:.35s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
-::view-transition-old(pj-title),::view-transition-new(pj-title){animation:none;mix-blend-mode:normal;height:100%}
+::view-transition-old(pj-title),::view-transition-new(pj-title){mix-blend-mode:normal;height:100%}
+::view-transition-old(pj-title){animation:vt-out .18s ease-out both}   /* 옛 제목은 빨리 사라져 새 제목과 겹쳐 보이지 않게 */
+::view-transition-new(pj-title){animation:vt-fade .25s ease-out both}
+@keyframes vt-fade{from{opacity:0}to{opacity:1}}
 .case-head .h1{view-transition-name:pj-title}
 .prow.vt .h2{view-transition-name:pj-title}
 @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
