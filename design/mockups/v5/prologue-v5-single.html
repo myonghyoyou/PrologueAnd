@@ -540,6 +540,14 @@ body{overflow:hidden}
 #tune .seg button{padding:4px 9px;font-size:12px;color:var(--bone-600)}
 #tune .seg button+button{border-left:1px solid var(--bone-300)}
 #tune .seg button.on{background:var(--navy-800);color:#fff}
+#tune .mob-btn{padding:4px 10px;border:1px solid var(--bone-900);border-radius:2px;font-size:12px;font-weight:500}
+#tune .mob-btn:hover{background:var(--bone-100)}
+#mob-preview{position:fixed;inset:0;z-index:70;background:rgba(28,27,24,.55);display:none;align-items:center;justify-content:center}
+#mob-preview.on{display:flex}
+#mob-preview .phone{width:390px;height:min(844px,calc(100vh - 48px));background:var(--bone-0);border:1px solid var(--bone-900);border-radius:2px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+#mob-preview .bar{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 6px 12px;font-size:12px;color:var(--bone-500);border-bottom:1px solid var(--bone-200);background:var(--bone-50)}
+#mob-preview .bar button{width:28px;height:28px;border:1px solid var(--bone-300);border-radius:2px;font-size:16px;line-height:1}
+#mob-preview iframe{flex:1;width:100%;border:0;display:block;background:var(--bone-50)}
 /* header progress map */
 .hdr{pointer-events:none;background:linear-gradient(var(--bone-100) 70%,rgba(243,241,236,0))}
 .hdr .pmap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:3px;pointer-events:auto}
@@ -666,7 +674,8 @@ body{overflow:hidden}
 </div>
 <div id="marker" aria-hidden="true">&amp;</div>
 
-<div id="tune"><label><input type="checkbox" id="zoomToggle"> 이동 중 축소</label><span class="cap" id="zoomInfo"></span><span class="sep"></span><span class="cap">패널</span><div class="seg" id="sizeSeg"><button type="button" data-size="s">작게</button><button type="button" data-size="m">보통</button><button type="button" data-size="l">V2</button><button type="button" data-size="xl">처음(크게)</button></div></div>
+<div id="tune"><label><input type="checkbox" id="zoomToggle"> 이동 중 축소</label><span class="cap" id="zoomInfo"></span><span class="sep"></span><span class="cap">패널</span><div class="seg" id="sizeSeg"><button type="button" data-size="s">작게</button><button type="button" data-size="m">보통</button><button type="button" data-size="l">V2</button><button type="button" data-size="xl">처음(크게)</button></div><span class="sep"></span><button type="button" class="mob-btn" id="mobBtn">모바일 보기</button></div>
+<div id="mob-preview"><div class="phone"><div class="bar"><span>iPhone 390 × 844</span><button type="button" id="mobClose" aria-label="닫기">×</button></div><iframe id="mobFrame" title="모바일 미리보기"></iframe></div></div>
 <div id="sheet-bd"></div>
 <div id="sheet" aria-label="상세"><button class="close" aria-label="닫기">×</button><div class="sheet-note"><span class="amp">&amp;</span><b>Projects · Case Study</b><p>이 단일 파일 시안에는 상세 시트가 포함되어 있지 않습니다.<br>전체 시안: design/mockups/v5/index.html</p></div></div>
 
@@ -1202,6 +1211,12 @@ window.V5 = (function () {
 <script>
   V5.build();
   V3.drawer.init();
+  // mobile preview (mockup): the page itself at 390px inside an iframe → mobile CSS applies
+  const mp = document.getElementById('mob-preview'), mf = document.getElementById('mobFrame');
+  document.getElementById('mobBtn').addEventListener('click', () => { if (!mf.src) mf.src = 'index.html?embed=1'; mp.classList.add('on'); });
+  document.getElementById('mobClose').addEventListener('click', () => mp.classList.remove('on'));
+  mp.addEventListener('click', e => { if (e.target === mp) mp.classList.remove('on'); });
+  if (location.search.includes('embed=1')) document.getElementById('tune').style.display = 'none';
   Promise.all([document.fonts ? document.fonts.ready : Promise.resolve()]).then(() => requestAnimationFrame(() => V5.init()));
 </script>
 </body>
