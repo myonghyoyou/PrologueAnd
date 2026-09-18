@@ -378,3 +378,9 @@ footer{padding:96px 0 40px}
 .ba td{padding:10px 10px 10px 0;border-bottom:1px solid var(--bone-200);vertical-align:top;color:var(--bone-700)}
 .ba td:first-child{color:var(--bone-500);width:96px}
 .ba td:last-child{color:var(--navy-800);font-weight:500}
+
+/* ---------- embed (v5 시트 안): 페이지 헤더는 시트 헤더가 대신함 ---------- */
+html.embed .hdr,html.embed .topbar,html.embed footer{display:none}
+html.embed .page-head{padding-top:32px}
+html.embed .case-head{padding-top:32px}
+html.embed .nrail{top:24px}

@@ -94,8 +94,15 @@ body{overflow:hidden}
 #sheet-bd.on{opacity:1;pointer-events:auto}
 #sheet{position:fixed;left:50%;top:4vh;width:min(56rem,calc(100vw - 48px));height:92vh;transform:translate(-50%,0) scale(.985);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s var(--ease-out);z-index:46;background:var(--bone-50);box-shadow:var(--shadow);border-radius:2px;overflow:hidden}
 #sheet.on{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+#sheet{display:flex;flex-direction:column}
+#sheet .sh{flex:none;display:flex;align-items:center;justify-content:space-between;padding:16px 20px 16px 28px;border-bottom:1px solid var(--bone-200);background:var(--bone-50)}
+#sheet .sh .brand{font-size:20px}
+#sheet .sh .brand .amp{margin:0 .22em}
+#sheet .sh .brand .who{font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:-.01em}
+#sheet .sb{flex:1;min-height:0}
 #sheet iframe{width:100%;height:100%;border:0;display:block}
-#sheet .close{position:absolute;right:12px;top:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-50);z-index:2}
+#sheet .close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-50);font-size:18px;line-height:1}
+#sheet .close:hover{background:var(--bone-100)}
 /* ---- mobile: 세로 스택 ---- */
 @media (max-width:1023px){
   html,body{height:auto}

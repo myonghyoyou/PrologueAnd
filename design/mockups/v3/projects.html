@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="v3.css?v=202609181555">
+<link rel="stylesheet" href="v3.css?v=202609181608">
 </head>
 <body>
 
@@ -42,16 +42,17 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
-<script src="v3.js?v=202609181555"></script>
+<script src="v3.js?v=202609181608"></script>
 <script>
+  const EMBED = location.search.includes('embed=1') ? '&embed=1' : '';
   function render() {
     const items = V3.projects.slice().sort((a, b) => a.order - b.order);
     document.getElementById('cnt').textContent = `${items.length}건`;
     document.getElementById('list').innerHTML = items.length ? items.map((p, i) => `
-      <a class="prow" href="case.html?p=${p.slug}&v=202609181604">
+      <a class="prow" href="case.html?p=${p.slug}&v=202609181607${EMBED}">
         <span class="num">${String(p.order).padStart(2, '0')}</span>
         <div>
-          <div class="h2"><span class="amp">&amp;</span>${p.title}</div>
+          <div class="h2">${p.title}</div>
           <div class="meta">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}<span>${p.year}</span><span>${V3.problem(p.problem).name}</span>${p.featured ? '<span style="color:var(--navy-800)">대표</span>' : ''}</div>
           <p class="res">${p.tagline}</p>
         </div>

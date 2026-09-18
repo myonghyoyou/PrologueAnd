@@ -2,6 +2,7 @@
    Data stands in for the Notion DB (docs/10 §2.3). Drawer, Lenis, page line (S1/S2), case-study helpers. */
 window.V3 = (function () {
   const V = {};
+  if (location.search.includes('embed=1')) document.documentElement.classList.add('embed');   // 시트(모달) 안: 페이지 헤더 숨김, 상단 여백 축소
   const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const desktop = () => matchMedia('(min-width:1024px)').matches;
 

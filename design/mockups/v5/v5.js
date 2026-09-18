@@ -62,7 +62,9 @@ window.V5 = (function () {
     document.getElementById('sheet-bd').addEventListener('click', () => V.closeSheet());
     document.addEventListener('keydown', e => { if (e.key === 'Escape') V.closeSheet(); });
   };
-  V.openSheet = src => { const f = document.getElementById('sheet-frame'); if (f.getAttribute('src') !== src) f.src = src; document.getElementById('sheet').classList.add('on'); document.getElementById('sheet-bd').classList.add('on'); };
+  const sheetTitle = () => { const f = document.getElementById('sheet-frame'); let t = 'Projects'; try { const d = f.contentDocument; if (d && d.title) t = d.title.replace(/^Prologue\s*&\s*/, '').replace(/\s*[—-]\s*Prologue&.*$/, ''); } catch (e) {} document.getElementById('sheetTitle').textContent = t; };
+  V.openSheet = src => { const f = document.getElementById('sheet-frame'); if (f.getAttribute('src') !== src) { f.src = src; } document.getElementById('sheet').classList.add('on'); document.getElementById('sheet-bd').classList.add('on'); sheetTitle(); };
+  document.addEventListener('DOMContentLoaded', () => { const f = document.getElementById('sheet-frame'); if (f) f.addEventListener('load', sheetTitle); });
   V.closeSheet = () => { document.getElementById('sheet').classList.remove('on'); document.getElementById('sheet-bd').classList.remove('on'); };
 
   /* ---------- scrolling ---------- */
