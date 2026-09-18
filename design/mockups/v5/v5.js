@@ -199,16 +199,12 @@ window.V5 = (function () {
     const srcs = heroDia.querySelectorAll('.knot'), texts = heroDia.querySelectorAll('text, .node');
     // progress map widths ∝ panel widths
     const tot = panels.reduce((a, p) => a + p._w, 0); document.querySelectorAll('#pmap i').forEach((b, i) => b.style.width = Math.max(6, Math.round(panels[i]._w / tot * 260)) + 'px');
-    if (skip || !window.gsap) { launched = true; marker.style.opacity = 1; brand.classList.add('amp-gone'); render(); return; }
+    if (skip || !window.gsap) { launched = true; marker.style.opacity = 1; render(); return; }
     srcs.forEach(sp => { const L = sp.getTotalLength(); sp.style.strokeDasharray = L; sp.style.strokeDashoffset = L; }); texts.forEach(t => t.style.opacity = 0);
     gsap.timeline({ delay: 0.2 })
       .to(srcs, { strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut' })
       .to(texts, { opacity: 1, duration: 0.3 }, '-=0.3')
-      .call(() => { animTip = 0; render(); })
-      .call(() => {
-        const from = bamp.getBoundingClientRect(), ghost = marker.cloneNode(true); ghost.id = 'marker-ghost'; ghost.style.opacity = 1; document.body.appendChild(ghost); brand.classList.add('amp-gone');
-        gsap.fromTo(ghost, { x: from.left + from.width / 2, y: from.top + from.height / 2, scale: 0.75 }, { x: geo.nodeX + tipMin - sl(), y: geo.y, scale: 1, duration: 0.9, ease: 'power3.inOut', onComplete() { ghost.remove(); marker.style.opacity = 1; launched = true; render(); } });
-      });
+      .call(() => { animTip = 0; launched = true; render(); gsap.fromTo(marker, { opacity: 0 }, { opacity: 1, duration: 0.4 }); });   // &는 선의 시작점에서 그냥 나타남 (떨어지는 연출 없음)
   }
   V.zoom = ZOOM;
   return V;

@@ -421,7 +421,10 @@ html.embed .prow .res{font-size:14px}
 @keyframes vt-out{to{opacity:0}}
 @keyframes vt-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 ::view-transition-group(pj-title){animation-duration:.35s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
-::view-transition-old(pj-title),::view-transition-new(pj-title){animation:none;mix-blend-mode:normal;height:100%}
+::view-transition-old(pj-title),::view-transition-new(pj-title){mix-blend-mode:normal;height:100%}
+::view-transition-old(pj-title){animation:vt-out .18s ease-out both}   /* 옛 제목은 빨리 사라져 새 제목과 겹쳐 보이지 않게 */
+::view-transition-new(pj-title){animation:vt-fade .25s ease-out both}
+@keyframes vt-fade{from{opacity:0}to{opacity:1}}
 .case-head .h1{view-transition-name:pj-title}
 .prow.vt .h2{view-transition-name:pj-title}
 @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
@@ -443,6 +446,20 @@ html.embed .nrail li:nth-child(10),html.embed .nrail li:nth-child(10) i{animatio
 @keyframes rail-in{to{opacity:1}}
 @keyframes rail-line{to{transform:scaleX(1)}}
 html.embed .cs{max-width:none}
+
+/* embed: 상세 항목 간격 통일 (03의 다이어그램은 03에 붙이고, 03↔04 간격도 같게) */
+html.embed .cs{padding-bottom:44px}
+html.embed .cs h2{margin-bottom:14px}
+html.embed #s3{padding-bottom:12px}
+html.embed #morph-wrap{height:auto;margin:0 0 44px}
+html.embed #morph-stick{position:static}
+html.embed #morph-stick .cap{margin-top:8px}
+html.embed .cs .q{font-size:24px}
+
+/* 라이브 목업 화면: img-src.html의 1280×800 화면을 매트 안에 축소 표시 (캡처 대신) */
+.shot.live{position:relative;overflow:hidden;--sc:.5}
+.shot.live iframe{position:absolute;left:6px;top:6px;width:1280px;height:800px;border:0;transform:scale(var(--sc));transform-origin:0 0;pointer-events:none;background:#fff}
+.case-hero .shot.live{aspect-ratio:16/10}
 
 /* v4 — 하이브리드: v3 위에 섹션 01 가로 포스터 스트립(pin) */
 #strip{position:relative;z-index:9;background:var(--bone-100)}       /* above #line (6) so segment ① hides behind the pinned strip */
@@ -566,6 +583,10 @@ body{overflow:hidden}
 .p08 .foot-cap{top:calc(var(--ly) + 28px)}
 .p08 .foot-row{position:absolute;left:0;right:0;top:calc(var(--ly) + 56px);margin:0;font-size:12px;color:var(--bone-500);display:flex;justify-content:center;gap:20px}
 .p08 .foot-row nav{display:flex;gap:20px}
+/* & 마커: 배경 원 없이 선 위에 그대로 (문의 패널 경계에서 배경이 깜빡이던 문제) */
+#marker:before{display:none}
+#marker{transition:none;padding-top:0}
+#marker.dark{color:var(--bone-50)}
 /* ---- line ---- */
 #hline{position:absolute;left:0;top:0;height:100%;pointer-events:none;z-index:4;overflow:visible}
 #hline .guide{fill:none;stroke:var(--navy-200);stroke-width:1}
@@ -654,7 +675,7 @@ body{overflow:hidden}
   <a class="brand" href="#p00" aria-label="Prologue&">Prologue<span class="bamp">&amp;</span></a>
   <div class="pmap" id="pmap"></div>
   <nav>
-    <a href="#" data-sheet="../v3/projects.html?v=202609181631&embed=1">Projects</a>
+    <a href="#" data-sheet="../v3/projects.html?v=202609181701&embed=1">Projects</a>
     <button type="button" data-open-drawer>문의</button>
   </nav>
   <span class="mob-pos">01 / 09</span>
@@ -703,7 +724,7 @@ body{overflow:hidden}
     <section class="hp p06" id="p06">
       <div class="shape-area"><div class="shape squares"><i style="left:44%;top:6%;width:16%;height:22%"></i><i style="left:66%;top:16%;width:16%;height:22%"></i><i style="left:52%;top:44%;width:16%;height:22%"></i><i style="left:78%;top:50%;width:16%;height:22%"></i><i style="left:36%;top:60%;width:12%;height:16%"></i><i style="left:88%;top:2%;width:10%;height:14%"></i></div></div>
       <div class="txt"><h2 class="hl hl2">작업<br><span id="restN">6</span>건.</h2><p class="sub1">문제 유형별로 정리한 Case Study — 무엇이 불편했고 어떻게 바꿨는지.</p></div>
-      <div class="below"><a class="btn" href="#" data-sheet="../v3/projects.html?v=202609181631&embed=1">Projects 열기 <i class="tri"></i></a></div>
+      <div class="below"><a class="btn" href="#" data-sheet="../v3/projects.html?v=202609181701&embed=1">Projects 열기 <i class="tri"></i></a></div>
     </section>
     <!-- 07 문의 · 끝 -->
     <section class="hp p07 dark" id="p07">
@@ -715,7 +736,7 @@ body{overflow:hidden}
       <span class="rule r"></span><span class="seat"></span>
       <p class="foot-top">Prologue</p>
       <p class="foot-cap">and, 그리고 end. 처음과 끝을 함께합니다.</p>
-      <div class="foot-row"><nav><a href="#" data-sheet="../v3/projects.html?v=202609181631&embed=1">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></div>
+      <div class="foot-row"><nav><a href="#" data-sheet="../v3/projects.html?v=202609181701&embed=1">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></div>
     </section>
     <svg id="hline" aria-hidden="true"></svg>
     <div id="hline-dark" aria-hidden="true"></div>
@@ -1290,16 +1311,12 @@ window.V5 = (function () {
     const srcs = heroDia.querySelectorAll('.knot'), texts = heroDia.querySelectorAll('text, .node');
     // progress map widths ∝ panel widths
     const tot = panels.reduce((a, p) => a + p._w, 0); document.querySelectorAll('#pmap i').forEach((b, i) => b.style.width = Math.max(6, Math.round(panels[i]._w / tot * 260)) + 'px');
-    if (skip || !window.gsap) { launched = true; marker.style.opacity = 1; brand.classList.add('amp-gone'); render(); return; }
+    if (skip || !window.gsap) { launched = true; marker.style.opacity = 1; render(); return; }
     srcs.forEach(sp => { const L = sp.getTotalLength(); sp.style.strokeDasharray = L; sp.style.strokeDashoffset = L; }); texts.forEach(t => t.style.opacity = 0);
     gsap.timeline({ delay: 0.2 })
       .to(srcs, { strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut' })
       .to(texts, { opacity: 1, duration: 0.3 }, '-=0.3')
-      .call(() => { animTip = 0; render(); })
-      .call(() => {
-        const from = bamp.getBoundingClientRect(), ghost = marker.cloneNode(true); ghost.id = 'marker-ghost'; ghost.style.opacity = 1; document.body.appendChild(ghost); brand.classList.add('amp-gone');
-        gsap.fromTo(ghost, { x: from.left + from.width / 2, y: from.top + from.height / 2, scale: 0.75 }, { x: geo.nodeX + tipMin - sl(), y: geo.y, scale: 1, duration: 0.9, ease: 'power3.inOut', onComplete() { ghost.remove(); marker.style.opacity = 1; launched = true; render(); } });
-      });
+      .call(() => { animTip = 0; launched = true; render(); gsap.fromTo(marker, { opacity: 0 }, { opacity: 1, duration: 0.4 }); });   // &는 선의 시작점에서 그냥 나타남 (떨어지는 연출 없음)
   }
   V.zoom = ZOOM;
   return V;

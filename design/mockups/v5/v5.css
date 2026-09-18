@@ -55,6 +55,10 @@ body{overflow:hidden}
 .p08 .foot-cap{top:calc(var(--ly) + 28px)}
 .p08 .foot-row{position:absolute;left:0;right:0;top:calc(var(--ly) + 56px);margin:0;font-size:12px;color:var(--bone-500);display:flex;justify-content:center;gap:20px}
 .p08 .foot-row nav{display:flex;gap:20px}
+/* & 마커: 배경 원 없이 선 위에 그대로 (문의 패널 경계에서 배경이 깜빡이던 문제) */
+#marker:before{display:none}
+#marker{transition:none;padding-top:0}
+#marker.dark{color:var(--bone-50)}
 /* ---- line ---- */
 #hline{position:absolute;left:0;top:0;height:100%;pointer-events:none;z-index:4;overflow:visible}
 #hline .guide{fill:none;stroke:var(--navy-200);stroke-width:1}
