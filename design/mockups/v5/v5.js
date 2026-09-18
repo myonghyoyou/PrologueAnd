@@ -91,7 +91,7 @@ window.V5 = (function () {
     //   고해상도 휠·트랙패드는 노치 하나에 이벤트를 수십 개 보내므로, 스트림 시작에 한 번 진행하고 같은 스트림 안에서는 240px 누적마다 한 점만 더 진행.
     //   진행 요청은 버리지 않고 큐에 쌓아 순서대로(입력 유실 없음).
     const WHEEL = { gap: 100, first: 90, more: 480 };   // 감도: 스트림 묶음 간격(ms) / 첫 점까지 누적(px) / 같은 스트림에서 추가 점당 누적(px). 클수록 둔감
-    let acc = 0, lastEv = 0, pending = 0, lockUntil = 0, stepped = false;
+    let acc = 0, lastEv = 0, pending = 0, lockUntil = 0, stepped = false, streamStart = 0;
     const request = dir => { const now = performance.now(); if (now < lockUntil) { pending += dir; return; } V.step(dir); lockUntil = now + 160; };
     wrap.addEventListener('wheel', e => {
       e.preventDefault();
@@ -99,10 +99,11 @@ window.V5 = (function () {
       const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
       if (!d) return;
       const now = performance.now(), gap = now - lastEv; lastEv = now;
-      if (gap > WHEEL.gap) { acc = 0; stepped = false; }                 // 새 스트림
+      if (gap > WHEEL.gap) { acc = 0; stepped = false; streamStart = now; }   // 새 스트림
       acc += d;
-      const need = stepped ? WHEEL.more : WHEEL.first;
-      if (Math.abs(acc) >= need) { request(acc > 0 ? 1 : -1); acc = 0; stepped = true; }
+      if (!stepped) { if (Math.abs(acc) >= WHEEL.first) { request(acc > 0 ? 1 : -1); acc = 0; stepped = true; } return; }
+      // 같은 스트림에서 추가 점: 마우스 노치는 짧게 끝나므로(300ms 미만) 한 점만. 300ms 넘게 이어지는 트랙패드 스와이프만 누적마다 한 점 더
+      if (now - streamStart > 300 && Math.abs(acc) >= WHEEL.more) { request(acc > 0 ? 1 : -1); acc = 0; }
     }, { passive: false });
     gsap.ticker.add(() => { if (pending && performance.now() >= lockUntil) { const dir = Math.sign(pending); pending -= dir; V.step(dir); lockUntil = performance.now() + 160; } });
     // hash → start position (skip intro)
