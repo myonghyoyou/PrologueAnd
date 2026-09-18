@@ -1022,13 +1022,36 @@ window.V5 = (function () {
   const LS = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
   const LINE = () => { const p0 = document.getElementById('p00'); return p0.offsetTop + Math.round(p0.offsetHeight * 0.80); }; // 바닥선(L1): 패널 상단 + 80%
   let wrap, track, lenis = null, panels = [], hline, ink, guide, lineLen = 0, geo = {}, launched = false, animTip = 0, tipMin = 0;
+  let snaps = [], snapping = false, moving = false, idleSince = 0, gestureFrom = null, lastDir = 0;
   /* 이동 중 축소 (V2 계승): 속도에 비례해 트랙을 최대 ZOOM.max 만큼 축소, 기준점은 매 프레임 화면 중심 */
   const ZOOM = { max: 0.12, vel: 28, ease: 0.18, on: !reduced && LS.get('v5-zoom') !== 'off' };   // 시안 조정: ?zoom=0.10&vel=30 (max = 최대 축소율, vel = 최대 축소에 이르는 속도 px/frame)
   { const q = new URLSearchParams(location.search); if (q.get('zoom')) ZOOM.max = +q.get('zoom'); if (q.get('vel')) ZOOM.vel = +q.get('vel'); if (q.get('zoom') === '0') ZOOM.on = false; }
   const st = { tipX: 0, s: 0, z: 1 };
+  /* 스냅: 손을 떼면 가장 가까운 점(노드)이 & 아래에 오도록. 같은 점으로 되돌아가지 않고, 움직인 방향의 다음 점으로 */
+  function pickSnap(sl) {
+    if (!snaps.length) return null;
+    let nearest = snaps.reduce((a, b) => Math.abs(b - sl) < Math.abs(a - sl) ? b : a);
+    if (gestureFrom !== null && Math.abs(nearest - gestureFrom) < 2 && Math.abs(sl - gestureFrom) > 24 && lastDir) {
+      const i = snaps.indexOf(nearest), j = Math.max(0, Math.min(snaps.length - 1, i + lastDir));
+      nearest = snaps[j];
+    }
+    return nearest;
+  }
+  function doSnap() {
+    const sl0 = sl(), t = pickSnap(sl0);
+    moving = false; gestureFrom = null;
+    if (t === null || Math.abs(t - sl0) < 2) return;
+    snapping = true;
+    lenis.scrollTo(t, { duration: 0.55, onComplete: () => { snapping = false; } });
+  }
   function tick() {
     if (!launched) return;
-    const v = lenis ? Math.abs(lenis.velocity || 0) : 0;
+    const vRaw = lenis ? (lenis.velocity || 0) : 0;
+    if (lenis && !snapping) {
+      if (Math.abs(vRaw) > 0.3) { if (!moving) { moving = true; gestureFrom = pickSnap(sl()); } lastDir = vRaw > 0 ? 1 : -1; idleSince = 0; }
+      else if (moving) { if (!idleSince) idleSince = performance.now(); else if (performance.now() - idleSince > 140) doSnap(); }
+    }
+    const v = Math.abs(vRaw);
     const zt = ZOOM.on ? 1 - Math.min(1, v / ZOOM.vel) * ZOOM.max : 1;
     st.z += (zt - st.z) * ZOOM.ease; if (Math.abs(st.z - zt) < 0.0005) st.z = zt;
     const cx = st.s + innerWidth / 2, cy = innerHeight / 2, z = st.z;
@@ -1056,7 +1079,7 @@ window.V5 = (function () {
 
   /* ---------- scrolling ---------- */
   const sl = () => wrap.scrollLeft;
-  V.goTo = (x, immediate) => { if (lenis) lenis.scrollTo(x, { duration: immediate ? 0 : 1.1, immediate: !!immediate }); else wrap.scrollTo({ left: x, behavior: immediate ? 'auto' : 'smooth' }); };
+  V.goTo = (x, immediate) => { if (lenis) { snapping = !immediate; moving = false; gestureFrom = null; lenis.scrollTo(x, { duration: immediate ? 0 : 1.1, immediate: !!immediate, onComplete: () => { snapping = false; } }); } else wrap.scrollTo({ left: x, behavior: immediate ? 'auto' : 'smooth' }); };
 
   V.init = function () {
     if (!desktop()) return;
@@ -1076,11 +1099,12 @@ window.V5 = (function () {
       if (document.getElementById('sheet').classList.contains('on')) return;
       if (!['ArrowRight', 'ArrowLeft', 'Home', 'End', 'PageDown', 'PageUp', ' '].includes(e.key)) return;
       e.preventDefault();                                             // 네이티브 가로 스크롤 + 우리 이동이 겹치지 않게
-      const cur = idxAt(lenis ? lenis.targetScroll : sl());           // 애니메이션 중이면 목표 위치 기준 → 한 번에 한 장
-      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { if (cur < panels.length - 1) V.goTo(panels[cur + 1]._x - 12); }
-      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { if (cur > 0) V.goTo(panels[cur - 1]._x - 12); }
-      else if (e.key === 'Home') V.goTo(0);
-      else if (e.key === 'End') V.goTo(track.scrollWidth);
+      const at = lenis ? lenis.targetScroll : sl();                    // 애니메이션 중이면 목표 위치 기준 → 한 번에 한 점
+      const go = t => { snapping = true; moving = false; gestureFrom = null; lenis ? lenis.scrollTo(t, { duration: 0.9, onComplete: () => { snapping = false; } }) : V.goTo(t); };
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { const t = snaps.find(v => v > at + 2); if (t !== undefined) go(t); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { const t = [...snaps].reverse().find(v => v < at - 2); if (t !== undefined) go(t); }
+      else if (e.key === 'Home') go(0);
+      else if (e.key === 'End') go(snaps[snaps.length - 1]);
     });
     // hash → start position (skip intro)
     const hash = location.hash.replace('#', ''); const target = hash && document.getElementById(hash);
@@ -1116,7 +1140,7 @@ window.V5 = (function () {
     const knot = `M0 ${yl - up * 0.4} C ${16 * k} ${yl - up}, ${44 * k} ${yl + dn * 0.9}, ${28 * k} ${yl - up * 0.2} S ${8 * k} ${yl + dn}, ${40 * k} ${yl + dn * 0.5} S ${66 * k} ${yl - up}, ${50 * k} ${yl - up * 0.5} S ${30 * k} ${yl + dn * 0.8}, ${64 * k} ${yl + dn * 0.4} S ${86 * k} ${yl - up * 0.9}, ${78 * k} ${yl - up * 0.15} S ${70 * k} ${yl + dn * 0.35}, ${100 * k} ${yl}`;
     heroDia.innerHTML = `<path class="knot" d="${knot}"/>`;
     // the line: node → seat in 09
-    const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX - 14;
+    const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX;
     const d = `M${nodeX} ${y} H${endX}`;
     hline.setAttribute('width', W); hline.setAttribute('height', H); hline.setAttribute('viewBox', `0 0 ${W} ${H}`);
     // shared diagrams on project panels + five nodes in 06
@@ -1131,6 +1155,16 @@ window.V5 = (function () {
     // 09 rules
     const ruleLen = Math.min(260, p09._w / 2 - 60), rr = p09.querySelector('.rule.r'); rr.style.left = (p09._w / 2 + 14) + 'px'; rr.style.width = ruleLen + 'px';
     geo = { W, H, y, nodeX, endX, ampX, darkL: p08._x, darkR: p08._x + p08._w };
+    // snap targets (scrollLeft values): panels with nodes → each node under the marker (50vw); others → panel start; last → end
+    const vw = innerWidth, limit = W - vw;
+    snaps = [];
+    panels.forEach((p, i) => {
+      const ns = [...p.querySelectorAll('.nodes span')];
+      if (i === panels.length - 1) snaps.push(limit);
+      else if (ns.length) ns.forEach(n => snaps.push(+n.dataset.x - vw / 2));
+      else snaps.push(i === 0 ? 0 : p._x - 12);
+    });
+    snaps = [...new Set(snaps.map(v => Math.max(0, Math.min(limit, Math.round(v)))))].sort((a, b) => a - b);
     tipMin = 40;
   }
   const current = () => { const c = sl() + innerWidth * 0.5; let i = 0; panels.forEach((p, k) => { if (p._x <= c) i = k; }); return i; };
