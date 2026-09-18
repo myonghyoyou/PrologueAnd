@@ -1103,7 +1103,7 @@ window.V5 = (function () {
     // wheel / trackpad (A): 이벤트 "스트림"(간격 50ms 이내의 연속 이벤트) 하나 = 노치 하나 = 점 하나.
     //   고해상도 휠·트랙패드는 노치 하나에 이벤트를 수십 개 보내므로, 스트림 시작에 한 번 진행하고 같은 스트림 안에서는 240px 누적마다 한 점만 더 진행.
     //   진행 요청은 버리지 않고 큐에 쌓아 순서대로(입력 유실 없음).
-    const WHEEL = { gap: 80, first: 60, more: 360 };   // 감도: 스트림 묶음 간격(ms) / 첫 점까지 누적(px) / 같은 스트림에서 추가 점당 누적(px). 클수록 둔감
+    const WHEEL = { gap: 100, first: 90, more: 480 };   // 감도: 스트림 묶음 간격(ms) / 첫 점까지 누적(px) / 같은 스트림에서 추가 점당 누적(px). 클수록 둔감
     let acc = 0, lastEv = 0, pending = 0, lockUntil = 0, stepped = false;
     const request = dir => { const now = performance.now(); if (now < lockUntil) { pending += dir; return; } V.step(dir); lockUntil = now + 160; };
     wrap.addEventListener('wheel', e => {
