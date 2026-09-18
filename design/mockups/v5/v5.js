@@ -44,7 +44,8 @@ window.V5 = (function () {
     st.z += (zt - st.z) * ZOOM.ease; if (Math.abs(st.z - zt) < 0.0005) st.z = zt;
     const cx = st.s + innerWidth / 2, cy = innerHeight / 2, z = st.z;
     track.style.transformOrigin = `${cx}px ${cy}px`; track.style.transform = z < 0.9995 ? `scale(${z})` : '';
-    const mx = innerWidth / 2 + (st.tipX - st.s - innerWidth / 2) * z, my = cy + (geo.y - cy) * z;
+    const LIFT = 20;   // &는 선 위에 올라앉음(글리프 아래가 선·점에 닿지 않게) — 점과 겹치지 않고 점이 발판이 됨
+    const mx = innerWidth / 2 + (st.tipX - st.s - innerWidth / 2) * z, my = cy + (geo.y - LIFT - cy) * z;
     document.getElementById('marker').style.transform = `translate(${mx}px, ${my}px) scale(${z})`;
   }
 
@@ -183,9 +184,9 @@ window.V5 = (function () {
     const len = tipX - geo.nodeX;
     ink.style.strokeDashoffset = lineLen - len; const dkInk = document.querySelector('#hline-dark .ink'); if (dkInk) dkInk.style.strokeDashoffset = lineLen - len;
     hline.querySelectorAll('.pd').forEach(g => PANELS.progress(g, Math.min(1, Math.max(0, (tipX - +g.dataset.x0) / (+g.dataset.x1 - +g.dataset.x0)))));
-    hline.querySelectorAll('.n6').forEach(n => { n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6'; n.style.opacity = Math.abs(tipX - +n.dataset.x) < 16 ? 0 : 1; });   // &가 점 위에 오면 점은 숨김(&가 점이 됨)
+    hline.querySelectorAll('.n6').forEach(n => { n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6'; });
     document.querySelectorAll('.nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x));
-    const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
+    const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched) marker.style.transform = `translate(${tipX - s}px, ${geo.y - 20}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);
     const cur = current(); document.querySelectorAll('#pmap i').forEach((b, i) => { b.classList.toggle('on', i === cur); b.classList.toggle('done', i < cur); });
