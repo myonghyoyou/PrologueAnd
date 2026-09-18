@@ -435,3 +435,12 @@ html.embed .nrail li:nth-child(10),html.embed .nrail li:nth-child(10) i{animatio
 @keyframes rail-in{to{opacity:1}}
 @keyframes rail-line{to{transform:scaleX(1)}}
 html.embed .cs{max-width:none}
+
+/* embed: 상세 항목 간격 통일 (03의 다이어그램은 03에 붙이고, 03↔04 간격도 같게) */
+html.embed .cs{padding-bottom:44px}
+html.embed .cs h2{margin-bottom:14px}
+html.embed #s3{padding-bottom:12px}
+html.embed #morph-wrap{height:auto;margin:0 0 44px}
+html.embed #morph-stick{position:static}
+html.embed #morph-stick .cap{margin-top:8px}
+html.embed .cs .q{font-size:24px}
