@@ -57,27 +57,27 @@ window.V3 = (function () {
       return `
       <div id="backdrop"></div>
       <aside id="drawer" data-step="1" aria-label="프로젝트 문의">
-        <div class="dh"><div class="brand">Prologue<span class="amp">&amp;</span><span class="who">당신의 업무</span></div><button class="close" aria-label="닫기">×</button></div>
+        <div class="dh"><div class="brand">Prologue<span class="amp">&amp;</span><span class="who">문의</span></div><button class="close" aria-label="닫기">×</button></div>
         <div class="db">
-          <div class="attach"><span><span class="amp" style="font-size:15px">&amp;</span> <b class="pj"></b>를 보고 문의합니다</span><button type="button" class="detach">해제</button></div>
+          <div class="attach"><span><span class="amp" style="font-size:15px">&amp;</span> <b class="pj"></b>를 보고 문의합니다</span><button type="button" class="detach">빼기</button></div>
           <div class="form">
             <div class="s1">
-              <div class="stepc"><span class="num">1 / 2</span><div class="h2">현재 업무</div></div>
-              <div class="fld"><label>현재 어떤 업무를 하고 있나요?</label><textarea placeholder="예) 병동별 비품 요청을 카톡과 엑셀로 받고 있습니다"></textarea></div>
-              <div class="fld"><label>지금 쓰는 도구</label><div class="chips">${['엑셀', '종이', '카톡', '이메일', '기존 시스템', '없음'].map(t => `<label><input type="checkbox"><span>${t}</span></label>`).join('')}</div></div>
-              <div class="fld"><label>가장 불편한 부분은 무엇인가요?</label><textarea placeholder="한 줄이면 충분합니다"></textarea></div>
+              <div class="stepc"><span class="num">1 / 2</span><div class="h2">지금 하는 일</div></div>
+              <div class="fld"><label>어떤 일을 하고 계세요?</label><textarea placeholder="예) 병동마다 비품 요청을 카톡이랑 엑셀로 받고 있어요"></textarea></div>
+              <div class="fld"><label>지금 쓰는 것</label><div class="chips">${['엑셀', '종이', '카톡', '이메일', '기존 시스템', '없음'].map(t => `<label><input type="checkbox"><span>${t}</span></label>`).join('')}</div></div>
+              <div class="fld"><label>무엇이 가장 불편하세요?</label><textarea placeholder="한 줄이면 됩니다"></textarea></div>
               <div class="fld grid">
-                <div><label>사용자 수</label><select><option>1~5명</option><option>6~20명</option><option>21~100명</option><option>100명 이상</option></select></div>
-                <div><label>반복 빈도</label><select><option>매일</option><option>매주</option><option>매월</option><option>가끔</option></select></div>
-                <div><label>기존 / 신규</label><select><option>기존 개선</option><option>신규 제작</option><option>모르겠음</option></select></div>
+                <div><label>쓰는 사람</label><select><option>1~5명</option><option>6~20명</option><option>21~100명</option><option>100명 이상</option></select></div>
+                <div><label>얼마나 자주</label><select><option>매일</option><option>매주</option><option>매월</option><option>가끔</option></select></div>
+                <div><label>고치기 / 새로 만들기</label><select><option>쓰던 걸 고치기</option><option>새로 만들기</option><option>잘 모르겠어요</option></select></div>
               </div>
             </div>
             <div class="s2">
-              <div class="stepc"><span class="num">2 / 2</span><div class="h2">목표·연락처</div></div>
-              <div class="fld"><label>원하는 결과 (선택)</label><textarea placeholder="예) 요청이 한 곳으로 모이고, 진행 상황을 서로 물어보지 않게"></textarea></div>
+              <div class="stepc"><span class="num">2 / 2</span><div class="h2">바라는 것과 연락처</div></div>
+              <div class="fld"><label>이렇게 됐으면 (선택)</label><textarea placeholder="예) 요청이 한 곳으로 모이고, 진행 상황을 서로 물어보지 않아도 되게"></textarea></div>
               <div class="fld grid" style="grid-template-columns:1fr 1fr">
-                <div><label>희망 일정</label><select><option>정해지지 않음</option><option>1개월 안</option><option>3개월 안</option><option>올해 안</option></select></div>
-                <div><label>예산 범위</label><select><option>상담 후 결정</option><option>300만 원 이하</option><option>300~1,000만 원</option><option>1,000만 원 이상</option></select></div>
+                <div><label>언제까지</label><select><option>아직 정하지 않았어요</option><option>한 달 안</option><option>세 달 안</option><option>올해 안</option></select></div>
+                <div><label>예산</label><select><option>이야기 나눠 보고</option><option>300만 원 이하</option><option>300~1,000만 원</option><option>1,000만 원 이상</option></select></div>
               </div>
               <div class="fld"><label>이메일 (필수)</label><input type="email" placeholder="name@company.com"></div>
               <div class="fld"><label>전화 (선택)</label><input type="tel" placeholder="010-"></div>
@@ -86,13 +86,13 @@ window.V3 = (function () {
           <div class="done">
             <span class="amp">&amp;</span>
             <div class="h2">여기서부터 함께합니다</div>
-            <p>접수됐습니다. 2영업일 안에 <b>hello@prologue.and</b>로 답변드립니다.</p>
+            <p>잘 받았습니다. 이틀 안에 <b>hello@prologue.and</b>로 답장드리겠습니다.</p>
           </div>
         </div>
         <div class="df">
           <button class="btn o prev" type="button" style="display:none">이전</button>
           <button class="btn next" type="button">다음 <i class="tri"></i></button>
-          <span class="cap">이메일 + 문의 시트에 저장<br>2영업일 안에 답변</span>
+          <span class="cap">보내면 메일과 문의 목록에 남습니다<br>이틀 안에 답장</span>
         </div>
       </aside>`;
     },
@@ -105,7 +105,7 @@ window.V3 = (function () {
       document.addEventListener('keydown', e => { if (e.key === 'Escape' && d.classList.contains('on')) this.close(); });
       d.querySelector('.detach').addEventListener('click', () => this.attach(null));
       d.querySelector('.next').addEventListener('click', () => {
-        if (d.dataset.step === '1') { d.dataset.step = '2'; d.querySelector('.prev').style.display = ''; d.querySelector('.next').innerHTML = '문의 보내기 <i class="tri"></i>'; d.querySelector('.db').scrollTop = 0; }
+        if (d.dataset.step === '1') { d.dataset.step = '2'; d.querySelector('.prev').style.display = ''; d.querySelector('.next').innerHTML = '보내기 <i class="tri"></i>'; d.querySelector('.db').scrollTop = 0; }
         else if (d.dataset.step === '2') { d.dataset.step = 'done'; }
       });
       d.querySelector('.prev').addEventListener('click', () => { d.dataset.step = '1'; d.querySelector('.prev').style.display = 'none'; d.querySelector('.next').innerHTML = '다음 <i class="tri"></i>'; });
@@ -120,13 +120,13 @@ window.V3 = (function () {
       this.attached = p;
       const d = this.el;
       d.querySelector('.attach').classList.toggle('on', !!p);
-      d.querySelector('.who').textContent = p ? p.title : '당신의 업무';
+      d.querySelector('.who').textContent = p ? p.title : '문의';
       if (p) d.querySelector('.attach .pj').textContent = p.title;
     },
     open(p) {
       this.attach(p);
       this.el.classList.add('on'); document.getElementById('backdrop').classList.add('on');
-      this.baseTitle = document.title; document.title = `Prologue & ${p ? p.title : '당신의 업무'}`;
+      this.baseTitle = document.title; document.title = `Prologue & ${p ? p.title : '문의'}`;
       if (V.lenis) V.lenis.stop(); document.documentElement.style.overflow = 'hidden';
       setTimeout(() => { const f = this.el.querySelector('textarea'); if (f) f.focus(); }, 380);
     },
