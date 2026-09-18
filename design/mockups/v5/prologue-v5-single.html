@@ -494,9 +494,11 @@ body{overflow:hidden}
 .p08 .seat{position:absolute;left:50%;top:var(--ly);width:44px;height:44px;margin:-22px 0 0 -22px}
 .p08 .rule{position:absolute;top:var(--ly);height:1px;background:var(--bone-300);transition:background .4s}
 .p08.done .rule{background:var(--navy-800)}
-.p08 .foot-cap{position:absolute;left:0;right:0;top:calc(var(--ly) + 40px);text-align:center;font-size:13px;color:var(--bone-500);margin:0}
-.p08 .foot-row{position:absolute;left:var(--pad);right:var(--pad);bottom:var(--pad);margin:0;padding-top:16px;border-top:1px solid var(--bone-200);font-size:13px;color:var(--bone-500);display:flex;justify-content:space-between}
-.p08 .foot-row nav{display:flex;gap:24px}
+.p08 .foot-top{position:absolute;left:0;right:0;top:calc(var(--ly) - 92px);text-align:center;margin:0;font-family:var(--serif);font-size:44px;line-height:1;letter-spacing:.005em;color:var(--bone-900);font-optical-sizing:none;font-variation-settings:"opsz" 24}
+.p08 .foot-cap{position:absolute;left:0;right:0;top:calc(var(--ly) + 36px);text-align:center;font-size:14px;color:var(--bone-600);margin:0}
+.p08 .foot-cap{top:calc(var(--ly) + 28px)}
+.p08 .foot-row{position:absolute;left:0;right:0;top:calc(var(--ly) + 56px);margin:0;font-size:12px;color:var(--bone-500);display:flex;justify-content:center;gap:20px}
+.p08 .foot-row nav{display:flex;gap:20px}
 /* ---- line ---- */
 #hline{position:absolute;left:0;top:0;height:100%;pointer-events:none;z-index:4;overflow:visible}
 #hline .guide{fill:none;stroke:var(--navy-200);stroke-width:1}
@@ -557,7 +559,9 @@ body{overflow:hidden}
   .nodes span{text-align:left;padding-left:20px}
   .nodes span:before{content:"";position:absolute;left:0;top:.55em;width:10px;height:10px;border-radius:50%;background:var(--bone-50);border:1.5px solid var(--navy-800)}
   .p08 .seat,.p08 .rule{display:none}
-  .p08 .foot-cap,.p08 .foot-row{position:static;text-align:left}
+  .p08 .foot-top,.p08 .foot-cap,.p08 .foot-row{position:static;text-align:left}
+  .p08 .foot-top{font-size:32px}
+  .p08 .foot-top:after{content:' &';color:var(--navy-800)}
   .p08 .foot-row{flex-direction:column;gap:12px;margin-top:16px}
   .p08 .foot-cap{margin-top:24px}
   .hdr .pmap,#tune{display:none}
@@ -640,7 +644,8 @@ body{overflow:hidden}
     <!-- 08 — & — -->
     <section class="hp p08" id="p08">
       <span class="rule r"></span><span class="seat"></span>
-      <p class="foot-cap">Prologue<span class="amp">&amp;</span> — and, 그리고 end. 처음과 끝을 함께합니다.</p>
+      <p class="foot-top">Prologue</p>
+      <p class="foot-cap">and, 그리고 end. 처음과 끝을 함께합니다.</p>
       <div class="foot-row"><nav><a href="#" data-sheet="../v3/projects.html">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></div>
     </section>
     <svg id="hline" aria-hidden="true"></svg>
@@ -1176,7 +1181,7 @@ window.V5 = (function () {
       const ns = [...p.querySelectorAll('.nodes span')];
       if (i === panels.length - 1) snaps.push(limit);
       else if (ns.length) ns.forEach(n => snaps.push(+n.dataset.x - vw / 2));
-      else snaps.push(i === 0 ? 0 : p._x - 12);
+      else snaps.push(i === 0 ? 0 : Math.round(p._x + p._w / 2 - vw / 2));   // 점 없는 패널은 패널 중앙이 & 아래에
     });
     snaps = [...new Set(snaps.map(v => Math.max(0, Math.min(limit, Math.round(v)))))].sort((a, b) => a - b);
     tipMin = 0;
@@ -1188,7 +1193,8 @@ window.V5 = (function () {
     let tipX;
     if (!launched) tipX = geo.nodeX + animTip;
     else {
-      const k = Math.max(0, Math.min(1, (s - (maxS - vw)) / vw));                       // 끝: 마지막 화면에서 & 자리까지 달려감
+      const sPrev = snaps.length > 1 ? snaps[snaps.length - 2] : maxS - vw;                // 끝: 마지막 직전 스냅부터 & 자리까지 달려감(그 전 스냅에서는 정확히 중앙)
+      const k = Math.max(0, Math.min(1, (s - sPrev) / Math.max(1, maxS - sPrev)));
       const leadEnd = (snaps[1] || 600), lead = (vw * 0.5 - geo.nodeX) * Math.max(0, 1 - s / leadEnd);   // 시작: 첫 스냅 지점까지 선의 시작점 → 화면 중앙으로 옮겨감
       tipX = s + vw * 0.5 - lead + k * (geo.endX - (maxS + vw * 0.5));
       tipX = Math.max(geo.nodeX + tipMin, Math.min(geo.endX, tipX));

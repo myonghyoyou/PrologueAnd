@@ -160,7 +160,7 @@ window.V5 = (function () {
       const ns = [...p.querySelectorAll('.nodes span')];
       if (i === panels.length - 1) snaps.push(limit);
       else if (ns.length) ns.forEach(n => snaps.push(+n.dataset.x - vw / 2));
-      else snaps.push(i === 0 ? 0 : p._x - 12);
+      else snaps.push(i === 0 ? 0 : Math.round(p._x + p._w / 2 - vw / 2));   // 점 없는 패널은 패널 중앙이 & 아래에
     });
     snaps = [...new Set(snaps.map(v => Math.max(0, Math.min(limit, Math.round(v)))))].sort((a, b) => a - b);
     tipMin = 0;
@@ -172,7 +172,8 @@ window.V5 = (function () {
     let tipX;
     if (!launched) tipX = geo.nodeX + animTip;
     else {
-      const k = Math.max(0, Math.min(1, (s - (maxS - vw)) / vw));                       // 끝: 마지막 화면에서 & 자리까지 달려감
+      const sPrev = snaps.length > 1 ? snaps[snaps.length - 2] : maxS - vw;                // 끝: 마지막 직전 스냅부터 & 자리까지 달려감(그 전 스냅에서는 정확히 중앙)
+      const k = Math.max(0, Math.min(1, (s - sPrev) / Math.max(1, maxS - sPrev)));
       const leadEnd = (snaps[1] || 600), lead = (vw * 0.5 - geo.nodeX) * Math.max(0, 1 - s / leadEnd);   // 시작: 첫 스냅 지점까지 선의 시작점 → 화면 중앙으로 옮겨감
       tipX = s + vw * 0.5 - lead + k * (geo.endX - (maxS + vw * 0.5));
       tipX = Math.max(geo.nodeX + tipMin, Math.min(geo.endX, tipX));
