@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="v3.css?v=202609181610">
+<link rel="stylesheet" href="v3.css?v=202609181631">
 </head>
 <body>
 
@@ -42,7 +42,7 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
-<script src="v3.js?v=202609181610"></script>
+<script src="v3.js?v=202609181631"></script>
 <script>
   const EMBED = location.search.includes('embed=1') ? '&embed=1' : '';
   function render() {
@@ -60,6 +60,10 @@
       : `<div class="empty"><p>이 유형의 작업은 준비 중입니다.<br>비슷한 문제가 있다면 문의해 주세요.</p><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a></div>`;
   }
   render();
+  // 전환 A: 클릭한 행의 제목만 공유 요소로(이름은 문서에 하나만). 돌아올 때를 위해 slug 기억
+  document.getElementById('list').addEventListener('click', e => { const a = e.target.closest('.prow'); if (!a) return; document.querySelectorAll('.prow.vt').forEach(r => r.classList.remove('vt')); a.classList.add('vt'); try { sessionStorage.setItem('vt-slug', new URL(a.href, location.href).searchParams.get('p')); } catch (err) {} });
+  // 상세에서 돌아올 때: 같은 행에 이름을 붙여 제목이 제자리로 내려오게
+  addEventListener('pagereveal', e => { let slug = null; try { slug = sessionStorage.getItem('vt-slug'); } catch (err) {} if (!slug) return; const row = [...document.querySelectorAll('.prow')].find(r => r.getAttribute('href').includes('p=' + slug)); if (row) { row.classList.add('vt'); if (e.viewTransition) e.viewTransition.finished.finally(() => row.classList.remove('vt')); else row.classList.remove('vt'); } });
   V3.initLenis();
   V3.drawer.init();
 </script>
