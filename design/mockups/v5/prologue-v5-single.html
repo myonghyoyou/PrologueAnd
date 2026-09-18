@@ -1085,7 +1085,7 @@ window.V5 = (function () {
   V.init = function () {
     if (!desktop()) return;
     if (!reduced && window.Lenis) {
-      lenis = new Lenis({ wrapper: wrap, content: track, orientation: 'horizontal', gestureOrientation: 'both', lerp: 0.1, smoothWheel: true, wheelMultiplier: 1.4 });
+      lenis = new Lenis({ wrapper: wrap, content: track, orientation: 'horizontal', gestureOrientation: 'both', lerp: 0.1, smoothWheel: false, syncTouch: true });   // 휠은 아래에서 직접: 한 번에 한 점
       V3.lenis = lenis; // drawer stop/start
       gsap.ticker.add(t => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0);
     }
@@ -1102,11 +1102,24 @@ window.V5 = (function () {
       e.preventDefault();                                             // 네이티브 가로 스크롤 + 우리 이동이 겹치지 않게
       const at = lenis ? lenis.targetScroll : sl();                    // 애니메이션 중이면 목표 위치 기준 → 한 번에 한 점
       const go = t => { snapping = true; moving = false; gestureFrom = null; lenis ? lenis.scrollTo(t, { duration: 1.5, onComplete: () => { snapping = false; } }) : V.goTo(t); };
-      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { const t = snaps.find(v => v > at + 2); if (t !== undefined) go(t); }
-      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { const t = [...snaps].reverse().find(v => v < at - 2); if (t !== undefined) go(t); }
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') V.step(1);
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') V.step(-1);
       else if (e.key === 'Home') go(0);
       else if (e.key === 'End') go(snaps[snaps.length - 1]);
     });
+    // wheel / trackpad: 한 제스처 = 한 점 (키보드와 같은 이동)
+    V.step = dir => { const at = lenis ? lenis.targetScroll : sl(); const t = dir > 0 ? snaps.find(v => v > at + 2) : [...snaps].reverse().find(v => v < at - 2); if (t === undefined) return false; snapping = true; moving = false; gestureFrom = null; if (lenis) lenis.scrollTo(t, { duration: 1.5, onComplete: () => { snapping = false; } }); else wrap.scrollTo({ left: t, behavior: 'smooth' }); return true; };
+    let acc = 0, lockUntil = 0;
+    wrap.addEventListener('wheel', e => {
+      e.preventDefault();
+      if (document.getElementById('sheet').classList.contains('on')) return;
+      const now = performance.now(); if (now < lockUntil) return;
+      const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      acc += d;
+      if (Math.abs(acc) < 24) return;                      // 트랙패드 미세 입력 무시
+      const dir = acc > 0 ? 1 : -1; acc = 0;
+      if (V.step(dir)) lockUntil = now + 700;              // 이동 중 추가 휠 무시(연타 방지)
+    }, { passive: false });
     // hash → start position (skip intro)
     const hash = location.hash.replace('#', ''); const target = hash && document.getElementById(hash);
     if (target) { wrap.scrollLeft = target.offsetLeft - 12; }
@@ -1176,7 +1189,7 @@ window.V5 = (function () {
     if (!launched) tipX = geo.nodeX + animTip;
     else {
       const k = Math.max(0, Math.min(1, (s - (maxS - vw)) / vw));                       // 끝: 마지막 화면에서 & 자리까지 달려감
-      const lead = (vw * 0.5 - geo.nodeX) * Math.max(0, 1 - s / 600);                   // 시작: 첫 600px 동안 선의 시작점에서 화면 중앙으로 옮겨감
+      const leadEnd = (snaps[1] || 600), lead = (vw * 0.5 - geo.nodeX) * Math.max(0, 1 - s / leadEnd);   // 시작: 첫 스냅 지점까지 선의 시작점 → 화면 중앙으로 옮겨감
       tipX = s + vw * 0.5 - lead + k * (geo.endX - (maxS + vw * 0.5));
       tipX = Math.max(geo.nodeX + tipMin, Math.min(geo.endX, tipX));
     }
