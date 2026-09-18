@@ -14,8 +14,6 @@ body{overflow:hidden}
 .p00 .display,.p08 .display{font-size:56px}
 .p00 .lead{margin-top:28px}
 .p00 .cta{display:flex;gap:12px;margin-top:36px}
-.p00 .sub{position:absolute;left:40px;top:calc(var(--ly) + 22px);font-size:13px;color:var(--bone-500)}
-.p00 .sub b{font-weight:500;color:var(--bone-700)}
 .p00 .hint{position:absolute;right:40px;bottom:40px;font-size:13px;color:var(--bone-500)}
 #hero-dia{position:absolute;inset:0;pointer-events:none;overflow:visible}
 #hero-dia text{font-family:var(--sans);font-size:12px;font-weight:500;fill:var(--bone-500)}
@@ -26,7 +24,7 @@ body{overflow:hidden}
 .p01 .num{display:block;color:var(--navy-800);margin-bottom:12px}
 .p01 .h1{max-width:9em}
 .p01 .cap.b{position:absolute;left:40px;bottom:40px}
-.p01 .probs{list-style:none;margin:0;padding:0;position:absolute;left:40px;right:40px;top:calc(var(--ly) - 8px);display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.p01 .probs{list-style:none;margin:0;padding:0;position:absolute;left:40px;right:40px;top:calc(var(--ly) + 28px);display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
 .p01 .probs li{border-top:1px solid var(--navy-800);padding-top:12px;background:var(--bone-0);position:relative;z-index:2}
 .p01 .probs b{display:block;font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--navy-800);margin-bottom:6px}
 .p01 .probs span{display:block;font-size:19px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
@@ -44,20 +42,21 @@ body{overflow:hidden}
 /* 06 five steps on the line */
 .p06{padding:40px}
 .p06 .sec-head{position:absolute;left:40px;right:40px;top:40px;margin:0}
-.p06 .steps{position:absolute;left:40px;right:40px;top:calc(var(--ly) - 72px);display:grid;grid-template-columns:repeat(5,1fr);gap:24px;border:0}
-.p06 .step{padding-top:0;text-align:center}
-.p06 .step h3{font-size:19px;font-weight:600;margin:0 0 6px}
-.p06 .step .num{display:block;margin-bottom:8px}
+.p06 .steps{position:absolute;left:40px;right:40px;top:calc(var(--ly) - 84px);display:grid;grid-template-columns:repeat(5,1fr);gap:24px;border:0}
+.p06 .step{padding-top:0;text-align:center;display:grid;grid-template-rows:60px 48px auto;align-content:start}   /* 가운데 48px = 선이 지나는 레인, 글자 없음 */
+.p06 .step .top{display:flex;flex-direction:column;justify-content:flex-end;gap:6px}
+.p06 .step h3{font-size:19px;font-weight:600;margin:0}
+.p06 .step .num{display:block;margin:0}
 .p06 .step .num:after{display:none}
-.p06 .step p{margin:0;font-size:13px;color:var(--bone-700);height:110px}
-.p06 .step .chip{margin-top:8px}
+.p06 .step .bot{padding-top:6px}
+.p06 .step p{margin:0 0 8px;font-size:13px;color:var(--bone-700);min-height:60px}
 .p06 .about{position:absolute;left:40px;right:40px;bottom:40px;margin:0;padding-top:20px;grid-template-columns:7fr 5fr}
 .p06 .about .lead{font-size:16px}
 .p06 .about .body{font-size:14px}
 .p06 .about li{padding:6px 0;font-size:13px}
 /* 08 contact (dark) */
 .p08{background:var(--navy-950);border-color:var(--navy-900);color:var(--bone-50)}
-.p08 .inner{position:absolute;left:40px;top:48px;max-width:calc(100% - 200px)}
+.p08 .inner{position:absolute;left:40px;top:40px;max-width:calc(100% - 200px)}
 .p08 .display{color:var(--bone-50)}
 .p08 .display em{color:var(--navy-300)}
 .p08 .lead{color:var(--navy-300);margin-top:28px}
@@ -84,7 +83,7 @@ body{overflow:hidden}
 @media (max-height:780px){
   .p00 .display,.p08 .display{font-size:46px}.p00 .lead,.p08 .lead{margin-top:18px;font-size:17px}.p00 .cta,.p08 .cta{margin-top:24px}
   .hp.pan.pj h2{font-size:5.6rem!important}.hp.pan.pj .nums b{font-size:32px}
-  .p06 .step p{height:64px;font-size:12px}.p06 .step h3{font-size:16px}
+  .p06 .step p{min-height:0;font-size:12px}.p06 .step h3{font-size:16px}
   .p06 .about{grid-template-columns:1fr}.p06 .about .body,.p06 .about>div:last-child{display:none}.p06 .about .lead{font-size:14px;max-width:40rem}
 }
 /* tune (mockup only) */
@@ -132,14 +131,16 @@ body{overflow:hidden}
   #tune{display:none}
   .p00{min-height:auto;padding:24px}
   .p00 .inner{position:static;max-width:none}
-  .p00 .sub{position:static;margin-top:24px}
   .p00 .hint,#hero-dia{display:none}
   .p00 .cta{flex-direction:column}
   .p01 .cap.b,.p07 .btn{position:static;display:inline-block;margin-top:16px}
   .p01 .probs{position:static;grid-template-columns:1fr;gap:12px;margin-top:16px}
   .p06 .sec-head,.p06 .steps,.p06 .about{position:static}
   .p06 .steps{grid-template-columns:1fr;gap:0;margin-top:16px}
-  .p06 .step{text-align:left;padding:16px 0;border-bottom:1px solid var(--bone-200)}
+  .p06 .step{text-align:left;padding:16px 0;border-bottom:1px solid var(--bone-200);display:block}
+  .p06 .step .lane{display:none}
+  .p06 .step .top{flex-direction:row;align-items:baseline;gap:10px}
+  .p06 .step .bot{padding-top:6px}
   .p06 .step p{height:auto}
   .p06 .about{margin-top:40px;grid-template-columns:1fr}
   .p08{padding:32px 24px}
