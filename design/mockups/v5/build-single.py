@@ -19,9 +19,9 @@ html = html.replace('<iframe id="sheet-frame" title="상세"></iframe>',
 css += "\n.sheet-note{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;color:var(--bone-700)}.sheet-note .amp{font-size:64px;line-height:1;margin-bottom:12px}.sheet-note b{font-size:18px;margin-bottom:8px}.sheet-note p{margin:0;font-size:14px;line-height:1.7}"
 
 # ---- inline CSS/JS ----
-html = re.sub(r'<link rel="stylesheet" href="(\.\./v3/v3\.css|\.\./v4/v4\.css|v5\.css)">\n?', '', html)
+html = re.sub(r'<link rel="stylesheet" href="(\.\./v3/v3\.css|\.\./v4/v4\.css|v5\.css)(\?v=[^"]*)?">\n?', '', html)
 html = html.replace('</head>', '<style>\n' + css + '\n</style>\n</head>')
-html = re.sub(r'<script src="(\.\./v3/v3\.js|\.\./v3/panels\.js|v5\.js)"></script>\n?', '', html)
+html = re.sub(r'<script src="(\.\./v3/v3\.js|\.\./v3/panels\.js|v5\.js)(\?v=[^"]*)?"></script>\n?', '', html)
 html = html.replace('<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>',
                     '<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>\n<script>\n' + js.replace('</script>', '<\\/script>') + '\n</script>')
 html = html.replace('<a class="brand" href="index.html"', '<a class="brand" href="#p00"')

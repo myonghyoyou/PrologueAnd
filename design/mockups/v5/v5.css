@@ -46,9 +46,6 @@ body{overflow:hidden}
 .nodes span{position:relative;font-size:1.2rem;font-weight:500;color:var(--bone-700);text-align:center;flex:1}
 .nodes span[data-chip]:after{content:attr(data-chip);display:block;font-size:12px;color:var(--navy-800);margin-top:4px}
 .nodes span.on{color:var(--bone-900)}
-/* 07 문의 */
-#flag{position:absolute;inset:0;pointer-events:none;overflow:visible;opacity:0;transition:opacity .35s;z-index:3}
-#flag path{fill:none;stroke:var(--bone-50);stroke-width:1.5}#flag polygon{fill:var(--bone-50)}#flag.on{opacity:1}
 /* 08 — & — */
 .p08 .seat{position:absolute;left:50%;top:var(--ly);width:44px;height:44px;margin:-22px 0 0 -22px}
 .p08 .rule{position:absolute;top:var(--ly);height:1px;background:var(--bone-300);transition:background .4s}
@@ -111,7 +108,7 @@ body{overflow:hidden}
   .shape-area{width:60%;height:60%;left:40%;opacity:.7}
   .below,.hp.prob .more,.nodes{position:static;margin-top:20px}
   .below{flex-wrap:wrap}
-  .hp .hint,#hero-dia,#hline,#hline-dark,#marker,#flag{display:none}
+  .hp .hint,#hero-dia,#hline,#hline-dark,#marker{display:none}
   .nodes{display:grid;grid-template-columns:1fr;gap:8px;text-align:left}
   .nodes span{text-align:left;padding-left:20px}
   .nodes span:before{content:"";position:absolute;left:0;top:.55em;width:10px;height:10px;border-radius:50%;background:var(--bone-50);border:1.5px solid var(--navy-800)}

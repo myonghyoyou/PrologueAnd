@@ -99,7 +99,7 @@ window.V5 = (function () {
     const txtB = p00.querySelector('.txt').getBoundingClientRect().bottom - p00.getBoundingClientRect().top;   // headline block bottom (panel-local)
     const up = Math.max(14, Math.min(52, yl - txtB - 12)), dn = Math.min(84, ph - yl - 44);                      // knot amplitude: never into the text, never out of the panel
     const knot = `M0 ${yl - up * 0.4} C ${16 * k} ${yl - up}, ${44 * k} ${yl + dn * 0.9}, ${28 * k} ${yl - up * 0.2} S ${8 * k} ${yl + dn}, ${40 * k} ${yl + dn * 0.5} S ${66 * k} ${yl - up}, ${50 * k} ${yl - up * 0.5} S ${30 * k} ${yl + dn * 0.8}, ${64 * k} ${yl + dn * 0.4} S ${86 * k} ${yl - up * 0.9}, ${78 * k} ${yl - up * 0.15} S ${70 * k} ${yl + dn * 0.35}, ${100 * k} ${yl}`;
-    heroDia.innerHTML = `<path class="knot" d="${knot}"/><text x="${Math.round(6 * k)}" y="${yl + dn + 16}">복잡한 업무</text><text x="${nodeL + 12}" y="${yl - 10}">단순한 제품</text>`;
+    heroDia.innerHTML = `<path class="knot" d="${knot}"/>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX - 14;
     const d = `M${nodeX} ${y} H${endX}`;
@@ -115,11 +115,7 @@ window.V5 = (function () {
     dk.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="left:${-p08._x}px"><path class="guide" d="${d}"/><path class="ink" d="${d}" style="stroke-dasharray:${lineLen};stroke-dashoffset:${lineLen}"/></svg>`;
     // 09 rules
     const ruleLen = Math.min(260, p09._w / 2 - 60), rr = p09.querySelector('.rule.r'); rr.style.left = (p09._w / 2 + 14) + 'px'; rr.style.width = ruleLen + 'px';
-    // flag in 08: line → drop → button
-    const btn = p08.querySelector('.btn'), br = btn.getBoundingClientRect(), pr = p08.getBoundingClientRect(), bx = br.left - pr.left, by = br.top - pr.top + br.height / 2, flag = document.getElementById('flag');
-    const p8h = p08.offsetHeight; flag.setAttribute('viewBox', `0 0 ${p08._w} ${p8h}`); flag.setAttribute('width', p08._w); flag.setAttribute('height', p8h);
-    const fx = bx - 60, y8 = y - p08.offsetTop; flag.innerHTML = `<path d="M${fx} ${y8} V${by} H${bx - 26}"/><polygon points="${bx - 26},${by - 6} ${bx - 12},${by} ${bx - 26},${by + 6}"/>`;
-    geo = { W, H, y, nodeX, endX, ampX, darkL: p08._x, darkR: p08._x + p08._w, flagX: p08._x + fx };
+    geo = { W, H, y, nodeX, endX, ampX, darkL: p08._x, darkR: p08._x + p08._w };
     tipMin = 40;
   }
   const current = () => { const c = sl() + innerWidth * 0.5; let i = 0; panels.forEach((p, k) => { if (p._x <= c) i = k; }); return i; };
@@ -137,7 +133,6 @@ window.V5 = (function () {
     const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched || !lenis) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);
-    document.getElementById('flag').classList.toggle('on', tipX >= geo.flagX - 2);
     const hdr = document.querySelector('.hdr'); hdr.classList.toggle('on-dark', s + 40 >= geo.darkL && s + 40 < geo.darkR - vw * 0.2);
     const cur = current(); document.querySelectorAll('#pmap i').forEach((b, i) => { b.classList.toggle('on', i === cur); b.classList.toggle('done', i < cur); });
     const id = panels[cur].id; if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
