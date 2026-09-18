@@ -1101,14 +1101,14 @@ window.V5 = (function () {
       if (!['ArrowRight', 'ArrowLeft', 'Home', 'End', 'PageDown', 'PageUp', ' '].includes(e.key)) return;
       e.preventDefault();                                             // 네이티브 가로 스크롤 + 우리 이동이 겹치지 않게
       const at = lenis ? lenis.targetScroll : sl();                    // 애니메이션 중이면 목표 위치 기준 → 한 번에 한 점
-      const go = t => { snapping = true; moving = false; gestureFrom = null; lenis ? lenis.scrollTo(t, { duration: 1.5, onComplete: () => { snapping = false; } }) : V.goTo(t); };
+      const go = t => { snapping = true; moving = false; gestureFrom = null; lenis ? lenis.scrollTo(t, { lerp: 0.075, onComplete: () => { snapping = false; } }) : V.goTo(t); };
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') V.step(1);
       else if (e.key === 'ArrowLeft' || e.key === 'PageUp') V.step(-1);
       else if (e.key === 'Home') go(0);
       else if (e.key === 'End') go(snaps[snaps.length - 1]);
     });
     // wheel / trackpad: 한 제스처 = 한 점 (키보드와 같은 이동)
-    V.step = dir => { const at = lenis ? lenis.targetScroll : sl(); const t = dir > 0 ? snaps.find(v => v > at + 2) : [...snaps].reverse().find(v => v < at - 2); if (t === undefined) return false; snapping = true; moving = false; gestureFrom = null; if (lenis) lenis.scrollTo(t, { duration: 1.5, onComplete: () => { snapping = false; } }); else wrap.scrollTo({ left: t, behavior: 'smooth' }); return true; };
+    V.step = dir => { const at = lenis ? lenis.targetScroll : sl(); const t = dir > 0 ? snaps.find(v => v > at + 2) : [...snaps].reverse().find(v => v < at - 2); if (t === undefined) return false; snapping = true; moving = false; gestureFrom = null; if (lenis) lenis.scrollTo(t, { lerp: 0.075, onComplete: () => { snapping = false; } }); else wrap.scrollTo({ left: t, behavior: 'smooth' }); return true; };   // lerp 방식: 이동 중 다음 점으로 목표를 바꿔도 끊기지 않고 이어짐
     let acc = 0, lockUntil = 0;
     wrap.addEventListener('wheel', e => {
       e.preventDefault();
@@ -1118,7 +1118,7 @@ window.V5 = (function () {
       acc += d;
       if (Math.abs(acc) < 24) return;                      // 트랙패드 미세 입력 무시
       const dir = acc > 0 ? 1 : -1; acc = 0;
-      if (V.step(dir)) lockUntil = now + 700;              // 이동 중 추가 휠 무시(연타 방지)
+      if (V.step(dir)) lockUntil = now + 320;              // 휠 한 칸의 연속 이벤트 묶음. 그 뒤 입력은 다음 점으로 목표만 갱신(부드럽게 이어짐)
     }, { passive: false });
     // hash → start position (skip intro)
     const hash = location.hash.replace('#', ''); const target = hash && document.getElementById(hash);
