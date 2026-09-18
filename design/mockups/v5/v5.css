@@ -48,8 +48,6 @@ body{overflow:hidden}
 .nodes span.on{color:var(--bone-900)}
 /* 08 — & — */
 .p08 .seat{position:absolute;left:50%;top:var(--ly);width:44px;height:44px;margin:-22px 0 0 -22px}
-.p08 .rule{position:absolute;top:var(--ly);height:1px;background:var(--bone-300);transition:background .4s}
-.p08.done .rule{background:var(--navy-800)}
 .p08 .foot-top{position:absolute;left:0;right:0;top:calc(var(--ly) - 92px);text-align:center;margin:0;font-family:var(--serif);font-size:44px;line-height:1;letter-spacing:.005em;color:var(--bone-900);font-optical-sizing:none;font-variation-settings:"opsz" 24}
 .p08 .foot-cap{position:absolute;left:0;right:0;top:calc(var(--ly) + 36px);text-align:center;font-size:14px;color:var(--bone-600);margin:0}
 .p08 .foot-cap{top:calc(var(--ly) + 28px)}
@@ -91,8 +89,6 @@ body{overflow:hidden}
 .hdr .pmap i.done{background:var(--navy-400)}
 .hdr .pmap i.on{background:var(--navy-800)}
 .hdr .pmap i:hover:after{content:attr(data-l);position:absolute;left:0;top:8px;font-size:11px;font-weight:500;color:var(--bone-700);white-space:nowrap}
-.hdr.on-dark{background:linear-gradient(var(--navy-950) 70%,rgba(21,26,51,0))}
-.hdr.on-dark .pmap i{background:var(--navy-700)}.hdr.on-dark .pmap i.done{background:var(--navy-400)}.hdr.on-dark .pmap i.on{background:var(--bone-50)}
 /* ---- sheet (Projects · Case Study) ---- */
 #sheet-bd{position:fixed;inset:0;background:rgba(28,27,24,.45);opacity:0;pointer-events:none;transition:opacity .35s;z-index:45}
 #sheet-bd.on{opacity:1;pointer-events:auto}

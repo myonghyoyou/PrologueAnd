@@ -142,7 +142,7 @@ window.V5 = (function () {
     heroDia.innerHTML = `<path class="knot" d="${knot}"/>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX;
-    const d = `M${nodeX} ${y} H${endX}`;
+    const d = `M${nodeX} ${y} H${ampX - 34}`;   // 선은 & 자리 34px 앞에서 끝남 (붙어 보이지 않게)
     hline.setAttribute('width', W); hline.setAttribute('height', H); hline.setAttribute('viewBox', `0 0 ${W} ${H}`);
     // shared diagrams on project panels + five nodes in 06
     const dia = panels.filter(p => p.dataset.slug).map(p => `<g class="pd" data-x0="${Math.round(p._x + p._w * 0.40)}" data-x1="${Math.round(p._x + p._w * 0.9)}">${PANELS.diagramSVG(p.dataset.slug, { shared: true, y, x0: Math.round(p._x + p._w * 0.40), node: Math.round(p._x + p._w * 0.56), x1: Math.round(p._x + p._w - 56) })}</g>`).join('');
@@ -154,7 +154,6 @@ window.V5 = (function () {
     const dk = document.getElementById('hline-dark'); dk.style.left = p08._x + 'px'; dk.style.width = p08._w + 'px';
     dk.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="left:${-p08._x}px"><path class="guide" d="${d}"/><path class="ink" d="${d}" style="stroke-dasharray:${lineLen};stroke-dashoffset:${lineLen}"/></svg>`;
     // 09 rules
-    const ruleLen = Math.min(260, p09._w / 2 - 60), rr = p09.querySelector('.rule.r'); rr.style.left = (p09._w / 2 + 14) + 'px'; rr.style.width = ruleLen + 'px';
     geo = { W, H, y, nodeX, endX, ampX, darkL: p08._x, darkR: p08._x + p08._w };
     // snap targets (scrollLeft values): panels with nodes → each node under the marker (50vw); others → panel start; last → end
     const vw = innerWidth, limit = W - vw;
@@ -184,12 +183,11 @@ window.V5 = (function () {
     const len = tipX - geo.nodeX;
     ink.style.strokeDashoffset = lineLen - len; const dkInk = document.querySelector('#hline-dark .ink'); if (dkInk) dkInk.style.strokeDashoffset = lineLen - len;
     hline.querySelectorAll('.pd').forEach(g => PANELS.progress(g, Math.min(1, Math.max(0, (tipX - +g.dataset.x0) / (+g.dataset.x1 - +g.dataset.x0)))));
-    hline.querySelectorAll('.n6').forEach(n => n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6');
+    hline.querySelectorAll('.n6').forEach(n => { n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6'; n.style.opacity = Math.abs(tipX - +n.dataset.x) < 16 ? 0 : 1; });   // &가 점 위에 오면 점은 숨김(&가 점이 됨)
     document.querySelectorAll('.nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x));
     const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);
-    const hdr = document.querySelector('.hdr'); hdr.classList.toggle('on-dark', s + 40 >= geo.darkL && s + 40 < geo.darkR - vw * 0.2);
     const cur = current(); document.querySelectorAll('#pmap i').forEach((b, i) => { b.classList.toggle('on', i === cur); b.classList.toggle('done', i < cur); });
     const id = panels[cur].id; if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
   }
