@@ -451,8 +451,8 @@ body{overflow:hidden}
 .hp .txt{position:relative;z-index:2;padding-top:24px}
 .hl{font-weight:600;letter-spacing:-.035em;line-height:1.02;margin:0;word-break:keep-all;color:var(--bone-900)}
 .hl em{font-style:normal;color:var(--navy-800)}
-.hl2{font-size:clamp(3.6rem,8.6vw,7.8rem)}
-.hl3{font-size:clamp(3.2rem,7.4vw,6.8rem)}
+.hl2{font-size:min(clamp(3.6rem,8.6vw,7.8rem),calc(var(--ph) * .15))}   /* 패널 높이에도 비례: 작은 패널에서 바닥선 위에 들어가도록 */
+.hl3{font-size:min(clamp(3.2rem,7.4vw,6.8rem),calc(var(--ph) * .125))}
 .hl .amp{font-size:.9em;margin-right:.12em}
 .hp.dark .hl{color:var(--bone-50)}
 .hp.dark .hl em{color:var(--navy-300)}
@@ -461,6 +461,10 @@ body{overflow:hidden}
 /* ---- 도형: 밝은 면이 글자를 덮는다 (D 문법 4) ---- */
 .shape-area{position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .shape.squares i{border-radius:2px}
+.shape.flag i{left:52%;top:8%;width:44%;height:72%;background:var(--navy-100);clip-path:polygon(0 0,100% 50%,0 100%)}
+.shape.glyph i{position:absolute;left:44%;top:-6%;font-family:var(--serif);font-style:normal;font-size:min(56vw,860px);line-height:1;color:var(--navy-100);background:none;font-optical-sizing:none;font-variation-settings:"opsz" 24}
+/* 선 위의 노드 라벨 (한 개면 가운데) */
+.nodes span.amp-node{font-family:var(--serif);font-size:1.6rem;color:var(--navy-800);font-optical-sizing:none;font-variation-settings:"opsz" 24}
 /* ---- 바닥선(L1) 아래 구역: 버튼·라벨 ---- */
 .below{position:absolute;left:var(--pad);top:calc(var(--ly) + 22px);display:flex;align-items:center;gap:12px;z-index:3}
 .below.right{left:auto;right:var(--pad)}
@@ -468,7 +472,8 @@ body{overflow:hidden}
 .hp .hint{position:absolute;right:var(--pad);top:16px;font-size:12px;color:var(--bone-500);z-index:2}
 /* 00 hero */
 #hero-dia{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:2}
-#hero-dia text{font-family:var(--sans);font-size:11px;font-weight:500;fill:var(--bone-500)}
+#hero-dia text{font-family:var(--sans);font-size:12px;font-weight:500;fill:var(--bone-500)}
+#hero-dia .knot{fill:none;stroke:var(--navy-400);stroke-width:1}
 #hero-dia .src{fill:none;stroke:var(--navy-400);stroke-width:1}
 #hero-dia .node{fill:var(--bone-50);stroke:var(--navy-800)}
 /* 01~04 문제 */
@@ -576,19 +581,44 @@ body{overflow:hidden}
     <!-- 00 Prologue · 처음 -->
     <section class="hp p00" id="p00">
       <svg id="hero-dia" aria-hidden="true"></svg>
-      <div class="shape-area"><div class="shape circles"><i style="width:38%;padding-top:38%;left:56%;top:-14%"></i><i style="width:18%;padding-top:18%;left:86%;top:36%"></i><i style="width:12%;padding-top:12%;left:48%;top:46%"></i></div></div>
       <span class="pcap">Prologue · 처음</span>
-      <div class="txt"><h1 class="hl hl3">복잡한 업무를<br><em>단순한 제품</em>으로<br>바꿉니다.</h1><p class="sub1">만들기 전에 정리하고, 실제로 쓰이는 끝까지 함께합니다.</p></div>
-      <div class="below right"><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a><a class="btn o" href="#p05" data-go="p05">작업 보기 →</a></div>
+      <div class="txt"><h1 class="hl hl3">복잡한 업무를<br><em>단순한 제품</em>으로<br>바꿉니다.</h1><p class="sub1">B2B Product Engineer — 만들기 전에 정리하고, 실제로 쓰이는 끝까지 함께합니다.</p></div>
+      <div class="below right"><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a><a class="btn o" href="#p06" data-go="p06">작업 보기 →</a></div>
       <span class="hint">→ 넘기세요 (휠 · 트랙패드 · 방향키)</span>
     </section>
-    <!-- 01~04 문제 4장 (generated) -->
-    <!-- 05 다섯 단계 -->
+    <!-- 01 처음 -->
+    <section class="hp p01" id="p01">
+      <div class="shape-area"><div class="shape ring"><i style="width:52%;padding-top:52%;left:46%;top:0"></i></div></div>
+      <span class="pcap">1 / 3 · 처음 — Prologue</span>
+      <div class="txt"><h2 class="hl hl2">만들기 전에,<br>무엇이 불편한지부터.</h2><p class="sub1">Understand · Simplify — 현재 업무와 사용자를 이해하고, 불필요한 단계부터 걷어냅니다.</p></div>
+      <div class="nodes"><span>처음</span></div>
+    </section>
+    <!-- 02 그리고 (&) -->
+    <section class="hp p02" id="p02">
+      <div class="shape-area"><div class="shape glyph"><i>&amp;</i></div></div>
+      <span class="pcap">2 / 3 · 그리고 — And</span>
+      <div class="txt"><h2 class="hl hl2">Workflow, 화면, 제품을<br>한 사람이.</h2><p class="sub1">Design · Build — 설계와 구현이 한 손에서 이어져, 처음 정리한 문제가 끝까지 흐트러지지 않습니다.</p></div>
+      <div class="nodes"><span class="amp-node">&amp;</span></div>
+    </section>
+    <!-- 03 끝까지 -->
+    <section class="hp p03" id="p03">
+      <div class="shape-area"><div class="shape flag"><i></i></div></div>
+      <span class="pcap">3 / 3 · 끝 — End</span>
+      <div class="txt"><h2 class="hl hl2">출시가 끝이 아니라,<br>쓰이는 데까지.</h2><p class="sub1">Improve — 사용 후에 드러나는 문제를 반복해서 고칩니다. 그래서 Prologue&amp;은 Prologue End이기도 합니다.</p></div>
+      <div class="nodes"><span data-flag>끝</span></div>
+    </section>
+    <!-- 04 누구를 위해 -->
+    <section class="hp p04" id="p04">
+      <div class="shape-area"><div class="shape squares"><i style="left:46%;top:4%;width:22%;height:30%"></i><i style="left:72%;top:14%;width:22%;height:30%"></i><i style="left:52%;top:42%;width:22%;height:30%"></i><i style="left:78%;top:50%;width:22%;height:30%"></i></div></div>
+      <span class="pcap">누구를 위해</span>
+      <div class="txt"><h2 class="hl hl2">병원 · 제조 · 건설 ·<br>사내 시스템.</h2><p class="sub1">개발 지식이 없어도 됩니다. 지금 쓰는 방식과 가장 불편한 점만 알려주세요.</p></div>
+    </section>
+    <!-- 05 무엇을 -->
     <section class="hp p05" id="p05">
-      <div class="shape-area"><div class="shape circles"><i style="width:56%;padding-top:56%;left:40%;top:-6%"></i></div></div>
-      <span class="pcap">02 · 일하는 방식</span>
-      <div class="txt"><h2 class="hl hl2">처음부터<br>끝까지.</h2><p class="sub1">만들기 전에 정리하고, 출시 후에도 고칩니다.</p></div>
-      <div class="nodes" id="nodes"><span data-chip="처음 — 만들기 전에 정리">Understand</span><span>Simplify</span><span>Design</span><span>Build</span><span data-chip="끝 — 출시 후에도">Improve</span></div>
+      <div class="shape-area"><div class="shape grid"><i style="left:44%;top:6%;width:52%;height:86%"></i></div></div>
+      <span class="pcap">무엇을</span>
+      <div class="txt"><h2 class="hl hl3">고치거나,<br>만들거나,<br>시작하거나.</h2><p class="sub1">기존 시스템 UX·Workflow 개선 · 업무의 웹 시스템화 · 아이디어 → MVP</p></div>
+      <div class="nodes"><span data-chip="있는 시스템을 고칩니다">개선</span><span data-chip="엑셀·종이·메신저 업무를 웹으로">시스템화</span><span data-chip="아이디어를 제품으로">MVP</span></div>
     </section>
     <!-- 06 Projects -->
     <section class="hp p06" id="p06">
@@ -1005,22 +1035,12 @@ window.V5 = (function () {
     document.getElementById('marker').style.transform = `translate(${mx}px, ${my}px) scale(${z})`;
   }
 
-  /* ---------- markup: 문제 4장(01~04) 생성, 진행 지도 ---------- */
-  const SHAPE_OF = { scattered: 'circles', legacy: 'grid', paper: 'papers', idea: 'ring' };
-  const TITLE_OF = { scattered: '흩어진<br>요청', legacy: '불편한<br>시스템', paper: '종이·<br>수작업', idea: '아이디어' };
-  const SUB_OF = { scattered: '엑셀·메신저·이메일·구두 요청으로 흩어진 업무', legacy: '기능은 있는데 쓰기 어렵고 복잡한 화면', paper: '그대로 옮기면 안 될 것 같은 디지털화', idea: '구조와 화면이 아직 없는 제품' };
+  /* ---------- markup: 진행 지도 ---------- */
   V.build = function () {
     wrap = document.getElementById('hwrap'); track = document.getElementById('htrack');
-    const probs = V3.problems, N = probs.length, p05 = document.getElementById('p05');
-    probs.forEach((pr, i) => {
-      const el = document.createElement('a'); el.className = 'hp prob'; el.id = 'p' + String(i + 1).padStart(2, '0'); el.href = `../v3/projects.html?type=${pr.key}`; el.dataset.sheet = el.href;
-      el.innerHTML = `<div class="shape-area">${PANELS.shapeHTML(SHAPE_OF[pr.key])}</div><span class="pcap">${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')} · 문제</span>
-        <div class="txt"><h2 class="hl hl2">${TITLE_OF[pr.key]}</h2><p class="sub1">${SUB_OF[pr.key]}</p></div><span class="more">이 문제의 사례 →</span>`;
-      track.insertBefore(el, p05);
-    });
     document.getElementById('restN').textContent = V3.projects.length;
     panels = [...track.querySelectorAll('.hp')];
-    const labels = ['Prologue', ...probs.map(pr => pr.name), '다섯 단계', 'Projects', '문의', '&'];
+    const labels = ['Prologue', '처음', '&', '끝까지', '누구를 위해', '무엇을', 'Projects', '문의', '&'];
     document.getElementById('pmap').innerHTML = panels.map((el, i) => `<i data-i="${i}" data-l="${labels[i] || ''}"></i>`).join('');
     if (!desktop()) V3.initMobilePos(panels.map(p => p.id));
     // sheets
@@ -1075,19 +1095,19 @@ window.V5 = (function () {
     const p00 = panels[0], p08 = panels.find(p => p.classList.contains('dark')), p09 = panels[panels.length - 1];
     const pt = p00.offsetTop, nodeL = Math.round(p00._w * 0.56), nodeX = p00._x + nodeL, yl = y - pt;   // panel-local coords for the hero svg
     // hero sources (in the track svg, panel 00 coordinates == track coordinates)
-    // 4 sources start at the panel's LEFT edge, fan in to the node, then the one line runs right
-    const ys = [14, 40, 66, 92].map(d => y + d), names = ['전화', '메신저', '이메일', '직접 방문'];
+    // S1: 엉킨 선 뭉치(복잡한 업무)에서 한 가닥이 풀려 나와 바닥선(단순한 제품)이 된다 — docs/19 §3
     const heroDia = document.getElementById('hero-dia');
     const ph = p00.offsetHeight; heroDia.setAttribute('viewBox', `0 0 ${p00._w} ${ph}`); heroDia.setAttribute('width', p00._w); heroDia.setAttribute('height', ph);
-    heroDia.innerHTML = ys.map(yy => `<path class="src" d="M0 ${yy - pt} C ${Math.round(nodeL * 0.5)} ${yy - pt}, ${Math.round(nodeL * 0.72)} ${yl}, ${nodeL} ${yl}"/>`).join('') + ys.map((yy, i) => `<text x="10" y="${yy - pt - 5}">${names[i]}</text>`).join('') + `<circle class="node" cx="${nodeL}" cy="${yl}" r="4"/><text x="${nodeL}" y="${yl - 14}" text-anchor="middle">하나의 흐름</text>`;
+    const k = nodeL / 100; // knot spans x 0 → nodeL, wobbling around the line
+    const knot = `M0 ${yl - 26} C ${16 * k} ${yl - 120}, ${44 * k} ${yl + 70}, ${28 * k} ${yl - 6} S ${8 * k} ${yl + 80}, ${40 * k} ${yl + 40} S ${66 * k} ${yl - 110}, ${50 * k} ${yl - 30} S ${30 * k} ${yl + 60}, ${64 * k} ${yl + 34} S ${86 * k} ${yl - 60}, ${78 * k} ${yl - 8} S ${70 * k} ${yl + 30}, ${100 * k} ${yl}`;
+    heroDia.innerHTML = `<path class="knot" d="${knot}"/><text x="${Math.round(10 * k)}" y="${yl - 128}">복잡한 업무</text><text x="${nodeL + 12}" y="${yl - 12}">단순한 제품</text>`;
     // the line: node → seat in 09
     const seat = p09.querySelector('.seat'), ampX = Math.round(p09._x + p09._w / 2), endX = ampX - 14;
     const d = `M${nodeX} ${y} H${endX}`;
     hline.setAttribute('width', W); hline.setAttribute('height', H); hline.setAttribute('viewBox', `0 0 ${W} ${H}`);
     // shared diagrams on project panels + five nodes in 06
     const dia = panels.filter(p => p.dataset.slug).map(p => `<g class="pd" data-x0="${Math.round(p._x + p._w * 0.40)}" data-x1="${Math.round(p._x + p._w * 0.9)}">${PANELS.diagramSVG(p.dataset.slug, { shared: true, y, x0: Math.round(p._x + p._w * 0.40), node: Math.round(p._x + p._w * 0.56), x1: Math.round(p._x + p._w - 56) })}</g>`).join('');
-    const p05 = document.getElementById('p05'), steps = [...p05.querySelectorAll('.nodes span')];
-    const nodes = steps.map((s, i) => { const r = s.getBoundingClientRect(), x = Math.round(p05._x + (r.left + r.width / 2 - p05.getBoundingClientRect().left)); s.dataset.x = x; return `<circle class="d-node n6" data-x="${x}" cx="${x}" cy="${y}" r="5"/>`; }).join('');
+    const nodes = panels.flatMap(p => [...p.querySelectorAll('.nodes span')].map(s => { const r = s.getBoundingClientRect(), x = Math.round(p._x + (r.left + r.width / 2 - p.getBoundingClientRect().left)); s.dataset.x = x; return (s.hasAttribute('data-flag') ? `<polygon class="d-flag n6f" data-x="${x}" points="${x - 8},${y - 9} ${x + 10},${y} ${x - 8},${y + 9}"/>` : `<circle class="d-node n6" data-x="${x}" cx="${x}" cy="${y}" r="5"/>`); })).join('');
     hline.innerHTML = `<path class="guide" d="${d}"/><path class="ink" d="${d}"/>${dia}${nodes}`;
     ink = hline.querySelector('.ink'); lineLen = ink.getTotalLength(); ink.style.strokeDasharray = lineLen; ink.style.strokeDashoffset = lineLen;
     hline.querySelectorAll('.pd').forEach(g => PANELS.prep(g));
@@ -1101,7 +1121,7 @@ window.V5 = (function () {
     const p8h = p08.offsetHeight; flag.setAttribute('viewBox', `0 0 ${p08._w} ${p8h}`); flag.setAttribute('width', p08._w); flag.setAttribute('height', p8h);
     const fx = bx - 60, y8 = y - p08.offsetTop; flag.innerHTML = `<path d="M${fx} ${y8} V${by} H${bx - 26}"/><polygon points="${bx - 26},${by - 6} ${bx - 12},${by} ${bx - 26},${by + 6}"/>`;
     geo = { W, H, y, nodeX, endX, ampX, darkL: p08._x, darkR: p08._x + p08._w, flagX: p08._x + fx };
-    tipMin = 120;
+    tipMin = 40;
   }
   const current = () => { const c = sl() + innerWidth * 0.5; let i = 0; panels.forEach((p, k) => { if (p._x <= c) i = k; }); return i; };
 
@@ -1114,7 +1134,7 @@ window.V5 = (function () {
     ink.style.strokeDashoffset = lineLen - len; const dkInk = document.querySelector('#hline-dark .ink'); if (dkInk) dkInk.style.strokeDashoffset = lineLen - len;
     hline.querySelectorAll('.pd').forEach(g => PANELS.progress(g, Math.min(1, Math.max(0, (tipX - +g.dataset.x0) / (+g.dataset.x1 - +g.dataset.x0)))));
     hline.querySelectorAll('.n6').forEach(n => n.style.fill = tipX >= +n.dataset.x ? '#2B3160' : '#FAF9F6');
-    document.querySelectorAll('#nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x));
+    document.querySelectorAll('.nodes span').forEach(n => n.classList.toggle('on', tipX >= +n.dataset.x)); hline.querySelectorAll('.n6f').forEach(f => f.style.opacity = tipX >= +f.dataset.x ? 1 : 0.25);
     const marker = document.getElementById('marker'); st.tipX = tipX; st.s = s; if (!launched || !lenis) marker.style.transform = `translate(${tipX - s}px, ${geo.y}px)`;
     marker.classList.toggle('dark', tipX >= geo.darkL && tipX < geo.darkR);
     const rest = tipX >= geo.endX - 0.5; marker.classList.toggle('rest', rest); panels[panels.length - 1].classList.toggle('done', rest);
@@ -1126,13 +1146,13 @@ window.V5 = (function () {
 
   function intro(skip) {
     const heroDia = document.getElementById('hero-dia'), marker = document.getElementById('marker'), brand = document.querySelector('.hdr .brand'), bamp = brand.querySelector('.bamp');
-    const srcs = heroDia.querySelectorAll('.src'), texts = heroDia.querySelectorAll('text, .node');
+    const srcs = heroDia.querySelectorAll('.knot'), texts = heroDia.querySelectorAll('text, .node');
     // progress map widths ∝ panel widths
     const tot = panels.reduce((a, p) => a + p._w, 0); document.querySelectorAll('#pmap i').forEach((b, i) => b.style.width = Math.max(6, Math.round(panels[i]._w / tot * 260)) + 'px');
     if (skip || !window.gsap) { launched = true; marker.style.opacity = 1; brand.classList.add('amp-gone'); render(); return; }
     srcs.forEach(sp => { const L = sp.getTotalLength(); sp.style.strokeDasharray = L; sp.style.strokeDashoffset = L; }); texts.forEach(t => t.style.opacity = 0);
     gsap.timeline({ delay: 0.2 })
-      .to(srcs, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.inOut', stagger: 0.06 })
+      .to(srcs, { strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut' })
       .to(texts, { opacity: 1, duration: 0.3 }, '-=0.3')
       .to({ v: 0 }, { v: tipMin, duration: 1.0, ease: 'power2.inOut', onUpdate() { animTip = this.targets()[0].v; render(); } }, '-=0.2')
       .call(() => {
