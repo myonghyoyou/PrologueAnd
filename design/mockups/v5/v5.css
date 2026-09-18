@@ -113,13 +113,16 @@ body{overflow:hidden}
 #sheet iframe{width:100%;height:100%;border:0;display:block}
 #sheet .close{position:absolute;right:12px;top:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-50);z-index:2}
 @media (max-width:1023px){
-  body{overflow:auto}
+  html,body{height:auto}
+  body{overflow:visible}
+  .hdr{background:var(--bone-50);height:calc(56px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px)}
   .hwrap{position:static;overflow:visible;background:var(--bone-50)}
   .htrack{display:block;height:auto}
-  .htrack{padding:0}
-  .hp{width:auto!important;height:auto!important;padding:24px;margin:0 24px 16px}
+  .htrack{width:auto;padding:calc(72px + env(safe-area-inset-top,0px)) 0 24px}
+  .hp{width:auto!important;height:auto!important;padding:24px;margin:0 16px 16px}
+  .p00 .display,.p08 .display{font-size:38px}
   #tune{display:none}
-  .p00{min-height:auto;padding:104px 24px 48px}
+  .p00{min-height:auto;padding:24px}
   .p00 .inner{position:static;max-width:none}
   .p00 .sub{position:static;margin-top:24px}
   .p00 .hint,#hero-dia{display:none}
@@ -131,10 +134,10 @@ body{overflow:hidden}
   .p06 .step{text-align:left;padding:16px 0;border-bottom:1px solid var(--bone-200)}
   .p06 .step p{height:auto}
   .p06 .about{margin-top:40px;grid-template-columns:1fr}
-  .p08{padding:64px 24px}
+  .p08{padding:32px 24px}
   .p08 .inner{position:static;max-width:none}
   .p08 .cta{flex-direction:column;align-items:flex-start}
-  .p09{padding:48px 24px 32px}
+  .p09{padding:24px}
   .p09 .seat,.p09 .rule{display:none}
   .p09 .foot-cap,.p09 .foot-row{position:static}
   .p09 .foot-row{flex-direction:column;gap:12px;margin-top:24px}
