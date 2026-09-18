@@ -1,0 +1,105 @@
+/* v6 — 경로형: 꼬인 선 하나가 풀려 아홉 점을 지난다. 화면은 고정, 세계가 선을 따라 흐른다 (docs/22) */
+html,body{height:100%}
+body{overflow:hidden;background:var(--bone-100)}
+:root{--pw:640px;--ph:420px;--pad:40px}
+.stage{position:fixed;inset:0;overflow:clip;background:var(--bone-100)}
+.world{position:absolute;left:0;top:0;width:2800px;height:5100px;transform-origin:0 0;will-change:transform}
+.pathsvg{position:absolute;left:0;top:0;width:2800px;height:5100px;overflow:visible;pointer-events:none}
+.pathsvg .guide{fill:none;stroke:var(--navy-200);stroke-width:1.5}
+.pathsvg .ink{fill:none;stroke:var(--navy-800);stroke-width:2}
+.pathsvg .knot{fill:none;stroke:var(--navy-400);stroke-width:1.5}
+.pathsvg .dot{fill:var(--bone-50);stroke:var(--navy-800);stroke-width:1.5;transition:fill .25s}
+.pathsvg .dot.on{fill:var(--navy-800)}
+/* scenes */
+.scene{position:absolute;box-sizing:border-box}
+.scene.pan{width:var(--pw);height:var(--ph);padding:var(--pad);background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;overflow:hidden;opacity:0;transform:translateY(8px);transition:opacity .35s cubic-bezier(.2,.8,.2,1),transform .35s cubic-bezier(.2,.8,.2,1)}
+.scene.pan.show{opacity:1;transform:none}
+.scene.pan.dark{background:var(--navy-950);border-color:var(--navy-900);color:var(--bone-50)}
+.scene .txt{position:relative;z-index:2}
+.hl{font-weight:600;letter-spacing:-.035em;line-height:1.05;margin:0;word-break:keep-all;color:var(--bone-900)}
+.hl em{font-style:normal;color:var(--navy-800)}
+.hl2{font-size:4.6rem}
+.hl3{font-size:4rem}
+.scene.dark .hl{color:var(--bone-50)}.scene.dark .hl em{color:var(--navy-300)}
+.sub1{font-size:1.05rem;line-height:1.55;color:var(--bone-700);margin:16px 0 0;max-width:34rem}
+.scene.dark .sub1{color:var(--navy-300)}
+.shape-area{position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.shape.squares i{border-radius:2px}
+.shape.flag i{left:52%;top:8%;width:44%;height:72%;background:var(--navy-100);clip-path:polygon(0 0,100% 50%,0 100%)}
+.shape.glyph i{position:absolute;left:46%;top:-8%;font-family:var(--serif);font-style:normal;font-size:420px;line-height:1;color:var(--navy-100);background:none;font-optical-sizing:none;font-variation-settings:"opsz" 24}
+.below{position:absolute;left:var(--pad);bottom:var(--pad);display:flex;align-items:center;gap:12px;z-index:3}
+.below .mail{color:var(--navy-300);font-size:14px}
+.nodes{position:absolute;left:var(--pad);right:var(--pad);bottom:var(--pad);display:flex;justify-content:space-between;z-index:3}
+.nodes span{position:relative;font-size:1rem;font-weight:500;color:var(--bone-700);text-align:center;flex:1}
+.nodes span[data-chip]:after{content:attr(data-chip);display:block;font-size:12px;color:var(--navy-800);margin-top:2px}
+.nodes span.on{color:var(--bone-900)}
+/* 0 hero (세계에 직접) */
+.scene.hero{left:540px;top:300px;width:490px}
+.scene.hero .hl{font-size:4.6rem}
+.scene.hero .cta{display:flex;gap:12px;margin-top:28px}
+.scene.hero .hint{display:block;margin-top:56px;font-size:13px;color:var(--bone-500)}
+/* 8 end (세계에 직접) — 점 (1500,4800) 기준 */
+.scene.end{left:1100px;top:4700px;width:800px;text-align:center}
+.scene.end .foot-top{margin:0;font-family:var(--serif);font-size:44px;line-height:1;color:var(--bone-900);font-optical-sizing:none;font-variation-settings:"opsz" 24}
+.scene.end .foot-cap{margin:88px 0 0;font-size:14px;color:var(--bone-600)}
+.scene.end .foot-row{margin-top:20px;font-size:12px;color:var(--bone-500);display:flex;justify-content:center;gap:20px}
+.scene.end .foot-row nav{display:flex;gap:20px}
+/* & marker: 화면 중앙 고정 */
+#marker{position:fixed;left:0;top:0;z-index:30;width:44px;height:44px;margin:0;padding:0;will-change:transform;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:30px;line-height:1;color:var(--navy-800);pointer-events:none;opacity:0;font-optical-sizing:none;font-variation-settings:"opsz" 24}
+#marker:before{display:none}
+#marker.dark{color:var(--bone-50)}
+/* header progress map */
+.hdr{pointer-events:none;background:linear-gradient(var(--bone-100) 70%,rgba(243,241,236,0))}
+.hdr>*{pointer-events:auto}
+.hdr .pmap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:3px}
+.hdr .pmap i{position:relative;display:block;height:3px;background:var(--bone-300);cursor:pointer;transition:background .2s}
+.hdr .pmap i.done{background:var(--navy-400)}
+.hdr .pmap i.on{background:var(--navy-800)}
+.hdr .pmap i:hover:after{content:attr(data-l);position:absolute;left:0;top:8px;font-size:11px;font-weight:500;color:var(--bone-700);white-space:nowrap}
+/* tune */
+#tune{position:fixed;right:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bone-0);border:1px solid var(--bone-300);border-radius:2px;font-size:12px}
+#tune label{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500}
+#tune input{margin:0}
+#tune .sep{width:1px;height:16px;background:var(--bone-200)}
+#tune .mob-btn{padding:4px 10px;border:1px solid var(--bone-900);border-radius:2px;font-size:12px;font-weight:500}
+#mob-preview{position:fixed;inset:0;z-index:70;background:rgba(28,27,24,.55);display:none;align-items:center;justify-content:center}
+#mob-preview.on{display:flex}
+#mob-preview .phone{width:390px;height:min(844px,calc(100vh - 48px));background:var(--bone-0);border:1px solid var(--bone-900);border-radius:2px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+#mob-preview .bar{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 6px 12px;font-size:12px;color:var(--bone-500);border-bottom:1px solid var(--bone-200);background:var(--bone-50)}
+#mob-preview .bar button{width:28px;height:28px;border:1px solid var(--bone-300);border-radius:2px;font-size:16px;line-height:1}
+#mob-preview iframe{flex:1;width:100%;border:0;display:block;background:var(--bone-50)}
+/* sheet */
+#sheet-bd{position:fixed;inset:0;background:rgba(28,27,24,.45);opacity:0;pointer-events:none;transition:opacity .35s;z-index:45}
+#sheet-bd.on{opacity:1;pointer-events:auto}
+#sheet{position:fixed;left:50%;top:4vh;width:min(56rem,calc(100vw - 48px));height:92vh;transform:translate(-50%,0) scale(.985);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s var(--ease-out);z-index:46;background:var(--bone-50);box-shadow:var(--shadow);border-radius:2px;overflow:hidden;display:flex;flex-direction:column}
+#sheet.on{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+#sheet .sh{flex:none;display:flex;align-items:center;justify-content:space-between;padding:16px 20px 16px 28px;border-bottom:1px solid var(--bone-200);background:var(--bone-50)}
+#sheet .sh .brand{font-size:20px;flex:1}
+#sheet .sh .brand .amp{margin:0 .22em}
+#sheet .sh .brand .who{font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:-.01em}
+#sheet .sh .back{font-size:13px;font-weight:500;color:var(--bone-600);padding:6px 10px 6px 0;margin-right:12px;border-right:1px solid var(--bone-200)}
+#sheet .sh .back[hidden]{display:none}
+#sheet .sb{flex:1;min-height:0}
+#sheet iframe{width:100%;height:100%;border:0;display:block}
+#sheet .close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-50);font-size:18px;line-height:1}
+/* ---- mobile: 세로 스택 ---- */
+@media (max-width:1023px){
+  html,body{height:auto}
+  body{overflow:visible;overflow-x:clip;background:var(--bone-50)}
+  .hdr{background:var(--bone-50);height:calc(56px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px)}
+  .hdr .pmap,#tune,#marker,.pathsvg{display:none}
+  .stage{position:static;overflow:visible;background:var(--bone-50)}
+  .world{position:static;width:auto;height:auto;transform:none!important;padding:calc(72px + env(safe-area-inset-top,0px)) 16px 24px}
+  .scene{position:static;width:auto!important;height:auto!important;left:auto!important;top:auto!important;margin:0 0 16px;opacity:1!important;transform:none!important}
+  .scene.pan{position:relative;padding:24px}
+  .hl2,.hl3,.scene.hero .hl{font-size:2.4rem}
+  .sub1{font-size:1rem;margin-top:12px}
+  .shape-area{width:60%;height:60%;left:40%;opacity:.7}
+  .below,.nodes{position:static;margin-top:20px}
+  .scene.hero{padding:16px 8px 24px}
+  .scene.hero .hint{display:none}
+  .scene.end{text-align:left;padding:24px 8px}
+  .scene.end .foot-cap{margin-top:12px}
+  .scene.end .foot-row{justify-content:flex-start;flex-wrap:wrap}
+  #sheet{left:0;top:0;width:100vw;height:100vh;transform:none}
+}
