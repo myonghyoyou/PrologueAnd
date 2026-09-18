@@ -1079,7 +1079,7 @@ window.V5 = (function () {
   V.init = function () {
     if (!desktop()) return;
     if (!reduced && window.Lenis) {
-      lenis = new Lenis({ wrapper: wrap, content: track, orientation: 'horizontal', gestureOrientation: 'both', lerp: 0.1, smoothWheel: false, syncTouch: true });   // 휠은 아래에서 직접: 한 번에 한 점
+      lenis = new Lenis({ wrapper: wrap, content: track, orientation: 'horizontal', gestureOrientation: 'both', lerp: 0.1, smoothWheel: false, syncTouch: true, virtualScroll: d => !d.event.type.includes('wheel') });   // 휠은 Lenis가 아예 보지 않게(smoothWheel:false만으로는 휠마다 animate.stop()이 호출돼 이동이 끊김). 휠은 아래에서 직접: 한 번에 한 점
       V3.lenis = lenis; // drawer stop/start
       gsap.ticker.add(t => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0);
     }
