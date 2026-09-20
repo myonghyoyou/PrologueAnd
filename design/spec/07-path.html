@@ -53,14 +53,14 @@
     { n: '&', x: 1300, y: 1600 },
     { n: '끝까지', x: 2000, y: 2050 },
     { n: '회사든, 개인이든', x: 1150, y: 2550 },
-    { n: '무엇을', x: 1700, y: 3000, group: [[1700, 3000], [1950, 3120], [2200, 3240]], panelAt: [1950, 2760] },
+    { n: '무엇을', x: 1700, y: 3000, group: [[1700, 3000], [1700, 3200], [1700, 3400]], panelAt: [2076, 3200] },   // 시안(v6)과 같이 세로 3점, 판은 가운데 점 오른쪽
     { n: 'Projects', x: 1300, y: 3750 },
     { n: '문의', x: 2100, y: 4250, dark: true },
     { n: '— & —', x: 1500, y: 4800, end: true }
   ];
   const knotBox = { x: 1150, y: 310, w: 700, h: 420 };
   const knotEnd = [1780, 700];
-  const nodes = [knotEnd, [2200, 1100], [1300, 1600], [2000, 2050], [1150, 2550], [1700, 3000], [1950, 3120], [2200, 3240], [1300, 3750], [2100, 4250], [1500, 4800]];
+  const nodes = [knotEnd, [2200, 1100], [1300, 1600], [2000, 2050], [1150, 2550], [1700, 3000], [1700, 3200], [1700, 3400], [1300, 3750], [2100, 4250], [1500, 4800]];
   // Catmull-Rom → cubic bezier (C1)
   function crPath(p, k = 0.5) {
     let d = `M${p[0][0]} ${p[0][1]}`;
@@ -89,7 +89,7 @@
   const tOf = (x, y) => { let best = S[0], bd = 1e9; for (const s of S) { const dd = (s[0] - x) ** 2 + (s[1] - y) ** 2; if (dd < bd) { bd = dd; best = s; } } return best[2]; };
   const tangentAt = t => { const a = main.getPointAtLength(Math.max(0, t - 8)), b = main.getPointAtLength(Math.min(L, t + 8)); const dx = b.x - a.x, dy = b.y - a.y, n = Math.hypot(dx, dy) || 1; return [dx / n, dy / n]; };
   const turnAt = t => { const a = tangentAt(Math.max(0, t - 120)), b = tangentAt(Math.min(L, t + 120)); return a[0] * b[1] - a[1] * b[0]; }; // >0 = turning right(clockwise in screen coords)
-  const PW = 700, PH = 420, GAP = 56;
+  const PW = 640, PH = 420, GAP = 56;   // 시안(v6)과 같은 판 크기
   const panels = [];
   scenes.forEach((s, i) => {
     if (s.knot || s.end) return;
