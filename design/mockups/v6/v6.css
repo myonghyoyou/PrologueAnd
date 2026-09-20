@@ -3,43 +3,44 @@ html,body{height:100%}
 body{overflow:hidden;background:var(--bone-100)}
 :root{--pw:640px;--ph:420px;--pad:40px}
 .stage{position:fixed;inset:0;overflow:clip;background:var(--bone-100)}
-.world{position:absolute;left:0;top:0;width:2800px;height:5100px;transform-origin:0 0;will-change:transform}
+.world{--inv:1;position:absolute;left:0;top:0;width:2800px;height:5100px;transform-origin:0 0;will-change:transform}
 .pathsvg{position:absolute;left:0;top:0;width:2800px;height:5100px;overflow:visible;pointer-events:none}
 .pathsvg .guide{fill:none;stroke:var(--navy-200);stroke-width:1.5}
 .pathsvg .ink{fill:none;stroke:var(--navy-800);stroke-width:2}
 .pathsvg .knot{fill:none;stroke:var(--navy-400);stroke-width:1.5}
 .pathsvg .dot{fill:var(--bone-50);stroke:var(--navy-800);stroke-width:1.5;transition:fill .25s}
 .pathsvg .dot.on{fill:var(--navy-800)}
-/* scenes */
-.scene{position:absolute;box-sizing:border-box}
-.scene.pan{width:var(--pw);height:var(--ph);padding:var(--pad);background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;overflow:hidden;opacity:0;transform:translateY(8px);transition:opacity .35s cubic-bezier(.2,.8,.2,1),transform .35s cubic-bezier(.2,.8,.2,1)}
-.scene.pan.show{opacity:1;transform:none}
-.scene.pan.dark{background:var(--navy-950);border-color:var(--navy-900);color:var(--bone-50)}
+/* scenes — 글자는 세계 스케일에서 제외: 위치만 세계 좌표, 크기는 CSS px. --inv = 1/scale (docs/22 §12-1)
+   판은 상자가 아니라 글자 자리: 배경·테두리 없음, 문의 판의 navy 면도 없음 (2026-09-20 결정). 640×420은 배치·겹침 계산용 영역 */
+.scene{position:absolute;box-sizing:border-box;transform:scale(var(--inv));transform-origin:0 0}
+.scene.pan{width:var(--pw);height:var(--ph);padding:var(--pad);opacity:0;transform:translateY(8px) scale(var(--inv));transition:opacity .35s cubic-bezier(.2,.8,.2,1),transform .35s cubic-bezier(.2,.8,.2,1)}
+.scene.pan.show{opacity:1;transform:scale(var(--inv))}
 .scene .txt{position:relative;z-index:2}
 .hl{font-weight:600;letter-spacing:-.035em;line-height:1.05;margin:0;word-break:keep-all;color:var(--bone-900)}
 .hl em{font-style:normal;color:var(--navy-800)}
 .hl2{font-size:4.6rem}
 .hl3{font-size:4rem}
-.scene.dark .hl{color:var(--bone-50)}.scene.dark .hl em{color:var(--navy-300)}
 .sub1{font-size:1.05rem;line-height:1.55;color:var(--bone-700);margin:16px 0 0;max-width:34rem}
-.scene.dark .sub1{color:var(--navy-300)}
 .shape-area{position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .shape.squares i{border-radius:2px}
 .shape.flag i{left:52%;top:8%;width:44%;height:72%;background:var(--navy-100);clip-path:polygon(0 0,100% 50%,0 100%)}
 .shape.glyph i{position:absolute;left:46%;top:-8%;font-family:var(--serif);font-style:normal;font-size:420px;line-height:1;color:var(--navy-100);background:none;font-optical-sizing:none;font-variation-settings:"opsz" 24}
 .below{position:absolute;left:var(--pad);bottom:var(--pad);display:flex;align-items:center;gap:12px;z-index:3}
-.below .mail{color:var(--navy-300);font-size:14px}
-.nodes{position:absolute;left:var(--pad);right:var(--pad);bottom:var(--pad);display:flex;justify-content:space-between;z-index:3}
-.nodes span{position:relative;font-size:1rem;font-weight:500;color:var(--bone-700);text-align:center;flex:1}
-.nodes span[data-chip]:after{content:attr(data-chip);display:block;font-size:12px;color:var(--navy-800);margin-top:2px}
-.nodes span.on{color:var(--bone-900)}
+.below .mail{color:var(--bone-600);font-size:14px}
+/* 5 무엇을 칩: 점 왼쪽에 세계 직접. left/top = 점에서 NGAP 왼쪽, 오른쪽 끝·세로 중앙을 그 자리에 맞춤 */
+.scene.node{transform:scale(var(--inv)) translate(-100%,-50%);text-align:right;white-space:nowrap;opacity:0;transition:opacity .3s}
+.scene.node.vis{opacity:1}
+.scene.node span{display:block;font-size:1rem;font-weight:500;color:var(--bone-500);transition:color .25s}
+.scene.node span[data-chip]:after{content:attr(data-chip);display:block;font-size:12px;color:var(--bone-500);margin-top:2px;transition:color .25s}
+.scene.node.on span{color:var(--bone-900)}
+.scene.node.on span:after{color:var(--navy-800)}
 /* 0 hero (세계에 직접) */
 .scene.hero{left:540px;top:300px;width:490px}
 .scene.hero .hl{font-size:4.6rem}
 .scene.hero .cta{display:flex;gap:12px;margin-top:28px}
 .scene.hero .hint{display:block;margin-top:56px;font-size:13px;color:var(--bone-500)}
-/* 8 end (세계에 직접) — 점 (1500,4800) 기준 */
-.scene.end{left:1100px;top:4700px;width:800px;text-align:center}
+/* 8 end (세계에 직접) — 점 (1500,4800) 기준. 되돌림 기준점도 & 자리(안에서 400,100) */
+.scene.end{left:1100px;top:4700px;width:800px;text-align:center;transform-origin:400px 100px}
 .scene.end .foot-top{margin:0;font-family:var(--serif);font-size:44px;line-height:1;color:var(--bone-900);font-optical-sizing:none;font-variation-settings:"opsz" 24}
 .scene.end .foot-cap{margin:88px 0 0;font-size:14px;color:var(--bone-600)}
 .scene.end .foot-row{margin-top:20px;font-size:12px;color:var(--bone-500);display:flex;justify-content:center;gap:20px}
@@ -47,7 +48,7 @@ body{overflow:hidden;background:var(--bone-100)}
 /* & marker: 화면 중앙 고정 */
 #marker{position:fixed;left:0;top:0;z-index:30;width:44px;height:44px;margin:0;padding:0;will-change:transform;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:30px;line-height:1;color:var(--navy-800);pointer-events:none;opacity:0;font-optical-sizing:none;font-variation-settings:"opsz" 24}
 #marker:before{display:none}
-#marker.dark{color:var(--bone-50)}
+#marker{display:none}   /* 임시(2026-09-20): 선이 &를 관통하는 문제(3번)의 처리 방식이 정해질 때까지 숨김. 이 줄만 지우면 복구 */
 /* header progress map */
 .hdr{pointer-events:none;background:linear-gradient(var(--bone-100) 70%,rgba(243,241,236,0))}
 .hdr>*{pointer-events:auto}
@@ -56,6 +57,11 @@ body{overflow:hidden;background:var(--bone-100)}
 .hdr .pmap i.done{background:var(--navy-400)}
 .hdr .pmap i.on{background:var(--navy-800)}
 .hdr .pmap i:hover:after{content:attr(data-l);position:absolute;left:0;top:8px;font-size:11px;font-weight:500;color:var(--bone-700);white-space:nowrap}
+/* 메뉴: 글자 16px·600, 둘 다 2차 버튼(높이 40px, 1px bone-900 테두리, 채우기 없음 — 14 §3.3). 호버 시 반전. v3의 밑줄 호버는 끔 */
+.hdr nav{gap:10px;font-size:16px;font-weight:600;align-items:center}
+.hdr nav a,.hdr nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1;transition:background .15s,color .15s}
+.hdr nav a:after,.hdr nav button:after{display:none}
+.hdr nav a:hover,.hdr nav button:hover{background:var(--bone-900);color:var(--bone-50)}
 /* tune */
 #tune{position:fixed;right:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bone-0);border:1px solid var(--bone-300);border-radius:2px;font-size:12px}
 #tune label{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500}
@@ -91,11 +97,12 @@ body{overflow:hidden;background:var(--bone-100)}
   .stage{position:static;overflow:visible;background:var(--bone-50)}
   .world{position:static;width:auto;height:auto;transform:none!important;padding:calc(72px + env(safe-area-inset-top,0px)) 16px 24px}
   .scene{position:static;width:auto!important;height:auto!important;left:auto!important;top:auto!important;margin:0 0 16px;opacity:1!important;transform:none!important}
-  .scene.pan{position:relative;padding:24px}
+  .scene.pan{position:relative;padding:24px;overflow:hidden}   /* 세로 스택에서는 도형이 판 밖으로 나가면 문서 폭이 늘어남 */
   .hl2,.hl3,.scene.hero .hl{font-size:2.4rem}
   .sub1{font-size:1rem;margin-top:12px}
   .shape-area{width:60%;height:60%;left:40%;opacity:.7}
-  .below,.nodes{position:static;margin-top:20px}
+  .below{position:static;margin-top:20px}
+  .scene.node{margin:0 0 8px;padding:0 8px;text-align:left;white-space:normal}
   .scene.hero{padding:16px 8px 24px}
   .scene.hero .hint{display:none}
   .scene.end{text-align:left;padding:24px 8px}
