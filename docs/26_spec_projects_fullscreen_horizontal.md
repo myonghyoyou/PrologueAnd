@@ -36,13 +36,13 @@
 | ID | 요구 | 검증 |
 |---|---|---|
 | C1 | 세로 문서 + Lenis 세로. `.track`은 `position:sticky; top:0; height:100vh; overflow:clip`. `html,body{overflow-x:clip}`. 가로 스크롤바 없음 | 자동: computed 값, `document.documentElement.scrollWidth <= innerWidth` |
-| C2 | 장 11개(00 표지 + 01~10)가 데이터(`V3.cases[slug]`, docs/25 §4 스키마)로 렌더. 다른 slug는 같은 본문 + 제목만 | 자동: `.scene` 11개, `?p=custom-commerce`에서 `#hd-title` 바뀜 |
+| C2 | 장 9개(00 표지, 01, 02, 03~05 묶음, 06, 07, 08, 09, 10)가 데이터(`V3.cases[slug]`, docs/25 §4 스키마)로 렌더. 단계는 10개(04·05는 묶음 안). 다른 slug는 같은 본문 + 제목만 | 자동: `.scene` 9개, `?p=custom-commerce`에서 `#hd-title` 바뀜 |
 | C3 | 매핑 `xOf(y)`/`yOf(x)`: 보통 구간 1:1, 머무름 구간(03~05: 160vh, 07: 120vh — Before 있을 때만)은 X 고정·t 진행. 스크롤 범위 = trackWidth − vw + 머무름 합. sticky 부모 높이 = 범위 + 100vh | 자동: `__spec().range`, 부모 높이, `xOf(yOf(x))===x` 표본 5개 |
 | C4 | 장 폭: 표지 100vw, 01·02·09 44rem, 03~05 묶음 100vw, 06 80rem, 07 80rem, 08 64rem, 10 100vw. 장 높이 = 100vh − 64, 세로 넘침 없음 | 자동: 각 `.scene` scrollHeight ≤ clientHeight |
 | C5 | 선(S1): 트랙 폭 SVG, y = 62vh 고정. 점 = 장 시작 + 48px. 잉크 끝 = x + 45vw. 지난 점 채움 | 자동: `line.y === innerHeight*.62 ± 1`, 점 11개 |
 | C6 | 라이브 화면 배율 = min(폭/1280, 높이/800). 1280×720에서도 잘리지 않음 | 자동: `.shot.live` rect가 장 rect 안 |
-| C7 | 진행 스트립: 헤더 밖, 칸 10개 같은 폭(26px), 현재·지난 표시, 클릭 → 장 시작으로 이동. `NN / 10`도 갱신 | 자동: 칸 10, 클릭 후 `__spec().cur` |
-| C8 | 키: ←/→/↑/↓/PgUp/PgDn/Space/Home/End 가로채서 장 단위 이동 | 자동: keydown 후 target y |
+| C7 | 진행 스트립: 헤더 밖, 칸 10개(단계 01~10) 같은 폭, 현재·지난 표시, 클릭 → 그 단계의 정거장으로 이동. 묶음 안에서는 t로 03/04/05를 가른다. `NN / 10`도 갱신 | 자동: 칸 10, 클릭 후 `__spec().step` |
+| C8 | 키: ←/→/↑/↓/PgUp/PgDn/Space/Home/End 가로채서 **정거장** 단위 이동(장 시작, 묶음은 t 0/.5/1, 07은 t 0/1) | 자동: keydown 후 `__spec().step` 순서 1,2,3,4,5,6,7,7,8,9,10 |
 | C9 | 창 크기 변경 시 같은 장에 서 있음 | 자동: resize 이벤트 후 `cur` 동일 |
 | C10 | 표지 오른쪽 아래 힌트 "→ 굴리면 옆으로", 첫 스크롤 뒤 사라짐 | 자동: `.hint` opacity |
 | C11 | 해시 `#s07` 등으로 진입하면 그 장에 즉시 | 자동 |
@@ -73,3 +73,34 @@
 2. 상세 데이터·무대·매핑·선·스트립·키 (C)
 3. 머무름·핫스팟·막대·다음 이야기·전환 (I)
 4. 모바일·감속 (M·A), `__spec()` 전 항목 통과 → 커밋
+
+## 9. 검증 결과 (2026-09-21, Chrome, `window.__spec()`)
+| ID | 결과 | 값 |
+|---|---|---|
+| H1 | 통과 | 세 페이지 `.hdr` 64px, 브랜드 left 112, 메뉴 40px |
+| H2 | 통과 | `viewTransitionName: hdr` 세 문서. 스트립·진행 지도 부모가 `.hdr` 아님 |
+| H3·H4 | 통과 | 브랜드 → `#p06`, `nav a.cur`, `.topbar` 없음 |
+| H5 | 통과(흐름) | 대시보드 → 목록 → 상세 → `← Projects`(history.back) → 상세 → 다음 이야기 → 브랜드 → 대시보드 `#p06`(pos 5268 = Projects 점) |
+| L1~L5 | 통과 | padding 16px 28px, h2 20px, 열 40px, max-width 896, img 0, `#cnt` 없음, `.ft` static, embed 없음 |
+| D1~D4 | 통과 | 시트 없음, Projects 링크 3곳, VT 켜짐, `#p06` 진입 시 pos = T[Projects] |
+| C1 | 통과 | sticky·clip·bodyClip, scrollWidth ≤ vw |
+| C2 | 통과 | 장 9, 제목 교체 |
+| C3 | 통과 | 범위 11096(1440×900), wrapH = 범위 + vh, 왕복 표본 5개 일치 |
+| C4 | 통과 | 1440×900·1920×1080 넘침 0. 1280×720은 묶음 장이 넘쳐 `max-height:800px` 규칙 추가 후 0 |
+| C5 | 통과 | ly = 62vh(558@900, 446@720, 670@1080), 점 9 |
+| C6 | 통과 | 배율 .58~.92, 화면 rect가 장 안 |
+| C7 | 통과 | 칸 10, 폭 29/26, 단계 03→04→05가 t로 갈림, `NN / 10` 갱신 |
+| C8 | 통과 | → 키 11번: 1,2,3,4,5,6,7,7(와이프 끝),8,9,10. ← 키 역순 |
+| C9 | 통과 | resize 후 step 6 유지, x 동일 |
+| C10 | 통과 | y > 40에서 `.hint.off` |
+| C11 | 통과 | `#s07` 진입 → step 7, y 8326 |
+| I1 | 통과 | 묶음 중간 y에서 morphT .5, 04만 `.on` |
+| I2 | 통과 | 07 t=0 → clip 100%, t=1 → 0%, 경계선 left 0→100% |
+| I3 | 통과 | 캡션 2 → `.spot-hl` 위치 26.1/49/47.9(%) = 데이터, 배지 3 |
+| I4 | 통과 | 08 점을 지나면 `.bar.on`, 막대 25% = 1/4 |
+| I5 | 통과 | `.next a` 밑변이 선 8px 위, 링크 = 다음 프로젝트 |
+| I6 | 부분 | `pageswap`/`pagereveal` 처리 있음. 실제 전환 모양(왼쪽 밀림·제목 공유)은 사람이 Chrome에서 확인 |
+| I7 | 통과 | 표지 숫자 = 08 숫자 |
+| M1 | 통과 | 390px: `.track` static, scrollWidth 373 < 388, 선·스트립·힌트 숨김, morph t=1, After 정적 |
+| A1 | 미확인 | reduced-motion은 사람이 확인 |
+| A2 | 통과 | 세 페이지 `#drawer` 존재 |
