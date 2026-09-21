@@ -1,5 +1,5 @@
 # GitHub Pages 배포 — main에 푸시하면 design/ 목업을 그대로 올린다.
-# 첫 실행에서 Pages 사이트를 자동으로 켠다(configure-pages enablement).
+# Pages는 저장소 Settings → Pages → Source: GitHub Actions 로 한 번 켜 두어야 한다(워크플로 토큰으로는 켤 수 없음).
 name: pages
 on:
   push:
@@ -21,8 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - name: Collect site
         run: |
           mkdir -p _site
