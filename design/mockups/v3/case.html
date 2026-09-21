@@ -122,7 +122,10 @@
     const t = matchMedia('(min-width:1024px)').matches ? Math.min(1, Math.max(0, (96 - r.top) / Math.max(1, range))) : Math.min(1, Math.max(0, (innerHeight * .6 - r.top) / r.height));
     morph(t);
     // number rail
-    let cur = 1; for (let i = 1; i <= 10; i++) { const s = document.getElementById('s' + i); if (s && s.getBoundingClientRect().top <= innerHeight * .45) cur = i; }
+    // 읽는 선: 평소엔 화면 45% 높이. 문서 끝이 가까워지면 화면 아래로 내려가 마지막 항목(09·10)도 잡힌다
+    const remain = Math.max(0, document.documentElement.scrollHeight - (scrollY + innerHeight));
+    const line = innerHeight * .45 + Math.max(0, innerHeight * .55 - remain);
+    let cur = 1; for (let i = 1; i <= 10; i++) { const s = document.getElementById('s' + i); if (s && s.getBoundingClientRect().top <= line) cur = i; }
     document.querySelectorAll('#nrail li').forEach(li => li.classList.toggle('on', +li.dataset.i === cur));
     document.getElementById('tb-pos').textContent = `${String(cur).padStart(2, '0')} / 10`;
   }
