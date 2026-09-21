@@ -26,20 +26,22 @@
   const hasBefore = !!D.s07.before;
   const scenes = [
     { id: 's00', n: 0, cls: 'cover w100', html: `
-      <div class="ctext">
+      <div>
         <span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> ${esc(pj.title)} · ${esc(D.cap)}${sample ? ' · <span style="color:var(--warning)">본문은 Por favor, Harry 예시(시안)</span>' : ''}</span>
         <h1 class="h1">${title}</h1>
+        <div class="nums" id="nums0">${nums}</div>
         <table>${D.meta.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</table>
       </div>
-      <div class="knums" id="nums0">${nums}</div>
       <div class="shotbox">${shot(D.hero)}<span class="cap">${esc(D.hero.cap)}</span></div>` },
     { id: 's01', n: 1, cls: 'w44', html: H('01', 'Overview') + P(D.s01.p) },
     { id: 's02', n: 2, cls: 'w44', html: H('02', 'Problem') + P(D.s02.p) },
     { id: 's03', n: 3, cls: 'group w100', dwell: 1.6, html: `
       <div class="dia"><svg id="morph" viewBox="0 0 640 220"></svg><div class="dcap"><span id="m-before">${esc(D.s03.before)}</span><span id="m-after" style="text-align:right">${esc(D.s03.after)}</span></div></div>
-      <div class="gstep" data-k="0">${H('03', 'Existing Workflow')}${P(D.s03.p)}</div>
-      <div class="gstep" data-k="1" id="s04">${H('04', 'Insight')}<p class="q">${esc(D.s04.q)}</p></div>
-      <div class="gstep" data-k="2" id="s05">${H('05', 'Redesign')}<div class="flow">${D.s05.flow.map((f, i, a) => `<span${i === a.length - 1 ? ' class="g"' : ''}>${esc(f)}</span>${i < a.length - 1 ? '<em>→</em>' : ''}`).join('')}</div>${P(D.s05.p)}</div>` },
+      <div class="steps">
+        <div class="step" data-k="0">${H('03', 'Existing Workflow')}${P(D.s03.p)}</div>
+        <div class="step" data-k="1" id="s04">${H('04', 'Insight')}<p class="q">${esc(D.s04.q)}</p></div>
+        <div class="step" data-k="2" id="s05">${H('05', 'Redesign')}<div class="flow">${D.s05.flow.map((f, i, a) => `<span${i === a.length - 1 ? ' class="g"' : ''}>${esc(f)}</span>${i < a.length - 1 ? '<em>→</em>' : ''}`).join('')}</div>${P(D.s05.p)}</div>
+      </div>` },
     { id: 's06', n: 6, cls: 'solution w80', html: `
       <div>${H('06', 'Solution')}${P(D.s06.p)}
         ${D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((s, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(s.cap)}</span></li>`).join('')}</ul>` : ''}</div>
@@ -58,7 +60,7 @@
         <div class="cta"><a class="btn" href="#" data-open-drawer data-project="${pj.slug}">이 프로젝트를 보고 문의하기 <i class="tri"></i></a><a class="mail link" href="mailto:hello@prologue.and">hello@prologue.and</a></div></div>
       <div class="next"><span class="cap">다음 이야기</span><a href="case.html?p=${next.slug}" id="next-link">${esc(next.title)}</a></div>` }
   ];
-  document.getElementById('scenes').insertAdjacentHTML('beforeend', scenes.map(s => `<section class="scene ${s.cls}" id="${s.id}" data-n="${s.n}">${s.html}</section>`).join(''));   // 선 SVG는 .scenes 안 첫 자식: 장과 함께 움직인다
+  document.getElementById('scenes').innerHTML = scenes.map(s => `<section class="scene ${s.cls}" id="${s.id}" data-n="${s.n}">${s.html}</section>`).join('');
   const strip = document.getElementById('strip');
   // 진행 스트립: 칸 10개 = 단계 01~10 (표지는 칸 없음). 04·05는 03 묶음 안이라 같은 장으로 간다
   strip.innerHTML = Array.from({ length: 10 }, (_, k) => `<i data-n="${k + 1}"></i>`).join('');
@@ -83,7 +85,7 @@
     mb.style.opacity = Math.max(0, 1 - t * 2); ma.style.opacity = Math.min(1, Math.max(0, (t - .45) * 2));
     mchain.style.strokeDashoffset = chainLen * (1 - clamp((t - .5) * 2, 0, 1));
     document.getElementById('m-before').style.opacity = t < .5 ? 1 : .35; document.getElementById('m-after').style.opacity = t < .5 ? .35 : 1;
-    document.querySelectorAll('#s03 .gstep').forEach(s => s.classList.toggle('on', +s.dataset.k === (t < .34 ? 0 : t < .67 ? 1 : 2)));
+    document.querySelectorAll('#s03 .step').forEach(s => s.classList.toggle('on', +s.dataset.k === (t < .34 ? 0 : t < .67 ? 1 : 2)));
   }
 
   /* ---------- 06 핫스팟 ---------- */
@@ -114,25 +116,17 @@
   function tOf(y, i) { let d = 0; for (let k = 0; k < i; k++) d += dwellPx(k); const y0 = G.x[i] + d, dw = dwellPx(i); if (!dw) return y >= y0 ? 1 : 0; const t = clamp((y - y0) / dw, 0, 1); return reduced ? (t >= .5 ? 1 : 0) : t; }
   function yOf(x) { let d = 0; for (let i = 0; i < scenes.length; i++) { const dw = dwellPx(i); if (!dw) continue; if (x <= G.x[i]) break; d += dw; } return x + d; }
   function fitShots() {   // 라이브 화면 배율 = min(폭/1280, 높이/800) (docs/24 §4.1, docs/26 C6)
-    const lineY = Math.round(innerHeight * 0.62), pad = innerHeight <= 800 ? 80 : 92;
     document.querySelectorAll('.shotbox').forEach(box => {
-      const bw = box.clientWidth;
-      // 높이: 그리드 장(표지·06)은 칸 높이, 나머지는 장 위 여백~선 사이에서 형제(제목·문단) 높이를 뺀 나머지
-      let bh = 1e9;
-      if (desktop()) {
-        const sc = box.closest('.scene');
-        if (sc.classList.contains('cover') || sc.classList.contains('solution')) bh = (lineY - 28) - pad;   // 그림 칸은 장 위 여백~선 사이를 다 쓴다(글 칸 높이에 묶이지 않게)
-        else { const sib = [...box.parentElement.children].filter(k => k !== box).reduce((a, k) => a + k.getBoundingClientRect().height + 14, 0); bh = (lineY - 28) - (64 + (pad - 64)) - sib - 8; }
-      }
+      const cap = box.querySelector(':scope > .cap, .wcaps'); const capH = cap ? cap.offsetHeight + 8 : 0;
+      const bw = box.clientWidth, bh = desktop() ? box.clientHeight - capH : 1e9;
       const sc = Math.max(0.1, Math.min((bw - 12) / 1280, (bh - 12) / 800));
       box.querySelectorAll('.shot.live').forEach(sh => { sh.style.setProperty('--sc', sc.toFixed(4)); sh.style.width = (1280 * sc + 12) + 'px'; sh.style.height = (800 * sc + 12) + 'px'; });
       const w = box.querySelector('.wipe'); if (w) { w.style.width = (1280 * sc + 12) + 'px'; w.style.height = (800 * sc + 12) + 'px'; }
-      const wc = box.querySelector('.wcaps'); if (wc) wc.style.width = (1280 * sc + 12) + 'px';
     });
   }
   function layout() {
     G.vw = innerWidth; G.vh = innerHeight;
-    if (!desktop()) { wrap.style.height = ''; scenesEl.style.transform = ''; fitShots(); morph(1); document.querySelectorAll('#s03 .gstep').forEach(s => s.classList.add('on')); return; }
+    if (!desktop()) { wrap.style.height = ''; scenesEl.style.transform = ''; fitShots(); morph(1); document.querySelectorAll('#s03 .step').forEach(s => s.classList.add('on')); return; }
     fitShots();
     G.x = els.map(el => el.offsetLeft); G.w = els.map(el => el.offsetWidth);
     G.trackW = G.x[G.x.length - 1] + G.w[G.w.length - 1];
@@ -215,7 +209,7 @@
       C1: { sticky: cs(track).position === 'sticky', clip: cs(track).overflowX === 'clip', bodyClip: cs(document.documentElement).overflowX === 'clip', noHScroll: document.documentElement.scrollWidth <= innerWidth },
       C2: { scenes: els.length, title: document.getElementById('hd-title').textContent },
       C3: { range: G.yMax, wrapH: wrap.offsetHeight, expectWrapH: G.yMax + G.vh, roundTrip: sample.every(Boolean), dwell: scenes.map((s, i) => Math.round(dwellPx(i))) },
-      C4: els.map(el => { const rs = [...el.querySelectorAll('h1,h2,p,table,.knums,.shot,.dia,.gstep,.spots,.impact,.bars,.cta,.next')].map(k => k.getBoundingClientRect()).filter(r => r.height > 0); const top = Math.min(...rs.map(r => r.top)), bottom = Math.max(...rs.map(r => r.bottom)); return { id: el.id, w: el.offsetWidth, top: Math.round(top), bottom: Math.round(bottom), overflow: top < 64 + 8 || bottom > G.ly - 8 }; }),   // 내용이 헤더 아래 ~ 선 위 8px 안에 (캡션은 선 아래라 제외)
+      C4: els.map(el => ({ id: el.id, w: el.offsetWidth, overflow: el.scrollHeight > el.clientHeight + 1 })),
       C5: { ly: G.ly, expect: Math.round(innerHeight * .62), dots: line.querySelectorAll('.dot').length },
       C6: [...document.querySelectorAll('.shot.live')].map(sh => ({ sc: sh.style.getPropertyValue('--sc'), inside: inside(sh.getBoundingClientRect(), sh.closest('.scene').getBoundingClientRect()) })),
       C7: { cells: strip.querySelectorAll('i').length, widths: [...strip.querySelectorAll('i')].map(b => b.offsetWidth), parentIsHdr: !!strip.closest('.hdr'), cur: S.cur, step: S.step, pos: document.getElementById('hd-pos').textContent },

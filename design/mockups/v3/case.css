@@ -5,8 +5,7 @@ body{background:var(--bone-50)}
 .track-wrap{position:relative}
 .track{position:sticky;top:0;height:100vh;overflow:clip;background:var(--bone-50)}
 .scenes{position:absolute;left:0;top:0;height:100%;display:flex;will-change:transform}
-/* 바닥선 문법(docs/18): 모든 내용은 선 위에 선다. 장 아래 여백 = 38vh + 28 → 내용 밑변이 선 28px 위 */
-.scene{position:relative;flex:none;box-sizing:border-box;height:100%;padding:92px 48px calc(38vh + 28px);display:flex;flex-direction:column;justify-content:flex-end}
+.scene{position:relative;flex:none;box-sizing:border-box;height:100%;padding:104px 48px 40px;display:flex;flex-direction:column}
 .scene.w44{width:44rem}.scene.w64{width:64rem}.scene.w80{width:80rem}.scene.w100{width:100vw}
 /* 선(S1): 무대 폭 전체, y = 62vh 고정. 그림 뒤를 지난다 (그림 판은 bone-0 면) */
 .line{position:absolute;left:0;top:0;height:100%;pointer-events:none;overflow:visible;z-index:0}
@@ -24,26 +23,23 @@ body{background:var(--bone-50)}
 .scene .flow span{font-size:13px;font-weight:500;padding:6px 10px;border:1px solid var(--bone-200);background:var(--bone-0);border-radius:2px}
 .scene .flow span.g{border-color:var(--navy-800);color:var(--navy-800)}
 .scene .flow em{color:var(--bone-400);font-size:12px}
-.shotbox{position:relative;flex:none;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start}   /* 높이는 fitShots가 남는 공간으로 계산 */
+.shotbox{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
 .shotbox .shot{flex:none;background:var(--bone-0);border:1px solid var(--bone-900);padding:6px;aspect-ratio:auto}
-.shotbox>.cap,.shotbox .wcaps{position:absolute;left:0;top:calc(100% + 40px);margin:0;white-space:nowrap}   /* 캡션은 선 아래 12px */
-/* 00 표지: 글·숫자·화면이 모두 선 위에 선다. 왼쪽 여백은 헤더 브랜드 시작선(112) */
-.scene.cover{display:grid;grid-template-columns:5fr 7fr;grid-template-areas:"text shot" "nums shot";gap:28px 48px;align-items:end;align-content:end;padding-left:112px}
-.cover .ctext{grid-area:text}
-.cover .knums{grid-area:nums}
-.cover .shotbox{grid-area:shot;height:100%}
+.shotbox .cap{display:block;margin-top:8px}
+/* 00 표지 */
+.scene.cover{display:grid;grid-template-columns:5fr 7fr;gap:48px;align-items:start}
 .cover .h1{margin:12px 0 0;max-width:12em;view-transition-name:pj-title}
-.cover .knums{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;border-top:1px solid var(--bone-200);max-width:34rem}
-.cover .knums div{padding-top:12px}
-.cover .knums b{display:block;font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:6px}
-.cover .knums span{font-size:13px;color:var(--bone-700)}
-.cover table{border-collapse:collapse;width:100%;max-width:34rem;font-size:14px;margin-top:24px}
-.cover td{padding:7px 0;border-top:1px solid var(--bone-200);vertical-align:top}
+.cover .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px;border-top:1px solid var(--bone-200)}
+.cover .nums div{padding-top:12px}
+.cover .nums b{display:block;font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:6px}
+.cover .nums span{font-size:13px;color:var(--bone-700)}
+.cover table{border-collapse:collapse;width:100%;max-width:34rem;font-size:14px;margin-top:28px}
+.cover td{padding:8px 0;border-top:1px solid var(--bone-200);vertical-align:top}
 .cover td:first-child{color:var(--bone-500);width:96px}
-/* 03~05 묶음: 다이어그램 왼쪽, 글 세 개 오른쪽 세로. t 구간별 강조. 낮은 창은 세 칸 */
-.scene.group{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"dia s3" "dia s4" "dia s5";gap:24px 48px;align-items:end;align-content:end}
-.group .dia{grid-area:dia;background:var(--bone-0);border:1px solid var(--bone-200);padding:24px;align-self:end}
-.group .gstep[data-k="0"]{grid-area:s3}.group .gstep[data-k="1"]{grid-area:s4}.group .gstep[data-k="2"]{grid-area:s5}
+.cover .shotbox{height:100%}
+/* 03~05 묶음: 다이어그램 왼쪽 고정, 글 세 개 오른쪽 세로. t 구간별 강조 */
+.scene.group{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.group .dia{background:var(--bone-0);border:1px solid var(--bone-200);padding:24px;align-self:start}
 .group .dia svg{width:100%;height:auto;display:block;overflow:visible}
 .group .dia text{font-family:var(--sans);font-size:11px;font-weight:500;fill:var(--bone-500)}
 .group .dia .before{fill:none;stroke:var(--navy-400);stroke-width:1}
@@ -52,12 +48,11 @@ body{background:var(--bone-50)}
 .group .dia .flagp{fill:var(--navy-800)}
 .group .dia .dcap{display:flex;justify-content:space-between;gap:16px;margin-top:12px}
 .group .dia .dcap span{transition:opacity .3s}
-.group .gstep{transition:opacity .35s}
-.group .gstep:not(.on){opacity:.32}
-.group .gstep p:last-child,.group .gstep .q{margin-bottom:0}
+.group .steps{display:flex;flex-direction:column;gap:28px}
+.group .step{transition:opacity .35s}
+.group .step:not(.on){opacity:.32}
 /* 06 핫스팟 */
-.scene.solution{display:grid;grid-template-columns:24rem 1fr;gap:40px;align-items:end;align-content:end}
-.solution .shotbox{height:100%}
+.scene.solution{display:grid;grid-template-columns:24rem 1fr;gap:40px}
 .spots{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
 .spots li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--bone-200);border-radius:2px;background:var(--bone-0);font-size:13px;line-height:1.45;color:var(--bone-700);cursor:default;transition:border-color .15s,color .15s}
 .spots li b{flex:none;width:18px;height:18px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
@@ -69,7 +64,8 @@ body{background:var(--bone-50)}
 .wipe{position:relative}
 .wipe .after{position:absolute;left:0;top:0;clip-path:inset(0 100% 0 0)}
 .wipe .edge{position:absolute;top:-6px;bottom:-6px;left:0;width:2px;background:var(--navy-800);z-index:5;pointer-events:none}
-.wcaps{display:flex;justify-content:space-between;gap:24px;margin-top:8px}
+.wipe .edge:after{content:"";position:absolute;left:-5px;bottom:-6px;width:12px;height:12px;border-radius:50%;background:var(--navy-800)}
+.wcaps{display:flex;justify-content:space-between;margin-top:8px}
 .wcaps span{transition:opacity .3s}
 /* 08 숫자 + 막대 */
 .impact{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;border-top:1px solid var(--bone-200);max-width:none}
@@ -80,9 +76,9 @@ body{background:var(--bone-50)}
 .bar .tr i{position:absolute;left:0;top:0;height:100%;background:var(--navy-800);width:0;transition:width .6s cubic-bezier(.2,.8,.2,1)}
 .bar.on .tr i{width:var(--w)}
 /* 10 문의 + 다음 이야기 */
-.scene.last{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;align-content:end}
+.scene.last{display:grid;grid-template-columns:1fr 1fr;gap:48px}
 .last .cta{display:flex;align-items:center;gap:16px;margin-top:8px}
-.next{margin-bottom:-16px}   /* 제목 밑변이 선 12px 위 (장 밑변은 선 28px 위) */
+.next{align-self:end;padding-bottom:calc(38vh - 32px)}   /* 제목 밑변이 선 8px 위에 앉는다 (bottom = 62vh − 8) */
 .next .cap{display:block;margin-bottom:6px}
 .next a{font-size:32px;font-weight:600;letter-spacing:-.02em;color:var(--bone-900);display:inline-block;position:relative;line-height:1.2}
 .next a:after{content:"";position:absolute;left:0;right:100%;bottom:-6px;height:2px;background:var(--navy-800);transition:right .25s cubic-bezier(.2,.8,.2,1)}
@@ -101,34 +97,25 @@ body{background:var(--bone-50)}
 .hint.off{opacity:0}
 /* 낮은 창(≤800px): 묶음 장의 글 세 개가 세로로 들어가도록 촘촘하게 (docs/26 C4, 1280×720) */
 @media (min-width:1024px) and (max-height:800px){
-  .scene{padding-top:80px}
+  .scene{padding-top:92px}
   .scene h2{font-size:20px;margin-bottom:10px}
   .scene p{font-size:14px;margin-bottom:8px}
   .scene .q{font-size:22px}
+  .group .steps{gap:14px}
   .scene .flow{gap:6px;margin-bottom:8px}
   .scene .flow span{padding:4px 8px;font-size:12px}
-  .scene.group{grid-template-columns:5fr 4fr 4fr;grid-template-areas:"dia s3 s5" "dia s4 s5";gap:16px 32px}
-  .scene.cover{grid-template-columns:4fr 3fr 5fr;grid-template-areas:"text nums shot"}
-  .cover .knums{grid-template-columns:1fr;gap:10px;border-top:0}
-  .cover .knums div{padding-top:0}
-  .cover .h1{font-size:32px}
-  .cover table{margin-top:14px;font-size:13px}.cover td{padding:5px 0}
-  .spots li{padding:6px 8px;font-size:12px}
+  .cover .nums{margin-top:20px}.cover table{margin-top:18px}
 }
 /* ---- 모바일: 세로 스택, 선은 왼쪽 세로 1px, 머무름 정적 ---- */
 @media (max-width:1023px){
   .track-wrap{height:auto!important}
   .track{position:static;height:auto;overflow:visible}
   .scenes{position:static;display:block;transform:none!important;padding:72px 16px 32px 24px;border-left:1px solid var(--navy-200);margin-left:16px}
-  .scene{width:auto!important;height:auto}
+  .scene{width:auto!important;height:auto;padding:0 0 40px}
   .scene.cover,.scene.group,.scene.solution,.scene.last{display:block}
   .line,.pmap,.hint,.hdr .pos{display:none}
-  .scene{padding:0 0 40px;justify-content:flex-start}
   .cover .shotbox,.shotbox{height:auto;margin-top:16px}
-  .shotbox>.cap,.shotbox .wcaps{position:static;white-space:normal;margin-top:8px}
-  .cover .knums{margin:16px 0}
-  .group .gstep:not(.on){opacity:1}
-  .group .gstep{margin-bottom:20px}
+  .group .step:not(.on){opacity:1}
   .group .dia{margin-bottom:24px}
   .wipe .after{position:static;clip-path:none;margin-top:12px}
   .wipe .edge{display:none}
@@ -137,7 +124,7 @@ body{background:var(--bone-50)}
   .ft{position:static;padding:24px 24px 32px}
 }
 @media (prefers-reduced-motion:reduce){
-  .group .gstep,.bar .tr i,.spot-hl,.next a:after{transition:none}
+  .group .step,.bar .tr i,.spot-hl,.next a:after{transition:none}
 }
 /* 상세 → 다음 상세: 왼쪽으로 밀림 (docs/24 §4.3). 목록↔상세는 v3.css의 기본 전환(제목 공유) */
 html:active-view-transition-type(to-case)::view-transition-old(root){animation:vt-left-out .3s cubic-bezier(.2,.8,.2,1) both}
