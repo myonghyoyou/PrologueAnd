@@ -24,7 +24,6 @@
     <div class="page-head">
       <h1 class="h1">Projects</h1>
       <p class="lead">지금까지 한 일. 이름 뒤의 빈칸을 채워 온 것들입니다.</p>
-      <p class="cap cnt"><span id="cnt"></span> · 2026-09-16 기준</p>
     </div>
     <div id="list"></div>
   </div>
@@ -47,7 +46,6 @@
   const EMBED = location.search.includes('embed=1') ? '&embed=1' : '';
   function render() {
     const items = V3.projects.slice().sort((a, b) => a.order - b.order);
-    document.getElementById('cnt').textContent = `${items.length}건`;
     document.getElementById('list').innerHTML = items.length ? items.map((p, i) => `
       <a class="prow" href="case.html?p=${p.slug}&v=202609181607${EMBED}">
         <span class="num">${String(p.order).padStart(2, '0')}</span>
