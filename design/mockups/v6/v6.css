@@ -3,7 +3,9 @@ html,body{height:100%}
 body{overflow:hidden;background:var(--bone-100)}
 :root{--pw:640px;--ph:420px;--pad:40px}
 .stage{position:fixed;inset:0;overflow:clip;background:var(--bone-100);-webkit-user-select:none;user-select:none;-webkit-user-drag:none}   /* 대시보드 글자·도형은 드래그 선택 안 됨 */
-.hdr,.ft{-webkit-user-select:none;user-select:none}
+.hdr,.ft,.pmap{-webkit-user-select:none;user-select:none}
+@view-transition{navigation:auto}
+.hdr{view-transition-name:hdr}
 .world{--inv:1;position:absolute;left:0;top:0;width:2800px;height:5100px;transform-origin:0 0;will-change:transform}
 .pathsvg{position:absolute;left:0;top:0;width:2800px;height:5100px;overflow:visible;pointer-events:none}
 .pathsvg .guide{fill:none;stroke:var(--navy-200);stroke-width:1.5}
@@ -57,14 +59,14 @@ body{overflow:hidden;background:var(--bone-100)}
 /* header progress map */
 .hdr{pointer-events:none;background:linear-gradient(var(--bone-100) 70%,rgba(243,241,236,0))}
 .hdr>*{pointer-events:auto}
-.hdr .pmap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex}
+.pmap{position:fixed;left:50%;top:32px;transform:translate(-50%,-50%);z-index:41;display:flex}   /* 헤더 밖 형제: 헤더는 문서 간 전환에서 고정(hdr), 진행 지도는 내용과 함께 페이드 (docs/23 §5) */
 /* 칸: 보이는 막대는 3px, 커서 범위는 위아래 10px·칸 사이 간격까지 (background-clip으로 안쪽만 칠함) */
-.hdr .pmap i{position:relative;display:block;box-sizing:border-box;width:29px;height:23px;padding:10px 3px 10px 0;background:var(--bone-300);background-clip:content-box;cursor:pointer;transition:background-color .2s}
-.hdr .pmap i:last-child{width:26px;padding-right:0}
-.hdr .pmap i.done{background-color:var(--navy-400)}
-.hdr .pmap i.on{background-color:var(--navy-800)}
-.hdr .pmap i:hover{background-color:var(--navy-600)}
-.hdr .pmap i.on:hover{background-color:var(--navy-900)}
+.pmap i{position:relative;display:block;box-sizing:border-box;width:29px;height:23px;padding:10px 3px 10px 0;background:var(--bone-300);background-clip:content-box;cursor:pointer;transition:background-color .2s}
+.pmap i:last-child{width:26px;padding-right:0}
+.pmap i.done{background-color:var(--navy-400)}
+.pmap i.on{background-color:var(--navy-800)}
+.pmap i:hover{background-color:var(--navy-600)}
+.pmap i.on:hover{background-color:var(--navy-900)}
 /* 메뉴: 글자 16px·600, 둘 다 2차 버튼(높이 40px, 1px bone-900 테두리, 채우기 없음 — 14 §3.3). 호버 시 반전. v3의 밑줄 호버는 끔 */
 .hdr nav{gap:10px;font-size:16px;font-weight:600;align-items:center}
 .hdr nav a,.hdr nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1;transition:background .15s,color .15s}
@@ -82,26 +84,12 @@ body{overflow:hidden;background:var(--bone-100)}
 #mob-preview .bar{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 6px 12px;font-size:12px;color:var(--bone-500);border-bottom:1px solid var(--bone-200);background:var(--bone-50)}
 #mob-preview .bar button{width:28px;height:28px;border:1px solid var(--bone-300);border-radius:2px;font-size:16px;line-height:1}
 #mob-preview iframe{flex:1;width:100%;border:0;display:block;background:var(--bone-50)}
-/* sheet */
-#sheet-bd{position:fixed;inset:0;background:rgba(28,27,24,.45);opacity:0;pointer-events:none;transition:opacity .35s;z-index:45}
-#sheet-bd.on{opacity:1;pointer-events:auto}
-#sheet{position:fixed;left:50%;top:4vh;width:min(56rem,calc(100vw - 48px));height:92vh;transform:translate(-50%,0) scale(.985);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s var(--ease-out);z-index:46;background:var(--bone-50);box-shadow:var(--shadow);border-radius:2px;overflow:hidden;display:flex;flex-direction:column}
-#sheet.on{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
-#sheet .sh{flex:none;display:flex;align-items:center;justify-content:space-between;padding:16px 20px 16px 28px;border-bottom:1px solid var(--bone-200);background:var(--bone-50)}
-#sheet .sh .brand{font-size:20px;flex:1}
-#sheet .sh .brand .amp{margin:0 .22em}
-#sheet .sh .brand .who{font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:-.01em}
-#sheet .sh .back{font-size:13px;font-weight:500;color:var(--bone-600);padding:6px 10px 6px 0;margin-right:12px;border-right:1px solid var(--bone-200)}
-#sheet .sh .back[hidden]{display:none}
-#sheet .sb{flex:1;min-height:0}
-#sheet iframe{width:100%;height:100%;border:0;display:block}
-#sheet .close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-50);font-size:18px;line-height:1}
 /* ---- mobile: 세로 스택 ---- */
 @media (max-width:1023px){
   html,body{height:auto}
   body{overflow:visible;overflow-x:clip;background:var(--bone-50)}
   .hdr{background:var(--bone-50);height:calc(56px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px)}
-  .hdr .pmap,#tune,#marker,.pathsvg{display:none}
+  .pmap,#tune,#marker,.pathsvg{display:none}
   .stage{position:static;overflow:visible;background:var(--bone-50);-webkit-user-select:text;user-select:text}   /* 모바일 스택은 일반 문서처럼 선택 가능 */
   .world{position:static;width:auto;height:auto;transform:none!important;padding:calc(72px + env(safe-area-inset-top,0px)) 16px 24px}
   .scene{position:static;width:auto!important;height:auto!important;left:auto!important;top:auto!important;margin:0 0 16px;opacity:1!important;transform:none!important}
@@ -117,5 +105,4 @@ body{overflow:hidden;background:var(--bone-100)}
   .scene.end .foot-amp{opacity:1;transform:none;margin-top:8px}
   .scene.end .foot-cap{margin-top:8px}
   .ft{position:static;flex-wrap:wrap;padding:8px 24px 24px}
-  #sheet{left:0;top:0;width:100vw;height:100vh;transform:none}
 }
