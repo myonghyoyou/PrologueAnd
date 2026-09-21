@@ -89,9 +89,11 @@ window.V6 = (function () {
     }
     const v = anim.active ? Math.abs(anim.vel) * dt : 0;
     const zt = ZOOM.on ? 1 - Math.min(1, v / ZOOM.vel) * ZOOM.max : 1;
-    st.z += (zt - st.z) * ZOOM.ease; if (Math.abs(st.z - zt) < 0.0005) st.z = zt;
-    render();
+    const zPrev = st.z; st.z += (zt - st.z) * ZOOM.ease; if (Math.abs(st.z - zt) < 0.0005) st.z = zt;
+    // 멈춰 있을 때는 그리지 않는다 — 매 프레임 style을 다시 쓰면 시트(iframe) 위에서 커서가 화살표↔I빔으로 떨린다
+    if (anim.active || st.z !== zPrev || dirty) { dirty = false; render(); }
   }
+  let dirty = true;   // 입력·창 크기 변경 등으로 한 번 더 그려야 할 때
 
   // 무엇을: 세 점을 지나는 동안 카메라는 가운데 점(옮기기)에 고정, 선·점·칩만 진행.
   // 앞 구간(회사든 → 고치기)과 뒤 구간(만들기 → Projects)은 카메라를 일정 배속(약 1.3×)으로 선형 재매개 — t의 감속 곡선을 그대로 따르므로 도착 직전에 튀지 않는다
@@ -169,7 +171,7 @@ window.V6 = (function () {
     if (!desktop()) return;
     V3.lenis = null;
     gsap.ticker.lagSmoothing(0);
-    addEventListener('resize', () => { fit(); render(); });
+    addEventListener('resize', () => { fit(); dirty = true; render(); });
     // input
     document.getElementById('pmap').addEventListener('click', e => { const i = e.target.closest('i'); if (i) setTarget(T[scenes[+i.dataset.i].firstIdx]); });
     document.querySelectorAll('[data-go]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); setTarget(T[scenes[+a.dataset.go].firstIdx]); }));
