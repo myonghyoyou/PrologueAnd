@@ -39,12 +39,16 @@ body{overflow:hidden;background:var(--bone-100)}
 .scene.hero .hl{font-size:4.6rem}
 .scene.hero .cta{display:flex;gap:12px;margin-top:28px}
 .scene.hero .hint{display:block;margin-top:56px;font-size:13px;color:var(--bone-500)}
-/* 8 end (세계에 직접) — 점 (1500,4800) 기준. 되돌림 기준점도 & 자리(안에서 400,100) */
-.scene.end{left:1100px;top:4700px;width:800px;text-align:center;transform-origin:400px 100px}
+/* 8 end (세계에 직접) — 선 끝점 (1500,4676)은 Prologue 위 24px. 카메라는 묶음 가운데 (1500,4772)=안에서 (400,72)에 서므로 되돌림 기준점도 거기. 도착하면 Prologue 아래에 &가 떠오른다 */
+.scene.end{left:1100px;top:4700px;width:800px;text-align:center;transform-origin:400px 72px}
 .scene.end .foot-top{margin:0;font-family:var(--serif);font-size:44px;line-height:1;color:var(--bone-900);font-optical-sizing:none;font-variation-settings:"opsz" 24}
-.scene.end .foot-cap{margin:88px 0 0;font-size:14px;color:var(--bone-600)}
-.scene.end .foot-row{margin-top:20px;font-size:12px;color:var(--bone-500);display:flex;justify-content:center;gap:20px}
-.scene.end .foot-row nav{display:flex;gap:20px}
+.scene.end .foot-amp{margin:14px 0 0;height:44px;line-height:44px;font-family:var(--serif);font-size:34px;color:var(--navy-800);font-optical-sizing:none;font-variation-settings:"opsz" 24;opacity:0;transform:translateY(-8px);transition:opacity .7s cubic-bezier(.2,.8,.2,1) .15s,transform .7s cubic-bezier(.2,.8,.2,1) .15s}
+.scene.end.arrive .foot-amp{opacity:1;transform:none}
+.scene.end .foot-cap{margin:22px 0 0;font-size:14px;color:var(--bone-600)}
+/* footer: 항상 화면 아래 */
+.ft{position:fixed;left:24px;bottom:16px;z-index:35;display:flex;align-items:center;gap:20px;font-size:12px;color:var(--bone-500)}
+.ft nav{display:flex;gap:20px}
+.ft a:after{display:none}
 /* & marker: 화면 중앙 고정 */
 #marker{position:fixed;left:0;top:0;z-index:30;width:44px;height:44px;margin:0;padding:0;will-change:transform;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:30px;line-height:1;color:var(--navy-800);pointer-events:none;opacity:0;font-optical-sizing:none;font-variation-settings:"opsz" 24}
 #marker:before{display:none}
@@ -52,11 +56,14 @@ body{overflow:hidden;background:var(--bone-100)}
 /* header progress map */
 .hdr{pointer-events:none;background:linear-gradient(var(--bone-100) 70%,rgba(243,241,236,0))}
 .hdr>*{pointer-events:auto}
-.hdr .pmap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:3px}
-.hdr .pmap i{position:relative;display:block;height:3px;background:var(--bone-300);cursor:pointer;transition:background .2s}
-.hdr .pmap i.done{background:var(--navy-400)}
-.hdr .pmap i.on{background:var(--navy-800)}
-.hdr .pmap i:hover:after{content:attr(data-l);position:absolute;left:0;top:8px;font-size:11px;font-weight:500;color:var(--bone-700);white-space:nowrap}
+.hdr .pmap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex}
+/* 칸: 보이는 막대는 3px, 커서 범위는 위아래 10px·칸 사이 간격까지 (background-clip으로 안쪽만 칠함) */
+.hdr .pmap i{position:relative;display:block;box-sizing:border-box;width:29px;height:23px;padding:10px 3px 10px 0;background:var(--bone-300);background-clip:content-box;cursor:pointer;transition:background-color .2s}
+.hdr .pmap i:last-child{width:26px;padding-right:0}
+.hdr .pmap i.done{background-color:var(--navy-400)}
+.hdr .pmap i.on{background-color:var(--navy-800)}
+.hdr .pmap i:hover{background-color:var(--navy-600)}
+.hdr .pmap i.on:hover{background-color:var(--navy-900)}
 /* 메뉴: 글자 16px·600, 둘 다 2차 버튼(높이 40px, 1px bone-900 테두리, 채우기 없음 — 14 §3.3). 호버 시 반전. v3의 밑줄 호버는 끔 */
 .hdr nav{gap:10px;font-size:16px;font-weight:600;align-items:center}
 .hdr nav a,.hdr nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1;transition:background .15s,color .15s}
@@ -106,7 +113,8 @@ body{overflow:hidden;background:var(--bone-100)}
   .scene.hero{padding:16px 8px 24px}
   .scene.hero .hint{display:none}
   .scene.end{text-align:left;padding:24px 8px}
-  .scene.end .foot-cap{margin-top:12px}
-  .scene.end .foot-row{justify-content:flex-start;flex-wrap:wrap}
+  .scene.end .foot-amp{opacity:1;transform:none;margin-top:8px}
+  .scene.end .foot-cap{margin-top:8px}
+  .ft{position:static;flex-wrap:wrap;padding:8px 24px 24px}
   #sheet{left:0;top:0;width:100vw;height:100vh;transform:none}
 }

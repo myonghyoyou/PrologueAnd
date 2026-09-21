@@ -17,13 +17,14 @@ window.V6 = (function () {
     { id: 'p05', n: '무엇을', x: 1700, y: 3000, group: [[1700, 3000], [1700, 3200], [1700, 3400]], off: [376, 220] },   // 점 3개는 세로로, 판은 오른쪽·가운데 점(옮기기) 옆 (3200 + 20)
     { id: 'p06', n: 'Projects', x: 1300, y: 3750, off: [-376, 0] },           // 왼쪽, 점과 같은 높이
     { id: 'p07', n: '문의', x: 2100, y: 4250 },
-    { id: 'p08', n: '&', x: 1500, y: 4800, end: true }
+    { id: 'p08', n: '&', x: 1500, y: 4676, end: true }   // 선은 Prologue 글자 위(24px)에서 끝난다
   ];
   const knotBox = { x: 1150, y: 310, w: 700, h: 420 }, knotEnd = [1780, 700];
-  const nodes = [knotEnd, [2200, 1100], [1300, 1600], [2000, 2050], [1150, 2550], [1700, 3000], [1700, 3200], [1700, 3400], [1300, 3750], [2100, 4250], [1500, 4800]];
-  const PW = 640, PH = 420, GAP = 56;   // 판은 화면 px 고정(글자는 세계 스케일에서 제외, docs/22 §12-1). 세계 안에서는 PW/scale × PH/scale
+  const nodes = [knotEnd, [2200, 1100], [1300, 1600], [2000, 2050], [1150, 2550], [1700, 3000], [1700, 3200], [1700, 3400], [1300, 3750], [2100, 4250], [1500, 4676]];
+  const PW = 640, PH = 420, GAP = 56, END_GAP = 0;   // END_GAP: 선 끝을 더 당길 때 쓰는 여유(끝점 자체가 Prologue 위이므로 0)   // 판은 화면 px 고정(글자는 세계 스케일에서 제외, docs/22 §12-1). 세계 안에서는 PW/scale × PH/scale
   const EDGE = 24, HDR = 84, LIFT = 20, PAD = 40, NGAP = 28, NDY = [24, 0, -24];   // 화면 px: 가장자리 여백, 헤더 높이, 선이 & 아래로 내려간 거리, 무엇을 칩과 점 사이, 칩의 세로 오프셋(고치기 아래·옮기기 중앙·만들기 위)
   const CAM0 = [1240, 600];   // 인트로 카메라: 꼬임과 헤드라인이 같이 보이는 자리. 첫 이동에서 &가 화면 중앙으로 온다
+  const CAM_END = [1500, 4772];   // 끝 카메라: Prologue·&·캡션 묶음의 가운데. 마지막 구간에서 선 끝점 → 이 자리로 옮겨가 판이 화면 정중앙에 선다
   function crPath(p, k = 0.5) {
     let d = `M${p[0][0]} ${p[0][1]}`;
     for (let i = 0; i < p.length - 1; i++) {
@@ -101,14 +102,19 @@ window.V6 = (function () {
     return t < a ? pre + (t - pre) * (b - pre) / (a - pre) : b + (t - c) * (post - b) / (post - c);
   }
   function render() {
-    const p = pAt(camT(anim.pos)), s = scale * st.z, cx = innerWidth / 2, cy = innerHeight / 2 + LIFT;   // 화면 중앙(선은 &보다 LIFT 아래)
+    const p = pAt(camT(anim.pos)), s = scale * st.z, cx = innerWidth / 2;
     // 인트로 오프셋: t=0에서는 카메라가 CAM0에 서고(&는 꼬임 끝에), 첫 점까지 오프셋이 선형으로 0이 된다 (smoothstep이면 감속 중 카메라가 한 번 더 움직여 '휙'하고 튐)
     const e = clamp(anim.pos / T[1], 0, 1);
-    const c = [p[0] + (CAM0[0] - knotEnd[0]) * (1 - e), p[1] + (CAM0[1] - knotEnd[1]) * (1 - e)];
+    // 끝 오프셋: 마지막 구간(문의 점 → 끝)에서 카메라가 선 끝점 대신 CAM_END로, LIFT도 0으로 — 도착하면 Prologue 묶음이 화면 정중앙
+    const tEnd = T[T.length - 1], tPrev = T[T.length - 2], e2 = clamp((anim.pos - tPrev) / (tEnd - tPrev), 0, 1), pEnd = pAt(tEnd);
+    const cy = innerHeight / 2 + LIFT * (1 - e2);
+    const c = [p[0] + (CAM0[0] - knotEnd[0]) * (1 - e) + (CAM_END[0] - pEnd[0]) * e2, p[1] + (CAM0[1] - knotEnd[1]) * (1 - e) + (CAM_END[1] - pEnd[1]) * e2];
     world.style.transform = `translate(${cx}px, ${cy}px) scale(${s}) translate(${-c[0]}px, ${-c[1]}px)`;
     const marker = document.getElementById('marker');
     marker.style.transform = `translate(${cx + (p[0] - c[0]) * s - 22}px, ${cy + (p[1] - c[1]) * s - 42}px)`;
-    ink.style.strokeDashoffset = L - anim.pos;
+    ink.style.strokeDashoffset = L - Math.min(anim.pos, L - END_GAP);   // 잉크는 & 34px 앞에서 끝
+    // 끝 장면: 선이 끝에 닿아 멈추면 Prologue 아래에 &가 떠오른다
+    scenes[8].el.classList.toggle('arrive', anim.pos >= L - 2);
     dots.forEach(d => d.el.classList.toggle('on', anim.pos >= d.t - 2));
     // 판은 지금 장면(가장 가까운 장면)의 것만 보임 — 두 장면의 중간에서 지금 판 페이드 아웃, 다음 판 페이드 인. 되돌아오면 반대 (2026-09-20)
     const near = nearestScene();
@@ -137,16 +143,14 @@ window.V6 = (function () {
       sc.el = document.getElementById(sc.id);
       const pts = sc.group || [[sc.x, sc.y]];
       sc.firstIdx = T.length;
-      pts.forEach(([x, y]) => { const t = sc.knot ? 0 : tOf(x, y); T.push(t); if (!sc.knot) dots.push({ x, y, t }); });
+      pts.forEach(([x, y]) => { const t = sc.knot ? 0 : tOf(x, y); T.push(t); if (!sc.knot && !sc.end) dots.push({ x, y, t }); });   // 끝 점은 점 없이 &가 자리를 맡음
     });
     fit();
     dots.forEach(d => { const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('class', 'dot'); c.setAttribute('cx', d.x); c.setAttribute('cy', d.y); c.setAttribute('r', 6); svg.appendChild(c); d.el = c; });
     ink.style.strokeDasharray = L; ink.style.strokeDashoffset = L;
-    // progress map ∝ 점 사이 경로 길이
-    const labels = scenes.map(s => s.n);
-    const segs = scenes.map((sc, i) => (i < scenes.length - 1 ? T[scenes[i + 1].firstIdx] : L) - T[sc.firstIdx]);
-    const tot = segs.reduce((a, b) => a + b, 0);
-    document.getElementById('pmap').innerHTML = scenes.map((sc, i) => `<i data-i="${i}" data-l="${labels[i]}" style="width:${Math.max(8, Math.round(segs[i] / tot * 260))}px"></i>`).join('');
+    main.style.strokeDasharray = `${L - END_GAP} ${END_GAP + 10}`;   // 안내선도 & 앞에서 멈춤
+    // progress map: 장면당 한 칸, 같은 폭
+    document.getElementById('pmap').innerHTML = scenes.map((sc, i) => `<i data-i="${i}" data-l="${sc.n}"></i>`).join('');
     // sheets
     document.addEventListener('click', e => { const t = e.target.closest('[data-sheet]'); if (!t) return; e.preventDefault(); V.openSheet(t.dataset.sheet); });
     document.getElementById('sheet').querySelector('.close').addEventListener('click', () => V.closeSheet());
