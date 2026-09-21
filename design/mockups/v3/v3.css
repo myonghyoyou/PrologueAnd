@@ -45,17 +45,10 @@ section{position:relative}
 .brand{display:inline-flex;align-items:baseline;font-family:var(--serif);font-size:24px;letter-spacing:.005em;color:var(--bone-900);font-optical-sizing:none;font-variation-settings:"opsz" 24;line-height:1}
 .brand .bamp{display:inline-block;width:.72em;color:var(--navy-800);transition:width .5s var(--ease-out),opacity .3s}
 .brand.amp-gone .bamp{width:0;opacity:0}
-/* 메뉴: 40px 테두리 버튼 — 대시보드(v6)·목록·상세가 같은 헤더 (docs/26 H1). 헤더는 문서 간 전환에서 고정(hdr) */
-.hdr{view-transition-name:hdr}
-.hdr nav{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:16px;font-weight:600}
-.hdr nav a,.hdr nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1;transition:background .15s,color .15s}
-.hdr nav a:hover,.hdr nav button:hover{background:var(--bone-900);color:var(--bone-50)}
-.hdr nav a.cur{border-color:transparent;color:var(--navy-800);pointer-events:none}
-.hdr .who{font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:-.01em;margin-left:14px;color:var(--bone-900)}
-.hdr .back{margin-left:auto;font-size:14px;font-weight:500;color:var(--bone-500);margin-right:8px}
-.hdr .back:hover{color:var(--bone-900)}
-.hdr .back+nav{margin-left:0}
-.hdr .pos{font-size:13px;color:var(--bone-500);font-variant-numeric:tabular-nums;margin-right:6px}
+.hdr nav{margin-left:auto;display:flex;gap:28px;font-size:14px;font-weight:500}
+.hdr nav a,.hdr nav button{position:relative;padding:6px 0}
+.hdr nav a:after,.hdr nav button:after{content:"";position:absolute;left:0;right:0;bottom:2px;height:1px;background:var(--signal);transform:scaleX(0);transform-origin:left;transition:transform .15s}
+.hdr nav a:hover:after,.hdr nav button:hover:after{transform:scaleX(1)}
 .hdr .mob-pos{display:none;margin-left:auto;font-variant-numeric:tabular-nums;font-size:13px;color:var(--bone-500)}
 .hdr.on-dark{background:linear-gradient(var(--navy-950) 70%,rgba(21,26,51,0));color:var(--bone-50)}
 .hdr.on-dark .brand{color:var(--bone-50)}
@@ -164,10 +157,6 @@ section{position:relative}
 
 /* ---------- footer (S2 로고 아랫줄) ---------- */
 footer{padding:96px 0 40px}
-/* 공통 푸터 행: 목록은 문서 끝 정적, 대시보드·상세는 화면 왼쪽 아래 고정(각 css에서 position 지정) */
-.ft{display:flex;align-items:center;gap:20px;font-size:12px;color:var(--bone-500);padding:48px 0 24px}
-.ft nav{display:flex;gap:20px}
-.ft a:hover{color:var(--bone-900)}
 .logo-bottom{position:relative;height:44px;display:flex;align-items:center}
 .logo-bottom .rule{position:absolute;top:50%;height:1px;background:var(--bone-300);transition:background .4s}
 .logo-bottom.done .rule.r{background:var(--navy-800)}
@@ -219,24 +208,30 @@ footer{padding:96px 0 40px}
 #drawer[data-step="2"] .s2{display:block}
 
 /* ---------- Projects page ---------- */
-.page-head{padding:104px 0 12px}   /* 헤더 64 + 40 */
-.page-head .lead{margin-top:10px}
-.wrap.narrow{max-width:56rem;padding:0 24px}   /* 목록 읽기 폭: 시트(56rem)와 같게 (docs/23 §4.2) */
+.page-head{padding:160px 0 48px}
+.page-head .lead{margin-top:16px}
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--bone-200);margin-bottom:8px;overflow:auto}
 .tabs button{padding:12px 14px;font-size:14px;font-weight:500;color:var(--bone-500);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
 .tabs button:hover{color:var(--bone-900)}
 .tabs button.on{color:var(--navy-800);border-color:var(--navy-800)}
-.prow{display:grid;grid-template-columns:40px 1fr;gap:16px;align-items:start;padding:16px 28px;margin:0 -28px;border-bottom:1px solid var(--bone-200);transition:background .15s}   /* 시트에서 승인된 밀도를 기본값으로 (docs/26 L1) */
+.prow{display:grid;grid-template-columns:48px 1fr;gap:24px;align-items:start;padding:32px 16px;margin:0 -16px;border-bottom:1px solid var(--bone-200);transition:background .15s}
 .prow:hover{background:var(--bone-100)}
-.prow .num{padding-top:4px}
-.prow .h2{font-size:20px}
+.prow .num{padding-top:6px}
 .prow .h2 .amp{font-size:.9em;margin-right:.18em}
-.prow .meta{display:flex;gap:12px;align-items:center;margin:6px 0 8px;font-size:13px;color:var(--bone-500)}
-.prow .res{margin:0;color:var(--bone-700);font-size:14px;max-width:34rem}
+.prow .meta{display:flex;gap:12px;align-items:center;margin:8px 0 12px;font-size:13px;color:var(--bone-500)}
+.prow .res{margin:0;color:var(--bone-700);font-size:15px;max-width:34rem}
 .empty{padding:64px 0;text-align:center;color:var(--bone-700)}
 .empty .btn{margin-top:16px}
 
 /* ---------- Case Study page ---------- */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:40;height:64px;display:flex;align-items:center;gap:20px;padding:0 40px 0 112px;background:var(--bone-50);border-bottom:1px solid var(--bone-200)}
+.topbar .back{font-size:14px;color:var(--bone-500)}
+.topbar .back:hover{color:var(--bone-900)}
+.topbar .brand{font-size:20px}
+.topbar .brand .amp{margin:0 .22em}
+.topbar .brand .who{font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:-.01em}
+.topbar .btn{margin-left:auto}
+.topbar .pos{display:none}
 .case-head{padding:160px 0 48px;display:grid;grid-template-columns:8fr 4fr;gap:24px;align-items:end}
 .case-head .h1{margin:12px 0 0;max-width:14em}
 .case-head table{border-collapse:collapse;width:100%;font-size:14px}
@@ -245,6 +240,12 @@ footer{padding:96px 0 40px}
 .case-hero{margin-bottom:96px}
 .case-hero .shot{aspect-ratio:16/9}
 .case-body{display:grid;grid-template-columns:96px 1fr;gap:24px}
+.nrail{position:sticky;top:96px;align-self:start;list-style:none;margin:0;padding:0}
+.nrail li{display:flex;align-items:center;gap:10px;height:32px;font-size:13px;font-weight:500;color:var(--bone-400);cursor:pointer;font-variant-numeric:tabular-nums}
+.nrail li i{width:12px;height:1px;background:currentColor;transition:width .2s}
+.nrail li.on{color:var(--navy-800)}
+.nrail li.on i{width:24px}
+.nrail li small{font-size:11px;color:var(--bone-400);font-weight:500}
 .cs{padding:0 0 96px;max-width:44rem}
 .cs h2{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0 0 20px;display:flex;align-items:baseline;gap:12px}
 .cs h2 .num{color:var(--navy-800)}
@@ -261,6 +262,9 @@ footer{padding:96px 0 40px}
 .dia .after{fill:none;stroke:var(--navy-800);stroke-width:1.5}
 .dia .node{fill:var(--bone-50);stroke:var(--navy-800)}
 .dia .flagp{fill:var(--navy-800)}
+#morph-wrap{height:220vh;max-width:44rem}
+#morph-stick{position:sticky;top:96px}
+#morph-stick .cap{display:flex;justify-content:space-between;margin-top:12px}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .pair .cap{display:block;margin-bottom:8px}
 .pair .amp{display:flex;align-items:center;justify-content:center;font-size:40px}
@@ -285,7 +289,7 @@ footer{padding:96px 0 40px}
 @media (max-width:1023px){
   :root{--rail-x:24px}
   .wrap{padding:0 24px}
-  .hdr{padding:0 24px;height:56px}
+  .hdr,.topbar{padding:0 24px;height:56px}
   #line,#line-dark,#marker,.rail-lbl{display:none}
   .hdr nav{display:none}
   .hdr .mob-pos{display:block}
@@ -323,8 +327,9 @@ footer{padding:96px 0 40px}
   .prow .num{display:none}
   .case-head{grid-template-columns:1fr;padding-top:112px}
   .case-body{grid-template-columns:1fr}
-  .hdr .who,.hdr .back{display:none}
-  .hdr .pos{display:block;margin-left:auto}
+  .nrail{display:none}
+  .topbar .brand{display:none}
+  .topbar .pos{display:block;font-size:13px;color:var(--bone-500);font-variant-numeric:tabular-nums}
   .pair,.impact{grid-template-columns:1fr}
   .pair .amp{display:none}
   #morph-wrap{height:auto}
@@ -374,9 +379,27 @@ footer{padding:96px 0 40px}
 .ba td:last-child{color:var(--navy-800);font-weight:500}
 
 /* ---------- embed (v5 시트 안): 페이지 헤더는 시트 헤더가 대신함 ---------- */
+html.embed .hdr,html.embed .topbar,html.embed footer{display:none}
+html.embed .page-head{padding-top:32px}
+html.embed .case-head{padding-top:32px}
+html.embed .nrail{top:24px}
 
 /* embed: 스크롤바 (13 토큰) */
+html.embed{scrollbar-width:thin;scrollbar-color:var(--bone-300) var(--bone-50)}
+html.embed::-webkit-scrollbar{width:8px;height:8px}
+html.embed::-webkit-scrollbar-track{background:var(--bone-50)}
+html.embed::-webkit-scrollbar-thumb{background:var(--bone-300);border-radius:2px;border:2px solid var(--bone-50)}
+html.embed::-webkit-scrollbar-thumb:hover{background:var(--bone-400)}
 /* embed: Projects 목록 — 행 상하 패딩 축소, 좌우 확대 */
+html.embed .wrap{padding:0 36px}
+html.embed .page-head{padding:28px 0 12px}
+html.embed .page-head .lead{margin-top:10px}
+html.embed .prow{grid-template-columns:40px 1fr;gap:16px;padding:16px 28px;margin:0 -28px;border-bottom:1px solid var(--bone-200)}
+html.embed .prow:hover{background:var(--bone-100)}
+html.embed .prow .num{display:block;padding-top:4px}
+html.embed .prow .h2{font-size:20px}
+html.embed .prow .meta{margin:6px 0 8px}
+html.embed .prow .res{font-size:14px}
 
 /* ---------- 목록 ↔ 상세 전환 (docs/20: A 제목 공유 요소 + D 번호 레일 그리기) ---------- */
 @view-transition{navigation:auto}
@@ -393,10 +416,32 @@ footer{padding:96px 0 40px}
 .prow.vt .h2{view-transition-name:pj-title}
 @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
 /* embed: 상세의 번호 레일을 시트 안에서도 보이게 + 도착 후 01→10 그려짐 */
+html.embed .case-body{grid-template-columns:64px 1fr;gap:16px}
+html.embed .nrail{display:block;top:16px}
+html.embed .nrail li{opacity:0;animation:rail-in .32s cubic-bezier(.2,.8,.2,1) forwards}
+html.embed .nrail li i{transform-origin:left;transform:scaleX(0);animation:rail-line .32s cubic-bezier(.2,.8,.2,1) forwards}
+html.embed .nrail li:nth-child(1),html.embed .nrail li:nth-child(1) i{animation-delay:.30s}
+html.embed .nrail li:nth-child(2),html.embed .nrail li:nth-child(2) i{animation-delay:.34s}
+html.embed .nrail li:nth-child(3),html.embed .nrail li:nth-child(3) i{animation-delay:.38s}
+html.embed .nrail li:nth-child(4),html.embed .nrail li:nth-child(4) i{animation-delay:.42s}
+html.embed .nrail li:nth-child(5),html.embed .nrail li:nth-child(5) i{animation-delay:.46s}
+html.embed .nrail li:nth-child(6),html.embed .nrail li:nth-child(6) i{animation-delay:.50s}
+html.embed .nrail li:nth-child(7),html.embed .nrail li:nth-child(7) i{animation-delay:.54s}
+html.embed .nrail li:nth-child(8),html.embed .nrail li:nth-child(8) i{animation-delay:.58s}
+html.embed .nrail li:nth-child(9),html.embed .nrail li:nth-child(9) i{animation-delay:.62s}
+html.embed .nrail li:nth-child(10),html.embed .nrail li:nth-child(10) i{animation-delay:.66s}
 @keyframes rail-in{to{opacity:1}}
 @keyframes rail-line{to{transform:scaleX(1)}}
+html.embed .cs{max-width:none}
 
 /* embed: 상세 항목 간격 통일 (03의 다이어그램은 03에 붙이고, 03↔04 간격도 같게) */
+html.embed .cs{padding-bottom:44px}
+html.embed .cs h2{margin-bottom:14px}
+html.embed #s3{padding-bottom:12px}
+html.embed #morph-wrap{height:auto;margin:0 0 44px}
+html.embed #morph-stick{position:static}
+html.embed #morph-stick .cap{margin-top:8px}
+html.embed .cs .q{font-size:24px}
 
 /* 라이브 목업 화면: img-src.html의 1280×800 화면을 매트 안에 축소 표시 (캡처 대신) */
 .shot.live{position:relative;overflow:hidden;--sc:.5}

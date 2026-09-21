@@ -153,8 +153,18 @@ window.V6 = (function () {
     main.style.strokeDasharray = `${L - END_GAP} ${END_GAP + 10}`;   // 안내선도 & 앞에서 멈춤
     // progress map: 장면당 한 칸, 같은 폭
     document.getElementById('pmap').innerHTML = scenes.map((sc, i) => `<i data-i="${i}" data-l="${sc.n}"></i>`).join('');
+    // sheets
+    document.addEventListener('click', e => { const t = e.target.closest('[data-sheet]'); if (!t) return; e.preventDefault(); V.openSheet(t.dataset.sheet); });
+    document.getElementById('sheet').querySelector('.close').addEventListener('click', () => V.closeSheet());
+    document.getElementById('sheet-bd').addEventListener('click', () => V.closeSheet());
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') V.closeSheet(); });
+    const f = document.getElementById('sheet-frame'); f.addEventListener('load', sheetTitle);
+    document.getElementById('sheetBack').addEventListener('click', () => { const w = f.contentWindow; try { if (w.history.length > 1) { w.history.back(); return; } } catch (e) {} f.src = '../v3/projects.html?embed=1&v=' + Date.now(); });
     if (!desktop()) { V3.initMobilePos(scenes.map(s => s.id)); scenes.forEach(sc => sc.el && sc.el.classList.add('show')); }
   };
+  const sheetTitle = () => { const f = document.getElementById('sheet-frame'); let t = 'Projects', isCase = false; try { const d = f.contentDocument; if (d && d.title) t = d.title.replace(/^Prologue\s*&\s*/, '').replace(/\s*[—-]\s*Prologue&.*$/, ''); isCase = /case\.html/.test(f.contentWindow.location.pathname); } catch (e) {} document.getElementById('sheetTitle').textContent = t; document.getElementById('sheetBack').hidden = !isCase; };
+  V.openSheet = src => { const f = document.getElementById('sheet-frame'); if (f.getAttribute('src') !== src) f.src = src; document.getElementById('sheet').classList.add('on'); document.getElementById('sheet-bd').classList.add('on'); sheetTitle(); };
+  V.closeSheet = () => { document.getElementById('sheet').classList.remove('on'); document.getElementById('sheet-bd').classList.remove('on'); };
 
   /* ---------- init ---------- */
   V.init = function () {
@@ -166,6 +176,7 @@ window.V6 = (function () {
     document.getElementById('pmap').addEventListener('click', e => { const i = e.target.closest('i'); if (i) setTarget(T[scenes[+i.dataset.i].firstIdx]); });
     document.querySelectorAll('[data-go]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); setTarget(T[scenes[+a.dataset.go].firstIdx]); }));
     addEventListener('keydown', e => {
+      if (document.getElementById('sheet').classList.contains('on')) return;
       if (!['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End', 'PageDown', 'PageUp', ' '].includes(e.key)) return;
       e.preventDefault();
       if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) V.step(1);
@@ -177,6 +188,7 @@ window.V6 = (function () {
     const request = dir => { const now = performance.now(); if (now < lockUntil) { pending += dir; return; } V.step(dir); lockUntil = now + 160; };
     document.getElementById('stage').addEventListener('wheel', e => {
       e.preventDefault();
+      if (document.getElementById('sheet').classList.contains('on')) return;
       const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX; if (!d) return;
       const now = performance.now(), gap = now - lastEv; lastEv = now;
       if (gap > WHEEL.gap) { acc = 0; stepped = false; streamStart = now; }
