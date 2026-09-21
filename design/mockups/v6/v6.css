@@ -2,7 +2,8 @@
 html,body{height:100%}
 body{overflow:hidden;background:var(--bone-100)}
 :root{--pw:640px;--ph:420px;--pad:40px}
-.stage{position:fixed;inset:0;overflow:clip;background:var(--bone-100)}
+.stage{position:fixed;inset:0;overflow:clip;background:var(--bone-100);-webkit-user-select:none;user-select:none;-webkit-user-drag:none}   /* 대시보드 글자·도형은 드래그 선택 안 됨 */
+.hdr,.ft{-webkit-user-select:none;user-select:none}
 .world{--inv:1;position:absolute;left:0;top:0;width:2800px;height:5100px;transform-origin:0 0;will-change:transform}
 .pathsvg{position:absolute;left:0;top:0;width:2800px;height:5100px;overflow:visible;pointer-events:none}
 .pathsvg .guide{fill:none;stroke:var(--navy-200);stroke-width:1.5}
@@ -101,7 +102,7 @@ body{overflow:hidden;background:var(--bone-100)}
   body{overflow:visible;overflow-x:clip;background:var(--bone-50)}
   .hdr{background:var(--bone-50);height:calc(56px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px)}
   .hdr .pmap,#tune,#marker,.pathsvg{display:none}
-  .stage{position:static;overflow:visible;background:var(--bone-50)}
+  .stage{position:static;overflow:visible;background:var(--bone-50);-webkit-user-select:text;user-select:text}   /* 모바일 스택은 일반 문서처럼 선택 가능 */
   .world{position:static;width:auto;height:auto;transform:none!important;padding:calc(72px + env(safe-area-inset-top,0px)) 16px 24px}
   .scene{position:static;width:auto!important;height:auto!important;left:auto!important;top:auto!important;margin:0 0 16px;opacity:1!important;transform:none!important}
   .scene.pan{position:relative;padding:24px;overflow:hidden}   /* 세로 스택에서는 도형이 판 밖으로 나가면 문서 폭이 늘어남 */
