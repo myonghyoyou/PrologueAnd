@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>08 Case Study 세로 재설계 와이어프레임</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{--ink:#1C1B18;--mute:#8B877E;--line:#D9D5CC;--fill:#EFECE5;--navy:#2B3160;--navy2:#8A96C2;--bg:#FAF9F6;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Pretendard,-apple-system,system-ui,sans-serif}
+header{padding:28px 40px 12px}
+h1{font-size:22px;margin:0 0 6px}
+header p{margin:0;color:var(--mute);max-width:70rem}
+.legend{display:flex;gap:18px;padding:0 40px 16px;font-size:12px;color:var(--mute);flex-wrap:wrap}
+.legend i{display:inline-block;width:14px;height:10px;vertical-align:middle;margin-right:4px}
+.rail{display:flex;gap:28px;padding:8px 40px 48px;overflow-x:auto}
+.opt{flex:none;width:420px}
+.opt h2{font-size:15px;margin:0 0 4px}
+.opt h2 small{font-weight:500;color:var(--mute);margin-left:6px}
+.opt .why{font-size:12px;color:var(--mute);margin:0 0 10px;min-height:54px}
+.opt.rec h2:after{content:"권장";font-size:11px;font-weight:600;color:#fff;background:var(--navy);padding:2px 6px;border-radius:2px;margin-left:8px;vertical-align:middle}
+/* frame: 1440-wide page scaled to 420 (0.2917). heights in "page px" via --h */
+.frame{position:relative;width:420px;background:var(--white);border:1px solid var(--line);overflow:hidden}
+.pg{transform:scale(.2917);transform-origin:0 0;width:1440px}
+.hdr{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 40px 0 112px;gap:24px;font-size:24px}
+.hdr .nav{margin-left:auto;display:flex;gap:10px}.hdr .nav b{border:1px solid var(--ink);padding:0 18px;height:40px;display:inline-flex;align-items:center;font-size:16px}
+.hdr .strip{position:absolute;left:50%;top:26px;transform:translateX(-50%);display:flex;gap:3px}.hdr .strip i{width:26px;height:3px;background:var(--line)}.hdr .strip i:first-child{background:var(--navy)}
+.wrap{padding:0 40px 0 112px}
+.col{max-width:704px}
+.t{background:var(--fill);border-radius:2px}
+.h{height:var(--h,56px);background:var(--ink);opacity:.85;border-radius:2px;margin-bottom:12px}
+.p{height:var(--h,80px);background:var(--fill);border-radius:2px;margin-bottom:16px}
+.cap{height:14px;width:60%;background:var(--fill);margin-bottom:10px}
+.img{background:repeating-linear-gradient(135deg,#E3E0D8 0 8px,#ECE9E2 8px 16px);border:1px solid var(--line);border-radius:2px;display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:22px;margin:0 0 16px}
+.img.live{background:#fff;border-color:var(--ink)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin:20px 0;border-top:1px solid var(--line);padding-top:16px}
+.nums div b{display:block;height:44px;width:70%;background:var(--navy);opacity:.85;border-radius:2px;margin-bottom:8px}.nums div i{display:block;height:12px;width:50%;background:var(--fill)}
+.meta{display:grid;grid-template-columns:96px 1fr;row-gap:10px;column-gap:12px;margin:16px 0}.meta i{display:block;height:14px;background:var(--fill)}.meta i:nth-child(odd){opacity:.6}
+.sec{display:grid;grid-template-columns:96px 1fr;gap:24px;margin-bottom:56px}
+.sec .n{font-size:20px;color:var(--navy);font-weight:600;padding-top:8px}
+.railline{position:absolute;left:150px;top:0;bottom:0;width:2px;background:var(--navy);opacity:.35}
+.dot{position:absolute;left:144px;width:14px;height:14px;border-radius:50%;background:var(--navy)}
+.lbl{position:absolute;font-size:22px;color:var(--navy);background:rgba(255,255,255,.85);padding:2px 8px;border:1px solid var(--navy2);border-radius:2px;z-index:5}
+.full{margin:0 -40px 0 -112px}
+.split{display:grid;grid-template-columns:22rem 1fr;gap:48px}
+.side{position:sticky;top:96px;align-self:start;border:1px solid var(--line);padding:24px;background:var(--bg)}
+.side .toc{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:16px}.side .toc i{height:22px;background:var(--fill);display:block}
+.pan{border:1px solid var(--line);padding:40px;background:var(--bg)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.slide{height:900px;border-bottom:1px dashed var(--navy2);padding:120px 40px 40px 112px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.note{font-size:12px;color:var(--mute);margin-top:8px;line-height:1.5}
+.note b{color:var(--ink)}
+</style>
+</head>
+<body>
+<header>
+  <h1>08 · Case Study 세로 재설계 — 와이어프레임 6안 (docs/27)</h1>
+  <p>1440 폭 페이지를 0.29배로 축소한 것. 검은 막대 = 제목, 회색 = 문단, 빗금 = 그림(정지), 흰 테두리 = 라이브 화면, 남색 = 숫자·선·번호. 좌우로 밀어 비교.</p>
+</header>
+<div class="legend"><span><i style="background:#1C1B18"></i>제목</span><span><i style="background:#EFECE5;border:1px solid #D9D5CC"></i>문단·메타</span><span><i style="background:repeating-linear-gradient(135deg,#E3E0D8 0 3px,#ECE9E2 3px 6px)"></i>그림</span><span><i style="background:#fff;border:1px solid #1C1B18"></i>라이브 화면</span><span><i style="background:#2B3160"></i>숫자·선·번호</span></div>
+
+<div class="rail">
+
+<!-- A -->
+<section class="opt">
+  <h2>A 편집 기사형 <small>Editorial long-read</small></h2>
+  <p class="why">지금 구조 유지. 표지 = 글 → 전폭 화면. 그림이 본문 폭(44rem)을 깨고 64rem·전폭으로. 레일이 스크롤에 비례해 그려지는 선(S1). 끝은 티저 1장.</p>
+  <div class="frame"><div class="pg">
+    <div class="hdr">Prologue&amp; <span style="font-size:15px">Por favor, Harry</span><div class="nav"><b>← Projects</b><b>문의</b></div></div>
+    <div class="wrap" style="padding-top:96px">
+      <div class="col"><div class="cap"></div><div class="h" style="--h:120px;width:80%"></div>
+        <div class="meta"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="nums"><div><b></b><i></i></div><div><b></b><i></i></div><div><b></b><i></i></div></div></div>
+      <div class="img live full" style="height:720px">라이브 화면 · 전폭</div>
+      <div style="position:relative;padding-top:24px">
+        <div class="railline"></div>
+        <div class="sec"><div class="n">01</div><div><div class="h" style="--h:32px;width:30%"></div><div class="p"></div></div></div>
+        <div class="sec"><div class="n">02</div><div><div class="h" style="--h:32px;width:30%"></div><div class="p" style="--h:120px"></div></div></div>
+        <div class="sec"><div class="n">03</div><div><div class="h" style="--h:32px;width:40%"></div><div class="p" style="--h:40px"></div><div class="img" style="height:360px;width:1024px">다이어그램 64rem · scrub</div></div></div>
+        <div class="sec"><div class="n">04</div><div><div class="h" style="--h:32px;width:20%"></div><div class="h" style="--h:80px;width:90%;opacity:.7"></div></div></div>
+        <div class="sec"><div class="n">05</div><div><div class="h" style="--h:32px;width:30%"></div><div class="p" style="--h:40px"></div><div class="p"></div></div></div>
+        <div class="sec"><div class="n">06</div><div><div class="h" style="--h:32px;width:30%"></div><div class="p" style="--h:60px"></div></div></div>
+        <div class="img live full" style="height:720px">화면 · 전폭 + 핫스팟</div>
+        <div class="sec"><div class="n">07</div><div><div class="h" style="--h:32px;width:40%"></div><div class="two" style="width:1024px"><div class="img live" style="height:320px">Before</div><div class="img live" style="height:320px">After</div></div></div></div>
+        <div class="sec"><div class="n">08</div><div><div class="h" style="--h:32px;width:20%"></div><div class="nums"><div><b></b><i></i></div><div><b></b><i></i></div><div><b></b><i></i></div></div><div class="p" style="--h:24px;width:60%"></div></div></div>
+        <div class="sec"><div class="n">09</div><div><div class="h" style="--h:32px;width:40%"></div><div class="p"></div></div></div>
+        <div class="sec"><div class="n">10</div><div><div class="h" style="--h:32px;width:50%"></div><div class="p" style="--h:60px"></div><div class="t" style="height:48px;width:260px;background:var(--navy)"></div></div></div>
+      </div>
+      <div class="img full" style="height:420px">다음 이야기 · 티저 1장</div>
+    </div>
+  </div></div>
+  <p class="note"><b>장점</b> 읽기 최적, 코드 70% 재사용. <b>단점</b> 에이전시 표준과 같아 인상은 평범.</p>
+</section>
+
+<!-- B -->
+<section class="opt">
+  <h2>B 좌측 고정 요약 <small>Sticky summary</small></h2>
+  <p class="why">표지 없음. 제목·메타·숫자·목차·문의가 왼쪽 22rem에 붙어 있고 오른쪽만 흐른다. 대시보드 판 하나가 붙어 있는 감각.</p>
+  <div class="frame"><div class="pg">
+    <div class="hdr">Prologue&amp;<div class="nav"><b>← Projects</b><b>문의</b></div></div>
+    <div class="wrap split" style="padding-top:32px">
+      <div class="side" style="position:absolute;width:352px;left:112px;top:96px"><div class="cap"></div><div class="h" style="--h:96px"></div><div class="meta"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="nums" style="grid-template-columns:1fr;gap:10px"><div><b style="height:28px"></b><i></i></div><div><b style="height:28px"></b><i></i></div><div><b style="height:28px"></b><i></i></div></div><div class="toc"><i style="background:var(--navy)"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="t" style="height:48px;margin-top:20px;background:var(--navy)"></div><div class="lbl" style="left:0;bottom:-40px">sticky</div></div>
+      <div></div>
+      <div style="padding-left:400px;margin-left:-400px;">
+        <div class="sec" style="grid-template-columns:1fr;margin-left:400px"><div><div class="h" style="--h:32px;width:30%"></div><div class="p"></div></div></div>
+        <div class="sec" style="grid-template-columns:1fr;margin-left:400px"><div><div class="h" style="--h:32px;width:30%"></div><div class="p" style="--h:120px"></div></div></div>
+        <div class="img live" style="height:520px;margin-left:400px">화면 · 우측 폭(60rem)</div>
+        <div class="sec" style="grid-template-columns:1fr;margin-left:400px"><div><div class="h" style="--h:32px;width:40%"></div><div class="img" style="height:320px">다이어그램</div></div></div>
+        <div class="sec" style="grid-template-columns:1fr;margin-left:400px"><div><div class="h" style="--h:32px;width:20%"></div><div class="h" style="--h:80px;width:90%;opacity:.7"></div></div></div>
+        <div class="sec" style="grid-template-columns:1fr;margin-left:400px"><div><div class="h" style="--h:32px;width:30%"></div><div class="p"></div></div></div>
+        <div class="img live" style="height:520px;margin-left:400px">화면 + 핫스팟</div>
+        <div class="sec" style="grid-template-columns:1fr;margin-left:400px"><div><div class="two"><div class="img live" style="height:280px">Before</div><div class="img live" style="height:280px">After</div></div></div></div>
+        <div class="sec" style="grid-template-columns:1fr;margin-left:400px"><div><div class="h" style="--h:32px;width:20%"></div><div class="nums"><div><b></b><i></i></div><div><b></b><i></i></div><div><b></b><i></i></div></div></div></div>
+        <div class="sec" style="grid-template-columns:1fr;margin-left:400px"><div><div class="h" style="--h:32px;width:40%"></div><div class="p"></div></div></div>
+        <div class="sec" style="grid-template-columns:1fr;margin-left:400px"><div><div class="h" style="--h:32px;width:50%"></div><div class="p" style="--h:60px"></div><div class="img" style="height:240px">다음 이야기</div></div></div>
+      </div>
+    </div>
+  </div></div>
+  <p class="note"><b>장점</b> 어디를 읽어도 맥락이 보임, 목차 = 진행. <b>단점</b> 에이전시 표준 밖(고정 사이드바), 그림 폭이 60rem으로 제한, 시트(56rem)에는 못 들어감.</p>
+</section>
+
+<!-- C -->
+<section class="opt">
+  <h2>C 화면 우선 <small>Media-first</small></h2>
+  <p class="why">화면이 본문, 글은 캡션. 장마다 전폭 그림 하나가 필수. Metalab·Instrument 계열의 인상.</p>
+  <div class="frame"><div class="pg">
+    <div class="hdr">Prologue&amp;<div class="nav"><b>← Projects</b><b>문의</b></div></div>
+    <div class="img live" style="height:760px;margin:0">라이브 화면 · 화면 높이 80%</div>
+    <div class="wrap" style="padding-top:40px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end"><div><div class="h" style="--h:96px;width:90%"></div><div class="meta"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="nums" style="margin:0"><div><b></b><i></i></div><div><b></b><i></i></div><div><b></b><i></i></div></div></div>
+      <div class="col" style="margin-top:40px"><div class="h" style="--h:28px;width:25%"></div><div class="p" style="--h:48px"></div><div class="h" style="--h:28px;width:25%"></div><div class="p" style="--h:64px"></div></div>
+      <div class="img live full" style="height:640px">Before 화면 · 전폭</div>
+      <div class="col"><div class="cap"></div><div class="h" style="--h:72px;width:90%;opacity:.7"></div></div>
+      <div class="img full" style="height:480px">다이어그램 After · 전폭</div>
+      <div class="img live full" style="height:640px">양식 화면 · 전폭 + 핫스팟</div>
+      <div class="two full"><div class="img live" style="height:400px">Before</div><div class="img live" style="height:400px">After</div></div>
+      <div class="nums" style="grid-template-columns:repeat(3,1fr)"><div><b style="height:72px"></b><i></i></div><div><b style="height:72px"></b><i></i></div><div><b style="height:72px"></b><i></i></div></div>
+      <div class="col"><div class="p" style="--h:40px"></div><div class="t" style="height:48px;width:260px;background:var(--navy);margin-bottom:24px"></div></div>
+      <div class="img full" style="height:420px">다음 이야기 · 전폭 티저</div>
+    </div>
+  </div></div>
+  <p class="note"><b>장점</b> 만든 것이 바로 보임, 인상 강함. <b>단점</b> 라이브 화면이 있는 프로젝트가 1개뿐 — 나머지 3개는 성립하지 않음. 서사(문제 → 워크플로 → 제품 → 영향)가 약해짐.</p>
+</section>
+
+<!-- D -->
+<section class="opt">
+  <h2>D 스크롤 텔링 <small>Pinned media + steps</small></h2>
+  <p class="why">글은 왼쪽 한 단으로 흐르고 오른쪽 그림이 붙어서 장에 맞춰 바뀐다. 가로 시안의 morph·와이프·핫스팟·막대가 오른쪽 판의 상태가 된다.</p>
+  <div class="frame"><div class="pg">
+    <div class="hdr">Prologue&amp; <span style="font-size:15px">Por favor, Harry</span><div class="nav"><b>← Projects</b><b>문의</b></div></div>
+    <div class="wrap" style="padding-top:96px">
+      <div class="col"><div class="cap"></div><div class="h" style="--h:120px;width:80%"></div><div class="meta"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="nums"><div><b></b><i></i></div><div><b></b><i></i></div><div><b></b><i></i></div></div></div>
+      <div style="display:grid;grid-template-columns:1fr 560px;gap:48px;position:relative;margin-top:40px">
+        <div>
+          <div class="sec" style="grid-template-columns:60px 1fr"><div class="n">01</div><div><div class="h" style="--h:32px;width:40%"></div><div class="p"></div></div></div>
+          <div class="sec" style="grid-template-columns:60px 1fr"><div class="n">02</div><div><div class="h" style="--h:32px;width:40%"></div><div class="p" style="--h:120px"></div></div></div>
+          <div class="sec" style="grid-template-columns:60px 1fr"><div class="n">03</div><div><div class="h" style="--h:32px;width:50%"></div><div class="p" style="--h:40px"></div></div></div>
+          <div class="sec" style="grid-template-columns:60px 1fr"><div class="n">04</div><div><div class="h" style="--h:32px;width:30%"></div><div class="h" style="--h:80px;width:95%;opacity:.7"></div></div></div>
+          <div class="sec" style="grid-template-columns:60px 1fr"><div class="n">05</div><div><div class="h" style="--h:32px;width:40%"></div><div class="p" style="--h:40px"></div><div class="p"></div></div></div>
+          <div class="sec" style="grid-template-columns:60px 1fr"><div class="n">06</div><div><div class="h" style="--h:32px;width:40%"></div><div class="p" style="--h:60px"></div><div class="p" style="--h:120px"></div></div></div>
+          <div class="sec" style="grid-template-columns:60px 1fr"><div class="n">07</div><div><div class="h" style="--h:32px;width:50%"></div><div class="p" style="--h:60px"></div></div></div>
+          <div class="sec" style="grid-template-columns:60px 1fr"><div class="n">08</div><div><div class="h" style="--h:32px;width:30%"></div><div class="nums"><div><b></b><i></i></div><div><b></b><i></i></div><div><b></b><i></i></div></div></div></div>
+          <div class="sec" style="grid-template-columns:60px 1fr"><div class="n">09</div><div><div class="h" style="--h:32px;width:50%"></div><div class="p"></div></div></div>
+          <div class="sec" style="grid-template-columns:60px 1fr"><div class="n">10</div><div><div class="h" style="--h:32px;width:60%"></div><div class="p" style="--h:60px"></div><div class="t" style="height:48px;width:260px;background:var(--navy)"></div></div></div>
+        </div>
+        <div><div class="img live" style="height:440px;position:sticky;top:96px">고정 그림 · 장마다 교체<br>(화면 → morph → 핫스팟 → 와이프 → 막대)</div><div class="lbl" style="right:0;top:560px">sticky 40%</div></div>
+      </div>
+      <div class="img full" style="height:420px">다음 이야기</div>
+    </div>
+  </div></div>
+  <p class="note"><b>장점</b> 인터랙션이 가장 많이 살아남음, 글과 그림이 항상 함께. <b>단점</b> 그림이 화면 40%로 작음, 긴 핀 고정(docs/14 "핀 없음"과 충돌), 모바일은 A로.</p>
+</section>
+
+<!-- E -->
+<section class="opt">
+  <h2>E 한 장씩 <small>Vertical slides</small></h2>
+  <p class="why">장마다 100vh, 스냅. 대시보드의 "점마다 서는" 손맛을 세로로. 큰 타이포.</p>
+  <div class="frame"><div class="pg">
+    <div class="hdr">Prologue&amp;<div class="strip"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="nav"><b>← Projects</b><b>문의</b></div></div>
+    <div class="slide" style="margin-top:-64px"><div><div class="cap"></div><div class="h" style="--h:160px"></div><div class="meta"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="nums"><div><b></b><i></i></div><div><b></b><i></i></div><div><b></b><i></i></div></div></div><div class="img live" style="height:460px">화면</div></div>
+    <div class="slide"><div><div class="n" style="font-size:28px;color:var(--navy)">01</div><div class="h" style="--h:56px;width:60%"></div><div class="p" style="--h:100px"></div></div><div class="img" style="height:360px">그림 1</div></div>
+    <div class="slide"><div><div class="n" style="font-size:28px;color:var(--navy)">02</div><div class="h" style="--h:56px;width:60%"></div><div class="p" style="--h:140px"></div></div><div class="img live" style="height:400px">화면</div></div>
+    <div class="slide" style="grid-template-columns:1.2fr 1fr"><div class="img" style="height:520px">다이어그램 morph (03 → 05)</div><div><div class="n" style="font-size:28px;color:var(--navy)">03 · 04 · 05</div><div class="h" style="--h:40px;width:70%"></div><div class="p" style="--h:60px"></div><div class="h" style="--h:64px;width:90%;opacity:.7"></div><div class="p" style="--h:60px"></div></div></div>
+    <div class="slide"><div><div class="n" style="font-size:28px;color:var(--navy)">06</div><div class="h" style="--h:56px;width:60%"></div><div class="p" style="--h:60px"></div><div class="p" style="--h:110px"></div></div><div class="img live" style="height:440px">화면 + 핫스팟</div></div>
+    <div class="slide" style="grid-template-columns:1fr"><div><div class="n" style="font-size:28px;color:var(--navy)">08</div><div class="nums" style="max-width:900px"><div><b style="height:96px"></b><i></i></div><div><b style="height:96px"></b><i></i></div><div><b style="height:96px"></b><i></i></div></div></div></div>
+    <div class="slide"><div><div class="n" style="font-size:28px;color:var(--navy)">10</div><div class="h" style="--h:56px;width:80%"></div><div class="p" style="--h:60px"></div><div class="t" style="height:48px;width:260px;background:var(--navy)"></div></div><div class="img" style="height:300px">다음 이야기</div></div>
+  </div></div>
+  <p class="note"><b>장점</b> 포스터 문법, 대시보드와 통일. <b>단점</b> 글이 한 장에 들어가야 함, 스냅 스크롤의 읽기 피로(v5), Lenis와 스냅 충돌. "읽는 상세" 전제와 어긋남.</p>
+</section>
+
+<!-- F -->
+<section class="opt rec">
+  <h2>F 표지 판 + 기사 <small>A + B 절충</small></h2>
+  <p class="why">표지만 대시보드 판 문법(글 판 + 그림 판). 선이 표지 아래에서 시작해 왼쪽 레일로 내려간다. 헤더 스트립은 대시보드 진행 지도 부품. 아래는 A의 기사.</p>
+  <div class="frame"><div class="pg">
+    <div class="hdr">Prologue&amp; <span style="font-size:15px">Por favor, Harry</span><div class="strip"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="nav"><b>← Projects</b><span style="font-size:14px;align-self:center;color:var(--mute)">03 / 10</span><b>문의</b></div></div>
+    <div class="wrap" style="padding-top:40px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="pan" style="height:520px"><div class="cap"></div><div class="h" style="--h:120px;width:90%"></div><div class="meta"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="nums"><div><b style="height:36px"></b><i></i></div><div><b style="height:36px"></b><i></i></div><div><b style="height:36px"></b><i></i></div></div></div>
+        <div class="img live" style="height:520px;margin:0">라이브 화면 · 그림 판</div>
+      </div>
+      <div style="position:relative;padding-top:48px">
+        <div style="position:absolute;left:0;top:24px;right:0;height:2px;background:var(--navy)"></div><div class="dot" style="left:-7px;top:18px"></div>
+        <div class="railline" style="left:40px;top:24px"></div>
+        <div class="lbl" style="left:60px;top:40px">선: 표지 아래 → 레일</div>
+        <div style="padding-left:0">
+        <div class="sec"><div class="n">01</div><div><div class="h" style="--h:32px;width:30%"></div><div class="p"></div></div></div>
+        <div class="sec"><div class="n">02</div><div><div class="h" style="--h:32px;width:30%"></div><div class="p" style="--h:120px"></div></div></div>
+        <div class="sec"><div class="n">03</div><div><div class="h" style="--h:32px;width:40%"></div><div class="p" style="--h:40px"></div><div class="img" style="height:360px;width:1024px">다이어그램 64rem · 화면에 있는 동안 morph (핀 없음)</div></div></div>
+        <div class="sec"><div class="n">04</div><div><div class="h" style="--h:32px;width:20%"></div><div class="h" style="--h:80px;width:90%;opacity:.7"></div></div></div>
+        <div class="sec"><div class="n">05</div><div><div class="h" style="--h:32px;width:30%"></div><div class="p" style="--h:40px"></div><div class="p"></div></div></div>
+        <div class="sec"><div class="n">06</div><div><div class="h" style="--h:32px;width:30%"></div><div class="p" style="--h:60px"></div><div class="p" style="--h:100px;width:60%"></div><div class="img live" style="height:640px;width:1024px">화면 64rem + 핫스팟 ①②③</div></div></div>
+        <div class="sec"><div class="n">07</div><div><div class="h" style="--h:32px;width:40%"></div><div class="two" style="width:1024px"><div class="img live" style="height:320px">Before</div><div class="img live" style="height:320px">After</div></div></div></div>
+        <div class="sec"><div class="n">08</div><div><div class="h" style="--h:32px;width:20%"></div><div class="nums"><div><b></b><i></i></div><div><b></b><i></i></div><div><b></b><i></i></div></div><div class="p" style="--h:24px;width:60%"></div></div></div>
+        <div class="sec"><div class="n">09</div><div><div class="h" style="--h:32px;width:40%"></div><div class="p"></div></div></div>
+        <div class="sec"><div class="n">10</div><div><div class="h" style="--h:32px;width:50%"></div><div class="p" style="--h:60px"></div><div class="t" style="height:48px;width:260px;background:var(--navy)"></div></div></div>
+        </div>
+        <div style="height:2px;background:var(--navy);opacity:.35;margin:24px 0 32px"></div>
+      </div>
+      <div class="pan" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;margin-bottom:40px"><div><div class="cap"></div><div class="h" style="--h:64px;width:80%"></div><div class="p" style="--h:40px;width:70%"></div></div><div class="img" style="height:240px;margin:0">다음 이야기 · 표지 판 규격</div></div>
+    </div>
+  </div></div>
+  <p class="note"><b>장점</b> 대시보드 → 상세 시각 연속(판·선·스트립), 읽기 표준, 그림 넓게, 인터랙션 5종 안. 시트에서도 판이 세로로 쌓이면 됨. <b>단점</b> 화면 없는 프로젝트는 그림 판을 정지 이미지로, 없으면 글 판만.</p>
+</section>
+
+</div>
+<script>document.querySelectorAll('.frame').forEach(f=>{const pg=f.querySelector('.pg');f.style.height=Math.round(pg.offsetHeight*.2917)+'px';});</script>
+</body>
+</html>
