@@ -2,7 +2,7 @@
 
 | 작성일 | 2026-09-21 |
 |---|---|
-| 상태 | 보고. 결정 요청 §5 |
+| 상태 | **결정 완료**(2026-09-21): 표지 숫자 미리보기 넣음 · 고객의 말 없음 · 함께 쓴 것 없음 |
 | 전제 | 상세는 H2 가로(docs/24). **프로젝트마다 구성 데이터가 같아야 한다**(2026-09-21 사용자). 시안은 Por favor, Harry 본문 하나로 만들고 "다음 이야기"도 같은 본문으로 넘어간다 |
 | 목적 | 10장의 이름·순서·각 장에 들어가는 데이터 필드를 확정해, 프로젝트 4개가 같은 틀로 채워지게 한다 |
 
@@ -45,12 +45,12 @@
 | 03 Existing Workflow · 05 Redesign | 에이전시엔 없는 우리만의 장(morph). 포지션의 핵심 | 유지. 04 Insight를 사이에 두는 것도 유지 |
 | 06 Solution | 챕터 "제목 + 문단 + 화면" ✓ | 유지. 화면 핫스팟(docs/23 D4) |
 | 07 Before & After | 우리만의 장. Before 화면이 없는 프로젝트가 있음 | **유지하되 필드 규칙**: Before 화면이 없으면 "전 워크플로 그림 vs 후 화면" |
-| 08 Impact | R2 ✓(끝 쪽 숫자 3개) | 유지 + 고객의 말(R4) 선택 필드 |
+| 08 Impact | R2 ✓(끝 쪽 숫자 3개) | 유지. 고객의 말(R4)은 넣지 않음(결정 2) |
 | 09 What I Learned | R8 | 유지(차별점). 문단 1개로 상한 |
 | 10 비슷한 문제가 있다면 | R7 CTA ✓ + 다음 이야기 ✓ | 유지 |
-| (없음) 역할·기술 | R5 | 표지 메타 표에 "역할", 10장 아래 작은 글씨로 "함께 쓴 것"(Built with) |
+| (없음) 역할·기술 | R5 | 표지 메타 표에 "역할"만. 기술 스택 표기는 넣지 않음(결정 3) |
 
-결론: **10장 이름·순서는 그대로**. 바꾸는 것은 (1) 표지에 결과 숫자 미리보기, (2) 각 장의 데이터 필드를 고정, (3) 08에 고객의 말 선택 필드, (4) 기술 스택은 10장 끝 보조 정보.
+결론: **10장 이름·순서는 그대로**. 바꾸는 것은 (1) 표지에 결과 숫자 미리보기, (2) 각 장의 데이터 필드를 고정. 고객의 말·기술 스택 표기는 넣지 않는다.
 
 ## 4. 표준 구성 — 장별 데이터 필드
 
@@ -66,19 +66,19 @@
 | 05 | Redesign | `p`, `after{nodes, edges}`(morph 뒤 상태) | — | ″ |
 | 06 | Solution | `p`, `screen`(라이브 화면 또는 이미지) | `spots[≤3]{x,y,w,h,cap}` | 80rem |
 | 07 | Before & After | `p`, `after`(화면) | `before`(화면). 없으면 03의 다이어그램이 Before 자리 | 머무름 07 (Before 있을 때만) |
-| 08 | Impact | `numbers[3]{value, label, small}`(표지와 같은 값) | `bars[≤3]{label, before, after, unit}`, `quote{text, who}` | 64rem |
+| 08 | Impact | `numbers[3]{value, label, small}`(표지와 같은 값) | `bars[≤3]{label, before, after, unit}` | 64rem |
 | 09 | What I Learned | `p`(문단 1) | — | 44rem |
-| 10 | 비슷한 문제가 있다면 | `p`, `cta`(문의, `data-project`), `next{slug}` | `built[]`(함께 쓴 것, 작은 글씨) | 100vw (다음 이야기 판 포함) |
+| 10 | 비슷한 문제가 있다면 | `p`, `cta`(문의, `data-project`), `next{slug}` | — | 100vw (다음 이야기 판 포함) |
 
 - 표지 `numbers`와 08 `numbers`는 같은 배열을 두 번 그린다(R2: 앞에서 예고, 끝에서 확인). 08의 `bars`는 전·후 값이 있는 항목만.
 - 라이브 화면이 없는 프로젝트(3개)는 `hero`·`screen`·`after`에 정지 이미지(`v2/img/{slug}.png`)를 쓴다. 필드는 같고 종류만 다르다(`{type:'live'|'img', src}`).
 - `p`는 docs/21 규칙. 장당 문단 상한: 01·04·09는 1, 02·05·06·07은 2, 03은 1 + 다이어그램.
 - 지금 `V3.projects`(v3.js)의 `title/tagline/tags/year/problem/featured`는 목록용으로 유지하고, 상세 데이터는 `V3.cases[slug]`로 분리한다. 시안은 `por-favor-harry` 하나를 채우고 다른 slug는 같은 본문 + 제목만 바꿈(현재 방식).
 
-## 5. 결정 요청
-1. 표지에 결과 숫자 3개 미리보기(R2) — 넣을지.
-2. 08 고객의 말(R4) — 필드를 둘지. 지금 4개 프로젝트 중 인용을 받을 수 있는 곳이 있는지는 사용자만 안다.
-3. 10장 아래 "함께 쓴 것"(Built with) — 이전 결정(2026-09-18, 대시보드 다음 이야기에서 제외)은 대시보드 이야기였다. 상세 끝에 작은 글씨로 두는 것은 docs/05의 원래 결정과 같다.
+## 5. 결정 기록 (2026-09-21)
+1. 표지에 결과 숫자 3개 미리보기 — **넣는다.** 08 Impact와 같은 `numbers` 배열을 두 번 그린다.
+2. 고객의 말 — **받지 않는다.** `quote` 필드 없음.
+3. "함께 쓴 것"(기술 스택) — **불필요.** `built` 필드 없음. docs/05의 "Built with 하단 보조" 결정은 이 결정으로 대체.
 
 ## 출처
 - ustwo RVO Health https://ustwo.com/work/rvo-health/ · Instrument EA https://www.instrument.com/work/electronic-arts · Huge CoinTracker https://www.hugeinc.com/case-study/cointracker · Fueled Microsoft https://fueled.com/work/microsoft/ · Metalab https://www.metalab.com/work/midjourney · Clay https://clay.global/work · 라이트브레인 신세계 https://rightbrain.co.kr/portfolio-item/shinsegae/ · 디지털 인사이트 https://ditoday.com/project/신세계백화점-스토어-모바일앱/ · 구조 지침 https://www.zmistandcopy.com/blog/how-to-write-case-studies · https://blog.uxfol.io/ux-case-study-template/
