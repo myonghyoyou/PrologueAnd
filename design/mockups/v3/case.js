@@ -32,16 +32,16 @@
       <div class="g-title">
         <div><span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> ${esc(pj.title)} · ${esc(D.cap)}${sample ? ' · <span style="color:var(--warning)">본문은 Por favor, Harry 예시(시안)</span>' : ''}</span>
           <h1 class="h1x">${title}</h1>
-          <div class="metarow">${D.meta.map(([k, v]) => `<span><b>${esc(k)}</b>${esc(v)}</span>`).join('')}</div></div>
+          <table class="metatb">${D.meta.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</table></div>
         <div class="knums" id="nums0">${nums}</div>
       </div>
     </section>
-    <section class="pan" id="s01">${TXT('01 OVERVIEW', D.s01.h || '업무 요청을 받아 처리하는 담당자를 위한 도구', P(D.s01.p))}<div class="dw"><div class="dia" data-morph data-t="0"></div></div></section>
+    <section class="pan" id="s01">${TXT('01 OVERVIEW', D.s01.h || '업무 요청을 받아 처리하는 담당자를 위한 도구', P(D.s01.p))}<div class="dw"><div class="dia" data-morph data-t="1"></div></div></section>
     <section class="pan" id="s02">${TXT('02 PROBLEM', D.s02.h || '네 갈래로 흩어져 들어온 요청', P(D.s02.p))}<div class="dw">${hasBefore ? pic(D.s07.before) + `<span class="capn">${esc(D.s07.before.cap)}</span>` : pic(D.hero)}</div></section>
-    <div class="g-dwell" data-dwell><section class="pan" id="s03">${TXT('03 · 04 · 05 &nbsp;EXISTING WORKFLOW → INSIGHT → REDESIGN', esc(D.s04.q), `<p>${D.s03.p[0]} ${D.s05.flow.join(' → ')}.</p>`)}<div class="dw"><div class="dia" data-morph data-scrub></div></div></section></div>
+    <div class="g-dwell" data-dwell><section class="pan" id="s03">${TXT('03 → 05 &nbsp;WORKFLOW', esc(D.s03.h || '네 갈래로 들어온 요청'), `<p>${D.s03.p[0]}</p>`)}<div class="dw"><div class="dia" data-morph data-scrub></div></div></section></div>
     <section class="pan" id="s06">${TXT('06 SOLUTION', D.s06.h || '필수 항목을 채워야 보낼 수 있는 양식', P(D.s06.p) + (D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((sp, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(sp.cap)}</span></li>`).join('')}</ul>` : ''))}<div class="dw" id="solbox">${pic(D.s06.screen, 'spotted')}<span class="capn">${esc(D.s06.screen.cap)}</span></div></section>
     ${hasBefore
-      ? `<div class="g-dwell" data-dwell data-wipe><section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></section></div>`
+      ? `<div class="g-dwell" data-dwell data-wipe><section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="arr">→</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></section></div>`
       : `<section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw">${pic(D.s07.after)}<span class="capn">${esc(D.s07.after.cap)}</span></div></section>`}
     <section class="pan finale" id="s08">
       <div class="txt"><span class="nlab">08 IMPACT</span>
@@ -55,7 +55,7 @@
 
   /* ---------- 라이브 화면: 폭에 맞춰 축소(원본보다 키우지 않음), 화면에 가까워지면 로드 ---------- */
   function fit() { document.querySelectorAll('.shot.live').forEach(el => { const w = el.clientWidth - 12; if (w <= 0) return; const sc = Math.min(1, w / 1280); el.style.setProperty('--sc', sc.toFixed(4)); el.style.height = (800 * sc + 12) + 'px'; }); }
-  function lazy() { document.querySelectorAll('.shot.live').forEach(el => { if (el.querySelector('iframe')) return; const r = el.getBoundingClientRect(); if (r.top < innerHeight * 2 && r.bottom > -innerHeight) el.insertAdjacentHTML('afterbegin', `<iframe src="${el.dataset.src}" tabindex="-1" aria-label="${esc(el.title)}" loading="lazy"></iframe>`); }); }
+  function lazy() { document.querySelectorAll('.shot.live').forEach(el => { if (el.querySelector('iframe')) return; el.insertAdjacentHTML('afterbegin', `<iframe src="${el.dataset.src}" tabindex="-1" aria-label="${esc(el.title)}"></iframe>`); }); }   // 정거장으로 바로 넘어가도 빈 화면이 없게 처음에 다 로드
   // 모든 판: 글 아래 남는 높이를 그림이 다 쓰게 폭을 정한다 (다이어그램 640:220 + 여백·캡션, 화면 1280:800 + 캡션). 표지는 화면 높이의 52%
   function fitPans() { fitOnce(); fitOnce(); }   // 문단 폭이 그림 폭을 따르고 그림 폭이 글 높이를 따르므로 두 번 돌려 수렴
   function fitOnce() {
@@ -66,7 +66,7 @@
       if (!desktop()) { targets.forEach(e => e.style.removeProperty('--dw')); return; }
       let h;
       if (pan.classList.contains('cover')) { const tt = pan.querySelector('.g-title'); const cap = box.querySelector('.capn'); h = Math.min(pan.clientHeight * 0.62, pan.clientHeight - 88 - 32 - 28 - (tt ? tt.offsetHeight : 0)) - (cap ? cap.offsetHeight + 8 : 0); }
-      else { const txt = pan.querySelector('.txt'); h = pan.clientHeight - 56 - (txt ? txt.offsetHeight : 0); }   // 글 아래 남는 높이(위아래 여백 56)
+      else { const txt = pan.querySelector('.txt'); const padT = parseFloat(getComputedStyle(pan).paddingTop) || 0; h = pan.clientHeight - padT - 40 - (txt ? txt.offsetHeight : 0); }   // 글 아래 남는 높이(위 여백은 고정 y, 아래 40)
       targets.forEach(t => {
         let w;
         if (t.classList.contains('dia')) { const cap = t.querySelector('.dcap'); w = (h - 48 - (cap ? cap.offsetHeight + 12 : 0)) * 640 / 360; }
@@ -83,7 +83,7 @@
   const Y = 1.6;   // 세로 배율: 640×220 그림을 640×360으로 키워 판을 더 채운다 (2026-09-22)
   const src = [40, 80, 120, 160].map(y => Math.round(y * Y)), names = ['전화', '메신저', '이메일', '직접 방문'];
   const CY = Math.round(100 * Y);
-  const B = src.map((y, i) => [120 + i * 30, y + (i % 2 ? -50 : 50) * Y, 220, CY + (i - 1.5) * 24 * Y, 300, CY]);
+  const B = src.map((y, i) => [150, y, 235, CY + (y - CY) * 0.12, 300, CY]);   // 겹침 없음: 출발 높이를 유지하다 노드 앞에서 모인다 (2026-09-22)
   const A = src.map(y => [110, y, 130, CY, 160, CY]);
   const lerp = (a, b, t) => a + (b - a) * t;
   const chain = [[160, '개인 링크'], [270, '요청폼'], [380, '심사 Queue'], [480, '약속일'], [580, '상태 공유']];
@@ -93,6 +93,15 @@
     d._morph = t => { if (t === last) return; last = t; src.forEach((y, i) => { const b = B[i], a = A[i]; const v = b.map((n, j) => lerp(n, a[j], t)); const el = d.querySelector(`path[data-i="${i}"]`); el.setAttribute('d', `M40 ${y} C ${v[0]} ${v[1]}, ${v[2]} ${v[3]}, ${v[4]} ${v[5]}`); el.setAttribute('class', t > .5 ? 'after' : 'before'); }); d.querySelector('.mb').style.opacity = Math.max(0, 1 - t * 2); d.querySelector('.ma').style.opacity = clamp((t - .45) * 2, 0, 1); mchain.style.strokeDashoffset = L * (1 - clamp((t - .5) * 2, 0, 1)); d.querySelector('.cb').style.opacity = t < .5 ? 1 : .35; d.querySelector('.ca').style.opacity = t < .5 ? .35 : 1; };
     d._morph(d.dataset.t !== undefined ? +d.dataset.t : 0);
   });
+  // 03 → 04 → 05: 단계에 따라 라벨·제목·문단이 바뀐다
+  const STEPS = [
+    { n: '03 &nbsp;EXISTING WORKFLOW', h: D.s03.h || '네 갈래로 들어온 요청', p: D.s03.p[0] },
+    { n: '04 &nbsp;INSIGHT', h: D.s04.q, p: (D.s04.p && D.s04.p[0]) || '' },
+    { n: '05 &nbsp;REDESIGN', h: D.s05.h || '한 줄로 들어오는 요청', p: D.s05.p[0] }
+  ];
+  let stepK = -1;
+  function setStep(t) { const k = t < .34 ? 0 : t < .67 ? 1 : 2; if (k === stepK) return; stepK = k; const tx = document.querySelector('#s03 .txt'); if (!tx) return; tx.querySelector('.nlab').innerHTML = STEPS[k].n; tx.querySelector('h2').textContent = STEPS[k].h; tx.querySelector('p').textContent = STEPS[k].p; }
+  setStep(0);
 
   /* ---------- 06 핫스팟 (docs/28 G9) ---------- */
   (function () {
@@ -117,7 +126,7 @@
   function tWipe() { return wipe ? tDwell(wipe) : 0; }
   function onScroll() {
     lazy();
-    document.querySelectorAll('[data-scrub]').forEach(d => { const dw = d.closest('[data-dwell]'); d._morph(desktop() ? tDwell(dw) : 1); });
+    document.querySelectorAll('[data-scrub]').forEach(d => { const dw = d.closest('[data-dwell]'); const t = desktop() ? tDwell(dw) : 1; d._morph(t); if (desktop()) setStep(t); });
     if (wipe && desktop()) { const t = tWipe(); wipe.querySelector('.after').style.clipPath = `inset(0 ${(100 - t * 100).toFixed(2)}% 0 0)`; wipe.querySelector('.edge').style.left = `calc(${(t * 100).toFixed(2)}% - 1px)`; wipe.querySelector('.wb').style.opacity = t < .5 ? 1 : .35; wipe.querySelector('.wa').style.opacity = t < .5 ? .35 : 1; }
     const bars = document.getElementById('bars'); if (bars && bars.getBoundingClientRect().top < innerHeight * .85) bars.querySelectorAll('.bar').forEach(b => b.classList.add('on'));
   }
