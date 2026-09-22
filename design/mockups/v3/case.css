@@ -13,18 +13,22 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 /* 판: 화면 한 장. 세로 가운데 */
 /* 판: 화면 한 장. 글 블록은 판 위 11%에 고정(판을 넘겨도 제목 위치가 같다), 그림은 그 아래 남는 높이 */
 .pan{position:relative;height:calc(100vh - 64px);min-height:640px;display:flex;flex-direction:column;justify-content:flex-start;padding:calc((100vh - 64px) * .11) 0 40px;box-sizing:border-box}
-.pan .txt{flex:none;padding-bottom:20px}
-.pan .dw{flex:none;min-height:0;display:flex;flex-direction:column;justify-content:center}   /* 글 + 그림이 한 묶음으로 세로 가운데 (2026-09-22) */
+/* 글 + 그림은 폭이 같은 한 열(--tw = 그림 폭)이고, 그 열이 판 가로 가운데에 선다 */
+.pan{align-items:center}
+.pan .txt{flex:none;padding-bottom:20px;width:var(--tw,100%);max-width:100%}
+.pan .dw{flex:none;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%}
 .pan .dw>.shot,.pan .dw>.dia,.pan .dw>.stack{width:var(--dw,100%);max-width:100%}
+.pan .dw>.capn,.pan .dw>.wcaps{width:var(--tw,100%);max-width:100%}   /* 캡션은 그림 왼쪽선에 맞춤 */
 .nlab{display:block;font-size:clamp(12px,.85vw,16px);font-weight:600;letter-spacing:.06em;color:var(--navy-800);margin-bottom:10px;font-variant-numeric:tabular-nums}
 .pan h2{font-size:clamp(40px,3.2vw,64px);font-weight:600;letter-spacing:-.025em;line-height:1.12;margin:0 0 12px;word-break:keep-all;max-width:22em}
 .pan p{font-size:clamp(16px,1.2vw,22px);line-height:1.7;color:var(--bone-700);max-width:var(--tw,56rem);margin:0 0 14px}   /* 문단 폭 = 그림 폭 */   /* 문단 폭 = 그 판 그림 폭(fitPans가 --tw로 넘김). 그림 없는 판은 56rem */
 .pan .txt p:last-child{margin-bottom:0}
 /* 표지: 화면 + 제목·메타 | 숫자 가 한 장에 */
-.pan.cover{height:100vh;padding-top:88px;justify-content:flex-start}   /* 첫 판은 문서 맨 위(헤더 아래 시작)라 화면 전체 높이 — 다음 판이 밑에 비치지 않게 */
+.pan.cover{height:100vh;padding-top:88px;justify-content:flex-start;align-items:stretch}
+.pan.cover .dw{align-items:center}   /* 첫 판은 문서 맨 위(헤더 아래 시작)라 화면 전체 높이 — 다음 판이 밑에 비치지 않게 */
 .pan.cover .cap{font-size:clamp(14px,1vw,17px)}
 .metatb{border-collapse:collapse;width:100%;max-width:34rem;font-size:clamp(14px,1vw,17px);margin-top:20px}.metatb td{padding:7px 0;border-top:1px solid var(--bone-200);vertical-align:top}.metatb td:first-child{color:var(--bone-500);width:6em}
-.pan.cover .dw{flex:none;display:block}
+.pan.cover .dw{flex:none;display:flex;align-items:center}
 .pan.cover .dw .capn{font-size:14px}
 .g-title{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;padding:28px 0 0}
 .h1x{font-size:clamp(44px,3.8vw,72px);font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:12px 0 0;word-break:keep-all;view-transition-name:pj-title}
@@ -34,7 +38,8 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 /* 마지막 판(finale): 08 숫자 + 09 | 10 + 다음 이야기 티저가 한 장 (2026-09-22) */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
 .two-col>*{min-width:0}
-.pan.finale{justify-content:center;gap:40px;padding-top:24px}
+.pan.finale{justify-content:center;gap:40px;padding-top:24px;align-items:stretch}
+.pan.finale .txt{width:auto}
 .pan.finale .txt{padding-bottom:0}
 .pan.finale .two-col h2{font-size:32px;margin-bottom:10px}
 .pan.finale .two-col p{font-size:clamp(15px,1.05vw,18px)}
@@ -84,6 +89,7 @@ html:active-view-transition-type(to-case) .h1x{view-transition-name:none}
 @media (max-width:1023px){
   .wrap{padding:0 16px}
   .pan{height:auto;min-height:0;padding:48px 0;display:block}
+  .pan .txt{width:auto}
   .metatb{max-width:none}
   .pan.cover{padding-top:72px}
   .pan .dw>.shot,.pan .dw>.dia,.pan .dw>.stack{width:auto!important;max-width:none}
