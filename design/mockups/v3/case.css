@@ -39,7 +39,7 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 .shot.live .badge{position:absolute;z-index:4;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;pointer-events:none}
 /* 머무름: 03~05(morph)·07(와이프)은 판 + 그림이 한 덩어리로 화면에 붙고, 120vh를 지나는 동안 애니메이션이 끝난 뒤에야 내려간다 (docs/28 G5·G6) */
 .g-dwell{position:relative;padding-bottom:120vh}
-.g-stick{position:sticky;top:64px;padding-top:16px}
+.g-stick{position:relative;padding-top:16px;will-change:transform}   /* 붙이기는 JS(translateY)로 — CSS sticky는 Lenis·환경에 따라 안 붙는 경우가 있어 스크롤 진행률과 같은 값으로 직접 옮긴다 */
 .g-dwell .g-panel.txt{padding:24px 0 20px}
 .g-dwell .g-panel h2{font-size:34px;margin-bottom:12px}
 .g-dwell .g-full.dw{padding-bottom:0}
@@ -69,7 +69,7 @@ html:active-view-transition-type(to-case) .h1x{view-transition-name:none}
   .h1x{font-size:34px}
   .g-panel{padding:48px 0}.g-panel h2{font-size:28px}
   .impact2{grid-template-columns:1fr}.impact2 b{font-size:56px}
-  .g-dwell{padding-bottom:0}.g-stick{position:static;padding-top:0}
+  .g-dwell{padding-bottom:0}.g-stick{position:static;padding-top:0;transform:none!important}
   .g-dwell .dia,.g-wipe .stack{max-width:none}
   .g-wipe .stack .after{position:static;clip-path:none!important;margin-top:12px}.g-wipe .edge{display:none}
   .two{grid-template-columns:1fr}
