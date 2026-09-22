@@ -37,10 +37,15 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 .shot.live .spot-hl{position:absolute;box-sizing:border-box;border:1.5px solid var(--navy-800);box-shadow:0 0 0 9999px rgba(250,249,246,.62);opacity:0;transition:opacity .15s;pointer-events:none;z-index:3}
 .shot.live .spot-hl.on{opacity:1}
 .shot.live .badge{position:absolute;z-index:4;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;pointer-events:none}
-/* 07 와이프: 같은 자리 두 화면, 구간(화면 높이 + 120vh)에 sticky, 경계선 왼→오른쪽 (docs/28 G6) */
-.g-wipe-wrap{position:relative;padding-bottom:120vh}
-.g-wipe{position:sticky;top:96px}
-.g-wipe .stack{position:relative}
+/* 머무름: 03~05(morph)·07(와이프)은 판 + 그림이 한 덩어리로 화면에 붙고, 120vh를 지나는 동안 애니메이션이 끝난 뒤에야 내려간다 (docs/28 G5·G6) */
+.g-dwell{position:relative;padding-bottom:120vh}
+.g-stick{position:sticky;top:64px;padding-top:16px}
+.g-dwell .g-panel.txt{padding:24px 0 20px}
+.g-dwell .g-panel h2{font-size:34px;margin-bottom:12px}
+.g-dwell .g-full.dw{padding-bottom:0}
+.g-dwell .dia{max-width:min(1120px,calc((100vh - 400px) * 640 / 220))}   /* 판 + 다이어그램이 한 화면에 들어오게 */
+.g-wipe .stack{position:relative;max-width:min(1120px,calc((100vh - 360px) * 1280 / 800))}
+.g-wipe .stack .shot.live{max-width:100%}
 .g-wipe .stack .after{position:absolute;left:0;top:0;width:100%;clip-path:inset(0 100% 0 0)}
 .g-wipe .edge{position:absolute;top:0;bottom:0;left:0;width:2px;background:var(--navy-800);pointer-events:none;z-index:3}
 .g-wipe .wcaps{display:flex;justify-content:space-between;gap:24px;margin-top:8px;font-size:13px;color:var(--bone-500)}.g-wipe .wcaps span{transition:opacity .3s}
@@ -64,7 +69,8 @@ html:active-view-transition-type(to-case) .h1x{view-transition-name:none}
   .h1x{font-size:34px}
   .g-panel{padding:48px 0}.g-panel h2{font-size:28px}
   .impact2{grid-template-columns:1fr}.impact2 b{font-size:56px}
-  .g-wipe-wrap{padding-bottom:0}.g-wipe{position:static}
+  .g-dwell{padding-bottom:0}.g-stick{position:static;padding-top:0}
+  .g-dwell .dia,.g-wipe .stack{max-width:none}
   .g-wipe .stack .after{position:static;clip-path:none!important;margin-top:12px}.g-wipe .edge{display:none}
   .two{grid-template-columns:1fr}
   .ft{flex-wrap:wrap;gap:12px}

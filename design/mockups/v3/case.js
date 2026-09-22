@@ -34,15 +34,19 @@
     </div>
     <section class="g-panel" id="s01"><div><span class="nlab">01 OVERVIEW</span><h2>${D.s01.h || '업무 요청을 받아 처리하는<br>담당자를 위한 도구'}</h2>${P(D.s01.p)}</div><div class="dia" data-morph data-t="0"></div></section>
     <section class="g-panel" id="s02"><div><span class="nlab">02 PROBLEM</span><h2>${D.s02.h || '네 갈래로 흩어져<br>들어온 요청'}</h2>${P(D.s02.p)}</div><div>${hasBefore ? pic(D.s07.before) + `<span class="capn">${esc(D.s07.before.cap)}</span>` : pic(D.hero)}</div></section>
-    <section class="g-panel txt" id="s03"><div><span class="nlab">03 · 04 · 05 &nbsp;EXISTING WORKFLOW → INSIGHT → REDESIGN</span><h2>${esc(D.s04.q).replace(/, /, ',<br>')}</h2><p>${D.s03.p[0]} ${D.s05.flow.join(' → ')}.</p></div></section>
-    <div class="g-full"><div class="dia" data-morph data-scrub></div></div>
+    <div class="g-dwell" data-dwell><div class="g-stick">
+      <section class="g-panel txt" id="s03"><div><span class="nlab">03 · 04 · 05 &nbsp;EXISTING WORKFLOW → INSIGHT → REDESIGN</span><h2>${esc(D.s04.q).replace(/, /, ',<br>')}</h2><p>${D.s03.p[0]} ${D.s05.flow.join(' → ')}.</p></div></section>
+      <div class="g-full dw"><div class="dia" data-morph data-scrub></div></div>
+    </div></div>
     <section class="g-panel txt" id="s06"><div><span class="nlab">06 SOLUTION</span><h2>${D.s06.h || '필수 항목을 채워야<br>보낼 수 있는 양식'}</h2>${P(D.s06.p)}
       ${D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((s, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(s.cap)}</span></li>`).join('')}</ul>` : ''}</div></section>
     <div class="g-full" id="solbox">${pic(D.s06.screen, 'spotted')}<span class="capn">${esc(D.s06.screen.cap)}</span></div>
-    <section class="g-panel txt" id="s07" style="padding-bottom:24px"><div><span class="nlab">07 BEFORE &amp; AFTER</span><h2>${D.s07.h || '길 네 개가 하나로'}</h2>${P(D.s07.p)}</div></section>
     ${hasBefore
-      ? `<div class="g-wipe-wrap" data-wipe><div class="g-wipe"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></div>`
-      : `<div class="g-full">${pic(D.s07.after)}<span class="capn">${esc(D.s07.after.cap)}</span></div>`}
+      ? `<div class="g-dwell" data-dwell data-wipe><div class="g-stick">
+          <section class="g-panel txt" id="s07"><div><span class="nlab">07 BEFORE &amp; AFTER</span><h2>${D.s07.h || '길 네 개가 하나로'}</h2>${P(D.s07.p)}</div></section>
+          <div class="g-wipe dw"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div>
+        </div></div>`
+      : `<section class="g-panel txt" id="s07"><div><span class="nlab">07 BEFORE &amp; AFTER</span><h2>${D.s07.h || '길 네 개가 하나로'}</h2>${P(D.s07.p)}</div></section><div class="g-full">${pic(D.s07.after)}<span class="capn">${esc(D.s07.after.cap)}</span></div>`}
     <section class="g-panel txt" id="s08"><div><span class="nlab">08 IMPACT</span>
       <div class="impact2" id="nums8">${D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span><small>${esc(n.small || '')}</small></div>`).join('')}</div>
       ${D.s08.bars && D.s08.bars.some(b => b.before > 0) ? `<div class="bars" id="bars">${D.s08.bars.filter(b => b.before > 0).map(b => `<div class="bar" style="--w:${Math.round(b.after / b.before * 100)}%"><div class="lbl"><span>${esc(b.label)}</span><span>${b.before}${esc(b.unit || '')} → ${b.after}${esc(b.unit || '')}</span></div><div class="tr"><i></i></div></div>`).join('')}</div>` : ''}</div></section>
@@ -84,12 +88,14 @@
   })();
 
   /* ---------- 스크롤: morph(scrub)·와이프·막대·지연 로드 ---------- */
+  // 머무름(docs/28 G5·G6 개정 2026-09-22): 03~05 판과 07 판은 애니메이션이 끝날 때까지 화면에 붙어 있고(sticky), 구간(120vh)을 다 지나야 다음으로 내려간다
   const wipe = document.querySelector('[data-wipe]');
-  function tWipe() { if (!wipe) return 0; const r = wipe.getBoundingClientRect(); const st = wipe.querySelector('.g-wipe'); const range = r.height - st.offsetHeight; return clamp((96 - r.top) / Math.max(1, range), 0, 1); }
+  function tDwell(el) { const r = el.getBoundingClientRect(); const st = el.querySelector('.g-stick'); const range = r.height - st.offsetHeight; let t = clamp((64 - r.top) / Math.max(1, range), 0, 1); if (reduced) t = t >= .5 ? 1 : 0; return t; }
+  function tWipe() { return wipe ? tDwell(wipe) : 0; }
   function onScroll() {
     lazy();
-    document.querySelectorAll('[data-scrub]').forEach(d => { const r = d.getBoundingClientRect(); let t = clamp((innerHeight * .85 - r.top) / (innerHeight * .85 - 120), 0, 1); if (!desktop()) t = 1; if (reduced) t = t >= .5 ? 1 : 0; d._morph(t); });
-    if (wipe && desktop()) { let t = tWipe(); if (reduced) t = t >= .5 ? 1 : 0; wipe.querySelector('.after').style.clipPath = `inset(0 ${(100 - t * 100).toFixed(2)}% 0 0)`; wipe.querySelector('.edge').style.left = `calc(${(t * 100).toFixed(2)}% - 1px)`; wipe.querySelector('.wb').style.opacity = t < .5 ? 1 : .35; wipe.querySelector('.wa').style.opacity = t < .5 ? .35 : 1; }
+    document.querySelectorAll('[data-scrub]').forEach(d => { const dw = d.closest('[data-dwell]'); d._morph(desktop() ? tDwell(dw) : 1); });
+    if (wipe && desktop()) { const t = tWipe(); wipe.querySelector('.after').style.clipPath = `inset(0 ${(100 - t * 100).toFixed(2)}% 0 0)`; wipe.querySelector('.edge').style.left = `calc(${(t * 100).toFixed(2)}% - 1px)`; wipe.querySelector('.wb').style.opacity = t < .5 ? 1 : .35; wipe.querySelector('.wa').style.opacity = t < .5 ? .35 : 1; }
     const bars = document.getElementById('bars'); if (bars && bars.getBoundingClientRect().top < innerHeight * .85) bars.querySelectorAll('.bar').forEach(b => b.classList.add('on'));
   }
   V3.initLenis();
@@ -98,7 +104,7 @@
 
   /* ---------- 키·해시·뒤로가기 ---------- */
   const panels = () => [...document.querySelectorAll('#s00, .g-panel, .teaser')];
-  const goTo = (el, immediate) => { const y = el.getBoundingClientRect().top + scrollY - 88; if (V3.lenis) V3.lenis.scrollTo(y, immediate ? { immediate: true } : { duration: 1.1 }); else scrollTo({ top: y, behavior: immediate || reduced ? 'auto' : 'smooth' }); };
+  const goTo = (el, immediate) => { const dw = el.closest && el.closest('[data-dwell]'); const y = (dw || el).getBoundingClientRect().top + scrollY - (dw ? 0 : 88); if (V3.lenis) V3.lenis.scrollTo(y, immediate ? { immediate: true } : { duration: 1.1 }); else scrollTo({ top: y, behavior: immediate || reduced ? 'auto' : 'smooth' }); };
   addEventListener('keydown', e => {
     if (!desktop() || e.altKey || e.ctrlKey || e.metaKey) return;
     const dr = document.getElementById('drawer'); if (dr && dr.classList.contains('on')) return;
@@ -127,7 +133,7 @@
       G2: { order: ['#s00', '.g-title .h1x', '.g-title .knums'].map(q => !!document.querySelector(q)) },
       G3: { panels: panelsEl.length, borders: [...panelsEl].filter(p => cs(p).borderBottomWidth !== '0px').length },
       G4: { fullW: [...fulls].map(f => Math.round(f.getBoundingClientRect().width)), gridW: Math.round(document.getElementById('main').clientWidth - 152) },
-      G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, sticky: wipe ? cs(wipe.querySelector('.g-wipe')).position : null },
+      G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, sticky: wipe ? cs(wipe.querySelector('.g-stick')).position : null, dwells: document.querySelectorAll('[data-dwell]').length, stickFits: [...document.querySelectorAll('.g-stick')].map(e => e.offsetHeight + 64 <= innerHeight) },
       G7: { bars: document.querySelectorAll('.bar').length, on: document.querySelectorAll('.bar.on').length },
       G8: { next: document.getElementById('next-link').textContent, ft: !!document.querySelector('.ft'), cta: !!document.querySelector('#s10 .btn[data-project]') },
       G10: { title: document.getElementById('hd-title').textContent, notSelf: document.getElementById('next-link').getAttribute('href').indexOf(pj.slug) < 0 },
