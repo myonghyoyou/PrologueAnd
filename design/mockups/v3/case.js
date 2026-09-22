@@ -58,7 +58,20 @@
   /* ---------- 라이브 화면: 폭에 맞춰 축소(원본보다 키우지 않음), 화면에 가까워지면 로드 ---------- */
   function fit() { document.querySelectorAll('.shot.live').forEach(el => { const w = el.clientWidth - 12; if (w <= 0) return; const sc = Math.min(1, w / 1280); el.style.setProperty('--sc', sc.toFixed(4)); el.style.height = (800 * sc + 12) + 'px'; }); }
   function lazy() { document.querySelectorAll('.shot.live').forEach(el => { if (el.querySelector('iframe')) return; const r = el.getBoundingClientRect(); if (r.top < innerHeight * 2 && r.bottom > -innerHeight) el.insertAdjacentHTML('afterbegin', `<iframe src="${el.dataset.src}" tabindex="-1" aria-label="${esc(el.title)}" loading="lazy"></iframe>`); }); }
-  fit(); lazy(); addEventListener('resize', () => { fit(); onScroll(); });
+  // 머무름 덩어리: 글 아래 남는 높이를 그림이 다 쓰게 폭을 정한다 (다이어그램 640:220 + 여백·캡션, 화면 1280:800 + 캡션)
+  function fitDwell() {
+    document.querySelectorAll('[data-dwell]').forEach(dw => {
+      const st = dw.querySelector('.g-stick'), txt = dw.querySelector('.g-panel'), box = dw.querySelector('.dw');
+      if (!desktop()) { st.style.height = ''; box.querySelectorAll('.dia,.stack').forEach(e => e.style.removeProperty('--dw')); return; }
+      const avail = st.clientHeight - 56 - txt.offsetHeight - 28;   // 위아래 여백 56, 글 아래 28
+      const dia = box.querySelector('.dia'), stack = box.querySelector('.stack');
+      if (dia) { const cap = dia.querySelector('.dcap'); const h = avail - 48 - (cap ? cap.offsetHeight + 12 : 0); dia.style.setProperty('--dw', Math.max(320, Math.min(box.clientWidth, h * 640 / 220)) + 'px'); }
+      if (stack) { const caps = box.querySelector('.wcaps'); const h = avail - (caps ? caps.offsetHeight + 8 : 0) - 12; stack.style.setProperty('--dw', Math.max(320, Math.min(box.clientWidth, h * 1280 / 800)) + 'px'); }
+    });
+    fit();
+  }
+  fit(); lazy(); fitDwell(); addEventListener('resize', () => { fitDwell(); onScroll(); });
+  setTimeout(fitDwell, 300);
 
   /* ---------- 다이어그램 03→05 morph (docs/28 G5): data-t 고정 또는 data-scrub(화면 안 위치 = t, 핀 없음) ---------- */
   const src = [40, 80, 120, 160], names = ['전화', '메신저', '이메일', '직접 방문'];
@@ -135,7 +148,7 @@
       G2: { order: ['#s00', '.g-title .h1x', '.g-title .knums'].map(q => !!document.querySelector(q)) },
       G3: { panels: panelsEl.length, borders: [...panelsEl].filter(p => cs(p).borderBottomWidth !== '0px').length },
       G4: { fullW: [...fulls].map(f => Math.round(f.getBoundingClientRect().width)), gridW: Math.round(document.getElementById('main').clientWidth - 152) },
-      G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, pinned: wipe ? Math.round(wipe.querySelector('.g-stick').getBoundingClientRect().top) : null, dwells: document.querySelectorAll('[data-dwell]').length, stickFits: [...document.querySelectorAll('.g-stick')].map(e => e.offsetHeight + 64 <= innerHeight) },
+      G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, pinned: wipe ? Math.round(wipe.querySelector('.g-stick').getBoundingClientRect().top) : null, dwells: document.querySelectorAll('[data-dwell]').length, stickH: [...document.querySelectorAll('.g-stick')].map(e => e.offsetHeight), fill: [...document.querySelectorAll('[data-dwell]')].map(dw => { const st = dw.querySelector('.g-stick'); const kids = [...st.querySelectorAll('.g-panel, .dia, .stack')].map(k => k.getBoundingClientRect()); return Math.round((Math.max(...kids.map(r => r.bottom)) - Math.min(...kids.map(r => r.top))) / st.offsetHeight * 100); }) },
       G7: { bars: document.querySelectorAll('.bar').length, on: document.querySelectorAll('.bar.on').length },
       G8: { next: document.getElementById('next-link').textContent, ft: !!document.querySelector('.ft'), cta: !!document.querySelector('#s10 .btn[data-project]') },
       G10: { title: document.getElementById('hd-title').textContent, notSelf: document.getElementById('next-link').getAttribute('href').indexOf(pj.slug) < 0 },
