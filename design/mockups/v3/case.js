@@ -58,7 +58,7 @@
   /* ---------- 라이브 화면: 폭에 맞춰 축소(원본보다 키우지 않음), 화면에 가까워지면 로드 ---------- */
   function fit() { document.querySelectorAll('.shot.live').forEach(el => { const w = el.clientWidth - 12; if (w <= 0) return; const sc = Math.min(1, w / 1280); el.style.setProperty('--sc', sc.toFixed(4)); el.style.height = (800 * sc + 12) + 'px'; }); }
   function lazy() { document.querySelectorAll('.shot.live').forEach(el => { if (el.querySelector('iframe')) return; const r = el.getBoundingClientRect(); if (r.top < innerHeight * 2 && r.bottom > -innerHeight) el.insertAdjacentHTML('afterbegin', `<iframe src="${el.dataset.src}" tabindex="-1" aria-label="${esc(el.title)}" loading="lazy"></iframe>`); }); }
-  fit(); lazy(); addEventListener('resize', fit);
+  fit(); lazy(); addEventListener('resize', () => { fit(); onScroll(); });
 
   /* ---------- 다이어그램 03→05 morph (docs/28 G5): data-t 고정 또는 data-scrub(화면 안 위치 = t, 핀 없음) ---------- */
   const src = [40, 80, 120, 160], names = ['전화', '메신저', '이메일', '직접 방문'];
@@ -90,7 +90,9 @@
   /* ---------- 스크롤: morph(scrub)·와이프·막대·지연 로드 ---------- */
   // 머무름(docs/28 G5·G6 개정 2026-09-22): 03~05 판과 07 판은 애니메이션이 끝날 때까지 화면에 붙어 있고(sticky), 구간(120vh)을 다 지나야 다음으로 내려간다
   const wipe = document.querySelector('[data-wipe]');
-  function tDwell(el) { const r = el.getBoundingClientRect(); const st = el.querySelector('.g-stick'); const range = r.height - st.offsetHeight; let t = clamp((64 - r.top) / Math.max(1, range), 0, 1); if (reduced) t = t >= .5 ? 1 : 0; return t; }
+  // 붙이기: 구간 안에서는 .g-stick을 translateY로 따라 내려 헤더 아래(64)에 고정된 것처럼. 진행률 t = 내려온 거리 / 구간
+  function pin(el) { const r = el.getBoundingClientRect(); const st = el.querySelector('.g-stick'); const range = Math.max(1, r.height - st.offsetHeight); const off = desktop() ? clamp(64 - r.top, 0, range) : 0; st.style.transform = off ? `translate3d(0,${off.toFixed(1)}px,0)` : ''; return off / range; }
+  function tDwell(el) { let t = pin(el); if (reduced) t = t >= .5 ? 1 : 0; return t; }
   function tWipe() { return wipe ? tDwell(wipe) : 0; }
   function onScroll() {
     lazy();
@@ -133,7 +135,7 @@
       G2: { order: ['#s00', '.g-title .h1x', '.g-title .knums'].map(q => !!document.querySelector(q)) },
       G3: { panels: panelsEl.length, borders: [...panelsEl].filter(p => cs(p).borderBottomWidth !== '0px').length },
       G4: { fullW: [...fulls].map(f => Math.round(f.getBoundingClientRect().width)), gridW: Math.round(document.getElementById('main').clientWidth - 152) },
-      G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, sticky: wipe ? cs(wipe.querySelector('.g-stick')).position : null, dwells: document.querySelectorAll('[data-dwell]').length, stickFits: [...document.querySelectorAll('.g-stick')].map(e => e.offsetHeight + 64 <= innerHeight) },
+      G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, pinned: wipe ? Math.round(wipe.querySelector('.g-stick').getBoundingClientRect().top) : null, dwells: document.querySelectorAll('[data-dwell]').length, stickFits: [...document.querySelectorAll('.g-stick')].map(e => e.offsetHeight + 64 <= innerHeight) },
       G7: { bars: document.querySelectorAll('.bar').length, on: document.querySelectorAll('.bar.on').length },
       G8: { next: document.getElementById('next-link').textContent, ft: !!document.querySelector('.ft'), cta: !!document.querySelector('#s10 .btn[data-project]') },
       G10: { title: document.getElementById('hd-title').textContent, notSelf: document.getElementById('next-link').getAttribute('href').indexOf(pj.slug) < 0 },
