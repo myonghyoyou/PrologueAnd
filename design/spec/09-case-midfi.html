@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>09 Case Study 세로 재설계 — 실물 크기 시안 6안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../mockups/v3/v3.css">
+<style>
+/* ---- 시트 공통: 실제 토큰·글꼴로 1:1. 옵션 하나만 보이고 오른쪽 아래 스위처로 바꾼다 ---- */
+body{background:var(--bone-50)}
+.opt{display:none}.opt.on{display:block}
+#sw{position:fixed;right:16px;bottom:16px;z-index:90;display:flex;gap:4px;padding:6px;background:var(--bone-0);border:1px solid var(--bone-300);border-radius:2px;font-size:12px}
+#sw button{width:34px;height:30px;border:1px solid transparent;border-radius:2px;font-weight:600;color:var(--bone-500);cursor:pointer}
+#sw button.on{border-color:var(--bone-900);color:var(--bone-900)}
+#sw span{align-self:center;padding:0 8px 0 4px;color:var(--bone-500);max-width:22rem}
+/* 헤더는 v3.css .hdr(고정 64) 그대로. 메뉴는 대시보드 스타일 */
+.hdr nav{gap:10px;font-size:16px;font-weight:600;align-items:center}
+.hdr nav a,.hdr nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1}
+.hdr nav a:after,.hdr nav button:after{display:none}
+.hdr .who{font-family:var(--sans);font-size:15px;font-weight:600;margin-left:14px}
+.hdr .back{margin-left:auto;font-size:14px;color:var(--bone-500);margin-right:8px}
+.hdr .back+nav{margin-left:0}
+.hdr .pos{font-size:13px;color:var(--bone-500);font-variant-numeric:tabular-nums;margin-right:6px}
+.strip{position:fixed;left:50%;top:32px;transform:translate(-50%,-50%);z-index:41;display:flex;gap:3px}
+.strip i{width:26px;height:3px;background:var(--bone-300)}.strip i.on{background:var(--navy-800)}.strip i.done{background:var(--navy-400)}
+/* 라이브 화면 */
+.shot.live{position:relative;overflow:hidden;--sc:.5;aspect-ratio:auto;background:#fff;border:1px solid var(--bone-900);padding:6px}
+.shot.live iframe{display:block;width:1280px;height:800px;border:0;transform:scale(var(--sc));transform-origin:0 0;pointer-events:none;background:#fff}
+.shot.img{background:var(--bone-100);border:1px solid var(--bone-300);display:flex;align-items:center;justify-content:center;color:var(--bone-500);font-size:13px;aspect-ratio:16/10}
+.capn{display:block;margin-top:8px;font-size:13px;color:var(--bone-500)}
+/* 본문 공통 */
+.wrap{max-width:1272px;margin:0 auto;padding:0 40px 0 112px}
+.col{max-width:44rem}
+.h1x{font-size:56px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:12px 0 0;word-break:keep-all}
+.metarow{display:flex;gap:28px;margin-top:24px;font-size:14px;color:var(--bone-700);flex-wrap:wrap}.metarow b{color:var(--bone-500);font-weight:500;margin-right:6px}
+.metatb{border-collapse:collapse;width:100%;max-width:34rem;font-size:14px;margin-top:24px}.metatb td{padding:8px 0;border-top:1px solid var(--bone-200);vertical-align:top}.metatb td:first-child{color:var(--bone-500);width:96px}
+.knums{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:32px;border-top:1px solid var(--bone-200);max-width:44rem}
+.knums div{padding-top:14px}.knums b{display:block;font-size:32px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:8px}.knums span{font-size:13px;color:var(--bone-700)}
+.sec{display:grid;grid-template-columns:96px 1fr;gap:24px;padding:0 0 88px}
+.sec .n{font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--navy-800);padding-top:9px;font-variant-numeric:tabular-nums}
+.sec h2{font-size:26px;font-weight:600;letter-spacing:-.02em;margin:0 0 16px}
+.sec p{margin:0 0 16px;color:var(--bone-700);max-width:44rem;font-size:16px;line-height:1.7}
+.sec .q{font-size:32px;font-weight:600;letter-spacing:-.02em;line-height:1.3;color:var(--bone-900);max-width:20em;margin:0}
+.wide{width:64rem;max-width:calc(100vw - 152px)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}.flow span{font-size:13px;font-weight:500;padding:6px 10px;border:1px solid var(--bone-200);background:var(--bone-0);border-radius:2px}.flow span.g{border-color:var(--navy-800);color:var(--navy-800)}.flow em{color:var(--bone-400);font-size:12px}
+.dia{background:var(--bone-0);border:1px solid var(--bone-200);padding:24px}.dia svg{width:100%;height:auto;display:block;overflow:visible}
+.dia text{font-family:var(--sans);font-size:11px;font-weight:500;fill:var(--bone-500)}.dia .before{fill:none;stroke:var(--navy-400);stroke-width:1}.dia .after{fill:none;stroke:var(--navy-800);stroke-width:1.5}.dia .node{fill:var(--bone-50);stroke:var(--navy-800)}.dia .flagp{fill:var(--navy-800)}
+.dia .dcap{display:flex;justify-content:space-between;gap:16px;margin-top:12px;font-size:13px;color:var(--bone-500)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.spots{list-style:none;margin:0 0 20px;padding:0;display:flex;flex-direction:column;gap:8px;max-width:34rem}
+.spots li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--bone-200);border-radius:2px;background:var(--bone-0);font-size:13px;line-height:1.45;color:var(--bone-700)}
+.spots li b{flex:none;width:18px;height:18px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.impact2{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;border-top:1px solid var(--bone-200);max-width:44rem}.impact2 div{padding-top:16px}.impact2 b{display:block;font-size:48px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:8px}.impact2 span{font-size:14px;color:var(--bone-700)}.impact2 small{display:block;font-size:11px;color:var(--bone-400);margin-top:4px}
+.bar{max-width:30rem;font-size:13px;color:var(--bone-700);margin-top:28px}.bar .lbl{display:flex;justify-content:space-between;margin-bottom:6px}.bar .tr{height:6px;background:var(--bone-200)}.bar .tr i{display:block;height:100%;width:25%;background:var(--navy-800)}
+.cta{display:flex;align-items:center;gap:16px;margin-top:8px}
+.teaser{border-top:1px solid var(--bone-200);padding:40px 0 64px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.teaser .cap{display:block;margin-bottom:8px}.teaser a.big{font-size:36px;font-weight:600;letter-spacing:-.02em;color:var(--bone-900);display:block;margin-bottom:12px}
+.ftr{border-top:1px solid var(--bone-200);padding:24px 0 40px;display:flex;justify-content:space-between;font-size:12px;color:var(--bone-500)}.ftr nav{display:flex;gap:20px}
+/* 레일 선(A·F): 번호 열 안의 세로선, 스크롤에 비례해 잉크 */
+.rail{position:relative}
+.rail:before{content:"";position:absolute;left:117px;top:0;bottom:0;width:1.5px;background:var(--navy-200)}   /* 선 = 내용 왼쪽 가장자리(브랜드 시작선 112) */
+.rail .ink{position:absolute;left:117px;top:0;width:2px;height:0;background:var(--navy-800)}
+.rail .sec .n{position:relative;padding-left:28px}
+.rail .sec .n:before{content:"";position:absolute;left:0;top:12px;width:12px;height:12px;border-radius:50%;background:var(--bone-50);border:1.5px solid var(--navy-800);box-sizing:border-box}
+.rail .sec.done .n:before{background:var(--navy-800)}
+/* A */
+.a-cover{padding:120px 0 48px}
+.a-full{margin:0 0 80px;padding:0 40px}.a-full .shot{margin:0 auto;max-width:1360px}
+/* B */
+.b-grid{display:grid;grid-template-columns:22rem 1fr;gap:56px;padding-top:96px}
+.b-side{position:sticky;top:96px;align-self:start}
+.b-side .toc{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 16px;margin-top:28px;font-size:13px;font-variant-numeric:tabular-nums}
+.b-side .toc a{display:flex;gap:10px;padding:5px 0;color:var(--bone-500);border-bottom:1px solid var(--bone-200)}.b-side .toc a b{color:var(--navy-800);font-weight:600}.b-side .toc a.on{color:var(--bone-900)}
+.b-side .knums{grid-template-columns:1fr;gap:12px;margin-top:24px}.b-side .knums b{font-size:26px}
+.b-main .sec{grid-template-columns:1fr}
+/* C */
+.c-hero{height:82vh;padding:64px 40px 0;display:flex;align-items:flex-end}.c-hero .shot{width:100%;max-width:1360px;margin:0 auto}
+.c-title{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;padding:40px 0 56px}
+.c-cap{padding:24px 0 72px}.c-cap h2{font-size:20px;margin:0 0 8px}.c-cap p{margin:0;color:var(--bone-700);max-width:40rem}
+.c-full{padding:0 40px}.c-full>*{max-width:1360px;margin:0 auto}
+/* D */
+.d-grid{display:grid;grid-template-columns:1fr 560px;gap:56px;align-items:start}
+.d-pin{position:sticky;top:96px}
+.d-pin .cap{display:block;margin-top:8px}
+.d-grid .sec{grid-template-columns:56px 1fr}
+/* E */
+.e-slide{min-height:100vh;scroll-snap-align:start;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:96px 40px 40px 112px;border-bottom:1px solid var(--bone-200)}
+.e-slide .n{font-size:14px;font-weight:600;color:var(--navy-800);letter-spacing:.04em;margin-bottom:12px}
+.e-slide h2{font-size:44px;font-weight:600;letter-spacing:-.025em;line-height:1.15;margin:0 0 20px;word-break:keep-all}
+.e-slide p{font-size:17px;line-height:1.7;color:var(--bone-700);max-width:34rem;margin:0 0 16px}
+/* F */
+.f-cover{padding:104px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
+.f-line{position:relative;height:40px;margin:32px 0 8px}
+.f-line svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+.f-line path{fill:none;stroke:var(--navy-800);stroke-width:2}
+.f-line .g{stroke:var(--navy-200);stroke-width:1.5}
+</style>
+</head>
+<body>
+
+<!-- ============ A 편집 기사형 ============ -->
+<section class="opt" id="A">
+  <header class="hdr"><a class="brand" href="#">Prologue<span class="bamp">&amp;</span></a><span class="who">Por favor, Harry</span><a class="back" href="#">← Projects</a><nav><span class="pos">01 / 10</span><button type="button">문의</button></nav></header>
+  <div class="wrap a-cover">
+    <div class="col">
+      <span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> Por favor, Harry · 문제 01 흩어진 요청</span>
+      <h1 class="h1x">흩어진 업무 요청을<br>하나의 흐름으로</h1>
+      <div class="metarow"><span><b>역할</b>기획 · 설계 · 개발</span><span><b>기간</b>2025 · 6주</span><span><b>사용자</b>담당자 1명 · 요청자 40여 명</span><span><b>공개</b>전체</span></div>
+      <div class="knums"><div><b>4 → 1</b><span>요청 경로</span></div><div><b>0회</b><span>진행 상황 묻는 연락</span></div><div><b>1곳</b><span>심사 대기열</span></div></div>
+    </div>
+  </div>
+  <div class="a-full"><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div><span class="capn" style="max-width:1360px;margin:8px auto 0;display:block">심사 대기열: 요청 6건이 한 화면에</span></div>
+  <div class="wrap rail" data-rail><i class="ink"></i>
+    <div class="sec"><div class="n">01</div><div><h2>Overview</h2><p>회사 안에서 들어오는 업무 요청을 받아 처리하는 담당자를 위한 도구입니다. 기획·설계·개발을 맡았습니다.</p></div></div>
+    <div class="sec"><div class="n">02</div><div><h2>Problem</h2><p>업무 요청이 전화, 메신저, 메일, 직접 방문으로 흩어져 들어왔습니다. 요청하는 쪽은 내용을 다 정리하지 않은 채 보내는 일이 많았고, 받는 쪽이 그걸 다시 정리하고 기억해야 했습니다.</p><p>요청이 올 때마다 하던 일이 끊겼고, "어떻게 됐어요?"라는 연락이 다시 일을 끊었습니다.</p></div></div>
+    <div class="sec"><div class="n">03</div><div><h2>Existing Workflow</h2><p>가는 선이 예전 흐름, 굵은 선이 바꾼 흐름입니다. 내려가면서 보세요.</p><div class="dia wide" data-morph></div></div></div>
+    <div class="sec"><div class="n">04</div><div><h2>Insight</h2><p class="q">할 일 관리가 아니라, 요청이 들어오는 길의 문제였습니다.</p></div></div>
+    <div class="sec"><div class="n">05</div><div><h2>Redesign</h2><div class="flow"><span>요청 링크</span><em>→</em><span>요청 양식</span><em>→</em><span>심사 대기열 하나</span><em>→</em><span>처리 예정일 확정</span><em>→</em><span class="g">진행 상황 자동 안내</span></div><p>요청할 때 꼭 필요한 정보를 채우게 해서 되묻는 일을 없앴습니다. 요청은 한 줄로 들어오고, 심사 뒤에 처리 예정일이 정해지며, 진행 상황은 요청한 사람이 직접 봅니다.</p></div></div>
+    <div class="sec"><div class="n">06</div><div><h2>Solution</h2><p>요청 양식 · 심사 대기열 · 진행 상태 · 처리 예정일 · 현황판 · 요청자 확인 화면. 아래는 요청하는 사람이 보는 양식입니다.</p>
+      <ul class="spots"><li><b>1</b><span>무엇이·왜 필요한지는 필수. 비우면 보낼 수 없습니다</span></li><li><b>2</b><span>희망일과 영향 범위를 고르면 심사에서 되묻지 않습니다</span></li><li><b>3</b><span>보내면 심사 대기열로. 처리 예정일이 정해지면 알림</span></li></ul>
+      <div class="shot live wide" data-src="../mockups/v2/img-src.html?p=por-favor-harry-form"></div><span class="capn">요청 양식: 요청하는 사람이 필수 항목을 채워 보냄</span></div></div>
+    <div class="sec"><div class="n">07</div><div><h2>Before <span class="amp" style="font-size:.9em">&amp;</span> After</h2><div class="two wide"><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div><span class="capn">Before: 메신저·메일·엑셀·메모에 흩어진 요청</span></div><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div><span class="capn">After: 심사 대기열 하나</span></div></div><p style="margin-top:16px">요청이 들어오는 길 네 개가 하나로. "어떻게 됐어요?" 연락 대신 직접 확인.</p></div></div>
+    <div class="sec"><div class="n">08</div><div><h2>Impact</h2><div class="impact2"><div><b>4 → 1</b><span>요청 경로</span><small>전화 · 메신저 · 이메일 · 방문 → 링크 하나</small></div><div><b>0회</b><span>진행 상황 묻는 연락</span><small>요청한 사람이 직접 확인</small></div><div><b>1곳</b><span>심사 대기열</span><small>예시 수치. 공개 범위를 확인한 뒤 확정</small></div></div><div class="bar"><div class="lbl"><span>요청 경로</span><span>4개 → 1개</span></div><div class="tr"><i></i></div></div></div></div>
+    <div class="sec"><div class="n">09</div><div><h2>What I Learned</h2><p>도구를 만들기 전에 요청이 들어오는 길부터 바꿔야 했습니다. 처음에 문제를 정리하지 않았다면 그냥 할 일 앱을 하나 더 만들었을 겁니다.</p></div></div>
+    <div class="sec"><div class="n">10</div><div><h2>비슷한 문제가 있다면</h2><p>지금 어떻게 일하고 있는지, 무엇이 가장 불편한지 알려주세요. 이 프로젝트를 붙여서 보내면 같은 맥락에서 바로 답장드리겠습니다.</p><div class="cta"><a class="btn" href="#">이 프로젝트를 보고 문의하기 <i class="tri"></i></a><a class="mail link" href="#">hello@prologue.and</a></div></div></div>
+  </div>
+  <div class="wrap"><div class="teaser"><div><span class="cap">다음 이야기</span><a class="big" href="#">Daeryun Learning Hub</a><p style="margin:0;color:var(--bone-700)">1,220개의 종이 문제를 새로운 학습 경험으로</p></div><div class="shot img">daeryun-learning-hub.png</div></div>
+  <div class="ftr"><nav><a href="#">Projects</a><a href="#">hello@prologue.and</a><a href="#">문의</a></nav><span>© 2026 Prologue&amp;</span></div></div>
+</section>
+
+<!-- ============ B 좌측 고정 요약 ============ -->
+<section class="opt" id="B">
+  <header class="hdr"><a class="brand" href="#">Prologue<span class="bamp">&amp;</span></a><a class="back" href="#">← Projects</a><nav><button type="button">문의</button></nav></header>
+  <div class="wrap b-grid">
+    <aside class="b-side">
+      <span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> Por favor, Harry</span>
+      <h1 class="h1x" style="font-size:34px">흩어진 업무 요청을<br>하나의 흐름으로</h1>
+      <table class="metatb"><tr><td>역할</td><td>기획 · 설계 · 개발</td></tr><tr><td>기간</td><td>2025 · 6주</td></tr><tr><td>사용자</td><td>담당자 1명 · 요청자 40여 명</td></tr><tr><td>공개 범위</td><td>전체 공개</td></tr></table>
+      <div class="knums"><div><b>4 → 1</b><span>요청 경로</span></div><div><b>0회</b><span>진행 상황 묻는 연락</span></div><div><b>1곳</b><span>심사 대기열</span></div></div>
+      <div class="toc"><a class="on" href="#"><b>01</b>Overview</a><a href="#"><b>02</b>Problem</a><a href="#"><b>03</b>Existing Workflow</a><a href="#"><b>04</b>Insight</a><a href="#"><b>05</b>Redesign</a><a href="#"><b>06</b>Solution</a><a href="#"><b>07</b>Before &amp; After</a><a href="#"><b>08</b>Impact</a><a href="#"><b>09</b>What I Learned</a><a href="#"><b>10</b>비슷한 문제</a></div>
+      <a class="btn" href="#" style="margin-top:28px">이 프로젝트를 보고 문의하기 <i class="tri"></i></a>
+    </aside>
+    <div class="b-main">
+      <div class="sec"><div><h2>01 Overview</h2><p>회사 안에서 들어오는 업무 요청을 받아 처리하는 담당자를 위한 도구입니다. 기획·설계·개발을 맡았습니다.</p></div></div>
+      <div class="sec"><div><h2>02 Problem</h2><p>업무 요청이 전화, 메신저, 메일, 직접 방문으로 흩어져 들어왔습니다. 요청하는 쪽은 내용을 다 정리하지 않은 채 보내는 일이 많았고, 받는 쪽이 그걸 다시 정리하고 기억해야 했습니다.</p><p>요청이 올 때마다 하던 일이 끊겼고, "어떻게 됐어요?"라는 연락이 다시 일을 끊었습니다.</p><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before" style="margin-top:8px"></div><span class="capn">Before: 메신저·메일·엑셀·메모에 흩어진 요청</span></div></div>
+      <div class="sec"><div><h2>03 Existing Workflow</h2><p>가는 선이 예전 흐름, 굵은 선이 바꾼 흐름입니다.</p><div class="dia" data-morph></div></div></div>
+      <div class="sec"><div><h2>04 Insight</h2><p class="q">할 일 관리가 아니라, 요청이 들어오는 길의 문제였습니다.</p></div></div>
+      <div class="sec"><div><h2>05 Redesign</h2><div class="flow"><span>요청 링크</span><em>→</em><span>요청 양식</span><em>→</em><span>심사 대기열 하나</span><em>→</em><span>처리 예정일 확정</span><em>→</em><span class="g">진행 상황 자동 안내</span></div><p>요청할 때 꼭 필요한 정보를 채우게 해서 되묻는 일을 없앴습니다. 요청은 한 줄로 들어오고, 심사 뒤에 처리 예정일이 정해지며, 진행 상황은 요청한 사람이 직접 봅니다.</p></div></div>
+      <div class="sec"><div><h2>06 Solution</h2><p>요청 양식 · 심사 대기열 · 진행 상태 · 처리 예정일 · 현황판 · 요청자 확인 화면.</p><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-form"></div><span class="capn">요청 양식: 요청하는 사람이 필수 항목을 채워 보냄</span></div></div>
+      <div class="sec"><div><h2>07 Before <span class="amp" style="font-size:.9em">&amp;</span> After</h2><div class="two"><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div><span class="capn">Before</span></div><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div><span class="capn">After: 심사 대기열 하나</span></div></div></div></div>
+      <div class="sec"><div><h2>08 Impact</h2><div class="impact2"><div><b>4 → 1</b><span>요청 경로</span></div><div><b>0회</b><span>진행 상황 묻는 연락</span></div><div><b>1곳</b><span>심사 대기열</span></div></div></div></div>
+      <div class="sec"><div><h2>09 What I Learned</h2><p>도구를 만들기 전에 요청이 들어오는 길부터 바꿔야 했습니다. 처음에 문제를 정리하지 않았다면 그냥 할 일 앱을 하나 더 만들었을 겁니다.</p></div></div>
+      <div class="sec"><div><h2>10 비슷한 문제가 있다면</h2><p>지금 어떻게 일하고 있는지, 무엇이 가장 불편한지 알려주세요.</p><div class="cta"><a class="btn" href="#">이 프로젝트를 보고 문의하기 <i class="tri"></i></a></div></div></div>
+      <div class="teaser" style="grid-template-columns:1fr"><div><span class="cap">다음 이야기</span><a class="big" href="#">Daeryun Learning Hub</a></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ C 화면 우선 ============ -->
+<section class="opt" id="C">
+  <header class="hdr"><a class="brand" href="#">Prologue<span class="bamp">&amp;</span></a><a class="back" href="#">← Projects</a><nav><button type="button">문의</button></nav></header>
+  <div class="c-hero"><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div></div>
+  <div class="wrap c-title"><div><span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> Por favor, Harry · 문제 01 흩어진 요청</span><h1 class="h1x" style="font-size:48px">흩어진 업무 요청을 하나의 흐름으로</h1><div class="metarow"><span><b>역할</b>기획 · 설계 · 개발</span><span><b>기간</b>2025 · 6주</span><span><b>사용자</b>담당자 1명 · 요청자 40여 명</span></div></div><div class="knums" style="margin:0"><div><b>4 → 1</b><span>요청 경로</span></div><div><b>0회</b><span>진행 상황 묻는 연락</span></div><div><b>1곳</b><span>심사 대기열</span></div></div></div>
+  <div class="wrap c-cap"><h2>01 · 02 &nbsp;누구를 위해, 무엇이 문제였나</h2><p>회사 안에서 들어오는 업무 요청을 받아 처리하는 담당자를 위한 도구. 요청이 전화, 메신저, 메일, 직접 방문으로 흩어져 들어왔고, 받는 쪽이 다시 정리하고 기억해야 했습니다.</p></div>
+  <div class="c-full"><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div><span class="capn" style="max-width:1360px;margin:8px auto 0;display:block">Before: 메신저·메일·엑셀·메모에 흩어진 요청</span></div>
+  <div class="wrap c-cap"><h2>03 · 04 &nbsp;길의 문제</h2><p class="q" style="font-size:28px;max-width:24em">할 일 관리가 아니라, 요청이 들어오는 길의 문제였습니다.</p></div>
+  <div class="c-full"><div class="dia" data-morph data-t="1"></div></div>
+  <div class="wrap c-cap"><h2>05 · 06 &nbsp;한 줄로 들어오는 요청</h2><p>요청 링크 → 요청 양식 → 심사 대기열 하나 → 처리 예정일 확정 → 진행 상황 자동 안내. 아래는 요청하는 사람이 보는 양식.</p></div>
+  <div class="c-full"><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-form"></div></div>
+  <div class="wrap c-cap"><h2>07 &nbsp;Before &amp; After</h2></div>
+  <div class="c-full"><div class="two"><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div></div></div>
+  <div class="wrap" style="padding-top:64px"><div class="impact2" style="max-width:none"><div><b style="font-size:72px">4 → 1</b><span>요청 경로</span><small>전화 · 메신저 · 이메일 · 방문 → 링크 하나</small></div><div><b style="font-size:72px">0회</b><span>진행 상황 묻는 연락</span></div><div><b style="font-size:72px">1곳</b><span>심사 대기열</span></div></div>
+    <div class="c-cap" style="padding-top:56px"><h2>09 · 10</h2><p>도구를 만들기 전에 요청이 들어오는 길부터 바꿔야 했습니다. 비슷한 문제가 있다면 지금 어떻게 일하고 있는지 알려주세요.</p><div class="cta" style="margin-top:20px"><a class="btn" href="#">이 프로젝트를 보고 문의하기 <i class="tri"></i></a></div></div></div>
+  <div class="c-full" style="padding-bottom:48px"><div class="shot img" style="height:420px;aspect-ratio:auto">다음 이야기 · Daeryun Learning Hub · 전폭 티저</div></div>
+</section>
+
+<!-- ============ D 스크롤 텔링 ============ -->
+<section class="opt" id="D">
+  <header class="hdr"><a class="brand" href="#">Prologue<span class="bamp">&amp;</span></a><span class="who">Por favor, Harry</span><a class="back" href="#">← Projects</a><nav><span class="pos">01 / 10</span><button type="button">문의</button></nav></header>
+  <div class="wrap a-cover"><div class="col"><span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> Por favor, Harry · 문제 01 흩어진 요청</span><h1 class="h1x">흩어진 업무 요청을<br>하나의 흐름으로</h1><div class="metarow"><span><b>역할</b>기획 · 설계 · 개발</span><span><b>기간</b>2025 · 6주</span><span><b>사용자</b>담당자 1명 · 요청자 40여 명</span></div><div class="knums"><div><b>4 → 1</b><span>요청 경로</span></div><div><b>0회</b><span>진행 상황 묻는 연락</span></div><div><b>1곳</b><span>심사 대기열</span></div></div></div></div>
+  <div class="wrap d-grid" data-pin>
+    <div>
+      <div class="sec" data-img="hero"><div class="n">01</div><div><h2>Overview</h2><p>회사 안에서 들어오는 업무 요청을 받아 처리하는 담당자를 위한 도구입니다. 기획·설계·개발을 맡았습니다.</p></div></div>
+      <div class="sec" data-img="before"><div class="n">02</div><div><h2>Problem</h2><p>업무 요청이 전화, 메신저, 메일, 직접 방문으로 흩어져 들어왔습니다. 요청하는 쪽은 내용을 다 정리하지 않은 채 보내는 일이 많았고, 받는 쪽이 그걸 다시 정리하고 기억해야 했습니다.</p><p>요청이 올 때마다 하던 일이 끊겼고, "어떻게 됐어요?"라는 연락이 다시 일을 끊었습니다.</p></div></div>
+      <div class="sec" data-img="dia0"><div class="n">03</div><div><h2>Existing Workflow</h2><p>가는 선이 예전 흐름. 네 갈래로 들어온 요청을 담당자 한 사람이 머리로 정리했습니다.</p></div></div>
+      <div class="sec" data-img="dia0"><div class="n">04</div><div><h2>Insight</h2><p class="q">할 일 관리가 아니라, 요청이 들어오는 길의 문제였습니다.</p></div></div>
+      <div class="sec" data-img="dia1"><div class="n">05</div><div><h2>Redesign</h2><div class="flow"><span>요청 링크</span><em>→</em><span>요청 양식</span><em>→</em><span>심사 대기열 하나</span><em>→</em><span>처리 예정일 확정</span><em>→</em><span class="g">진행 상황 자동 안내</span></div><p>요청할 때 꼭 필요한 정보를 채우게 해서 되묻는 일을 없앴습니다.</p></div></div>
+      <div class="sec" data-img="form"><div class="n">06</div><div><h2>Solution</h2><p>요청 양식 · 심사 대기열 · 진행 상태 · 처리 예정일 · 현황판 · 요청자 확인 화면.</p><ul class="spots"><li><b>1</b><span>무엇이·왜 필요한지는 필수</span></li><li><b>2</b><span>희망일과 영향 범위를 고르면 심사에서 되묻지 않습니다</span></li><li><b>3</b><span>보내면 심사 대기열로. 처리 예정일이 정해지면 알림</span></li></ul></div></div>
+      <div class="sec" data-img="hero"><div class="n">07</div><div><h2>Before <span class="amp" style="font-size:.9em">&amp;</span> After</h2><p>요청이 들어오는 길 네 개가 하나로. "어떻게 됐어요?" 연락 대신 직접 확인.</p></div></div>
+      <div class="sec" data-img="hero"><div class="n">08</div><div><h2>Impact</h2><div class="impact2"><div><b>4 → 1</b><span>요청 경로</span></div><div><b>0회</b><span>진행 상황 묻는 연락</span></div><div><b>1곳</b><span>심사 대기열</span></div></div></div></div>
+      <div class="sec" data-img="hero"><div class="n">09</div><div><h2>What I Learned</h2><p>도구를 만들기 전에 요청이 들어오는 길부터 바꿔야 했습니다.</p></div></div>
+      <div class="sec" data-img="hero"><div class="n">10</div><div><h2>비슷한 문제가 있다면</h2><p>지금 어떻게 일하고 있는지, 무엇이 가장 불편한지 알려주세요.</p><div class="cta"><a class="btn" href="#">이 프로젝트를 보고 문의하기 <i class="tri"></i></a></div></div></div>
+    </div>
+    <div><div class="d-pin">
+      <div data-key="hero"><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div><span class="capn">심사 대기열: 요청 6건이 한 화면에</span></div>
+      <div data-key="before" hidden><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div><span class="capn">Before: 흩어진 요청</span></div>
+      <div data-key="dia0" hidden><div class="dia" data-morph data-t="0"></div></div>
+      <div data-key="dia1" hidden><div class="dia" data-morph data-t="1"></div></div>
+      <div data-key="form" hidden><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-form"></div><span class="capn">요청 양식</span></div>
+    </div></div>
+  </div>
+  <div class="wrap"><div class="teaser"><div><span class="cap">다음 이야기</span><a class="big" href="#">Daeryun Learning Hub</a></div><div class="shot img">daeryun-learning-hub.png</div></div></div>
+</section>
+
+<!-- ============ E 한 장씩 ============ -->
+<section class="opt" id="E">
+  <header class="hdr"><a class="brand" href="#">Prologue<span class="bamp">&amp;</span></a><span class="who">Por favor, Harry</span><a class="back" href="#">← Projects</a><nav><span class="pos">01 / 10</span><button type="button">문의</button></nav></header>
+  <div class="strip"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="e-slide"><div><span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> Por favor, Harry · 문제 01 흩어진 요청</span><h2 style="font-size:64px">흩어진 업무 요청을<br>하나의 흐름으로</h2><div class="metarow"><span><b>역할</b>기획 · 설계 · 개발</span><span><b>기간</b>2025 · 6주</span><span><b>사용자</b>담당자 1명 · 요청자 40여 명</span></div><div class="knums"><div><b>4 → 1</b><span>요청 경로</span></div><div><b>0회</b><span>진행 상황 묻는 연락</span></div><div><b>1곳</b><span>심사 대기열</span></div></div></div><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div></div></div>
+  <div class="e-slide"><div><div class="n">01 OVERVIEW</div><h2>업무 요청을 받아 처리하는 담당자를 위한 도구</h2><p>회사 안에서 들어오는 업무 요청을 받아 처리하는 담당자를 위한 도구입니다. 기획·설계·개발을 맡았습니다.</p></div><div class="shot img">개요 그림</div></div>
+  <div class="e-slide"><div><div class="n">02 PROBLEM</div><h2>네 갈래로 흩어져 들어온 요청</h2><p>업무 요청이 전화, 메신저, 메일, 직접 방문으로 흩어져 들어왔습니다. 받는 쪽이 그걸 다시 정리하고 기억해야 했습니다.</p><p>요청이 올 때마다 하던 일이 끊겼고, "어떻게 됐어요?"라는 연락이 다시 일을 끊었습니다.</p></div><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div></div></div>
+  <div class="e-slide" style="grid-template-columns:1.2fr 1fr"><div class="dia" data-morph data-t="1"></div><div><div class="n">03 · 04 · 05</div><h2>할 일 관리가 아니라,<br>요청이 들어오는 길의 문제</h2><p>가는 선이 예전 흐름, 굵은 선이 바꾼 흐름. 요청 링크 → 요청 양식 → 심사 대기열 하나 → 처리 예정일 확정 → 진행 상황 자동 안내.</p></div></div>
+  <div class="e-slide"><div><div class="n">06 SOLUTION</div><h2>필수 항목을 채워야 보낼 수 있는 양식</h2><p>요청 양식 · 심사 대기열 · 진행 상태 · 처리 예정일 · 현황판 · 요청자 확인 화면.</p></div><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-form"></div></div></div>
+  <div class="e-slide" style="grid-template-columns:1fr"><div><div class="n">08 IMPACT</div><div class="impact2" style="max-width:60rem"><div><b style="font-size:96px">4 → 1</b><span>요청 경로</span></div><div><b style="font-size:96px">0회</b><span>진행 상황 묻는 연락</span></div><div><b style="font-size:96px">1곳</b><span>심사 대기열</span></div></div></div></div>
+  <div class="e-slide"><div><div class="n">10</div><h2>비슷한 문제가 있다면</h2><p>지금 어떻게 일하고 있는지, 무엇이 가장 불편한지 알려주세요.</p><div class="cta"><a class="btn" href="#">이 프로젝트를 보고 문의하기 <i class="tri"></i></a></div></div><div><span class="cap">다음 이야기</span><a class="big" href="#" style="font-size:40px;font-weight:600;color:var(--bone-900);display:block">Daeryun Learning Hub</a></div></div>
+</section>
+
+<!-- ============ F 표지 판 + 기사 (권장) ============ -->
+<section class="opt" id="F">
+  <header class="hdr"><a class="brand" href="#">Prologue<span class="bamp">&amp;</span></a><span class="who">Por favor, Harry</span><a class="back" href="#">← Projects</a><nav><span class="pos">01 / 10</span><button type="button">문의</button></nav></header>
+  <div class="strip"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="wrap f-cover">
+    <div><span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> Por favor, Harry · 문제 01 흩어진 요청</span>
+      <h1 class="h1x">흩어진 업무 요청을<br>하나의 흐름으로</h1>
+      <table class="metatb"><tr><td>역할</td><td>기획 · 설계 · 개발</td></tr><tr><td>기간</td><td>2025 · 6주</td></tr><tr><td>사용자</td><td>요청을 받는 담당자 1명 · 요청하는 사람 40여 명</td></tr><tr><td>공개 범위</td><td>전체 공개</td></tr></table>
+      <div class="knums"><div><b>4 → 1</b><span>요청 경로</span></div><div><b>0회</b><span>진행 상황 묻는 연락</span></div><div><b>1곳</b><span>심사 대기열</span></div></div></div>
+    <div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div><span class="capn">심사 대기열: 요청 6건이 한 화면에</span></div>
+  </div>
+  <div class="wrap"><div class="f-line"><svg viewBox="0 0 1120 40" preserveAspectRatio="none"><path class="g" d="M1120 2 H18 Q6 2 6 14 V40"/></svg></div></div>
+  <div class="wrap rail" data-rail><i class="ink"></i>
+    <div class="sec"><div class="n">01</div><div><h2>Overview</h2><p>회사 안에서 들어오는 업무 요청을 받아 처리하는 담당자를 위한 도구입니다. 기획·설계·개발을 맡았습니다.</p></div></div>
+    <div class="sec"><div class="n">02</div><div><h2>Problem</h2><p>업무 요청이 전화, 메신저, 메일, 직접 방문으로 흩어져 들어왔습니다. 요청하는 쪽은 내용을 다 정리하지 않은 채 보내는 일이 많았고, 받는 쪽이 그걸 다시 정리하고 기억해야 했습니다.</p><p>요청이 올 때마다 하던 일이 끊겼고, "어떻게 됐어요?"라는 연락이 다시 일을 끊었습니다.</p></div></div>
+    <div class="sec"><div class="n">03</div><div><h2>Existing Workflow</h2><p>가는 선이 예전 흐름, 굵은 선이 바꾼 흐름입니다. 다이어그램이 화면에 있는 동안 바뀝니다(핀 없음).</p><div class="dia wide" data-morph data-scrub></div></div></div>
+    <div class="sec"><div class="n">04</div><div><h2>Insight</h2><p class="q">할 일 관리가 아니라, 요청이 들어오는 길의 문제였습니다.</p></div></div>
+    <div class="sec"><div class="n">05</div><div><h2>Redesign</h2><div class="flow"><span>요청 링크</span><em>→</em><span>요청 양식</span><em>→</em><span>심사 대기열 하나</span><em>→</em><span>처리 예정일 확정</span><em>→</em><span class="g">진행 상황 자동 안내</span></div><p>요청할 때 꼭 필요한 정보를 채우게 해서 되묻는 일을 없앴습니다. 요청은 한 줄로 들어오고, 심사 뒤에 처리 예정일이 정해지며, 진행 상황은 요청한 사람이 직접 봅니다.</p></div></div>
+    <div class="sec"><div class="n">06</div><div><h2>Solution</h2><p>요청 양식 · 심사 대기열 · 진행 상태 · 처리 예정일 · 현황판 · 요청자 확인 화면. 아래는 요청하는 사람이 보는 양식입니다.</p>
+      <ul class="spots"><li><b>1</b><span>무엇이·왜 필요한지는 필수. 비우면 보낼 수 없습니다</span></li><li><b>2</b><span>희망일과 영향 범위를 고르면 심사에서 되묻지 않습니다</span></li><li><b>3</b><span>보내면 심사 대기열로. 처리 예정일이 정해지면 알림</span></li></ul>
+      <div class="shot live wide" data-src="../mockups/v2/img-src.html?p=por-favor-harry-form"></div><span class="capn">요청 양식: 요청하는 사람이 필수 항목을 채워 보냄</span></div></div>
+    <div class="sec"><div class="n">07</div><div><h2>Before <span class="amp" style="font-size:.9em">&amp;</span> After</h2><div class="two wide"><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div><span class="capn">Before: 메신저·메일·엑셀·메모에 흩어진 요청</span></div><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div><span class="capn">After: 심사 대기열 하나</span></div></div><p style="margin-top:16px">요청이 들어오는 길 네 개가 하나로. "어떻게 됐어요?" 연락 대신 직접 확인.</p></div></div>
+    <div class="sec"><div class="n">08</div><div><h2>Impact</h2><div class="impact2"><div><b>4 → 1</b><span>요청 경로</span><small>전화 · 메신저 · 이메일 · 방문 → 링크 하나</small></div><div><b>0회</b><span>진행 상황 묻는 연락</span><small>요청한 사람이 직접 확인</small></div><div><b>1곳</b><span>심사 대기열</span><small>예시 수치. 공개 범위를 확인한 뒤 확정</small></div></div><div class="bar"><div class="lbl"><span>요청 경로</span><span>4개 → 1개</span></div><div class="tr"><i></i></div></div></div></div>
+    <div class="sec"><div class="n">09</div><div><h2>What I Learned</h2><p>도구를 만들기 전에 요청이 들어오는 길부터 바꿔야 했습니다. 처음에 문제를 정리하지 않았다면 그냥 할 일 앱을 하나 더 만들었을 겁니다.</p></div></div>
+    <div class="sec"><div class="n">10</div><div><h2>비슷한 문제가 있다면</h2><p>지금 어떻게 일하고 있는지, 무엇이 가장 불편한지 알려주세요. 이 프로젝트를 붙여서 보내면 같은 맥락에서 바로 답장드리겠습니다.</p><div class="cta"><a class="btn" href="#">이 프로젝트를 보고 문의하기 <i class="tri"></i></a><a class="mail link" href="#">hello@prologue.and</a></div></div></div>
+  </div>
+  <div class="wrap"><div class="teaser"><div><span class="cap">다음 이야기</span><a class="big" href="#">Daeryun Learning Hub</a><p style="margin:0 0 16px;color:var(--bone-700)">1,220개의 종이 문제를 새로운 학습 경험으로</p><div class="knums" style="margin-top:8px;max-width:26rem"><div><b style="font-size:24px">즉시</b><span>채점·해설</span></div><div><b style="font-size:24px">1권 →</b><span>반복 학습 흐름</span></div></div></div><div class="shot img">daeryun-learning-hub.png</div></div>
+  <div class="ftr"><nav><a href="#">Projects</a><a href="#">hello@prologue.and</a><a href="#">문의</a></nav><span>© 2026 Prologue&amp;</span></div></div>
+</section>
+
+<div id="sw"><span id="swn"></span><button data-o="A">A</button><button data-o="B">B</button><button data-o="C">C</button><button data-o="D">D</button><button data-o="E">E</button><button data-o="F">F</button></div>
+
+<script>
+/* ---- 옵션 전환 ---- */
+const NAMES = { A: 'A 편집 기사형', B: 'B 좌측 고정 요약', C: 'C 화면 우선', D: 'D 스크롤 텔링', E: 'E 한 장씩(스냅)', F: 'F 표지 판 + 기사 (권장)' };
+function show(o) {
+  document.querySelectorAll('.opt').forEach(s => s.classList.toggle('on', s.id === o));
+  document.querySelectorAll('#sw button').forEach(b => b.classList.toggle('on', b.dataset.o === o));
+  document.getElementById('swn').textContent = NAMES[o];
+  document.documentElement.style.scrollSnapType = o === 'E' ? 'y mandatory' : '';
+  location.hash = o; scrollTo(0, 0); fit(); lazy();
+}
+document.getElementById('sw').addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(b.dataset.o); });
+/* ---- 라이브 화면: 보이는 옵션만 iframe 로드, 폭에 맞춰 축소 ---- */
+function fit() { document.querySelectorAll('.opt.on .shot.live').forEach(el => { const w = el.clientWidth - 12; if (w <= 0) return; const sc = Math.min(1, w / 1280); el.style.setProperty('--sc', sc.toFixed(4)); el.style.height = (800 * sc + 12) + 'px'; el.style.maxWidth = '1292px'; el.style.marginLeft = 'auto'; el.style.marginRight = 'auto'; }); }   // 1280 원본보다 키우지 않는다
+function lazy() { document.querySelectorAll('.opt.on .shot.live').forEach(el => { if (!el.querySelector('iframe')) el.innerHTML = `<iframe src="${el.dataset.src}" tabindex="-1" loading="lazy"></iframe>`; }); }
+addEventListener('resize', fit);
+/* ---- 다이어그램 (03→05 morph): data-t 고정 또는 data-scrub(화면 안 위치 = t) ---- */
+const src = [40, 80, 120, 160], names = ['전화', '메신저', '이메일', '직접 방문'];
+const B = src.map((y, i) => [120 + i * 30, y + (i % 2 ? -50 : 50), 220, 100 + (i - 1.5) * 24, 300, 100]);
+const A = src.map(y => [110, y, 130, 100, 160, 100]);
+const lerp = (a, b, t) => a + (b - a) * t;
+const chain = [[160, '개인 링크'], [270, '요청폼'], [380, '심사 Queue'], [480, '약속일'], [580, '상태 공유']];
+document.querySelectorAll('[data-morph]').forEach((d, k) => {
+  d.innerHTML = `<svg viewBox="0 0 640 220">${src.map((y, i) => `<text x="34" y="${y + 4}" text-anchor="end">${names[i]}</text>`).join('')}${src.map((y, i) => `<path class="before" data-i="${i}" d=""/>`).join('')}<g class="mb"><path class="before" d="M300 100 H520"/><circle class="node" cx="300" cy="100" r="4" style="stroke:#8A96C2"/><text x="300" y="124" text-anchor="middle">담당자가 정리·기억</text><path class="before" d="M514 94 l12 12 M526 94 l-12 12"/><text x="520" y="124" text-anchor="middle">몰입 중단</text></g><g class="ma"><path class="after mchain" d="M160 100 H566"/>${chain.map(([x, n], i) => i < 4 ? `<circle class="node" cx="${x}" cy="100" r="4"/><text x="${x}" y="${i === 0 ? 148 : i % 2 ? 84 : 124}" text-anchor="middle">${n}</text>` : `<polygon class="flagp" points="566,92 582,100 566,108"/><text x="582" y="124" text-anchor="middle">${n}</text>`).join('')}</g></svg><div class="dcap"><span class="cb">Before: 네 갈래로 들어온 요청을 담당자 한 사람이 머리로 정리</span><span class="ca" style="text-align:right">After: 링크 하나 → 요청 양식 → 심사 대기열 → 처리 예정일 → 진행 상황 안내</span></div>`;
+  const mchain = d.querySelector('.mchain'); const L = mchain.getTotalLength(); mchain.style.strokeDasharray = L;
+  d._morph = t => { src.forEach((y, i) => { const b = B[i], a = A[i]; const v = b.map((n, j) => lerp(n, a[j], t)); const el = d.querySelector(`path[data-i="${i}"]`); el.setAttribute('d', `M40 ${y} C ${v[0]} ${v[1]}, ${v[2]} ${v[3]}, ${v[4]} ${v[5]}`); el.setAttribute('class', t > .5 ? 'after' : 'before'); }); d.querySelector('.mb').style.opacity = Math.max(0, 1 - t * 2); d.querySelector('.ma').style.opacity = Math.min(1, Math.max(0, (t - .45) * 2)); mchain.style.strokeDashoffset = L * (1 - Math.min(1, Math.max(0, (t - .5) * 2))); d.querySelector('.cb').style.opacity = t < .5 ? 1 : .35; d.querySelector('.ca').style.opacity = t < .5 ? .35 : 1; };
+  d._morph(d.dataset.t !== undefined ? +d.dataset.t : 0);
+});
+/* ---- 스크롤: 레일 잉크(A·F), 핀 없는 morph(F), D의 고정 그림 교체, 진행 표시 ---- */
+function onScroll() {
+  const on = document.querySelector('.opt.on'); if (!on) return;
+  const rail = on.querySelector('[data-rail]');
+  if (rail) { const r = rail.getBoundingClientRect(); const y = Math.min(r.height, Math.max(0, innerHeight * .5 - r.top)); rail.querySelector('.ink').style.height = y + 'px'; rail.querySelectorAll('.sec').forEach(s => s.classList.toggle('done', s.getBoundingClientRect().top + 12 <= innerHeight * .5)); }
+  on.querySelectorAll('[data-scrub]').forEach(d => { const r = d.getBoundingClientRect(); const t = Math.min(1, Math.max(0, (innerHeight * .85 - r.top) / (innerHeight * .85 - 120))); d._morph(t); });
+  const pin = on.querySelector('[data-pin]');
+  if (pin) { let key = 'hero'; pin.querySelectorAll('.sec').forEach(s => { if (s.getBoundingClientRect().top <= innerHeight * .45) key = s.dataset.img; }); pin.querySelectorAll('.d-pin > div').forEach(b => b.hidden = b.dataset.key !== key); fit(); lazy(); }
+  const pos = on.querySelector('.hdr .pos'); const secs = on.querySelectorAll('.sec, .e-slide');
+  if (pos && secs.length) { let cur = 1; secs.forEach((s, i) => { if (s.getBoundingClientRect().top <= innerHeight * .45) cur = Math.min(10, Math.max(1, i + (on.id === 'E' ? 0 : 1))); }); pos.textContent = String(cur).padStart(2, '0') + ' / 10'; const st = on.querySelector('.strip'); if (st) st.querySelectorAll('i').forEach((b, i) => { b.classList.toggle('on', i + 1 === cur); b.classList.toggle('done', i + 1 < cur); }); }
+}
+addEventListener('scroll', onScroll, { passive: true });
+show(['A', 'B', 'C', 'D', 'E', 'F'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'F');
+setTimeout(() => { fit(); onScroll(); }, 300);
+</script>
+</body>
+</html>
