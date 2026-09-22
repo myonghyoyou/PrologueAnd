@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="../mockups/v3/v3.css">
 <style>
 /* ---- 시트 공통: 실제 토큰·글꼴로 1:1. 옵션 하나만 보이고 오른쪽 아래 스위처로 바꾼다 ---- */
-body{background:var(--bone-50)}
+html{overflow-x:clip}body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:hidden은 sticky를 깨뜨린다 */
 .opt{display:none}.opt.on{display:block}
 #sw{position:fixed;right:16px;bottom:16px;z-index:90;display:flex;gap:4px;padding:6px;background:var(--bone-0);border:1px solid var(--bone-300);border-radius:2px;font-size:12px}
 #sw button{width:34px;height:30px;border:1px solid transparent;border-radius:2px;font-weight:600;color:var(--bone-500);cursor:pointer}
@@ -104,6 +104,14 @@ body{background:var(--bone-50)}
 .g-panel p{font-size:16px;line-height:1.7;color:var(--bone-700);max-width:34rem;margin:0 0 14px}
 .g-full{padding:0 0 80px}.g-full .capn{margin-top:8px}
 .g-cover{padding:88px 0 0}
+/* 07 와이프: 두 화면을 같은 자리에 겹치고, 이 구간(화면 높이 + 120vh 머무름)을 지나는 동안 경계선이 왼→오른쪽 */
+.g-wipe-wrap{position:relative;padding-bottom:120vh}
+.g-wipe{position:sticky;top:96px}
+.g-wipe .stack{position:relative}
+.g-wipe .stack .after{position:absolute;left:0;top:0;width:100%;clip-path:inset(0 100% 0 0)}
+.g-wipe .edge{position:absolute;top:0;bottom:0;left:0;width:2px;background:var(--navy-800);pointer-events:none;z-index:3}
+.g-wipe .wcaps{display:flex;justify-content:space-between;gap:24px;margin-top:8px;font-size:13px;color:var(--bone-500)}
+.g-wipe .wcaps span{transition:opacity .3s}
 .g-title{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;padding:32px 0 40px}
 /* F */
 .f-cover{padding:104px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
@@ -282,7 +290,7 @@ body{background:var(--bone-50)}
     <div class="g-panel txt sec"><div><span class="nlab">06 SOLUTION</span><h2>필수 항목을 채워야<br>보낼 수 있는 양식</h2><p>요청 양식 · 심사 대기열 · 진행 상태 · 처리 예정일 · 현황판 · 요청자 확인 화면. 아래는 요청하는 사람이 보는 양식입니다.</p><ul class="spots"><li><b>1</b><span>무엇이·왜 필요한지는 필수. 비우면 보낼 수 없습니다</span></li><li><b>2</b><span>희망일과 영향 범위를 고르면 심사에서 되묻지 않습니다</span></li><li><b>3</b><span>보내면 심사 대기열로. 처리 예정일이 정해지면 알림</span></li></ul></div></div>
     <div class="g-full"><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-form"></div><span class="capn">요청 양식: 요청하는 사람이 필수 항목을 채워 보냄</span></div>
     <div class="g-panel txt sec" style="padding-bottom:24px"><div><span class="nlab">07 BEFORE &amp; AFTER</span><h2>길 네 개가 하나로</h2><p>"어떻게 됐어요?" 연락 대신 요청한 사람이 직접 확인합니다.</p></div></div>
-    <div class="g-full"><div class="two"><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div><span class="capn">Before</span></div><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div><span class="capn">After: 심사 대기열 하나</span></div></div></div>
+    <div class="g-wipe-wrap" data-wipe><div class="g-wipe"><div class="stack"><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div><div class="shot live after" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div><i class="edge"></i></div><div class="wcaps"><span class="wb">Before: 메신저·메일·엑셀·메모에 흩어진 요청</span><span class="wa" style="opacity:.35">After: 심사 대기열 하나 — 굴리면 경계선이 오른쪽으로</span></div></div></div>
     <div class="g-panel txt sec"><div><span class="nlab">08 IMPACT</span><div class="impact2" style="max-width:none;border-top:0;margin-top:8px"><div style="padding-top:0"><b style="font-size:88px">4 → 1</b><span>요청 경로</span><small>전화 · 메신저 · 이메일 · 방문 → 링크 하나</small></div><div style="padding-top:0"><b style="font-size:88px">0회</b><span>진행 상황 묻는 연락</span><small>요청한 사람이 직접 확인</small></div><div style="padding-top:0"><b style="font-size:88px">1곳</b><span>심사 대기열</span><small>예시 수치</small></div></div></div></div>
     <div class="g-panel sec"><div><span class="nlab">09 WHAT I LEARNED</span><h2>도구보다 길부터</h2><p>도구를 만들기 전에 요청이 들어오는 길부터 바꿔야 했습니다. 처음에 문제를 정리하지 않았다면 그냥 할 일 앱을 하나 더 만들었을 겁니다.</p></div><div><span class="nlab">10</span><h2>비슷한 문제가 있다면</h2><p>지금 어떻게 일하고 있는지, 무엇이 가장 불편한지 알려주세요. 이 프로젝트를 붙여서 보내면 같은 맥락에서 바로 답장드리겠습니다.</p><div class="cta"><a class="btn" href="#">이 프로젝트를 보고 문의하기 <i class="tri"></i></a><a class="mail link" href="#">hello@prologue.and</a></div></div></div>
     <div class="teaser"><div><span class="cap">다음 이야기</span><a class="big" href="#">Daeryun Learning Hub</a><p style="margin:0;color:var(--bone-700)">1,220개의 종이 문제를 새로운 학습 경험으로</p></div><div class="shot img">daeryun-learning-hub.png</div></div>
@@ -325,6 +333,7 @@ function onScroll() {
   const rail = on.querySelector('[data-rail]');
   if (rail) { const r = rail.getBoundingClientRect(); const y = Math.min(r.height, Math.max(0, innerHeight * .5 - r.top)); rail.querySelector('.ink').style.height = y + 'px'; rail.querySelectorAll('.sec').forEach(s => s.classList.toggle('done', s.getBoundingClientRect().top + 12 <= innerHeight * .5)); }
   on.querySelectorAll('[data-scrub]').forEach(d => { const r = d.getBoundingClientRect(); const t = Math.min(1, Math.max(0, (innerHeight * .85 - r.top) / (innerHeight * .85 - 120))); d._morph(t); });
+  on.querySelectorAll('[data-wipe]').forEach(w => { const r = w.getBoundingClientRect(); const st = w.querySelector('.g-wipe'); const range = r.height - st.offsetHeight; const t = Math.min(1, Math.max(0, (96 - r.top) / Math.max(1, range))); w.querySelector('.after').style.clipPath = `inset(0 ${(100 - t * 100).toFixed(2)}% 0 0)`; w.querySelector('.edge').style.left = `calc(${(t * 100).toFixed(2)}% - 1px)`; w.querySelector('.wb').style.opacity = t < .5 ? 1 : .35; w.querySelector('.wa').style.opacity = t < .5 ? .35 : 1; });
   const pin = on.querySelector('[data-pin]');
   if (pin) { let key = 'hero'; pin.querySelectorAll('.sec').forEach(s => { if (s.getBoundingClientRect().top <= innerHeight * .45) key = s.dataset.img; }); pin.querySelectorAll('.d-pin > div').forEach(b => b.hidden = b.dataset.key !== key); fit(); lazy(); }
   const pos = on.querySelector('.hdr .pos'); const secs = on.querySelectorAll('.sec, .e-slide');
