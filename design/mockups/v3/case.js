@@ -24,54 +24,59 @@
   const P = ps => (ps || []).map(t => `<p>${t}</p>`).join('');
   const hasBefore = !!D.s07.before;
   const nums = D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span></div>`).join('');
+  // 판 = 화면 한 장(.pan). 글(.txt) 위, 그림(.dw)은 남는 높이를 채움. 머무름 판은 .g-dwell로 감싼다
+  const TXT = (n, h, body) => `<div class="txt"><span class="nlab">${n}</span><h2>${h}</h2>${body}</div>`;
   document.getElementById('main').innerHTML = `
-    <div class="g-cover" id="s00">${pic(D.hero)}<span class="capn">${esc(D.hero.cap)}</span></div>
-    <div class="g-title">
-      <div><span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> ${esc(pj.title)} · ${esc(D.cap)}${sample ? ' · <span style="color:var(--warning)">본문은 Por favor, Harry 예시(시안)</span>' : ''}</span>
-        <h1 class="h1x">${title}</h1>
-        <div class="metarow">${D.meta.map(([k, v]) => `<span><b>${esc(k)}</b>${esc(v)}</span>`).join('')}</div></div>
-      <div class="knums" id="nums0">${nums}</div>
-    </div>
-    <section class="g-panel" id="s01"><div><span class="nlab">01 OVERVIEW</span><h2>${D.s01.h || '업무 요청을 받아 처리하는<br>담당자를 위한 도구'}</h2>${P(D.s01.p)}</div><div class="dia" data-morph data-t="0"></div></section>
-    <section class="g-panel" id="s02"><div><span class="nlab">02 PROBLEM</span><h2>${D.s02.h || '네 갈래로 흩어져<br>들어온 요청'}</h2>${P(D.s02.p)}</div><div>${hasBefore ? pic(D.s07.before) + `<span class="capn">${esc(D.s07.before.cap)}</span>` : pic(D.hero)}</div></section>
-    <div class="g-dwell" data-dwell><div class="g-stick">
-      <section class="g-panel txt" id="s03"><div><span class="nlab">03 · 04 · 05 &nbsp;EXISTING WORKFLOW → INSIGHT → REDESIGN</span><h2>${esc(D.s04.q).replace(/, /, ',<br>')}</h2><p>${D.s03.p[0]} ${D.s05.flow.join(' → ')}.</p></div></section>
-      <div class="g-full dw"><div class="dia" data-morph data-scrub></div></div>
-    </div></div>
-    <section class="g-panel txt" id="s06"><div><span class="nlab">06 SOLUTION</span><h2>${D.s06.h || '필수 항목을 채워야<br>보낼 수 있는 양식'}</h2>${P(D.s06.p)}
-      ${D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((s, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(s.cap)}</span></li>`).join('')}</ul>` : ''}</div></section>
-    <div class="g-full" id="solbox">${pic(D.s06.screen, 'spotted')}<span class="capn">${esc(D.s06.screen.cap)}</span></div>
+    <section class="pan cover" id="s00">
+      <div class="dw">${pic(D.hero, 'hero')}<span class="capn">${esc(D.hero.cap)}</span></div>
+      <div class="g-title">
+        <div><span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> ${esc(pj.title)} · ${esc(D.cap)}${sample ? ' · <span style="color:var(--warning)">본문은 Por favor, Harry 예시(시안)</span>' : ''}</span>
+          <h1 class="h1x">${title}</h1>
+          <div class="metarow">${D.meta.map(([k, v]) => `<span><b>${esc(k)}</b>${esc(v)}</span>`).join('')}</div></div>
+        <div class="knums" id="nums0">${nums}</div>
+      </div>
+    </section>
+    <section class="pan" id="s01">${TXT('01 OVERVIEW', D.s01.h || '업무 요청을 받아 처리하는 담당자를 위한 도구', P(D.s01.p))}<div class="dw"><div class="dia" data-morph data-t="0"></div></div></section>
+    <section class="pan" id="s02">${TXT('02 PROBLEM', D.s02.h || '네 갈래로 흩어져 들어온 요청', P(D.s02.p))}<div class="dw">${hasBefore ? pic(D.s07.before) + `<span class="capn">${esc(D.s07.before.cap)}</span>` : pic(D.hero)}</div></section>
+    <div class="g-dwell" data-dwell><section class="pan" id="s03">${TXT('03 · 04 · 05 &nbsp;EXISTING WORKFLOW → INSIGHT → REDESIGN', esc(D.s04.q), `<p>${D.s03.p[0]} ${D.s05.flow.join(' → ')}.</p>`)}<div class="dw"><div class="dia" data-morph data-scrub></div></div></section></div>
+    <section class="pan" id="s06">${TXT('06 SOLUTION', D.s06.h || '필수 항목을 채워야 보낼 수 있는 양식', P(D.s06.p) + (D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((sp, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(sp.cap)}</span></li>`).join('')}</ul>` : ''))}<div class="dw" id="solbox">${pic(D.s06.screen, 'spotted')}<span class="capn">${esc(D.s06.screen.cap)}</span></div></section>
     ${hasBefore
-      ? `<div class="g-dwell" data-dwell data-wipe><div class="g-stick">
-          <section class="g-panel txt" id="s07"><div><span class="nlab">07 BEFORE &amp; AFTER</span><h2>${D.s07.h || '길 네 개가 하나로'}</h2>${P(D.s07.p)}</div></section>
-          <div class="g-wipe dw"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div>
-        </div></div>`
-      : `<section class="g-panel txt" id="s07"><div><span class="nlab">07 BEFORE &amp; AFTER</span><h2>${D.s07.h || '길 네 개가 하나로'}</h2>${P(D.s07.p)}</div></section><div class="g-full">${pic(D.s07.after)}<span class="capn">${esc(D.s07.after.cap)}</span></div>`}
-    <section class="g-panel txt" id="s08"><div><span class="nlab">08 IMPACT</span>
+      ? `<div class="g-dwell" data-dwell data-wipe><section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></section></div>`
+      : `<section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw">${pic(D.s07.after)}<span class="capn">${esc(D.s07.after.cap)}</span></div></section>`}
+    <section class="pan" id="s08"><div class="txt"><span class="nlab">08 IMPACT</span>
       <div class="impact2" id="nums8">${D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span><small>${esc(n.small || '')}</small></div>`).join('')}</div>
       ${D.s08.bars && D.s08.bars.some(b => b.before > 0) ? `<div class="bars" id="bars">${D.s08.bars.filter(b => b.before > 0).map(b => `<div class="bar" style="--w:${Math.round(b.after / b.before * 100)}%"><div class="lbl"><span>${esc(b.label)}</span><span>${b.before}${esc(b.unit || '')} → ${b.after}${esc(b.unit || '')}</span></div><div class="tr"><i></i></div></div>`).join('')}</div>` : ''}</div></section>
-    <section class="g-panel" id="s09"><div><span class="nlab">09 WHAT I LEARNED</span><h2>${D.s09.h || '도구보다 길부터'}</h2>${P(D.s09.p)}</div>
-      <div id="s10"><span class="nlab">10</span><h2>비슷한 문제가 있다면</h2>${P(D.s10.p)}<div class="cta"><a class="btn" href="#" data-open-drawer data-project="${pj.slug}">이 프로젝트를 보고 문의하기 <i class="tri"></i></a><a class="mail link" href="mailto:hello@prologue.and">hello@prologue.and</a></div></div></section>
-    <div class="teaser"><div><span class="cap">다음 이야기</span><a class="big" href="case.html?p=${next.slug}" id="next-link">${esc(next.title)}</a><p style="margin:0;color:var(--bone-700)">${esc(next.tagline)}</p></div><a href="case.html?p=${next.slug}" class="shot img"><img src="${V3.img(next)}" alt="${esc(next.title)}" loading="lazy" onerror="this.remove()"></a></div>
+    <section class="pan last" id="s09">
+      <div class="two-col"><div class="txt"><span class="nlab">09 WHAT I LEARNED</span><h2>${D.s09.h || '도구보다 길부터'}</h2>${P(D.s09.p)}</div>
+        <div class="txt" id="s10"><span class="nlab">10</span><h2>비슷한 문제가 있다면</h2>${P(D.s10.p)}<div class="cta"><a class="btn" href="#" data-open-drawer data-project="${pj.slug}">이 프로젝트를 보고 문의하기 <i class="tri"></i></a><a class="mail link" href="mailto:hello@prologue.and">hello@prologue.and</a></div></div></div>
+      <div class="teaser"><div><span class="cap">다음 이야기</span><a class="big" href="case.html?p=${next.slug}" id="next-link">${esc(next.title)}</a><p style="margin:0;color:var(--bone-700)">${esc(next.tagline)}</p></div><a href="case.html?p=${next.slug}" class="shot img teaser-img"><img src="${V3.img(next)}" alt="${esc(next.title)}" loading="lazy" onerror="this.remove()"></a></div>
+    </section>
     <footer class="ft"><nav><a href="projects.html">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></footer>`;
 
   /* ---------- 라이브 화면: 폭에 맞춰 축소(원본보다 키우지 않음), 화면에 가까워지면 로드 ---------- */
   function fit() { document.querySelectorAll('.shot.live').forEach(el => { const w = el.clientWidth - 12; if (w <= 0) return; const sc = Math.min(1, w / 1280); el.style.setProperty('--sc', sc.toFixed(4)); el.style.height = (800 * sc + 12) + 'px'; }); }
   function lazy() { document.querySelectorAll('.shot.live').forEach(el => { if (el.querySelector('iframe')) return; const r = el.getBoundingClientRect(); if (r.top < innerHeight * 2 && r.bottom > -innerHeight) el.insertAdjacentHTML('afterbegin', `<iframe src="${el.dataset.src}" tabindex="-1" aria-label="${esc(el.title)}" loading="lazy"></iframe>`); }); }
-  // 머무름 덩어리: 글 아래 남는 높이를 그림이 다 쓰게 폭을 정한다 (다이어그램 640:220 + 여백·캡션, 화면 1280:800 + 캡션)
-  function fitDwell() {
-    document.querySelectorAll('[data-dwell]').forEach(dw => {
-      const st = dw.querySelector('.g-stick'), txt = dw.querySelector('.g-panel'), box = dw.querySelector('.dw');
-      if (!desktop()) { st.style.height = ''; box.querySelectorAll('.dia,.stack').forEach(e => e.style.removeProperty('--dw')); return; }
-      const avail = st.clientHeight - 56 - txt.offsetHeight - 28;   // 위아래 여백 56, 글 아래 28
-      const dia = box.querySelector('.dia'), stack = box.querySelector('.stack');
-      if (dia) { const cap = dia.querySelector('.dcap'); const h = avail - 48 - (cap ? cap.offsetHeight + 12 : 0); dia.style.setProperty('--dw', Math.max(320, Math.min(box.clientWidth, h * 640 / 220)) + 'px'); }
-      if (stack) { const caps = box.querySelector('.wcaps'); const h = avail - (caps ? caps.offsetHeight + 8 : 0) - 12; stack.style.setProperty('--dw', Math.max(320, Math.min(box.clientWidth, h * 1280 / 800)) + 'px'); }
+  // 모든 판: 글 아래 남는 높이를 그림이 다 쓰게 폭을 정한다 (다이어그램 640:220 + 여백·캡션, 화면 1280:800 + 캡션). 표지는 화면 높이의 52%
+  function fitPans() {
+    document.querySelectorAll('.pan').forEach(pan => {
+      if (pan.classList.contains('last')) { const tz = pan.querySelector('.teaser'), img = pan.querySelector('.teaser-img'), tc = pan.querySelector('.two-col'); if (img) { const h = desktop() ? Math.max(160, pan.clientHeight - 56 - tc.offsetHeight - 64) : 0; img.style.height = h ? Math.min(h, 420) + 'px' : ''; img.style.width = h ? Math.min(tz.clientWidth / 2 - 24, Math.min(h, 420) * 1.6) + 'px' : ''; } return; }
+      const box = pan.querySelector('.dw'); if (!box) return;
+      const targets = box.querySelectorAll(':scope > .dia, :scope > .stack, :scope > .shot');
+      if (!desktop()) { targets.forEach(e => e.style.removeProperty('--dw')); return; }
+      let h;
+      if (pan.classList.contains('cover')) { const tt = pan.querySelector('.g-title'); h = Math.min(pan.clientHeight * 0.56, pan.clientHeight - 88 - 32 - 28 - (tt ? tt.offsetHeight : 0)); }
+      else { const txt = pan.querySelector('.txt'); h = pan.clientHeight - 56 - (txt ? txt.offsetHeight : 0); }
+      targets.forEach(t => {
+        let w;
+        if (t.classList.contains('dia')) { const cap = t.querySelector('.dcap'); w = (h - 48 - (cap ? cap.offsetHeight + 12 : 0)) * 640 / 220; }
+        else { const cap = box.querySelector(':scope > .capn, :scope > .wcaps'); w = (h - (cap ? cap.offsetHeight + 8 : 0) - 12) * 1280 / 800; }
+        t.style.setProperty('--dw', Math.max(320, Math.min(box.clientWidth, w)) + 'px');
+      });
     });
     fit();
   }
-  fit(); lazy(); fitDwell(); addEventListener('resize', () => { fitDwell(); onScroll(); });
-  setTimeout(fitDwell, 300);
+  fit(); lazy(); fitPans(); addEventListener('resize', () => { fitPans(); onScroll(); });
+  setTimeout(fitPans, 300); addEventListener('load', fitPans);
 
   /* ---------- 다이어그램 03→05 morph (docs/28 G5): data-t 고정 또는 data-scrub(화면 안 위치 = t, 핀 없음) ---------- */
   const src = [40, 80, 120, 160], names = ['전화', '메신저', '이메일', '직접 방문'];
@@ -104,7 +109,7 @@
   // 머무름(docs/28 G5·G6 개정 2026-09-22): 03~05 판과 07 판은 애니메이션이 끝날 때까지 화면에 붙어 있고(sticky), 구간(120vh)을 다 지나야 다음으로 내려간다
   const wipe = document.querySelector('[data-wipe]');
   // 붙이기: 구간 안에서는 .g-stick을 translateY로 따라 내려 헤더 아래(64)에 고정된 것처럼. 진행률 t = 내려온 거리 / 구간
-  function pin(el) { const r = el.getBoundingClientRect(); const st = el.querySelector('.g-stick'); const range = Math.max(1, r.height - st.offsetHeight); const off = desktop() ? clamp(64 - r.top, 0, range) : 0; st.style.transform = off ? `translate3d(0,${off.toFixed(1)}px,0)` : ''; return off / range; }
+  function pin(el) { const r = el.getBoundingClientRect(); const st = el.querySelector('.pan'); const range = Math.max(1, r.height - st.offsetHeight); const off = desktop() ? clamp(64 - r.top, 0, range) : 0; st.style.transform = off ? `translate3d(0,${off.toFixed(1)}px,0)` : ''; return off / range; }
   function tDwell(el) { let t = pin(el); if (reduced) t = t >= .5 ? 1 : 0; return t; }
   function tWipe() { return wipe ? tDwell(wipe) : 0; }
   function onScroll() {
@@ -118,18 +123,18 @@
   onScroll();
 
   /* ---------- 키·해시·뒤로가기 ---------- */
-  const panels = () => [...document.querySelectorAll('#s00, .g-panel, .teaser')];
-  const goTo = (el, immediate) => { const dw = el.closest && el.closest('[data-dwell]'); const y = (dw || el).getBoundingClientRect().top + scrollY - (dw ? 0 : 88); if (V3.lenis) V3.lenis.scrollTo(y, immediate ? { immediate: true } : { duration: 1.1 }); else scrollTo({ top: y, behavior: immediate || reduced ? 'auto' : 'smooth' }); };
+  const panels = () => [...document.querySelectorAll('.pan')];
+  const goTo = (el, immediate) => { const dw = el.closest && el.closest('[data-dwell]'); const y = (dw || el).getBoundingClientRect().top + scrollY - (dw ? 0 : 64); if (V3.lenis) V3.lenis.scrollTo(y, immediate ? { immediate: true } : { duration: 1.1 }); else scrollTo({ top: y, behavior: immediate || reduced ? 'auto' : 'smooth' }); };
   addEventListener('keydown', e => {
     if (!desktop() || e.altKey || e.ctrlKey || e.metaKey) return;
     const dr = document.getElementById('drawer'); if (dr && dr.classList.contains('on')) return;
-    const ps = panels(); let k = 0; ps.forEach((p, i) => { if (p.getBoundingClientRect().top <= 90) k = i; });
+    const ps = panels(); let k = 0; ps.forEach((p, i) => { const el = p.closest('[data-dwell]') || p; if (el.getBoundingClientRect().top <= 66) k = i; });
     if (['ArrowDown', 'ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); goTo(ps[clamp(k + 1, 0, ps.length - 1)]); }
     else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); goTo(ps[clamp(k - 1, 0, ps.length - 1)]); }
     else if (e.key === 'Home') { e.preventDefault(); goTo(ps[0], false); } else if (e.key === 'End') { e.preventDefault(); goTo(ps[ps.length - 1]); }
   });
   const hash = location.hash.replace('#', ''); const target = hash && document.getElementById(hash);
-  if (target) setTimeout(() => goTo(target.closest('.g-panel') || target, true), 50);
+  if (target) setTimeout(() => goTo(target.closest('.pan') || target, true), 50);
   document.getElementById('hd-back').addEventListener('click', e => { if (document.referrer && /projects\.html/.test(document.referrer) && history.length > 1) { e.preventDefault(); history.back(); } });
 
   /* ---------- 전환 종류: 상세 → 상세는 제목 morph 없이 (docs/28 B5) ---------- */
@@ -142,13 +147,14 @@
   window.__spec = function () {
     const cs = el => getComputedStyle(el);
     const L = el => Math.round(el.getBoundingClientRect().left);
-    const cover = document.querySelector('#s00 .shot'), panelsEl = document.querySelectorAll('.g-panel'), fulls = document.querySelectorAll('.g-full');
+    const cover = document.querySelector('#s00 .shot'), panelsEl = document.querySelectorAll('.pan'), fulls = document.querySelectorAll('.pan .dw');
     return {
       G1: { lefts: [L(cover), ...[...panelsEl].map(L), ...[...fulls].map(L)], scMax: Math.max(...[...document.querySelectorAll('.shot.live')].map(s => +s.style.getPropertyValue('--sc'))) },
       G2: { order: ['#s00', '.g-title .h1x', '.g-title .knums'].map(q => !!document.querySelector(q)) },
-      G3: { panels: panelsEl.length, borders: [...panelsEl].filter(p => cs(p).borderBottomWidth !== '0px').length },
+      G3: { panels: panelsEl.length, heights: [...panelsEl].map(p => p.offsetHeight), vh: innerHeight, fill: [...panelsEl].map(p => { const ks = [...p.querySelectorAll('.txt, .dw > .dia, .dw > .stack, .dw > .shot, .g-title')].map(k => k.getBoundingClientRect()); return Math.round((Math.max(...ks.map(r => r.bottom)) - Math.min(...ks.map(r => r.top))) / p.offsetHeight * 100); }), overflow: [...panelsEl].filter(p => p.scrollHeight > p.clientHeight + 1).map(p => p.id) },
       G4: { fullW: [...fulls].map(f => Math.round(f.getBoundingClientRect().width)), gridW: Math.round(document.getElementById('main').clientWidth - 152) },
-      G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, pinned: wipe ? Math.round(wipe.querySelector('.g-stick').getBoundingClientRect().top) : null, dwells: document.querySelectorAll('[data-dwell]').length, stickH: [...document.querySelectorAll('.g-stick')].map(e => e.offsetHeight), fill: [...document.querySelectorAll('[data-dwell]')].map(dw => { const st = dw.querySelector('.g-stick'); const kids = [...st.querySelectorAll('.g-panel, .dia, .stack')].map(k => k.getBoundingClientRect()); return Math.round((Math.max(...kids.map(r => r.bottom)) - Math.min(...kids.map(r => r.top))) / st.offsetHeight * 100); }) },
+      G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, pinned: wipe ? Math.round(wipe.querySelector('.pan').getBoundingClientRect().top) : null, dwells: document.querySelectorAll('[data-dwell]').length },
+
       G7: { bars: document.querySelectorAll('.bar').length, on: document.querySelectorAll('.bar.on').length },
       G8: { next: document.getElementById('next-link').textContent, ft: !!document.querySelector('.ft'), cta: !!document.querySelector('#s10 .btn[data-project]') },
       G10: { title: document.getElementById('hd-title').textContent, notSelf: document.getElementById('next-link').getAttribute('href').indexOf(pj.slug) < 0 },

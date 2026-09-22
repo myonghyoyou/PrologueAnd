@@ -1,7 +1,7 @@
-/* Case Study 상세 — G안 (docs/27 §4 G, docs/28). 한 격자(시작선 112, 폭 1120) + 판 리듬 + 전폭 그림.
-   spec/09-case-midfi.html#G의 마크업·값을 그대로 옮긴 것 */
+/* Case Study 상세 — G안 (docs/27 §4 G, docs/28). 한 격자(시작선 112, 폭 1120).
+   모든 판 = 화면 한 장(100vh − 헤더 64). 글은 위, 그림은 남는 높이를 다 쓴다(fitPans). 2026-09-22 */
 html{overflow-x:clip}
-body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:hidden은 07 sticky를 깨뜨린다 (docs/28 B1) */
+body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:hidden은 붙이기 계산을 어긋나게 한다 */
 .wrap{max-width:1272px;margin:0 auto;padding:0 40px 0 112px}
 /* 라이브 화면 */
 .shot.live{position:relative;overflow:hidden;--sc:.5;aspect-ratio:auto;background:#fff;border:1px solid var(--bone-900);padding:6px;max-width:1292px}
@@ -9,73 +9,81 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 .shot.img{background:var(--bone-100);border:1px solid var(--bone-300);display:flex;align-items:center;justify-content:center;color:var(--bone-500);font-size:13px;aspect-ratio:16/10;overflow:hidden}
 .shot.img img{width:100%;height:100%;object-fit:cover;object-position:top left}
 .capn{display:block;margin-top:8px;font-size:13px;color:var(--bone-500)}
-/* 표지 */
-.g-cover{padding:88px 0 0}
-.g-title{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;padding:32px 0 40px}
+/* 판: 화면 한 장. 세로 가운데 */
+.pan{position:relative;height:calc(100vh - 64px);min-height:640px;display:flex;flex-direction:column;justify-content:center;padding:24px 0 32px;box-sizing:border-box}
+.pan .txt{flex:none;padding-bottom:28px}
+.pan .dw{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center}
+.pan .dw>.shot,.pan .dw>.dia,.pan .dw>.stack{width:var(--dw,100%);max-width:100%}
+.nlab{display:block;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--navy-800);margin-bottom:14px;font-variant-numeric:tabular-nums}
+.pan h2{font-size:48px;font-weight:600;letter-spacing:-.025em;line-height:1.12;margin:0 0 18px;word-break:keep-all}
+.pan p{font-size:18px;line-height:1.7;color:var(--bone-700);max-width:36rem;margin:0 0 14px}
+.pan .txt p:last-child{margin-bottom:0}
+/* 표지: 화면 + 제목·메타 | 숫자 가 한 장에 */
+.pan.cover{padding-top:88px;justify-content:flex-start}
+.pan.cover .dw{flex:none;display:block}
+.g-title{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;padding:28px 0 0}
 .h1x{font-size:56px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:12px 0 0;word-break:keep-all;view-transition-name:pj-title}
-.metarow{display:flex;gap:28px;margin-top:24px;font-size:14px;color:var(--bone-700);flex-wrap:wrap}.metarow b{color:var(--bone-500);font-weight:500;margin-right:6px}
+.metarow{display:flex;gap:28px;margin-top:20px;font-size:14px;color:var(--bone-700);flex-wrap:wrap}.metarow b{color:var(--bone-500);font-weight:500;margin-right:6px}
 .knums{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.knums b{display:block;font-size:32px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:8px}.knums span{font-size:13px;color:var(--bone-700)}
-/* 판 */
-.g-panel{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:80px 0}
-.g-panel>*{min-width:0}
-.g-panel.txt{grid-template-columns:1fr;padding-bottom:32px}
-.g-panel .nlab{display:block;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--navy-800);margin-bottom:14px;font-variant-numeric:tabular-nums}
-.g-panel h2{font-size:40px;font-weight:600;letter-spacing:-.025em;line-height:1.15;margin:0 0 18px;word-break:keep-all}
-.g-panel p{font-size:16px;line-height:1.7;color:var(--bone-700);max-width:34rem;margin:0 0 14px}
-.g-full{padding:0 0 80px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.knums b{display:block;font-size:36px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:8px}.knums span{font-size:13px;color:var(--bone-700)}
+/* 마지막 판: 09 | 10 두 칸 + 다음 이야기 티저가 한 장 */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.two-col>*{min-width:0}
+.pan.last{justify-content:space-between;padding-top:56px}
+.pan.last .two-col .txt{padding-bottom:0}
+/* 머무름: 03~05(morph)·07(와이프)은 판이 화면에 붙고 120vh를 지나며 애니메이션이 끝난 뒤 내려간다 (docs/28 G5·G6). 붙이기는 JS(translateY) */
+.g-dwell{position:relative;padding-bottom:120vh}
+.g-dwell .pan{will-change:transform}
 /* 다이어그램 */
-.dia{background:var(--bone-0);border:1px solid var(--bone-200);padding:24px}.dia svg{width:100%;height:auto;display:block;overflow:visible}
+.dia{background:var(--bone-0);border:1px solid var(--bone-200);padding:24px;box-sizing:border-box}.dia svg{width:100%;height:auto;display:block;overflow:visible}
 .dia text{font-family:var(--sans);font-size:11px;font-weight:500;fill:var(--bone-500)}.dia .before{fill:none;stroke:var(--navy-400);stroke-width:1}.dia .after{fill:none;stroke:var(--navy-800);stroke-width:1.5}.dia .node{fill:var(--bone-50);stroke:var(--navy-800)}.dia .flagp{fill:var(--navy-800)}
 .dia .dcap{display:flex;justify-content:space-between;gap:16px;margin-top:12px;font-size:13px;color:var(--bone-500)}.dia .dcap span{transition:opacity .3s}
 /* 06 핫스팟 */
-.spots{list-style:none;margin:0 0 20px;padding:0;display:flex;flex-direction:column;gap:8px;max-width:34rem}
-.spots li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--bone-200);border-radius:2px;background:var(--bone-0);font-size:13px;line-height:1.45;color:var(--bone-700);cursor:default;transition:border-color .15s,color .15s}
+.spots{list-style:none;margin:16px 0 0;padding:0;display:flex;gap:8px;max-width:none}
+.spots li{flex:1;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--bone-200);border-radius:2px;background:var(--bone-0);font-size:13px;line-height:1.45;color:var(--bone-700);cursor:default;transition:border-color .15s,color .15s}
 .spots li b{flex:none;width:18px;height:18px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
 .spots li.on{border-color:var(--navy-800);color:var(--bone-900)}
 .shot.live .spot-hl{position:absolute;box-sizing:border-box;border:1.5px solid var(--navy-800);box-shadow:0 0 0 9999px rgba(250,249,246,.62);opacity:0;transition:opacity .15s;pointer-events:none;z-index:3}
 .shot.live .spot-hl.on{opacity:1}
 .shot.live .badge{position:absolute;z-index:4;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;pointer-events:none}
-/* 머무름: 03~05(morph)·07(와이프)은 판 + 그림이 한 덩어리로 화면에 붙고, 120vh를 지나는 동안 애니메이션이 끝난 뒤에야 내려간다 (docs/28 G5·G6)
-   덩어리 높이 = 화면(100vh − 64). 글은 위, 그림은 남는 높이를 다 쓰도록 JS(fitDwell)가 폭을 정한다 — 아래가 비지 않게 (2026-09-22) */
-.g-dwell{position:relative;padding-bottom:120vh}
-.g-stick{position:relative;height:calc(100vh - 64px);display:flex;flex-direction:column;justify-content:center;padding:24px 0 32px;box-sizing:border-box;will-change:transform}   /* 붙이기는 JS(translateY) — CSS sticky는 환경에 따라 안 붙음 */
-.g-dwell .g-panel.txt{padding:0 0 28px;flex:none}
-.g-dwell .g-panel h2{font-size:34px;margin-bottom:12px}
-.g-dwell .g-panel p{margin-bottom:0}
-.g-dwell .dw{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:0}
-.g-dwell .dia{width:var(--dw,100%);max-width:100%}
-.g-wipe .stack{position:relative;width:var(--dw,100%);max-width:100%}
-.g-wipe .stack .shot.live{max-width:100%}
-.g-wipe .stack .after{position:absolute;left:0;top:0;width:100%;clip-path:inset(0 100% 0 0)}
-.g-wipe .edge{position:absolute;top:0;bottom:0;left:0;width:2px;background:var(--navy-800);pointer-events:none;z-index:3}
-.g-wipe .wcaps{display:flex;justify-content:space-between;gap:24px;margin-top:8px;font-size:13px;color:var(--bone-500)}.g-wipe .wcaps span{transition:opacity .3s}
+/* 07 와이프 */
+.stack{position:relative}
+.stack .after{position:absolute;left:0;top:0;width:100%;clip-path:inset(0 100% 0 0)}
+.stack .shot.live{max-width:100%}
+.stack .edge{position:absolute;top:0;bottom:0;left:0;width:2px;background:var(--navy-800);pointer-events:none;z-index:3}
+.wcaps{display:flex;justify-content:space-between;gap:24px;margin-top:8px;font-size:13px;color:var(--bone-500)}.wcaps span{transition:opacity .3s}
 /* 08 */
-.impact2{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px}
-.impact2 b{display:block;font-size:88px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:8px}.impact2 span{font-size:14px;color:var(--bone-700)}.impact2 small{display:block;font-size:11px;color:var(--bone-400);margin-top:4px}
-.bars{margin-top:32px;display:flex;flex-direction:column;gap:14px;max-width:30rem}
-.bar{font-size:13px;color:var(--bone-700)}.bar .lbl{display:flex;justify-content:space-between;margin-bottom:6px}.bar .tr{height:6px;background:var(--bone-200);overflow:hidden}.bar .tr i{display:block;height:100%;width:0;background:var(--navy-800);transition:width .6s cubic-bezier(.2,.8,.2,1)}.bar.on .tr i{width:var(--w)}
+.impact2{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:24px}
+.impact2 b{display:block;font-size:160px;font-weight:600;letter-spacing:-.04em;line-height:1;color:var(--navy-800);margin-bottom:12px}.impact2 span{font-size:16px;color:var(--bone-700)}.impact2 small{display:block;font-size:12px;color:var(--bone-400);margin-top:4px}
+.bars{margin-top:56px;display:flex;flex-direction:column;gap:14px;max-width:44rem}
+.bar{font-size:13px;color:var(--bone-700)}.bar .lbl{display:flex;justify-content:space-between;margin-bottom:6px}.bar .tr{height:10px;background:var(--bone-200);overflow:hidden}.bar .tr i{display:block;height:100%;width:0;background:var(--navy-800);transition:width .6s cubic-bezier(.2,.8,.2,1)}.bar.on .tr i{width:var(--w)}
 /* 10·끝 */
 .cta{display:flex;align-items:center;gap:16px;margin-top:8px;flex-wrap:wrap}
-.teaser{border-top:1px solid var(--bone-200);padding:40px 0 64px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.teaser{border-top:1px solid var(--bone-200);padding:32px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.teaser .teaser-img{aspect-ratio:auto;justify-self:end}
 .teaser .cap{display:block;margin-bottom:8px}.teaser a.big{font-size:36px;font-weight:600;letter-spacing:-.02em;color:var(--bone-900);display:block;margin-bottom:12px}
 .ft{border-top:1px solid var(--bone-200);padding:24px 0 40px;display:flex;justify-content:space-between}
 /* 상세 → 상세: 제목 morph 없이 root 페이드만 (docs/28 B5) */
 html:active-view-transition-type(to-case) .h1x{view-transition-name:none}
-/* ---- 모바일: 한 단 ---- */
+/* 낮은 창(≤800): 글자 한 단계 축소 */
+@media (min-width:1024px) and (max-height:800px){
+  .pan h2{font-size:38px}.pan p{font-size:16px}.h1x{font-size:44px}.impact2 b{font-size:104px}.knums b{font-size:28px}
+  .pan .txt{padding-bottom:18px}.nlab{margin-bottom:10px}
+}
+/* ---- 모바일: 한 단, 판 높이는 내용대로 ---- */
 @media (max-width:1023px){
   .wrap{padding:0 16px}
-  .g-cover{padding-top:72px}
-  .g-title,.g-panel,.teaser{grid-template-columns:1fr;gap:24px}
-  .h1x{font-size:34px}
-  .g-panel{padding:48px 0}.g-panel h2{font-size:28px}
+  .pan{height:auto;min-height:0;padding:48px 0;display:block}
+  .pan.cover{padding-top:72px}
+  .pan .dw>.shot,.pan .dw>.dia,.pan .dw>.stack{width:auto!important;max-width:none}
+  .pan .dw{margin-top:20px}
+  .g-title,.two-col,.teaser{display:grid;grid-template-columns:1fr;gap:24px}
+  .teaser{padding-top:24px;margin-top:32px}.teaser .teaser-img{width:auto!important;height:auto!important;aspect-ratio:16/10}
+  .h1x{font-size:34px}.pan h2{font-size:28px}.pan p{font-size:16px}
   .impact2{grid-template-columns:1fr}.impact2 b{font-size:56px}
-  .g-dwell{padding-bottom:0}.g-stick{position:static;height:auto;padding:0;transform:none!important;display:block}
-  .g-dwell .dia,.g-wipe .stack{width:auto;max-width:none}
-  .g-dwell .g-panel.txt{padding:48px 0 24px}
-  .g-wipe .stack .after{position:static;clip-path:none!important;margin-top:12px}.g-wipe .edge{display:none}
-  .two{grid-template-columns:1fr}
+  .spots{flex-direction:column}
+  .g-dwell{padding-bottom:0}.g-dwell .pan{transform:none!important}
+  .stack .after{position:static;clip-path:none!important;margin-top:12px}.stack .edge{display:none}
   .ft{flex-wrap:wrap;gap:12px}
 }
 @media (prefers-reduced-motion:reduce){.bar .tr i,.spots li,.shot.live .spot-hl,.dia .dcap span{transition:none}}
