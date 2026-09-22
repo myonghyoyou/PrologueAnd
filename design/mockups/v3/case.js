@@ -43,13 +43,13 @@
     ${hasBefore
       ? `<div class="g-dwell" data-dwell data-wipe><section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></section></div>`
       : `<section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw">${pic(D.s07.after)}<span class="capn">${esc(D.s07.after.cap)}</span></div></section>`}
-    <section class="pan" id="s08"><div class="txt"><span class="nlab">08 IMPACT</span>
-      <div class="impact2" id="nums8">${D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span><small>${esc(n.small || '')}</small></div>`).join('')}</div>
-      ${D.s08.bars && D.s08.bars.some(b => b.before > 0) ? `<div class="bars" id="bars">${D.s08.bars.filter(b => b.before > 0).map(b => `<div class="bar" style="--w:${Math.round(b.after / b.before * 100)}%"><div class="lbl"><span>${esc(b.label)}</span><span>${b.before}${esc(b.unit || '')} → ${b.after}${esc(b.unit || '')}</span></div><div class="tr"><i></i></div></div>`).join('')}</div>` : ''}</div></section>
-    <section class="pan last" id="s09">
-      <div class="two-col"><div class="txt"><span class="nlab">09 WHAT I LEARNED</span><h2>${D.s09.h || '도구보다 길부터'}</h2>${P(D.s09.p)}</div>
+    <section class="pan finale" id="s08">
+      <div class="txt"><span class="nlab">08 IMPACT</span>
+        <div class="impact2" id="nums8">${D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span><small>${esc(n.small || '')}</small></div>`).join('')}</div>
+        ${D.s08.bars && D.s08.bars.some(b => b.before > 0) ? `<div class="bars" id="bars">${D.s08.bars.filter(b => b.before > 0).map(b => `<div class="bar" style="--w:${Math.round(b.after / b.before * 100)}%"><div class="lbl"><span>${esc(b.label)}</span><span>${b.before}${esc(b.unit || '')} → ${b.after}${esc(b.unit || '')}</span></div><div class="tr"><i></i></div></div>`).join('')}</div>` : ''}</div>
+      <div class="two-col" id="s09"><div class="txt"><span class="nlab">09 WHAT I LEARNED</span><h2>${D.s09.h || '도구보다 길부터'}</h2>${P(D.s09.p)}</div>
         <div class="txt" id="s10"><span class="nlab">10</span><h2>비슷한 문제가 있다면</h2>${P(D.s10.p)}<div class="cta"><a class="btn" href="#" data-open-drawer data-project="${pj.slug}">이 프로젝트를 보고 문의하기 <i class="tri"></i></a><a class="mail link" href="mailto:hello@prologue.and">hello@prologue.and</a></div></div></div>
-      <div class="teaser"><div><span class="cap">다음 이야기</span><a class="big" href="case.html?p=${next.slug}" id="next-link">${esc(next.title)}</a><p style="margin:0;color:var(--bone-700)">${esc(next.tagline)}</p></div><a href="case.html?p=${next.slug}" class="shot img teaser-img"><img src="${V3.img(next)}" alt="${esc(next.title)}" loading="lazy" onerror="this.remove()"></a></div>
+      <a class="teaser" href="case.html?p=${next.slug}" id="next-link"><div><span class="cap">다음 이야기</span><span class="big">${esc(next.title)}</span><p style="margin:0;color:var(--bone-700)">${esc(next.tagline)}</p></div><span class="shot img teaser-img"><img src="${V3.img(next)}" alt="${esc(next.title)}" loading="lazy" onerror="this.remove()"></span></a>
     </section>
     <footer class="ft"><nav><a href="projects.html">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></footer>`;
 
@@ -60,7 +60,7 @@
   function fitPans() { fitOnce(); fitOnce(); }   // 문단 폭이 그림 폭을 따르고 그림 폭이 글 높이를 따르므로 두 번 돌려 수렴
   function fitOnce() {
     document.querySelectorAll('.pan').forEach(pan => {
-      if (pan.classList.contains('last')) { const tz = pan.querySelector('.teaser'), img = pan.querySelector('.teaser-img'), tc = pan.querySelector('.two-col'); if (img) { const h = desktop() ? Math.max(160, pan.clientHeight - 56 - tc.offsetHeight - 64) : 0; img.style.height = h ? Math.min(h, 420) + 'px' : ''; img.style.width = h ? Math.min(tz.clientWidth / 2 - 24, Math.min(h, 420) * 1.6) + 'px' : ''; } return; }
+      if (pan.classList.contains('finale')) { const img = pan.querySelector('.teaser-img'); if (img && desktop()) { const used = [...pan.children].filter(k => !k.classList.contains('teaser')).reduce((a, k) => a + k.offsetHeight, 0); const h = clamp(pan.clientHeight - 56 - used - 48 - 40, 120, 220); img.style.height = h + 'px'; img.style.width = Math.round(h * 1.6) + 'px'; } else if (img) { img.style.height = ''; img.style.width = ''; } return; }
       const box = pan.querySelector('.dw'); if (!box) return;
       const targets = box.querySelectorAll(':scope > .dia, :scope > .stack, :scope > .shot');
       if (!desktop()) { targets.forEach(e => e.style.removeProperty('--dw')); return; }
@@ -69,7 +69,7 @@
       else { const txt = pan.querySelector('.txt'); h = pan.clientHeight - 56 - (txt ? txt.offsetHeight : 0); }   // 글 아래 남는 높이(위아래 여백 56)
       targets.forEach(t => {
         let w;
-        if (t.classList.contains('dia')) { const cap = t.querySelector('.dcap'); w = (h - 48 - (cap ? cap.offsetHeight + 12 : 0)) * 640 / 220; }
+        if (t.classList.contains('dia')) { const cap = t.querySelector('.dcap'); w = (h - 48 - (cap ? cap.offsetHeight + 12 : 0)) * 640 / 360; }
         else { const cap = pan.classList.contains('cover') ? null : box.querySelector(':scope > .capn, :scope > .wcaps'); w = (h - (cap ? cap.offsetHeight + 8 : 0) - 12) * 1280 / 800; }
         const dw = Math.max(320, Math.min(box.clientWidth, w)); t.style.setProperty('--dw', dw + 'px'); pan.style.setProperty('--tw', dw + 'px');   // 문단도 그림 폭에 맞춘다
       });
@@ -80,13 +80,15 @@
   setTimeout(fitPans, 300); addEventListener('load', fitPans);
 
   /* ---------- 다이어그램 03→05 morph (docs/28 G5): data-t 고정 또는 data-scrub(화면 안 위치 = t, 핀 없음) ---------- */
-  const src = [40, 80, 120, 160], names = ['전화', '메신저', '이메일', '직접 방문'];
-  const B = src.map((y, i) => [120 + i * 30, y + (i % 2 ? -50 : 50), 220, 100 + (i - 1.5) * 24, 300, 100]);
-  const A = src.map(y => [110, y, 130, 100, 160, 100]);
+  const Y = 1.6;   // 세로 배율: 640×220 그림을 640×360으로 키워 판을 더 채운다 (2026-09-22)
+  const src = [40, 80, 120, 160].map(y => Math.round(y * Y)), names = ['전화', '메신저', '이메일', '직접 방문'];
+  const CY = Math.round(100 * Y);
+  const B = src.map((y, i) => [120 + i * 30, y + (i % 2 ? -50 : 50) * Y, 220, CY + (i - 1.5) * 24 * Y, 300, CY]);
+  const A = src.map(y => [110, y, 130, CY, 160, CY]);
   const lerp = (a, b, t) => a + (b - a) * t;
   const chain = [[160, '개인 링크'], [270, '요청폼'], [380, '심사 Queue'], [480, '약속일'], [580, '상태 공유']];
   document.querySelectorAll('[data-morph]').forEach(d => {
-    d.innerHTML = `<svg viewBox="0 0 640 220">${src.map((y, i) => `<text x="34" y="${y + 4}" text-anchor="end">${names[i]}</text>`).join('')}${src.map((y, i) => `<path class="before" data-i="${i}" d=""/>`).join('')}<g class="mb"><path class="before" d="M300 100 H520"/><circle class="node" cx="300" cy="100" r="4" style="stroke:#8A96C2"/><text x="300" y="124" text-anchor="middle">담당자가 정리·기억</text><path class="before" d="M514 94 l12 12 M526 94 l-12 12"/><text x="520" y="124" text-anchor="middle">몰입 중단</text></g><g class="ma"><path class="after mchain" d="M160 100 H566"/>${chain.map(([x, n], i) => i < 4 ? `<circle class="node" cx="${x}" cy="100" r="4"/><text x="${x}" y="${i === 0 ? 148 : i % 2 ? 84 : 124}" text-anchor="middle">${n}</text>` : `<polygon class="flagp" points="566,92 582,100 566,108"/><text x="582" y="124" text-anchor="middle">${n}</text>`).join('')}</g></svg><div class="dcap"><span class="cb">${esc(D.s03.before)}</span><span class="ca" style="text-align:right">${esc(D.s03.after)}</span></div>`;
+    d.innerHTML = `<svg viewBox="0 0 640 360">${src.map((y, i) => `<text x="34" y="${y + 5}" text-anchor="end">${names[i]}</text>`).join('')}${src.map((y, i) => `<path class="before" data-i="${i}" d=""/>`).join('')}<g class="mb"><path class="before" d="M300 ${CY} H520"/><circle class="node" cx="300" cy="${CY}" r="5" style="stroke:#8A96C2"/><text x="300" y="${CY + 28}" text-anchor="middle">담당자가 정리·기억</text><path class="before" d="M514 ${CY - 6} l12 12 M526 ${CY - 6} l-12 12"/><text x="520" y="${CY + 28}" text-anchor="middle">몰입 중단</text></g><g class="ma"><path class="after mchain" d="M160 ${CY} H566"/>${chain.map(([x, n], i) => i < 4 ? `<circle class="node" cx="${x}" cy="${CY}" r="5"/><text x="${x}" y="${i === 0 ? CY + 56 : i % 2 ? CY - 20 : CY + 28}" text-anchor="middle">${n}</text>` : `<polygon class="flagp" points="566,${CY - 9} 582,${CY} 566,${CY + 9}"/><text x="582" y="${CY + 28}" text-anchor="middle">${n}</text>`).join('')}</g></svg><div class="dcap"><span class="cb">${esc(D.s03.before)}</span><span class="ca" style="text-align:right">${esc(D.s03.after)}</span></div>`;
     const mchain = d.querySelector('.mchain'); const L = mchain.getTotalLength(); mchain.style.strokeDasharray = L; let last = -1;
     d._morph = t => { if (t === last) return; last = t; src.forEach((y, i) => { const b = B[i], a = A[i]; const v = b.map((n, j) => lerp(n, a[j], t)); const el = d.querySelector(`path[data-i="${i}"]`); el.setAttribute('d', `M40 ${y} C ${v[0]} ${v[1]}, ${v[2]} ${v[3]}, ${v[4]} ${v[5]}`); el.setAttribute('class', t > .5 ? 'after' : 'before'); }); d.querySelector('.mb').style.opacity = Math.max(0, 1 - t * 2); d.querySelector('.ma').style.opacity = clamp((t - .45) * 2, 0, 1); mchain.style.strokeDashoffset = L * (1 - clamp((t - .5) * 2, 0, 1)); d.querySelector('.cb').style.opacity = t < .5 ? 1 : .35; d.querySelector('.ca').style.opacity = t < .5 ? .35 : 1; };
     d._morph(d.dataset.t !== undefined ? +d.dataset.t : 0);
@@ -201,7 +203,7 @@
       G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, pinned: wipe ? Math.round(wipe.querySelector('.pan').getBoundingClientRect().top) : null, dwells: document.querySelectorAll('[data-dwell]').length },
 
       G7: { bars: document.querySelectorAll('.bar').length, on: document.querySelectorAll('.bar.on').length },
-      G8: { next: document.getElementById('next-link').textContent, ft: !!document.querySelector('.ft'), cta: !!document.querySelector('#s10 .btn[data-project]') },
+      G8: { next: document.getElementById('next-link').querySelector('.big').textContent, ft: !!document.querySelector('.ft'), cta: !!document.querySelector('#s10 .btn[data-project]') },
       G10: { title: document.getElementById('hd-title').textContent, notSelf: document.getElementById('next-link').getAttribute('href').indexOf(pj.slug) < 0 },
       B1: { html: cs(document.documentElement).overflowX, body: cs(document.body).overflow, stops: stops().length },
       B6: { drawer: !!document.getElementById('drawer'), hdrProject: document.getElementById('hd-ask').dataset.project },
