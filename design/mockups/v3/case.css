@@ -19,13 +19,15 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 .pan p{font-size:18px;line-height:1.7;color:var(--bone-700);max-width:36rem;margin:0 0 14px}
 .pan .txt p:last-child{margin-bottom:0}
 /* 표지: 화면 + 제목·메타 | 숫자 가 한 장에 */
-.pan.cover{padding-top:88px;justify-content:flex-start}
+.pan.cover{height:100vh;padding-top:88px;justify-content:flex-start}   /* 첫 판은 문서 맨 위(헤더 아래 시작)라 화면 전체 높이 — 다음 판이 밑에 비치지 않게 */
+.pan.cover .cap{font-size:15px}
 .pan.cover .dw{flex:none;display:block}
+.pan.cover .dw .capn{font-size:14px}
 .g-title{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;padding:28px 0 0}
 .h1x{font-size:56px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:12px 0 0;word-break:keep-all;view-transition-name:pj-title}
-.metarow{display:flex;gap:28px;margin-top:20px;font-size:14px;color:var(--bone-700);flex-wrap:wrap}.metarow b{color:var(--bone-500);font-weight:500;margin-right:6px}
+.metarow{display:flex;gap:28px;margin-top:20px;font-size:16px;color:var(--bone-700);flex-wrap:wrap}.metarow b{color:var(--bone-500);font-weight:500;margin-right:6px}
 .knums{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.knums b{display:block;font-size:36px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:8px}.knums span{font-size:13px;color:var(--bone-700)}
+.knums b{display:block;font-size:44px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:10px}.knums span{font-size:15px;color:var(--bone-700)}
 /* 마지막 판: 09 | 10 두 칸 + 다음 이야기 티저가 한 장 */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
 .two-col>*{min-width:0}
