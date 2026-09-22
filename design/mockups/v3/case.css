@@ -7,8 +7,8 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 /* 라이브 화면 */
 .shot.live{position:relative;overflow:hidden;--sc:.5;aspect-ratio:auto;background:#fff;border:1px solid var(--bone-900);padding:6px;max-width:1292px}
 .shot.live iframe{display:block;width:1280px;height:800px;border:0;transform:scale(var(--sc));transform-origin:0 0;pointer-events:none;background:#fff}
-.shot.img{background:var(--bone-100);border:1px solid var(--bone-300);display:flex;align-items:center;justify-content:center;color:var(--bone-500);font-size:13px;aspect-ratio:16/10;overflow:hidden}
-.shot.img img{width:100%;height:100%;object-fit:cover;object-position:top left}
+.shot.img{position:relative;background:var(--bone-0);border:1px solid var(--bone-900);padding:6px;box-sizing:border-box;display:block;color:var(--bone-500);font-size:13px;aspect-ratio:1292/812;overflow:hidden}
+.shot.img img{display:block;width:100%;height:100%;object-fit:cover;object-position:top left}
 .capn{display:block;margin-top:8px;font-size:clamp(12px,.9vw,15px);color:var(--bone-500)}
 /* 판: 화면 한 장. 세로 가운데 */
 /* 판: 화면 한 장. 글 블록은 판 위 11%에 고정(판을 넘겨도 제목 위치가 같다), 그림은 그 아래 남는 높이 */
@@ -55,9 +55,9 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 .spots li{flex:1;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--bone-200);border-radius:2px;background:var(--bone-0);font-size:clamp(13px,.9vw,15px);line-height:1.45;color:var(--bone-700);cursor:default;transition:border-color .15s,color .15s}
 .spots li b{flex:none;width:18px;height:18px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
 .spots li.on{border-color:var(--navy-800);color:var(--bone-900)}
-.shot.live .spot-hl{position:absolute;box-sizing:border-box;border:1.5px solid var(--navy-800);box-shadow:0 0 0 9999px rgba(250,249,246,.62);opacity:0;transition:opacity .15s;pointer-events:none;z-index:3}
-.shot.live .spot-hl.on{opacity:1}
-.shot.live .badge{position:absolute;z-index:4;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.shot .spot-hl{position:absolute;box-sizing:border-box;border:1.5px solid var(--navy-800);box-shadow:0 0 0 9999px rgba(250,249,246,.62);opacity:0;transition:opacity .15s;pointer-events:none;z-index:3}
+.shot .spot-hl.on{opacity:1}
+.shot .badge{position:absolute;z-index:4;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;pointer-events:none}
 /* 07 와이프 */
 .stack{position:relative}
 .stack .after{position:absolute;left:0;top:0;width:100%;clip-path:inset(0 100% 0 0)}

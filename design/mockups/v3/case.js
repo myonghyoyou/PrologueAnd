@@ -105,7 +105,7 @@
 
   /* ---------- 06 핫스팟 (docs/28 G9) ---------- */
   (function () {
-    const list = document.getElementById('spots'), sh = document.querySelector('#solbox .shot.live'); if (!list || !sh) return;
+    const list = document.getElementById('spots'), sh = document.querySelector('#solbox .shot'); if (!list || !sh) return;   // 라이브 화면·정지 이미지 모두
     const hl = document.createElement('i'); hl.className = 'spot-hl'; sh.appendChild(hl);
     const pos = (el, s) => { el.style.left = `calc(6px + (100% - 12px) * ${s.x / 100})`; el.style.top = `calc(6px + (100% - 12px) * ${s.y / 100})`; };
     D.s06.spots.forEach((s, i) => { const b = document.createElement('b'); b.className = 'badge'; b.textContent = i + 1; pos(b, s); sh.appendChild(b); });
