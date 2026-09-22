@@ -37,11 +37,11 @@
       </div>
     </section>
     <section class="pan" id="s01">${TXT('01 OVERVIEW', D.s01.h || '업무 요청을 받아 처리하는 담당자를 위한 도구', P(D.s01.p))}<div class="dw"><div class="dia" data-morph data-t="0"></div></div></section>
-    <section class="pan" id="s02">${TXT('02 PROBLEM', D.s02.h || '네 갈래로 흩어져 들어온 요청', P(D.s02.p))}<div class="dw">${hasBefore ? pic(D.s07.before) + `<span class="capn">${esc(D.s07.before.cap)}</span>` : pic(D.hero)}</div></section>
+    <section class="pan side" id="s02">${TXT('02 PROBLEM', D.s02.h || '네 갈래로 흩어져 들어온 요청', P(D.s02.p))}<div class="dw fill">${hasBefore ? pic(D.s07.before, 'crop') + `<span class="capn">${esc(D.s07.before.cap)}</span>` : pic(D.hero, 'crop')}</div></section>
     <div class="g-dwell" data-dwell><section class="pan" id="s03">${TXT('03 · 04 · 05 &nbsp;EXISTING WORKFLOW → INSIGHT → REDESIGN', esc(D.s04.q), `<p>${D.s03.p[0]} ${D.s05.flow.join(' → ')}.</p>`)}<div class="dw"><div class="dia" data-morph data-scrub></div></div></section></div>
-    <section class="pan" id="s06">${TXT('06 SOLUTION', D.s06.h || '필수 항목을 채워야 보낼 수 있는 양식', P(D.s06.p) + (D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((sp, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(sp.cap)}</span></li>`).join('')}</ul>` : ''))}<div class="dw" id="solbox">${pic(D.s06.screen, 'spotted')}<span class="capn">${esc(D.s06.screen.cap)}</span></div></section>
+    <section class="pan side" id="s06">${TXT('06 SOLUTION', D.s06.h || '필수 항목을 채워야 보낼 수 있는 양식', P(D.s06.p) + (D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((sp, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(sp.cap)}</span></li>`).join('')}</ul>` : ''))}<div class="dw fill" id="solbox">${pic(D.s06.screen, 'spotted crop')}<span class="capn">${esc(D.s06.screen.cap)}</span></div></section>
     ${hasBefore
-      ? `<div class="g-dwell" data-dwell data-wipe><section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></section></div>`
+      ? `<div class="g-dwell" data-dwell data-wipe><section class="pan side" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw fill"><div class="stack">${pic(D.s07.before, 'crop')}${pic(D.s07.after, 'after crop')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></section></div>`
       : `<section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw">${pic(D.s07.after)}<span class="capn">${esc(D.s07.after.cap)}</span></div></section>`}
     <section class="pan" id="s08"><div class="txt"><span class="nlab">08 IMPACT</span>
       <div class="impact2" id="nums8">${D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span><small>${esc(n.small || '')}</small></div>`).join('')}</div>
@@ -54,13 +54,24 @@
     <footer class="ft"><nav><a href="projects.html">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></footer>`;
 
   /* ---------- 라이브 화면: 폭에 맞춰 축소(원본보다 키우지 않음), 화면에 가까워지면 로드 ---------- */
-  function fit() { document.querySelectorAll('.shot.live').forEach(el => { const w = el.clientWidth - 12; if (w <= 0) return; const sc = Math.min(1, w / 1280); el.style.setProperty('--sc', sc.toFixed(4)); el.style.height = (800 * sc + 12) + 'px'; }); }
+  function fit() { document.querySelectorAll('.shot.live').forEach(el => { if (el.classList.contains('crop') && desktop()) return; const w = el.clientWidth - 12; if (w <= 0) return; const sc = Math.min(1, w / 1280); el.style.setProperty('--sc', sc.toFixed(4)); el.style.height = (800 * sc + 12) + 'px'; }); }
   function lazy() { document.querySelectorAll('.shot.live').forEach(el => { if (el.querySelector('iframe')) return; const r = el.getBoundingClientRect(); if (r.top < innerHeight * 2 && r.bottom > -innerHeight) el.insertAdjacentHTML('afterbegin', `<iframe src="${el.dataset.src}" tabindex="-1" aria-label="${esc(el.title)}" loading="lazy"></iframe>`); }); }
   // 모든 판: 글 아래 남는 높이를 그림이 다 쓰게 폭을 정한다 (다이어그램 640:220 + 여백·캡션, 화면 1280:800 + 캡션). 표지는 화면 높이의 52%
   function fitPans() {
     document.querySelectorAll('.pan').forEach(pan => {
       if (pan.classList.contains('last')) { const tz = pan.querySelector('.teaser'), img = pan.querySelector('.teaser-img'), tc = pan.querySelector('.two-col'); if (img) { const h = desktop() ? Math.max(160, pan.clientHeight - 56 - tc.offsetHeight - 64) : 0; img.style.height = h ? Math.min(h, 420) + 'px' : ''; img.style.width = h ? Math.min(tz.clientWidth / 2 - 24, Math.min(h, 420) * 1.6) + 'px' : ''; } return; }
       const box = pan.querySelector('.dw'); if (!box) return;
+      if (pan.classList.contains('side')) {
+        const capH = (box.querySelector(':scope > .capn, :scope > .wcaps') || { offsetHeight: 0 }).offsetHeight;
+        const bw = box.clientWidth, bh = desktop() ? box.clientHeight - capH - 8 : 0;
+        box.querySelectorAll('.shot.live.crop').forEach(sh => {
+          if (!bh) { sh.style.cssText = ''; sh.style.removeProperty('--sc'); sh.style.removeProperty('--ox'); return; }
+          const sc = Math.max((bw - 12) / 1280, (bh - 12) / 800);   // 칸을 다 채우고 넘치는 쪽을 잘라 낸다
+          sh.style.width = bw + 'px'; sh.style.height = bh + 'px'; sh.style.setProperty('--sc', sc.toFixed(4)); sh.style.setProperty('--ox', Math.round(((bw - 12) - 1280 * sc) / 2) + 'px');
+        });
+        const st = box.querySelector('.stack'); if (st) { st.style.width = bw + 'px'; st.style.height = bh + 'px'; }
+        return;
+      }
       const targets = box.querySelectorAll(':scope > .dia, :scope > .stack, :scope > .shot');
       if (!desktop()) { targets.forEach(e => e.style.removeProperty('--dw')); return; }
       let h;
@@ -118,20 +129,64 @@
     if (wipe && desktop()) { const t = tWipe(); wipe.querySelector('.after').style.clipPath = `inset(0 ${(100 - t * 100).toFixed(2)}% 0 0)`; wipe.querySelector('.edge').style.left = `calc(${(t * 100).toFixed(2)}% - 1px)`; wipe.querySelector('.wb').style.opacity = t < .5 ? 1 : .35; wipe.querySelector('.wa').style.opacity = t < .5 ? .35 : 1; }
     const bars = document.getElementById('bars'); if (bars && bars.getBoundingClientRect().top < innerHeight * .85) bars.querySelectorAll('.bar').forEach(b => b.classList.add('on'));
   }
-  V3.initLenis();
-  if (V3.lenis) V3.lenis.on('scroll', onScroll); else addEventListener('scroll', onScroll, { passive: true });
+  /* ---------- 정거장: 휠 한 칸 = 한 판 (v5 엔진). 머무름 판은 03→04→05 / Before→After 가 각각 한 칸 (docs/28 B2 개정 2026-09-22) ---------- */
+  const panels = () => [...document.querySelectorAll('.pan')];
+  // 정거장 목록: 판마다 하나(top − 64). 머무름 판은 구간 안 t 0/.5/1 (03~05) 또는 0/1 (07)
+  function stops() {
+    const out = [];
+    panels().forEach(p => {
+      const dw = p.closest('[data-dwell]');
+      if (!dw) { out.push({ y: p.getBoundingClientRect().top + scrollY - 64, el: p }); return; }
+      const y0 = dw.getBoundingClientRect().top + scrollY, range = dw.offsetHeight - p.offsetHeight;
+      const ks = dw.hasAttribute('data-wipe') ? [0, 1] : [0, .5, 1];
+      ks.forEach(k => out.push({ y: y0 + range * k, el: p }));
+    });
+    return out;
+  }
+  const anim = { pos: scrollY, target: scrollY, vel: 0, active: false, smooth: 0.28 };
+  function smoothDamp(cur, to, vel, smoothTime, dt) { const w = 2 / Math.max(0.0001, smoothTime), x = w * dt, e = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x); const ch = cur - to, tt = (vel + w * ch) * dt, nv = (vel - w * tt) * e; return { pos: to + (ch + tt) * e, vel: nv }; }
+  const maxY = () => document.documentElement.scrollHeight - innerHeight;
+  function setTarget(y) { anim.target = clamp(y, 0, maxY()); if (!anim.active) { anim.pos = scrollY; anim.vel = 0; anim.active = true; } }
+  let lastT = performance.now();
+  function tick(now) {
+    const dt = clamp((now - lastT) / 1000, 0.001, 0.05); lastT = now;
+    if (anim.active) {
+      const r = smoothDamp(anim.pos, anim.target, anim.vel, anim.smooth, dt); anim.pos = r.pos; anim.vel = r.vel;
+      if (Math.abs(anim.target - anim.pos) < 0.5 && Math.abs(anim.vel) < 8) { anim.pos = anim.target; anim.vel = 0; anim.active = false; }
+      scrollTo(0, anim.pos); onScroll();
+    }
+    requestAnimationFrame(tick);
+  }
+  const curStop = () => { const st = stops(); let k = 0; st.forEach((s, i) => { if (s.y <= (anim.active ? anim.target : scrollY) + 2) k = i; }); return { st, k }; };
+  const goStop = dir => { const { st, k } = curStop(); setTarget(st[clamp(k + dir, 0, st.length - 1)].y); };
+  const goTo = (el, immediate) => { const dw = el.closest && el.closest('[data-dwell]'); const y = (dw || el).getBoundingClientRect().top + scrollY - (dw ? 0 : 64); if (immediate || reduced) { anim.active = false; scrollTo(0, y); onScroll(); } else setTarget(y); };
+  if (desktop() && !reduced) {
+    // 휠: 스트림 하나(간격 100ms 안) = 한 칸. 90px부터 반응, 300ms 넘게 이어지면 480px마다 한 칸 더 (v5·v6과 같은 값)
+    const WHEEL = { gap: 100, first: 90, more: 480 }; let acc = 0, lastEv = 0, stepped = false, streamStart = 0, lockUntil = 0, pending = 0;
+    const request = dir => { const now = performance.now(); if (now < lockUntil) { pending += dir; return; } goStop(dir); lockUntil = now + 160; };
+    addEventListener('wheel', e => {
+      const dr = document.getElementById('drawer'); if (dr && dr.classList.contains('on')) return;
+      e.preventDefault();
+      const d = e.deltaY; if (!d) return;
+      const now = performance.now(), gap = now - lastEv; lastEv = now;
+      if (gap > WHEEL.gap) { acc = 0; stepped = false; streamStart = now; }
+      acc += d;
+      if (!stepped) { if (Math.abs(acc) >= WHEEL.first) { request(acc > 0 ? 1 : -1); acc = 0; stepped = true; } return; }
+      if (now - streamStart > 300 && Math.abs(acc) >= WHEEL.more) { request(acc > 0 ? 1 : -1); acc = 0; }
+    }, { passive: false });
+    setInterval(() => { if (pending && performance.now() >= lockUntil) { const dir = Math.sign(pending); pending -= dir; goStop(dir); lockUntil = performance.now() + 160; } }, 40);
+    requestAnimationFrame(tick);
+  }
+  addEventListener('scroll', () => { if (!anim.active) onScroll(); }, { passive: true });
   onScroll();
 
   /* ---------- 키·해시·뒤로가기 ---------- */
-  const panels = () => [...document.querySelectorAll('.pan')];
-  const goTo = (el, immediate) => { const dw = el.closest && el.closest('[data-dwell]'); const y = (dw || el).getBoundingClientRect().top + scrollY - (dw ? 0 : 64); if (V3.lenis) V3.lenis.scrollTo(y, immediate ? { immediate: true } : { duration: 1.1 }); else scrollTo({ top: y, behavior: immediate || reduced ? 'auto' : 'smooth' }); };
   addEventListener('keydown', e => {
     if (!desktop() || e.altKey || e.ctrlKey || e.metaKey) return;
     const dr = document.getElementById('drawer'); if (dr && dr.classList.contains('on')) return;
-    const ps = panels(); let k = 0; ps.forEach((p, i) => { const el = p.closest('[data-dwell]') || p; if (el.getBoundingClientRect().top <= 66) k = i; });
-    if (['ArrowDown', 'ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); goTo(ps[clamp(k + 1, 0, ps.length - 1)]); }
-    else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); goTo(ps[clamp(k - 1, 0, ps.length - 1)]); }
-    else if (e.key === 'Home') { e.preventDefault(); goTo(ps[0], false); } else if (e.key === 'End') { e.preventDefault(); goTo(ps[ps.length - 1]); }
+    if (['ArrowDown', 'ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); goStop(1); }
+    else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); goStop(-1); }
+    else if (e.key === 'Home') { e.preventDefault(); setTarget(0); } else if (e.key === 'End') { e.preventDefault(); setTarget(maxY()); }
   });
   const hash = location.hash.replace('#', ''); const target = hash && document.getElementById(hash);
   if (target) setTimeout(() => goTo(target.closest('.pan') || target, true), 50);
@@ -158,11 +213,11 @@
       G7: { bars: document.querySelectorAll('.bar').length, on: document.querySelectorAll('.bar.on').length },
       G8: { next: document.getElementById('next-link').textContent, ft: !!document.querySelector('.ft'), cta: !!document.querySelector('#s10 .btn[data-project]') },
       G10: { title: document.getElementById('hd-title').textContent, notSelf: document.getElementById('next-link').getAttribute('href').indexOf(pj.slug) < 0 },
-      B1: { html: cs(document.documentElement).overflowX, body: cs(document.body).overflow, lenis: !!V3.lenis },
+      B1: { html: cs(document.documentElement).overflowX, body: cs(document.body).overflow, stops: stops().length },
       B6: { drawer: !!document.getElementById('drawer'), hdrProject: document.getElementById('hd-ask').dataset.project },
       H: { hdrH: document.querySelector('.hdr').offsetHeight, vt: cs(document.querySelector('.hdr')).viewTransitionName, strip: !!document.querySelector('.pmap'), pos: !!document.querySelector('.hdr .pos') },
       noHScroll: document.documentElement.scrollWidth <= innerWidth
     };
   };
-  window.__case = { goTo, panels, tWipe };
+  window.__case = { goTo, goStop, stops, panels, tWipe, anim };
 })();
