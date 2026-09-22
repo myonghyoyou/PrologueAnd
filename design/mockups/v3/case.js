@@ -64,12 +64,12 @@
       const targets = box.querySelectorAll(':scope > .dia, :scope > .stack, :scope > .shot');
       if (!desktop()) { targets.forEach(e => e.style.removeProperty('--dw')); return; }
       let h;
-      if (pan.classList.contains('cover')) { const tt = pan.querySelector('.g-title'); h = Math.min(pan.clientHeight * 0.56, pan.clientHeight - 88 - 32 - 28 - (tt ? tt.offsetHeight : 0)); }
+      if (pan.classList.contains('cover')) { const tt = pan.querySelector('.g-title'); const cap = box.querySelector('.capn'); h = Math.min(pan.clientHeight * 0.62, pan.clientHeight - 88 - 32 - 28 - (tt ? tt.offsetHeight : 0)) - (cap ? cap.offsetHeight + 8 : 0); }
       else { const txt = pan.querySelector('.txt'); h = pan.clientHeight - 56 - (txt ? txt.offsetHeight : 0); }
       targets.forEach(t => {
         let w;
         if (t.classList.contains('dia')) { const cap = t.querySelector('.dcap'); w = (h - 48 - (cap ? cap.offsetHeight + 12 : 0)) * 640 / 220; }
-        else { const cap = box.querySelector(':scope > .capn, :scope > .wcaps'); w = (h - (cap ? cap.offsetHeight + 8 : 0) - 12) * 1280 / 800; }
+        else { const cap = pan.classList.contains('cover') ? null : box.querySelector(':scope > .capn, :scope > .wcaps'); w = (h - (cap ? cap.offsetHeight + 8 : 0) - 12) * 1280 / 800; }
         t.style.setProperty('--dw', Math.max(320, Math.min(box.clientWidth, w)) + 'px');
       });
     });
