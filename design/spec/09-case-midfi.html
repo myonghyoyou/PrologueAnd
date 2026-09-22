@@ -96,6 +96,15 @@ body{background:var(--bone-50)}
 .e-slide .n{font-size:14px;font-weight:600;color:var(--navy-800);letter-spacing:.04em;margin-bottom:12px}
 .e-slide h2{font-size:44px;font-weight:600;letter-spacing:-.025em;line-height:1.15;margin:0 0 20px;word-break:keep-all}
 .e-slide p{font-size:17px;line-height:1.7;color:var(--bone-700);max-width:34rem;margin:0 0 16px}
+/* G = C + E: C의 한 격자·전폭 표지 + E의 판 리듬(번호 라벨 + 큰 제목 + 그림 옆배치, 괘선 없음) */
+.g-panel{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:80px 0}
+.g-panel.txt{grid-template-columns:1fr;padding-bottom:32px}
+.g-panel .nlab{display:block;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--navy-800);margin-bottom:14px;font-variant-numeric:tabular-nums}
+.g-panel h2{font-size:40px;font-weight:600;letter-spacing:-.025em;line-height:1.15;margin:0 0 18px;word-break:keep-all}
+.g-panel p{font-size:16px;line-height:1.7;color:var(--bone-700);max-width:34rem;margin:0 0 14px}
+.g-full{padding:0 0 80px}.g-full .capn{margin-top:8px}
+.g-cover{padding:88px 0 0}
+.g-title{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;padding:32px 0 40px}
 /* F */
 .f-cover{padding:104px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
 .f-line{position:relative;height:40px;margin:32px 0 8px}
@@ -256,11 +265,36 @@ body{background:var(--bone-50)}
   <div class="ftr"><nav><a href="#">Projects</a><a href="#">hello@prologue.and</a><a href="#">문의</a></nav><span>© 2026 Prologue&amp;</span></div></div>
 </section>
 
-<div id="sw"><span id="swn"></span><button data-o="A">A</button><button data-o="B">B</button><button data-o="C">C</button><button data-o="D">D</button><button data-o="E">E</button><button data-o="F">F</button></div>
+<!-- ============ G = C + E ============ -->
+<section class="opt" id="G">
+  <header class="hdr"><a class="brand" href="#">Prologue<span class="bamp">&amp;</span></a><span class="who">Por favor, Harry</span><a class="back" href="#">← Projects</a><nav><span class="pos">01 / 10</span><button type="button">문의</button></nav></header>
+  <div class="strip"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <!-- 표지: C의 전폭 화면 → 제목·메타 | 숫자 -->
+    <div class="g-cover"><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div><span class="capn">심사 대기열: 요청 6건이 한 화면에</span></div>
+    <div class="g-title"><div><span class="cap">Prologue <span class="amp" style="font-size:14px">&amp;</span> Por favor, Harry · 문제 01 흩어진 요청</span><h1 class="h1x">흩어진 업무 요청을<br>하나의 흐름으로</h1><div class="metarow"><span><b>역할</b>기획 · 설계 · 개발</span><span><b>기간</b>2025 · 6주</span><span><b>사용자</b>담당자 1명 · 요청자 40여 명</span><span><b>공개</b>전체</span></div></div><div class="knums" style="margin:0;border-top:0;max-width:none"><div><b>4 → 1</b><span>요청 경로</span></div><div><b>0회</b><span>진행 상황 묻는 연락</span></div><div><b>1곳</b><span>심사 대기열</span></div></div></div>
+
+    <!-- 판 리듬: E처럼 번호 라벨 + 큰 제목 + 옆 그림. 그림이 화면이면 C처럼 격자 전폭 -->
+    <div class="g-panel sec"><div><span class="nlab">01 OVERVIEW</span><h2>업무 요청을 받아 처리하는<br>담당자를 위한 도구</h2><p>회사 안에서 들어오는 업무 요청을 받아 처리하는 담당자를 위한 도구입니다. 기획·설계·개발을 맡았습니다.</p></div><div class="dia" data-morph data-t="0"></div></div>
+    <div class="g-panel sec"><div><span class="nlab">02 PROBLEM</span><h2>네 갈래로 흩어져<br>들어온 요청</h2><p>업무 요청이 전화, 메신저, 메일, 직접 방문으로 흩어져 들어왔습니다. 요청하는 쪽은 내용을 다 정리하지 않은 채 보내는 일이 많았고, 받는 쪽이 그걸 다시 정리하고 기억해야 했습니다.</p><p>요청이 올 때마다 하던 일이 끊겼고, "어떻게 됐어요?"라는 연락이 다시 일을 끊었습니다.</p></div><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div><span class="capn">Before: 메신저·메일·엑셀·메모에 흩어진 요청</span></div></div>
+    <div class="g-panel txt sec"><div><span class="nlab">03 · 04 · 05 &nbsp;EXISTING WORKFLOW → INSIGHT → REDESIGN</span><h2>할 일 관리가 아니라,<br>요청이 들어오는 길의 문제</h2><p>가는 선이 예전 흐름, 굵은 선이 바꾼 흐름입니다. 다이어그램이 화면에 있는 동안 바뀝니다. 요청 링크 → 요청 양식 → 심사 대기열 하나 → 처리 예정일 확정 → 진행 상황 자동 안내.</p></div></div>
+    <div class="g-full"><div class="dia" data-morph data-scrub></div></div>
+    <div class="g-panel txt sec"><div><span class="nlab">06 SOLUTION</span><h2>필수 항목을 채워야<br>보낼 수 있는 양식</h2><p>요청 양식 · 심사 대기열 · 진행 상태 · 처리 예정일 · 현황판 · 요청자 확인 화면. 아래는 요청하는 사람이 보는 양식입니다.</p><ul class="spots"><li><b>1</b><span>무엇이·왜 필요한지는 필수. 비우면 보낼 수 없습니다</span></li><li><b>2</b><span>희망일과 영향 범위를 고르면 심사에서 되묻지 않습니다</span></li><li><b>3</b><span>보내면 심사 대기열로. 처리 예정일이 정해지면 알림</span></li></ul></div></div>
+    <div class="g-full"><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-form"></div><span class="capn">요청 양식: 요청하는 사람이 필수 항목을 채워 보냄</span></div>
+    <div class="g-panel txt sec" style="padding-bottom:24px"><div><span class="nlab">07 BEFORE &amp; AFTER</span><h2>길 네 개가 하나로</h2><p>"어떻게 됐어요?" 연락 대신 요청한 사람이 직접 확인합니다.</p></div></div>
+    <div class="g-full"><div class="two"><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry-before"></div><span class="capn">Before</span></div><div><div class="shot live" data-src="../mockups/v2/img-src.html?p=por-favor-harry"></div><span class="capn">After: 심사 대기열 하나</span></div></div></div>
+    <div class="g-panel txt sec"><div><span class="nlab">08 IMPACT</span><div class="impact2" style="max-width:none;border-top:0;margin-top:8px"><div style="padding-top:0"><b style="font-size:88px">4 → 1</b><span>요청 경로</span><small>전화 · 메신저 · 이메일 · 방문 → 링크 하나</small></div><div style="padding-top:0"><b style="font-size:88px">0회</b><span>진행 상황 묻는 연락</span><small>요청한 사람이 직접 확인</small></div><div style="padding-top:0"><b style="font-size:88px">1곳</b><span>심사 대기열</span><small>예시 수치</small></div></div></div></div>
+    <div class="g-panel sec"><div><span class="nlab">09 WHAT I LEARNED</span><h2>도구보다 길부터</h2><p>도구를 만들기 전에 요청이 들어오는 길부터 바꿔야 했습니다. 처음에 문제를 정리하지 않았다면 그냥 할 일 앱을 하나 더 만들었을 겁니다.</p></div><div><span class="nlab">10</span><h2>비슷한 문제가 있다면</h2><p>지금 어떻게 일하고 있는지, 무엇이 가장 불편한지 알려주세요. 이 프로젝트를 붙여서 보내면 같은 맥락에서 바로 답장드리겠습니다.</p><div class="cta"><a class="btn" href="#">이 프로젝트를 보고 문의하기 <i class="tri"></i></a><a class="mail link" href="#">hello@prologue.and</a></div></div></div>
+    <div class="teaser"><div><span class="cap">다음 이야기</span><a class="big" href="#">Daeryun Learning Hub</a><p style="margin:0;color:var(--bone-700)">1,220개의 종이 문제를 새로운 학습 경험으로</p></div><div class="shot img">daeryun-learning-hub.png</div></div>
+    <div class="ftr"><nav><a href="#">Projects</a><a href="#">hello@prologue.and</a><a href="#">문의</a></nav><span>© 2026 Prologue&amp;</span></div>
+  </div>
+</section>
+
+<div id="sw"><span id="swn"></span><button data-o="A">A</button><button data-o="B">B</button><button data-o="C">C</button><button data-o="D">D</button><button data-o="E">E</button><button data-o="F">F</button><button data-o="G">G</button></div>
 
 <script>
 /* ---- 옵션 전환 ---- */
-const NAMES = { A: 'A 편집 기사형', B: 'B 좌측 고정 요약', C: 'C 화면 우선', D: 'D 스크롤 텔링', E: 'E 한 장씩(스냅)', F: 'F 표지 판 + 기사 (권장)' };
+const NAMES = { A: 'A 편집 기사형', B: 'B 좌측 고정 요약', C: 'C 화면 우선', D: 'D 스크롤 텔링', E: 'E 한 장씩(스냅)', F: 'F 표지 판 + 기사', G: 'G = C + E (한 격자·전폭 표지 + 판 리듬)' };
 function show(o) {
   document.querySelectorAll('.opt').forEach(s => s.classList.toggle('on', s.id === o));
   document.querySelectorAll('#sw button').forEach(b => b.classList.toggle('on', b.dataset.o === o));
@@ -297,7 +331,7 @@ function onScroll() {
   if (pos && secs.length) { let cur = 1; secs.forEach((s, i) => { if (s.getBoundingClientRect().top <= innerHeight * .45) cur = Math.min(10, Math.max(1, i + (on.id === 'E' ? 0 : 1))); }); pos.textContent = String(cur).padStart(2, '0') + ' / 10'; const st = on.querySelector('.strip'); if (st) st.querySelectorAll('i').forEach((b, i) => { b.classList.toggle('on', i + 1 === cur); b.classList.toggle('done', i + 1 < cur); }); }
 }
 addEventListener('scroll', onScroll, { passive: true });
-show(['A', 'B', 'C', 'D', 'E', 'F'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'F');
+show(['A', 'B', 'C', 'D', 'E', 'F', 'G'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'G');
 setTimeout(() => { fit(); onScroll(); }, 300);
 </script>
 </body>
