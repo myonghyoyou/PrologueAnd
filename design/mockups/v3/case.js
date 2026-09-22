@@ -66,10 +66,10 @@
         const bw = box.clientWidth, bh = desktop() ? box.clientHeight - capH - 8 : 0;
         box.querySelectorAll('.shot.live.crop').forEach(sh => {
           if (!bh) { sh.style.cssText = ''; sh.style.removeProperty('--sc'); sh.style.removeProperty('--ox'); return; }
-          const sc = Math.max((bw - 12) / 1280, (bh - 12) / 800);   // 칸을 다 채우고 넘치는 쪽을 잘라 낸다
-          sh.style.width = bw + 'px'; sh.style.height = bh + 'px'; sh.style.setProperty('--sc', sc.toFixed(4)); sh.style.setProperty('--ox', Math.round(((bw - 12) - 1280 * sc) / 2) + 'px');
+          const sc = Math.min(1, (bw - 12) / 1280, (bh - 12) / 800);   // 화면 전체가 보이는 가장 큰 크기(자르지 않음, 2026-09-22)
+          sh.style.width = (1280 * sc + 12) + 'px'; sh.style.height = (800 * sc + 12) + 'px'; sh.style.setProperty('--sc', sc.toFixed(4)); sh.style.setProperty('--ox', '0px');
         });
-        const st = box.querySelector('.stack'); if (st) { st.style.width = bw + 'px'; st.style.height = bh + 'px'; }
+        const st = box.querySelector('.stack'); if (st) { const sh = st.querySelector('.shot.live'); st.style.width = sh.style.width; st.style.height = sh.style.height; }
         return;
       }
       const targets = box.querySelectorAll(':scope > .dia, :scope > .stack, :scope > .shot');
