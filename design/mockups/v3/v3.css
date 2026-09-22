@@ -40,7 +40,7 @@ section{position:relative}
 .sec-head .cap{max-width:22rem;text-align:right}
 
 /* ---------- header ---------- */
-.hdr{position:fixed;top:0;left:0;right:0;z-index:40;height:64px;display:flex;align-items:center;padding:0 40px 0 112px;background:linear-gradient(var(--bone-50) 70%,rgba(250,249,246,0));pointer-events:none;transition:color .3s}
+.hdr{position:fixed;top:0;left:0;right:0;z-index:40;height:64px;display:flex;align-items:center;padding:0 max(40px,calc((100% - clamp(1272px,80vw,1760px)) / 2 + 40px)) 0 max(112px,calc((100% - clamp(1272px,80vw,1760px)) / 2 + 112px));background:linear-gradient(var(--bone-50) 70%,rgba(250,249,246,0));pointer-events:none;transition:color .3s}
 .hdr>*{pointer-events:auto}
 .brand{display:inline-flex;align-items:baseline;font-family:var(--serif);font-size:24px;letter-spacing:.005em;color:var(--bone-900);font-optical-sizing:none;font-variation-settings:"opsz" 24;line-height:1}
 .brand .bamp{display:inline-block;width:.72em;color:var(--navy-800);transition:width .5s var(--ease-out),opacity .3s}

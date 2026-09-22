@@ -2,49 +2,52 @@
    모든 판 = 화면 한 장(100vh − 헤더 64). 글은 위, 그림은 남는 높이를 다 쓴다(fitPans). 2026-09-22 */
 html{overflow-x:clip}
 body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:hidden은 붙이기 계산을 어긋나게 한다 */
-.wrap{max-width:1272px;margin:0 auto;padding:0 40px 0 112px}
+/* 격자 폭은 창에 비례(1440 → 1272, 2560 → 1760). 헤더도 같은 컨테이너 규칙(v3.css .hdr) — 왼쪽선이 항상 같다 */
+.wrap{max-width:clamp(1272px, 80vw, 1760px);margin:0 auto;padding:0 40px 0 112px}
 /* 라이브 화면 */
 .shot.live{position:relative;overflow:hidden;--sc:.5;aspect-ratio:auto;background:#fff;border:1px solid var(--bone-900);padding:6px;max-width:1292px}
 .shot.live iframe{display:block;width:1280px;height:800px;border:0;transform:scale(var(--sc));transform-origin:0 0;pointer-events:none;background:#fff}
 .shot.img{background:var(--bone-100);border:1px solid var(--bone-300);display:flex;align-items:center;justify-content:center;color:var(--bone-500);font-size:13px;aspect-ratio:16/10;overflow:hidden}
 .shot.img img{width:100%;height:100%;object-fit:cover;object-position:top left}
-.capn{display:block;margin-top:8px;font-size:13px;color:var(--bone-500)}
+.capn{display:block;margin-top:8px;font-size:clamp(12px,.9vw,15px);color:var(--bone-500)}
 /* 판: 화면 한 장. 세로 가운데 */
-.pan{position:relative;height:calc(100vh - 64px);min-height:640px;display:flex;flex-direction:column;justify-content:center;padding:24px 0 32px;box-sizing:border-box}
+/* 판: 화면 한 장. 글 블록은 판 위 11%에 고정(판을 넘겨도 제목 위치가 같다), 그림은 그 아래 남는 높이 */
+.pan{position:relative;height:calc(100vh - 64px);min-height:640px;display:flex;flex-direction:column;justify-content:flex-start;padding:calc((100vh - 64px) * .11) 0 40px;box-sizing:border-box}
 .pan .txt{flex:none;padding-bottom:20px}
 .pan .dw{flex:none;min-height:0;display:flex;flex-direction:column;justify-content:center}   /* 글 + 그림이 한 묶음으로 세로 가운데 (2026-09-22) */
 .pan .dw>.shot,.pan .dw>.dia,.pan .dw>.stack{width:var(--dw,100%);max-width:100%}
-.nlab{display:block;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--navy-800);margin-bottom:10px;font-variant-numeric:tabular-nums}
-.pan h2{font-size:48px;font-weight:600;letter-spacing:-.025em;line-height:1.12;margin:0 0 12px;word-break:keep-all}
-.pan p{font-size:18px;line-height:1.7;color:var(--bone-700);max-width:var(--tw,56rem);margin:0 0 14px}   /* 문단 폭 = 그 판 그림 폭(fitPans가 --tw로 넘김). 그림 없는 판은 56rem */
+.nlab{display:block;font-size:clamp(12px,.85vw,16px);font-weight:600;letter-spacing:.06em;color:var(--navy-800);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.pan h2{font-size:clamp(40px,3.2vw,64px);font-weight:600;letter-spacing:-.025em;line-height:1.12;margin:0 0 12px;word-break:keep-all;max-width:22em}
+.pan p{font-size:clamp(16px,1.2vw,22px);line-height:1.7;color:var(--bone-700);max-width:min(var(--tw,56rem),64rem);margin:0 0 14px}   /* 문단 폭 = 그림 폭, 읽기 폭 상한 64rem */   /* 문단 폭 = 그 판 그림 폭(fitPans가 --tw로 넘김). 그림 없는 판은 56rem */
 .pan .txt p:last-child{margin-bottom:0}
 /* 표지: 화면 + 제목·메타 | 숫자 가 한 장에 */
 .pan.cover{height:100vh;padding-top:88px;justify-content:flex-start}   /* 첫 판은 문서 맨 위(헤더 아래 시작)라 화면 전체 높이 — 다음 판이 밑에 비치지 않게 */
-.pan.cover .cap{font-size:15px}
+.pan.cover .cap{font-size:clamp(14px,1vw,17px)}
+.metatb{border-collapse:collapse;width:100%;max-width:34rem;font-size:clamp(14px,1vw,17px);margin-top:20px}.metatb td{padding:7px 0;border-top:1px solid var(--bone-200);vertical-align:top}.metatb td:first-child{color:var(--bone-500);width:6em}
 .pan.cover .dw{flex:none;display:block}
 .pan.cover .dw .capn{font-size:14px}
 .g-title{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;padding:28px 0 0}
-.h1x{font-size:56px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:12px 0 0;word-break:keep-all;view-transition-name:pj-title}
+.h1x{font-size:clamp(44px,3.8vw,72px);font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:12px 0 0;word-break:keep-all;view-transition-name:pj-title}
 .metarow{display:flex;gap:28px;margin-top:20px;font-size:16px;color:var(--bone-700);flex-wrap:wrap}.metarow b{color:var(--bone-500);font-weight:500;margin-right:6px}
 .knums{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.knums b{display:block;font-size:44px;font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:10px}.knums span{font-size:15px;color:var(--bone-700)}
+.knums b{display:block;font-size:clamp(40px,3vw,56px);font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:10px}.knums span{font-size:clamp(14px,1vw,17px);color:var(--bone-700)}
 /* 마지막 판(finale): 08 숫자 + 09 | 10 + 다음 이야기 티저가 한 장 (2026-09-22) */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
 .two-col>*{min-width:0}
-.pan.finale{justify-content:center;gap:40px}
+.pan.finale{justify-content:center;gap:40px;padding-top:24px}
 .pan.finale .txt{padding-bottom:0}
 .pan.finale .two-col h2{font-size:32px;margin-bottom:10px}
-.pan.finale .two-col p{font-size:16px}
+.pan.finale .two-col p{font-size:clamp(15px,1.05vw,18px)}
 /* 머무름: 03~05(morph)·07(와이프)은 판이 화면에 붙고 120vh를 지나며 애니메이션이 끝난 뒤 내려간다 (docs/28 G5·G6). 붙이기는 JS(translateY) */
 .g-dwell{position:relative;padding-bottom:120vh}
 .g-dwell .pan{will-change:transform}
 /* 다이어그램 */
 .dia{background:var(--bone-0);border:1px solid var(--bone-200);padding:24px;box-sizing:border-box}.dia svg{width:100%;height:auto;display:block;overflow:visible}
 .dia text{font-family:var(--sans);font-size:11px;font-weight:500;fill:var(--bone-500)}.dia .before{fill:none;stroke:var(--navy-400);stroke-width:1.2}.dia .after{fill:none;stroke:var(--navy-800);stroke-width:2}.dia .node{fill:var(--bone-50);stroke:var(--navy-800)}.dia .flagp{fill:var(--navy-800)}
-.dia .dcap{display:flex;justify-content:space-between;gap:16px;margin-top:12px;font-size:13px;color:var(--bone-500)}.dia .dcap span{transition:opacity .3s}
+.dia .dcap{display:flex;justify-content:space-between;gap:16px;margin-top:12px;font-size:clamp(12px,.9vw,15px);color:var(--bone-500)}.dia .dcap span{transition:opacity .3s}
 /* 06 핫스팟 */
 .spots{list-style:none;margin:16px 0 0;padding:0;display:flex;gap:8px;max-width:none}
-.spots li{flex:1;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--bone-200);border-radius:2px;background:var(--bone-0);font-size:13px;line-height:1.45;color:var(--bone-700);cursor:default;transition:border-color .15s,color .15s}
+.spots li{flex:1;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--bone-200);border-radius:2px;background:var(--bone-0);font-size:clamp(13px,.9vw,15px);line-height:1.45;color:var(--bone-700);cursor:default;transition:border-color .15s,color .15s}
 .spots li b{flex:none;width:18px;height:18px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
 .spots li.on{border-color:var(--navy-800);color:var(--bone-900)}
 .shot.live .spot-hl{position:absolute;box-sizing:border-box;border:1.5px solid var(--navy-800);box-shadow:0 0 0 9999px rgba(250,249,246,.62);opacity:0;transition:opacity .15s;pointer-events:none;z-index:3}
@@ -55,10 +58,10 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 .stack .after{position:absolute;left:0;top:0;width:100%;clip-path:inset(0 100% 0 0)}
 .stack .shot.live{max-width:100%}
 .stack .edge{position:absolute;top:0;bottom:0;left:0;width:2px;background:var(--navy-800);pointer-events:none;z-index:3}
-.wcaps{display:flex;justify-content:space-between;gap:24px;margin-top:8px;font-size:13px;color:var(--bone-500)}.wcaps span{transition:opacity .3s}
+.wcaps{display:flex;justify-content:flex-start;gap:12px;margin-top:8px;font-size:clamp(12px,.9vw,15px);color:var(--bone-500)}.wcaps span{transition:opacity .3s}.wcaps .arr{color:var(--bone-400)}
 /* 08 */
 .impact2{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:12px}
-.impact2 b{display:block;font-size:min(96px,6vw);font-weight:600;letter-spacing:-.04em;line-height:1;color:var(--navy-800);margin-bottom:12px;white-space:nowrap}   /* 3칸 안에서 한 줄 (1440: 100px) */.impact2 span{font-size:16px;color:var(--bone-700)}.impact2 small{display:block;font-size:12px;color:var(--bone-400);margin-top:4px}
+.impact2 b{display:block;font-size:min(96px,6vw);font-weight:600;letter-spacing:-.04em;line-height:1;color:var(--navy-800);margin-bottom:12px;white-space:nowrap}   /* 3칸 안에서 한 줄 (1440: 100px) */.impact2 span{font-size:clamp(15px,1.05vw,18px);color:var(--bone-700)}.impact2 small{display:block;font-size:12px;color:var(--bone-400);margin-top:4px}
 .bars{margin-top:28px;display:flex;flex-direction:column;gap:14px;max-width:44rem}
 .bar{font-size:13px;color:var(--bone-700)}.bar .lbl{display:flex;justify-content:space-between;margin-bottom:6px}.bar .tr{height:10px;background:var(--bone-200);overflow:hidden}.bar .tr i{display:block;height:100%;width:0;background:var(--navy-800);transition:width .6s cubic-bezier(.2,.8,.2,1)}.bar.on .tr i{width:var(--w)}
 /* 10·끝 */
@@ -72,13 +75,16 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 html:active-view-transition-type(to-case) .h1x{view-transition-name:none}
 /* 낮은 창(≤800): 글자 한 단계 축소 */
 @media (min-width:1024px) and (max-height:800px){
-  .pan h2{font-size:38px}.pan p{font-size:16px}.h1x{font-size:44px}.impact2 b{font-size:min(96px,6.5vw)}.knums b{font-size:28px}
+  .pan h2{font-size:34px}.pan p{font-size:15px}.h1x{font-size:40px}.impact2 b{font-size:min(80px,6vw)}.knums b{font-size:28px}
+  .pan{padding-top:calc((100vh - 64px) * .08)}
+  .pan.finale{gap:20px;padding-top:12px}.bars{margin-top:14px}.pan.finale .two-col h2{font-size:26px}
   .pan .txt{padding-bottom:18px}.nlab{margin-bottom:10px}
 }
 /* ---- 모바일: 한 단, 판 높이는 내용대로 ---- */
 @media (max-width:1023px){
   .wrap{padding:0 16px}
   .pan{height:auto;min-height:0;padding:48px 0;display:block}
+  .metatb{max-width:none}
   .pan.cover{padding-top:72px}
   .pan .dw>.shot,.pan .dw>.dia,.pan .dw>.stack{width:auto!important;max-width:none}
   .pan .dw{margin-top:20px}
