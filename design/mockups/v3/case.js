@@ -66,7 +66,7 @@
       if (!desktop()) { targets.forEach(e => e.style.removeProperty('--dw')); return; }
       let h;
       if (pan.classList.contains('cover')) { const tt = pan.querySelector('.g-title'); const cap = box.querySelector('.capn'); h = Math.min(pan.clientHeight * 0.62, pan.clientHeight - 88 - 32 - 28 - (tt ? tt.offsetHeight : 0)) - (cap ? cap.offsetHeight + 8 : 0); }
-      else { const txt = pan.querySelector('.txt'); h = pan.clientHeight - 56 - (txt ? txt.offsetHeight : 0); }
+      else { const txt = pan.querySelector('.txt'); h = pan.clientHeight - 56 - (txt ? txt.offsetHeight : 0); }   // 글 아래 남는 높이(위아래 여백 56)
       targets.forEach(t => {
         let w;
         if (t.classList.contains('dia')) { const cap = t.querySelector('.dcap'); w = (h - 48 - (cap ? cap.offsetHeight + 12 : 0)) * 640 / 220; }
