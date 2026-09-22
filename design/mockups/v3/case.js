@@ -205,7 +205,7 @@
     const L = el => Math.round(el.getBoundingClientRect().left);
     const cover = document.querySelector('#s00 .shot'), panelsEl = document.querySelectorAll('.pan'), fulls = document.querySelectorAll('.pan .dw');
     return {
-      G1: { lefts: [L(cover), ...[...panelsEl].map(L), ...[...fulls].map(L)], scMax: Math.max(...[...document.querySelectorAll('.shot.live')].map(s => +s.style.getPropertyValue('--sc'))) },
+      G1: { lefts: [L(cover), ...[...panelsEl].map(L), ...[...fulls].map(L)], centered: Math.abs((document.getElementById('main').getBoundingClientRect().left + 72) - (innerWidth - (document.getElementById('main').getBoundingClientRect().right - 72))) <= 2, scMax: Math.max(...[...document.querySelectorAll('.shot.live')].map(s => +s.style.getPropertyValue('--sc'))) },
       G2: { order: ['#s00', '.g-title .h1x', '.g-title .knums'].map(q => !!document.querySelector(q)) },
       G3: { panels: panelsEl.length, heights: [...panelsEl].map(p => p.offsetHeight), vh: innerHeight, fill: [...panelsEl].map(p => { const ks = [...p.querySelectorAll('.txt, .dw > .dia, .dw > .stack, .dw > .shot, .g-title')].map(k => k.getBoundingClientRect()); return Math.round((Math.max(...ks.map(r => r.bottom)) - Math.min(...ks.map(r => r.top))) / p.offsetHeight * 100); }), overflow: [...panelsEl].filter(p => p.scrollHeight > p.clientHeight + 1).map(p => p.id) },
       G4: { fullW: [...fulls].map(f => Math.round(f.getBoundingClientRect().width)), gridW: Math.round(document.getElementById('main').clientWidth - 152) },
