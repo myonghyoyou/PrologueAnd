@@ -16,7 +16,7 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 .pan .dw>.shot,.pan .dw>.dia,.pan .dw>.stack{width:var(--dw,100%);max-width:100%}
 .nlab{display:block;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--navy-800);margin-bottom:14px;font-variant-numeric:tabular-nums}
 .pan h2{font-size:48px;font-weight:600;letter-spacing:-.025em;line-height:1.12;margin:0 0 18px;word-break:keep-all}
-.pan p{font-size:18px;line-height:1.7;color:var(--bone-700);max-width:36rem;margin:0 0 14px}
+.pan p{font-size:18px;line-height:1.7;color:var(--bone-700);max-width:var(--tw,56rem);margin:0 0 14px}   /* 문단 폭 = 그 판 그림 폭(fitPans가 --tw로 넘김). 그림 없는 판은 56rem */
 .pan .txt p:last-child{margin-bottom:0}
 /* 표지: 화면 + 제목·메타 | 숫자 가 한 장에 */
 .pan.cover{height:100vh;padding-top:88px;justify-content:flex-start}   /* 첫 판은 문서 맨 위(헤더 아래 시작)라 화면 전체 높이 — 다음 판이 밑에 비치지 않게 */

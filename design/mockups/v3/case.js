@@ -57,7 +57,8 @@
   function fit() { document.querySelectorAll('.shot.live').forEach(el => { const w = el.clientWidth - 12; if (w <= 0) return; const sc = Math.min(1, w / 1280); el.style.setProperty('--sc', sc.toFixed(4)); el.style.height = (800 * sc + 12) + 'px'; }); }
   function lazy() { document.querySelectorAll('.shot.live').forEach(el => { if (el.querySelector('iframe')) return; const r = el.getBoundingClientRect(); if (r.top < innerHeight * 2 && r.bottom > -innerHeight) el.insertAdjacentHTML('afterbegin', `<iframe src="${el.dataset.src}" tabindex="-1" aria-label="${esc(el.title)}" loading="lazy"></iframe>`); }); }
   // 모든 판: 글 아래 남는 높이를 그림이 다 쓰게 폭을 정한다 (다이어그램 640:220 + 여백·캡션, 화면 1280:800 + 캡션). 표지는 화면 높이의 52%
-  function fitPans() {
+  function fitPans() { fitOnce(); fitOnce(); }   // 문단 폭이 그림 폭을 따르고 그림 폭이 글 높이를 따르므로 두 번 돌려 수렴
+  function fitOnce() {
     document.querySelectorAll('.pan').forEach(pan => {
       if (pan.classList.contains('last')) { const tz = pan.querySelector('.teaser'), img = pan.querySelector('.teaser-img'), tc = pan.querySelector('.two-col'); if (img) { const h = desktop() ? Math.max(160, pan.clientHeight - 56 - tc.offsetHeight - 64) : 0; img.style.height = h ? Math.min(h, 420) + 'px' : ''; img.style.width = h ? Math.min(tz.clientWidth / 2 - 24, Math.min(h, 420) * 1.6) + 'px' : ''; } return; }
       const box = pan.querySelector('.dw'); if (!box) return;
@@ -70,7 +71,7 @@
         let w;
         if (t.classList.contains('dia')) { const cap = t.querySelector('.dcap'); w = (h - 48 - (cap ? cap.offsetHeight + 12 : 0)) * 640 / 220; }
         else { const cap = pan.classList.contains('cover') ? null : box.querySelector(':scope > .capn, :scope > .wcaps'); w = (h - (cap ? cap.offsetHeight + 8 : 0) - 12) * 1280 / 800; }
-        t.style.setProperty('--dw', Math.max(320, Math.min(box.clientWidth, w)) + 'px');
+        const dw = Math.max(320, Math.min(box.clientWidth, w)); t.style.setProperty('--dw', dw + 'px'); pan.style.setProperty('--tw', dw + 'px');   // 문단도 그림 폭에 맞춘다
       });
     });
     fit();
