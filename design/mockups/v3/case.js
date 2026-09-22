@@ -37,11 +37,11 @@
       </div>
     </section>
     <section class="pan" id="s01">${TXT('01 OVERVIEW', D.s01.h || '업무 요청을 받아 처리하는 담당자를 위한 도구', P(D.s01.p))}<div class="dw"><div class="dia" data-morph data-t="0"></div></div></section>
-    <section class="pan side" id="s02">${TXT('02 PROBLEM', D.s02.h || '네 갈래로 흩어져 들어온 요청', P(D.s02.p))}<div class="dw fill">${hasBefore ? pic(D.s07.before, 'crop') + `<span class="capn">${esc(D.s07.before.cap)}</span>` : pic(D.hero, 'crop')}</div></section>
+    <section class="pan" id="s02">${TXT('02 PROBLEM', D.s02.h || '네 갈래로 흩어져 들어온 요청', P(D.s02.p))}<div class="dw">${hasBefore ? pic(D.s07.before) + `<span class="capn">${esc(D.s07.before.cap)}</span>` : pic(D.hero)}</div></section>
     <div class="g-dwell" data-dwell><section class="pan" id="s03">${TXT('03 · 04 · 05 &nbsp;EXISTING WORKFLOW → INSIGHT → REDESIGN', esc(D.s04.q), `<p>${D.s03.p[0]} ${D.s05.flow.join(' → ')}.</p>`)}<div class="dw"><div class="dia" data-morph data-scrub></div></div></section></div>
-    <section class="pan side" id="s06">${TXT('06 SOLUTION', D.s06.h || '필수 항목을 채워야 보낼 수 있는 양식', P(D.s06.p) + (D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((sp, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(sp.cap)}</span></li>`).join('')}</ul>` : ''))}<div class="dw fill" id="solbox">${pic(D.s06.screen, 'spotted crop')}<span class="capn">${esc(D.s06.screen.cap)}</span></div></section>
+    <section class="pan" id="s06">${TXT('06 SOLUTION', D.s06.h || '필수 항목을 채워야 보낼 수 있는 양식', P(D.s06.p) + (D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((sp, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(sp.cap)}</span></li>`).join('')}</ul>` : ''))}<div class="dw" id="solbox">${pic(D.s06.screen, 'spotted')}<span class="capn">${esc(D.s06.screen.cap)}</span></div></section>
     ${hasBefore
-      ? `<div class="g-dwell" data-dwell data-wipe><section class="pan side" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw fill"><div class="stack">${pic(D.s07.before, 'crop')}${pic(D.s07.after, 'after crop')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></section></div>`
+      ? `<div class="g-dwell" data-dwell data-wipe><section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></section></div>`
       : `<section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw">${pic(D.s07.after)}<span class="capn">${esc(D.s07.after.cap)}</span></div></section>`}
     <section class="pan" id="s08"><div class="txt"><span class="nlab">08 IMPACT</span>
       <div class="impact2" id="nums8">${D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span><small>${esc(n.small || '')}</small></div>`).join('')}</div>
@@ -54,24 +54,13 @@
     <footer class="ft"><nav><a href="projects.html">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></footer>`;
 
   /* ---------- 라이브 화면: 폭에 맞춰 축소(원본보다 키우지 않음), 화면에 가까워지면 로드 ---------- */
-  function fit() { document.querySelectorAll('.shot.live').forEach(el => { if (el.classList.contains('crop') && desktop()) return; const w = el.clientWidth - 12; if (w <= 0) return; const sc = Math.min(1, w / 1280); el.style.setProperty('--sc', sc.toFixed(4)); el.style.height = (800 * sc + 12) + 'px'; }); }
+  function fit() { document.querySelectorAll('.shot.live').forEach(el => { const w = el.clientWidth - 12; if (w <= 0) return; const sc = Math.min(1, w / 1280); el.style.setProperty('--sc', sc.toFixed(4)); el.style.height = (800 * sc + 12) + 'px'; }); }
   function lazy() { document.querySelectorAll('.shot.live').forEach(el => { if (el.querySelector('iframe')) return; const r = el.getBoundingClientRect(); if (r.top < innerHeight * 2 && r.bottom > -innerHeight) el.insertAdjacentHTML('afterbegin', `<iframe src="${el.dataset.src}" tabindex="-1" aria-label="${esc(el.title)}" loading="lazy"></iframe>`); }); }
   // 모든 판: 글 아래 남는 높이를 그림이 다 쓰게 폭을 정한다 (다이어그램 640:220 + 여백·캡션, 화면 1280:800 + 캡션). 표지는 화면 높이의 52%
   function fitPans() {
     document.querySelectorAll('.pan').forEach(pan => {
       if (pan.classList.contains('last')) { const tz = pan.querySelector('.teaser'), img = pan.querySelector('.teaser-img'), tc = pan.querySelector('.two-col'); if (img) { const h = desktop() ? Math.max(160, pan.clientHeight - 56 - tc.offsetHeight - 64) : 0; img.style.height = h ? Math.min(h, 420) + 'px' : ''; img.style.width = h ? Math.min(tz.clientWidth / 2 - 24, Math.min(h, 420) * 1.6) + 'px' : ''; } return; }
       const box = pan.querySelector('.dw'); if (!box) return;
-      if (pan.classList.contains('side')) {
-        const capH = (box.querySelector(':scope > .capn, :scope > .wcaps') || { offsetHeight: 0 }).offsetHeight;
-        const bw = box.clientWidth, bh = desktop() ? box.clientHeight - capH - 8 : 0;
-        box.querySelectorAll('.shot.live.crop').forEach(sh => {
-          if (!bh) { sh.style.cssText = ''; sh.style.removeProperty('--sc'); sh.style.removeProperty('--ox'); return; }
-          const sc = Math.min(1, (bw - 12) / 1280, (bh - 12) / 800);   // 화면 전체가 보이는 가장 큰 크기(자르지 않음, 2026-09-22)
-          sh.style.width = (1280 * sc + 12) + 'px'; sh.style.height = (800 * sc + 12) + 'px'; sh.style.setProperty('--sc', sc.toFixed(4)); sh.style.setProperty('--ox', '0px');
-        });
-        const st = box.querySelector('.stack'); if (st) { const sh = st.querySelector('.shot.live'); st.style.width = sh.style.width; st.style.height = sh.style.height; }
-        return;
-      }
       const targets = box.querySelectorAll(':scope > .dia, :scope > .stack, :scope > .shot');
       if (!desktop()) { targets.forEach(e => e.style.removeProperty('--dw')); return; }
       let h;
