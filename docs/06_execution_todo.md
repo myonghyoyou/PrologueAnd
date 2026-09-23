@@ -7,7 +7,7 @@
 - [x] 핵심 고객 문제 정의
 - [x] 포트폴리오 전체 IA 초안 결정
 - [x] PRD 작성 → `07_PRD.md`
-- [x] 기술 스택 결정 → Next.js (App Router) + MDX, Vercel 배포 (`07_PRD.md` §8)
+- [x] 기술 스택 결정 → Next.js (App Router) + MDX, Vercel 배포 (`07_PRD.md` §8) — 구현 확정: Next 16 App Router + CSS Modules + Vercel
 - [x] 문의 수신 방식 결정 → 이메일 알림 + Google Sheets 적재 (`07_PRD.md` §6.3)
 - [x] 디자인 방향 결정 → 컬러 13 · 컨셉 14 · 구조 V5 가로 전용(17), 시안 `design/mockups/v5/` 다듬는 중
   - [x] 안별 시안 제작 → `design/mockups/index.html` (5안, 데스크톱 1200px·모바일 400px 비교)
