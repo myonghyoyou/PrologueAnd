@@ -1,6 +1,8 @@
 import type { Block } from '@/content';
 import { Frame } from './frame';
 import { Note } from './note';
+import { Phones } from './phones';
+import { Quote } from './quote';
 import g from './grid.module.css';
 
 /** 블록 한 개. 종류가 늘면 case 를 더한다 */
@@ -16,6 +18,10 @@ export function BlockView({ b }: { b: Block }) {
       );
     case 'note':
       return <Note b={b} />;
+    case 'phones':
+      return <Phones b={b} />;
+    case 'quote':
+      return <Quote b={b} />;
     default:
       return null;
   }
