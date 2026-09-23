@@ -13,9 +13,23 @@ test('보기에 없는 값은 400', async ({ request }) => {
 });
 
 test('허니팟이 채워지면 200이지만 보내지 않는다', async ({ request }) => {
-  const res = await request.post('/api/inquiry', { data: { ...ok, website: 'bot' } });
+  const res = await request.post('/api/inquiry', { data: { ...ok, hp_note: 'bot' } });
   expect(res.status()).toBe(200);
   expect((await res.json()).sent).toBe(false);
+});
+
+test('허니팟 칸은 브라우저가 자동 완성하지 않는 이름이고 탭 순서에서 빠져 있다', async ({ page }) => {
+  await page.goto('/projects');
+  await expect(page.locator('input[name="website"]')).toHaveCount(0);
+  const hp = page.locator('input[name="hp_note"]');
+  await expect(hp).toHaveCount(1);
+  await expect(hp).toHaveAttribute('autocomplete', 'off');
+  await expect(hp).toHaveAttribute('tabindex', '-1');
+});
+
+test('지금 쓰는 것은 6개를 넘으면 400', async ({ request }) => {
+  const res = await request.post('/api/inquiry', { data: { ...ok, tools: ['엑셀', '종이', '카톡', '이메일', '기존 시스템', '없음', '엑셀'] } });
+  expect(res.status()).toBe(400);
 });
 
 test('5초 미만 제출은 거른다', async ({ request }) => {

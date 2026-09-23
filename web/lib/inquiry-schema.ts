@@ -9,7 +9,7 @@ export const BUDGET = ['이야기 나눠 보고', '300만 원 이하', '300~1,00
 
 export const inquirySchema = z.object({
   work:   z.string().max(500).default(''),                 // 어떤 일을 하고 계세요
-  tools:  z.array(z.enum(TOOLS)).default([]),               // 지금 쓰는 것 (복수)
+  tools:  z.array(z.enum(TOOLS)).max(6).default([]),        // 지금 쓰는 것 (복수, 보기 6개)
   pain:   z.string().trim().min(2, '가장 불편한 점을 적어주세요').max(1000),
   people: z.enum(PEOPLE).optional(),
   repeat: z.enum(REPEAT).optional(),
@@ -20,7 +20,8 @@ export const inquirySchema = z.object({
   email:  z.string().trim().email('연락받을 메일 주소를 적어주세요'),
   phone:  z.string().max(40).default(''),
   project: z.string().max(60).default(''),                  // 상세에서 열었을 때의 slug
-  website: z.string().max(200).default(''),                 // 허니팟: 채워져 있으면 봇 (R4 — .max(0)이 아니라 .max(200))
+  hp_note: z.string().max(200).default(''),                 // 허니팟: 채워져 있으면 봇 (R4 — .max(0)이 아니라 .max(200)).
+                                                            // website 같은 이름은 브라우저가 자동 완성해 사람을 봇으로 거른다
   elapsed: z.number().int().nonnegative(),                  // 폼을 연 뒤 지난 ms
 });
 
