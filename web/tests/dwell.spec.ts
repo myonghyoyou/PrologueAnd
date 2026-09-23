@@ -8,7 +8,8 @@ const dwellY = (page: import('@playwright/test').Page, sel: string, k: number) =
     return d.getBoundingClientRect().top + window.scrollY - 64 + (d.offsetHeight - pan.offsetHeight) * (r as number);
   }, [sel, k] as const);
 
-test('03~05 머무름: 구간을 지나며 t가 0 → 1', async ({ page }) => {
+test('03~05 머무름: 구간을 지나며 t가 0 → 1', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, '데스크톱 전용 — use-dwell.ts는 1024px 미만에서 t=1 고정');
   await page.goto('/projects/por-favor-harry');
   await page.waitForTimeout(600);
   const read = async (k: number) => {
@@ -20,7 +21,8 @@ test('03~05 머무름: 구간을 지나며 t가 0 → 1', async ({ page }) => {
   expect(await read(1)).toBeCloseTo(1, 1);
 });
 
-test('머무름 동안 판이 상단 64에 붙어 있다', async ({ page }) => {
+test('머무름 동안 판이 상단 64에 붙어 있다', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, '데스크톱 전용 — use-dwell.ts는 1024px 미만에서 핀 고정을 하지 않음');
   await page.goto('/projects/por-favor-harry');
   await page.waitForTimeout(600);
   await scrollToY(page, await dwellY(page, '[data-dwell="3"]', 0.5));
