@@ -54,17 +54,37 @@ test.describe('상세 수용 기준', () => {
   });
 });
 
-test('V9 모션 줄이기에서 즉시 최종 상태', async ({ browser }) => {
+test('V9 모션 줄이기에서 즉시 최종 상태 (중간 프레임 없음)', async ({ browser }) => {
   const ctx = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
   const page = await ctx.newPage();
   await page.goto('/projects/por-favor-harry');
-  const y = await page.evaluate(() => {
-    const d = document.querySelector('[data-dwell="3"]') as HTMLElement;
-    const pan = d.querySelector('[data-pan]') as HTMLElement;
-    return d.getBoundingClientRect().top + window.scrollY - 64 + (d.offsetHeight - pan.offsetHeight) * 0.7;
+
+  const dwellY = (sel: string, k: number) =>
+    page.evaluate(([s, r]) => {
+      const d = document.querySelector(s as string) as HTMLElement;
+      const pan = d.querySelector('[data-pan]') as HTMLElement;
+      return d.getBoundingClientRect().top + window.scrollY - 64 + (d.offsetHeight - pan.offsetHeight) * (r as number);
+    }, [sel, k] as const);
+
+  const readT = (sel: string) =>
+    page.evaluate((s) => Number((document.querySelector(s) as HTMLElement).dataset.t), sel);
+
+  // 감속(reduced motion)에서는 use-dwell.ts가 중간 프레임 없이 구간 절반을 기준으로
+  // 0 또는 1로 스냅한다(raw >= 0.5 ? 1 : 0) — 그 정확한 이산 값을 검사한다.
+  for (const [k, expected] of [[0.1, 0], [0.3, 0], [0.7, 1], [0.95, 1]] as const) {
+    await scrollToY(page, await dwellY('[data-dwell="3"]', k));
+    expect(await readT('[data-dwell="3"]')).toBe(expected);
+  }
+
+  // 07 와이프 구간도 같은 방식 — 절반을 넘긴 지점에서는 t=1이고, After가 가려짐 없이
+  // 완전히 드러나 있어야 한다(오른쪽 인셋 0%).
+  await scrollToY(page, await dwellY('[data-dwell="2"]', 0.95));
+  expect(await readT('[data-dwell="2"]')).toBe(1);
+  const rightPct = await page.evaluate(() => {
+    const clip = (document.querySelector('[data-wipe-after]') as HTMLElement).style.clipPath;
+    return Number(clip.match(/inset\(0px\s+([\d.]+)%/)?.[1] ?? NaN);
   });
-  await scrollToY(page, y);
-  const t = await page.evaluate(() => Number((document.querySelector('[data-dwell="3"]') as HTMLElement).dataset.t));
-  expect([0, 1]).toContain(Math.round(t));
+  expect(rightPct).toBe(0);
+
   await ctx.close();
 });
