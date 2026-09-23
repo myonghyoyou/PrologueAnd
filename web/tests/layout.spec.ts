@@ -83,4 +83,31 @@ test.describe('상세 — 문서형 뼈대', () => {
     expect(r.bTop).toBeGreaterThanOrEqual(r.aBottom);
     expect(Math.abs(r.aw - r.bw)).toBeLessThanOrEqual(1);
   });
+
+  test('폰 칸: 창 없이 원래 비율, 높이 640 이하', async ({ page }) => {
+    const r = await page.evaluate(() => {
+      const box = document.querySelector<HTMLElement>('[data-block="phones"] [data-frame] > div')!;
+      const b = box.getBoundingClientRect();
+      return { w: b.width, h: b.height, sh: box.scrollHeight, ch: box.clientHeight };
+    });
+    expect(r.h).toBeLessThanOrEqual(641);
+    expect(Math.abs(r.w / r.h - (390 + 12) / (844 + 12))).toBeLessThan(0.02);
+    expect(r.sh).toBeLessThanOrEqual(r.ch + 1);   // 안에서 스크롤하지 않는다
+  });
+
+  test('폰: 폰 칸 한 장은 띠 폭의 60%', async ({ page, isMobile }) => {
+    test.skip(!isMobile, '폰 전용');
+    const r = await page.evaluate(() => {
+      const band = document.querySelector<HTMLElement>('[data-phones-band]')!;
+      const cs = getComputedStyle(band);
+      const inner = band.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return document.querySelector<HTMLElement>('[data-block="phones"] [data-frame]')!.getBoundingClientRect().width / inner;
+    });
+    expect(r).toBeGreaterThan(0.57);
+    expect(r).toBeLessThan(0.63);
+  });
+
+  test('통찰 한 문장이 01 장 안에 있다', async ({ page }) => {
+    await expect(page.locator('#problem [data-block="quote"] blockquote')).toContainText('요청이 들어오는 길의 문제였습니다');
+  });
 });
