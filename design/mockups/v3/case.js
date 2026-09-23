@@ -64,7 +64,7 @@
       const targets = box.querySelectorAll(':scope > .dia, :scope > .stack, :scope > .shot');
       if (!desktop()) { targets.forEach(e => e.style.removeProperty('--dw')); return; }
       let h;
-      if (pan.classList.contains('cover')) { const tt = pan.querySelector('.g-title'); const cap = box.querySelector('.capn'); h = Math.min(pan.clientHeight * 0.62, pan.clientHeight - 88 - 32 - 28 - (tt ? tt.offsetHeight : 0)) - (cap ? cap.offsetHeight + 8 : 0); }
+      if (pan.classList.contains('cover')) { const tt = pan.querySelector('.g-title'); const cap = box.querySelector('.capn'); h = Math.min(pan.clientHeight * 0.62, pan.clientHeight - (parseFloat(getComputedStyle(pan).paddingTop) || 0) - 32 - 28 - (tt ? tt.offsetHeight : 0)) - (cap ? cap.offsetHeight + 8 : 0); }
       else if (pan.classList.contains('phone')) { const txt = pan.querySelector('.txt'); const padT = parseFloat(getComputedStyle(pan).paddingTop) || 0; const cap = box.querySelector(':scope > .capn'); h = pan.clientHeight - padT - 40 - (txt ? txt.offsetHeight : 0) - (cap ? cap.offsetHeight + 8 : 0); }   // 폰 판은 캡션까지 빼야 넘치지 않는다
       else { const txt = pan.querySelector('.txt'); const padT = parseFloat(getComputedStyle(pan).paddingTop) || 0; h = pan.clientHeight - padT - 40 - (txt ? txt.offsetHeight : 0); }   // 글 아래 남는 높이(위 여백은 고정 y, 아래 40)
       targets.forEach(t => {
