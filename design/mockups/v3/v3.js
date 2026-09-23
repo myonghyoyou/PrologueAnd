@@ -14,7 +14,7 @@ window.V3 = (function () {
   ];
   V.projects = [
     { slug: 'por-favor-harry', title: 'Por favor, Harry', tagline: '흩어진 업무 요청을 하나의 Workflow로', problem: 'scattered', tags: ['Workflow Design', 'Internal Tool'], year: '2025', disclosure: 'full', order: 1, featured: true,
-      result: ['요청 경로 4개 → 1개', '진행 상황 문의를 요청자가 직접 확인'] },
+      result: ['요청이 들어오는 길 4개 → 1개', '진행 상황을 요청자가 화면에서 직접 확인'] },
     { slug: 'daeryun-learning-hub', title: 'Daeryun Learning Hub', tagline: '1,220개의 종이 문제를 새로운 학습 경험으로', problem: 'paper', tags: ['Digital Transformation', 'Web Application'], year: '2025', disclosure: 'anonymized', order: 2, featured: true,
       result: ['채점·해설이 즉시', '문제집 1권 → 반복 학습 흐름'] },
     { slug: 'hospital-ux', title: '병원 UI/UX 고도화', tagline: '복잡한 업무 화면을 더 빠르게 읽고 처리하도록', problem: 'legacy', tags: ['Enterprise UX', 'UI Redesign'], year: '2024–2025', disclosure: 'mockup', order: 3, featured: true,
