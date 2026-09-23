@@ -90,8 +90,10 @@ export function useStations() {
     const onKey = (e: KeyboardEvent) => {
       if (e.altKey || e.ctrlKey || e.metaKey) return;
       if (document.documentElement.hasAttribute('data-drawer-open')) return;
-      const tag = (e.target as HTMLElement | null)?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      // 버튼·링크·포커스 가능한 요소·입력칸의 Space/Enter/화살표는 그 요소의 것이다 (문의 버튼 Space 등)
+      const el = e.target as HTMLElement | null;
+      if (el && el !== document.body && el !== document.documentElement &&
+          (['BUTTON', 'A', 'INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || el.hasAttribute('tabindex') || el.isContentEditable)) return;
       if (['ArrowDown', 'ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); goStop(1); }
       else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); goStop(-1); }
       else if (e.key === 'Home') { e.preventDefault(); goY(0); }
