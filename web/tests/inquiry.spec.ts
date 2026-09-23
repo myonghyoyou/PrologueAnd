@@ -99,8 +99,8 @@ test('2단계에서 닫았다 다시 열면 포커스가 서랍 안 2단계 필�
   expect(stillInsideDialog).toBe(true);
 });
 
-test('상세에서 포커스된 문의 버튼에 Space 를 누르면 서랍이 열리고 정거장은 움직이지 않는다', async ({ page, isMobile }) => {
-  test.skip(!!isMobile, '데스크톱 전용 — 정거장 키 처리는 1024px 이상');
+test('상세에서 포커스된 문의 버튼에 Space 를 누르면 서랍이 열리고 페이지는 움직이지 않는다', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, '데스크톱 전용 — 헤더 문의 버튼 포커스로 확인');
   await page.goto('/projects/por-favor-harry');
   await page.waitForTimeout(600);
   await page.locator('header [data-open-drawer]').focus();
