@@ -1,4 +1,5 @@
 import type { Block } from '@/content';
+import { Flow } from './flow';
 import { Frame } from './frame';
 import { Note } from './note';
 import { Phones } from './phones';
@@ -22,6 +23,8 @@ export function BlockView({ b }: { b: Block }) {
       return <Phones b={b} />;
     case 'quote':
       return <Quote b={b} />;
+    case 'flow':
+      return <Flow b={b} />;
     default:
       return null;
   }
