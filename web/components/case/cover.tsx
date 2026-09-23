@@ -6,7 +6,7 @@ export function CoverText({ data, project }: { data: Case; project: Project }) {
     <div className={s.title} data-cover-title>
       <div>
         <span className={s.cap}>Prologue &amp; {project.title} · {data.cap}</span>
-        <h1 className={s.h1} data-title style={{ viewTransitionName: 'pj-title' }} dangerouslySetInnerHTML={{ __html: data.title }} />
+        <h1 className={s.h1} data-title dangerouslySetInnerHTML={{ __html: data.title }} />
         <table className={s.meta}>
           <tbody>
             {data.meta.map(([k, v]) => (
