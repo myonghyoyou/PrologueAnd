@@ -31,3 +31,15 @@ test('머무름 동안 판이 상단 64에 붙어 있다', async ({ page, isMobi
   expect(top).toBeGreaterThanOrEqual(62);
   expect(top).toBeLessThanOrEqual(66);
 });
+
+test('폰: 머무름 구간이 빈 여백(120vh)을 남기지 않는다', async ({ page, isMobile }) => {
+  test.skip(!isMobile, '폰 전용 — 데스크톱은 120vh 구간 안에서 판을 붙인다');
+  await page.goto('/projects/por-favor-harry');
+  await page.waitForTimeout(600);
+  const gaps = await page.evaluate(() => {
+    const r = (sel: string) => (document.querySelector(sel) as HTMLElement).getBoundingClientRect();
+    return { after03: Math.round(r('#s06').top - r('#s03').bottom), after07: Math.round(r('#s09').top - r('#s07').bottom) };
+  });
+  expect(gaps.after03).toBeLessThan(120);
+  expect(gaps.after07).toBeLessThan(120);
+});
