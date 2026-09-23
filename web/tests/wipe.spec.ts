@@ -34,6 +34,14 @@ test('와이프 무대가 화면 안에 다 들어온다', async ({ page, isMobi
   expect(bottom).toBeLessThanOrEqual(page.viewportSize()!.height);
 });
 
+test('Before 콜라주: 데이터의 쪽지가 빠짐없이 그려진다(12장 이상)', async ({ page }) => {
+  const { getStudy } = await import('../content');
+  const wipe = getStudy('por-favor-harry')!.chapters.flatMap((c) => c.blocks).find((b) => b.type === 'wipe')!;
+  const n = wipe.type === 'wipe' && Array.isArray(wipe.before) ? wipe.before.length : 0;
+  expect(n).toBeGreaterThanOrEqual(12);
+  await expect(page.locator('[data-wipe-before] [data-scatter-item]')).toHaveCount(n);
+});
+
 test('콜라주와 화면의 크기가 같다', async ({ page }) => {
   const [a, b] = await page.evaluate(() => {
     const r1 = (document.querySelector('[data-wipe-before]') as HTMLElement).getBoundingClientRect();
