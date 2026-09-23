@@ -13,6 +13,27 @@ test.describe('상세 수용 기준', () => {
     expect(over).toEqual([]);
   });
 
+  test('V1-b 머무름 판도 단계마다 넘침 0 (05 의 흐름 줄이 붙어도)', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, '데스크톱 전용 — 폰은 판 높이가 내용대로다');
+    const at = async (sel: string, k: number) => {
+      const y = await page.evaluate(([s, r]) => {
+        const d = document.querySelector(s as string) as HTMLElement;
+        const pan = d.querySelector('[data-pan]') as HTMLElement;
+        return d.getBoundingClientRect().top + window.scrollY - 64 + (d.offsetHeight - pan.offsetHeight) * (r as number);
+      }, [sel, k] as const);
+      await scrollToY(page, y);
+      return page.evaluate((s) => {
+        const pan = document.querySelector(`${s} [data-pan]`) as HTMLElement;
+        return { over: pan.scrollHeight - pan.clientHeight, t: (document.querySelector(s) as HTMLElement).dataset.t };
+      }, sel);
+    };
+    for (const [sel, k] of [['[data-dwell="3"]', 0], ['[data-dwell="3"]', 0.5], ['[data-dwell="3"]', 1],
+                            ['[data-dwell="2"]', 0], ['[data-dwell="2"]', 1]] as const) {
+      const r = await at(sel, k);
+      expect(r.over, `${sel} k=${k} t=${r.t}`).toBeLessThanOrEqual(1);
+    }
+  });
+
   test('V2-a 정거장 개수가 판 구성과 맞는다', async ({ page, isMobile }) => {
     test.skip(!!isMobile, '데스크톱 전용');
     // 판 13장 중 s03 머무름(3) + s07 머무름(2) → 11 + 3 + 2 = 16
