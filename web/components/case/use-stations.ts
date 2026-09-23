@@ -30,7 +30,7 @@ export function useStations() {
     target.current = to;
     const l = getLenis();
     if (l) l.scrollTo(to, { duration: DUR, easing: easeOutCubic, lock: true, onComplete: () => { target.current = null; } });
-    else window.scrollTo({ top: to, behavior: 'smooth' });   // 모션 줄이기: Lenis 가 없다
+    else window.scrollTo(0, to);   // 모션 줄이기: Lenis 가 없다
   }, []);
 
   const goStop = useCallback((dir: 1 | -1) => {
