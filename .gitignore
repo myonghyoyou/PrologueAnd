@@ -13,3 +13,6 @@ desktop.ini
 node_modules/
 .next/
 .env*
+
+# 브레인스토밍 시각 도구(설계 비교 화면) — 저장소에 넣지 않는다
+.superpowers/
