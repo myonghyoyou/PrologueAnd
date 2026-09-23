@@ -4,6 +4,7 @@ import { Frame } from './frame';
 import { Note } from './note';
 import { Phones } from './phones';
 import { Quote } from './quote';
+import { WipeView } from './wipe';
 import g from './grid.module.css';
 
 /** 블록 한 개. 종류가 늘면 case 를 더한다 */
@@ -25,7 +26,7 @@ export function BlockView({ b }: { b: Block }) {
       return <Quote b={b} />;
     case 'flow':
       return <Flow b={b} />;
-    default:
-      return null;
+    case 'wipe':
+      return <WipeView b={b} />;
   }
 }
