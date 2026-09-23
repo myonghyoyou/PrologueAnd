@@ -105,7 +105,7 @@ export function InquiryDrawer() {
       budget: String(fd.get('budget') ?? '') || undefined,
       email: String(fd.get('email') ?? ''),
       phone: String(fd.get('phone') ?? ''),
-      website: String(fd.get('website') ?? ''),
+      hp_note: String(fd.get('hp_note') ?? ''),
       project,
       elapsed: Date.now() - openedAt.current,
     };
@@ -207,7 +207,7 @@ export function InquiryDrawer() {
               </div>
               <label className={s.fld}>이메일 <b>*</b><input name="email" type="email" placeholder="name@company.com" /></label>
               <label className={s.fld}>전화 (선택)<input name="phone" type="tel" placeholder="010-" /></label>
-              <input name="website" tabIndex={-1} autoComplete="off" className={s.hp} aria-hidden="true" />
+              <input name="hp_note" type="text" tabIndex={-1} autoComplete="off" className={s.hp} aria-hidden="true" />
             </div>
 
             {error ? (
