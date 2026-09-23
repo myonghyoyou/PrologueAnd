@@ -44,7 +44,7 @@ V3.cases = {
     },
     s07: {
       p: ['요청이 들어오는 길 네 개가 하나로 모였습니다. 담당자는 들어오는 즉시 대응하는 대신 이 목록을 몰아서 심사합니다.'],
-      before: { type: 'live', src: '../v2/img-src.html?p=por-favor-harry-before', cap: 'Before: 메신저·메일·엑셀·메모에 흩어진 요청' },
+      before: { type: 'live', src: '../v2/img-src.html?p=por-favor-harry-before', cap: 'Before(재현): 메신저·메일·엑셀·메모에 흩어진 요청 — 제품 화면이 아니라 당시 상황을 다시 그린 것입니다' },
       after: { type: 'img', src: '../v2/img/pfh/queue.png', cap: 'After: 심사 대기 한 곳에 카드로' }
     },
     s08: { h: '길은 하나로, 약속은 날짜로', bars: [{ label: '요청이 들어오는 길', before: 4, after: 1, unit: '개' }] },
