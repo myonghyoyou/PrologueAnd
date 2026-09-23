@@ -39,10 +39,11 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 /* 마지막 판(finale): 08 숫자 + 09 | 10 + 다음 이야기 티저가 한 장 (2026-09-22) */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
 .two-col>*{min-width:0}
-.pan.finale{justify-content:center;gap:40px;padding-top:24px;align-items:stretch}
+.pan.finale{justify-content:center;gap:clamp(40px,8vh,96px);padding-top:24px;align-items:stretch}
 .pan.finale .txt{width:auto}
 .pan.finale .txt{padding-bottom:0}
-.pan.finale .two-col h2{font-size:32px;margin-bottom:10px}
+.pan.finale{gap:56px}
+.pan.finale .two-col h2{font-size:clamp(28px,2.4vw,40px);margin-bottom:12px}
 .pan.finale .two-col p{font-size:clamp(15px,1.05vw,18px)}
 /* 머무름: 03~05(morph)·07(와이프)은 판이 화면에 붙고 120vh를 지나며 애니메이션이 끝난 뒤 내려간다 (docs/28 G5·G6). 붙이기는 JS(translateY) */
 .g-dwell{position:relative;padding-bottom:120vh}
@@ -65,25 +66,24 @@ body{background:var(--bone-50);overflow:visible}   /* v3.css의 body overflow-x:
 .stack .shot.live{max-width:100%}
 .stack .edge{position:absolute;top:0;bottom:0;left:0;width:2px;background:var(--navy-800);pointer-events:none;z-index:3}
 .wcaps{display:flex;justify-content:flex-start;gap:12px;margin-top:8px;font-size:clamp(12px,.9vw,15px);color:var(--bone-500)}.wcaps span{transition:opacity .3s}.wcaps .arr{color:var(--bone-400)}
-/* 08 */
-.impact2{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:12px}
-.impact2 b{display:block;font-size:min(96px,6vw);font-weight:600;letter-spacing:-.04em;line-height:1;color:var(--navy-800);margin-bottom:12px;white-space:nowrap}   /* 3칸 안에서 한 줄 (1440: 100px) */.impact2 span{font-size:clamp(15px,1.05vw,18px);color:var(--bone-700)}.impact2 small{display:block;font-size:12px;color:var(--bone-400);margin-top:4px}
-.bars{margin-top:28px;display:flex;flex-direction:column;gap:14px;max-width:44rem}
-.bar{font-size:13px;color:var(--bone-700)}.bar .lbl{display:flex;justify-content:space-between;margin-bottom:6px}.bar .tr{height:10px;background:var(--bone-200);overflow:hidden}.bar .tr i{display:block;height:100%;width:0;background:var(--navy-800);transition:width .6s cubic-bezier(.2,.8,.2,1)}.bar.on .tr i{width:var(--w)}
+/* 표지 숫자 설명 */
+.knums small{display:block;font-size:clamp(11px,.8vw,13px);color:var(--bone-400);margin-top:4px;line-height:1.45}
 /* 10·끝 */
 .cta{display:flex;align-items:center;gap:16px;margin-top:8px;flex-wrap:wrap}
 .teaser{border-top:1px solid var(--bone-200);padding-top:24px;display:flex;justify-content:space-between;align-items:center;gap:48px;color:inherit}
 .teaser .teaser-img{aspect-ratio:auto;flex:none}
-.teaser .cap{display:block;margin-bottom:6px}.teaser .big{font-size:32px;font-weight:600;letter-spacing:-.02em;color:var(--bone-900);display:block;margin-bottom:8px}
+.teaser .cap{display:block;margin-bottom:6px}.teaser .big{font-size:clamp(28px,2.2vw,40px);font-weight:600;letter-spacing:-.02em;color:var(--bone-900);display:block;margin-bottom:8px}
 .teaser:hover .big{color:var(--navy-800)}
 .ft{border-top:1px solid var(--bone-200);padding:24px 0 40px;display:flex;justify-content:space-between}
 /* 상세 → 상세: 제목 morph 없이 root 페이드만 (docs/28 B5) */
 html:active-view-transition-type(to-case) .h1x{view-transition-name:none}
 /* 낮은 창(≤800): 글자 한 단계 축소 */
 @media (min-width:1024px) and (max-height:800px){
-  .pan h2{font-size:34px}.pan p{font-size:15px}.h1x{font-size:40px}.impact2 b{font-size:min(80px,6vw)}.knums b{font-size:28px}
+  .pan h2{font-size:34px}.pan p{font-size:15px}.h1x{font-size:40px}.knums b{font-size:28px}
   .pan{padding-top:calc((100vh - 64px) * .08)}
-  .pan.finale{gap:20px;padding-top:12px}.bars{margin-top:14px}.pan.finale .two-col h2{font-size:26px}
+  .pan.finale{gap:20px;padding-top:12px}.pan.finale .two-col h2{font-size:26px}
+  .spots{gap:6px;margin-top:10px}.spots li{padding:6px 8px;font-size:11.5px;line-height:1.35}.pan .txt{padding-bottom:14px}
+  .pan h2{margin-bottom:8px}
   .pan .txt{padding-bottom:18px}.nlab{margin-bottom:10px}
 }
 /* ---- 모바일: 한 단, 판 높이는 내용대로 ---- */
@@ -99,10 +99,9 @@ html:active-view-transition-type(to-case) .h1x{view-transition-name:none}
   .teaser{padding-top:24px;margin-top:32px;flex-direction:column;align-items:flex-start}.teaser .teaser-img{width:100%!important;height:auto!important;aspect-ratio:16/10}
   .pan.finale{gap:32px}
   .h1x{font-size:34px}.pan h2{font-size:28px}.pan p{font-size:16px}
-  .impact2{grid-template-columns:1fr}.impact2 b{font-size:56px}
   .spots{flex-direction:column}
   .g-dwell{padding-bottom:0}.g-dwell .pan{transform:none!important}
   .stack .after{position:static;clip-path:none!important;margin-top:12px}.stack .edge{display:none}
   .ft{flex-wrap:wrap;gap:12px}
 }
-@media (prefers-reduced-motion:reduce){.bar .tr i,.spots li,.shot.live .spot-hl,.dia .dcap span{transition:none}}
+@media (prefers-reduced-motion:reduce){.spots li,.shot .spot-hl,.dia .dcap span{transition:none}}

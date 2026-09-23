@@ -23,7 +23,7 @@
     : `<div class="shot img ${cls || ''}"><img src="${s.src}" alt="${esc(s.alt || s.cap || '')}" loading="lazy" onerror="this.remove()"></div>`;
   const P = ps => (ps || []).map(t => `<p>${t}</p>`).join('');
   const hasBefore = !!D.s07.before;
-  const nums = D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span></div>`).join('');
+  const nums = D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span>${n.small ? `<small>${esc(n.small)}</small>` : ''}</div>`).join('');   // 숫자는 표지에만 (2026-09-23)
   // 판 = 화면 한 장(.pan). 글(.txt) 위, 그림(.dw)은 남는 높이를 채움. 머무름 판은 .g-dwell로 감싼다
   const TXT = (n, h, body) => `<div class="txt"><span class="nlab">${n}</span><h2>${h}</h2>${body}</div>`;
   document.getElementById('main').innerHTML = `
@@ -45,11 +45,8 @@
     ${hasBefore
       ? `<div class="g-dwell" data-dwell data-wipe><section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="arr">→</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></section></div>`
       : `<section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw">${pic(D.s07.after)}<span class="capn">${esc(D.s07.after.cap)}</span></div></section>`}
-    <section class="pan finale" id="s08">
-      <div class="txt"><span class="nlab">08 IMPACT</span>
-        <div class="impact2" id="nums8">${D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span><small>${esc(n.small || '')}</small></div>`).join('')}</div>
-        ${D.s08.bars && D.s08.bars.some(b => b.before > 0) ? `<div class="bars" id="bars">${D.s08.bars.filter(b => b.before > 0).map(b => `<div class="bar" style="--w:${Math.round(b.after / b.before * 100)}%"><div class="lbl"><span>${esc(b.label)}</span><span>${b.before}${esc(b.unit || '')} → ${b.after}${esc(b.unit || '')}</span></div><div class="tr"><i></i></div></div>`).join('')}</div>` : ''}</div>
-      <div class="two-col" id="s09"><div class="txt"><span class="nlab">09 WHAT I LEARNED</span><h2>${D.s09.h || '도구보다 길부터'}</h2>${P(D.s09.p)}</div>
+    <section class="pan finale" id="s09">
+      <div class="two-col"><div class="txt"><span class="nlab">09 WHAT I LEARNED</span><h2>${D.s09.h || '도구보다 길부터'}</h2>${P(D.s09.p)}</div>
         <div class="txt" id="s10"><span class="nlab">10</span><h2>비슷한 문제가 있다면</h2>${P(D.s10.p)}<div class="cta"><a class="btn" href="#" data-open-drawer data-project="${pj.slug}">이 프로젝트를 보고 문의하기 <i class="tri"></i></a><a class="mail link" href="mailto:hello@prologue.and">hello@prologue.and</a></div></div></div>
       <a class="teaser" href="case.html?p=${next.slug}" id="next-link"><div><span class="cap">다음 이야기</span><span class="big">${esc(next.title)}</span><p style="margin:0;color:var(--bone-700)">${esc(next.tagline)}</p></div><span class="shot img teaser-img"><img src="${V3.img(next)}" alt="${esc(next.title)}" loading="lazy" onerror="this.remove()"></span></a>
     </section>
@@ -62,18 +59,19 @@
   function fitPans() { fitOnce(); fitOnce(); }   // 문단 폭이 그림 폭을 따르고 그림 폭이 글 높이를 따르므로 두 번 돌려 수렴
   function fitOnce() {
     document.querySelectorAll('.pan').forEach(pan => {
-      if (pan.classList.contains('finale')) { const img = pan.querySelector('.teaser-img'); if (img && desktop()) { const used = [...pan.children].filter(k => !k.classList.contains('teaser')).reduce((a, k) => a + k.offsetHeight, 0); const h = clamp(pan.clientHeight - 56 - used - 48 - 40, 120, 220); img.style.height = h + 'px'; img.style.width = Math.round(h * 1.6) + 'px'; } else if (img) { img.style.height = ''; img.style.width = ''; } return; }
+      if (pan.classList.contains('finale')) { const img = pan.querySelector('.teaser-img'); if (img && desktop()) { const used = [...pan.children].filter(k => !k.classList.contains('teaser')).reduce((a, k) => a + k.offsetHeight, 0); const h = clamp(pan.clientHeight - 56 - used - 48 - 40, 140, 320); img.style.height = h + 'px'; img.style.width = Math.round(h * 1.6) + 'px'; } else if (img) { img.style.height = ''; img.style.width = ''; } return; }
       const box = pan.querySelector('.dw'); if (!box) return;
       const targets = box.querySelectorAll(':scope > .dia, :scope > .stack, :scope > .shot');
       if (!desktop()) { targets.forEach(e => e.style.removeProperty('--dw')); return; }
       let h;
       if (pan.classList.contains('cover')) { const tt = pan.querySelector('.g-title'); const cap = box.querySelector('.capn'); h = Math.min(pan.clientHeight * 0.62, pan.clientHeight - 88 - 32 - 28 - (tt ? tt.offsetHeight : 0)) - (cap ? cap.offsetHeight + 8 : 0); }
+      else if (pan.classList.contains('phone')) { const txt = pan.querySelector('.txt'); const padT = parseFloat(getComputedStyle(pan).paddingTop) || 0; const cap = box.querySelector(':scope > .capn'); h = pan.clientHeight - padT - 40 - (txt ? txt.offsetHeight : 0) - (cap ? cap.offsetHeight + 8 : 0); }   // 폰 판은 캡션까지 빼야 넘치지 않는다
       else { const txt = pan.querySelector('.txt'); const padT = parseFloat(getComputedStyle(pan).paddingTop) || 0; h = pan.clientHeight - padT - 40 - (txt ? txt.offsetHeight : 0); }   // 글 아래 남는 높이(위 여백은 고정 y, 아래 40)
       targets.forEach(t => {
         let w;
         if (t.classList.contains('dia')) { w = (h - 48) * 640 / 360; }
         else { const cap = pan.classList.contains('cover') ? null : box.querySelector(':scope > .capn, :scope > .wcaps'); const R = pan.classList.contains('phone') ? 390 / 844 : 1280 / 800; w = (h - (cap ? cap.offsetHeight + 8 : 0) - 12) * R; }
-        const dw = Math.max(320, Math.min(box.clientWidth, w)); t.style.setProperty('--dw', dw + 'px'); pan.style.setProperty('--tw', pan.classList.contains('phone') ? '44rem' : dw + 'px');   // 문단도 그림 폭에 맞춘다
+        const dw = Math.max(pan.classList.contains('phone') ? 150 : 280, Math.min(box.clientWidth, w));   /* 하한이 높으면 낮은 창에서 넘친다 */ t.style.setProperty('--dw', dw + 'px'); pan.style.setProperty('--tw', pan.classList.contains('phone') ? Math.min(box.clientWidth, 704) + 'px' : dw + 'px');
       });
     });
     fit();
@@ -130,7 +128,6 @@
     lazy();
     document.querySelectorAll('[data-scrub]').forEach(d => { const dw = d.closest('[data-dwell]'); const t = desktop() ? tDwell(dw) : 1; d._morph(t); if (desktop()) setStep(t); });
     if (wipe && desktop()) { const t = tWipe(); wipe.querySelector('.after').style.clipPath = `inset(0 ${(100 - t * 100).toFixed(2)}% 0 0)`; wipe.querySelector('.edge').style.left = `calc(${(t * 100).toFixed(2)}% - 1px)`; wipe.querySelector('.wb').style.opacity = t < .5 ? 1 : .35; wipe.querySelector('.wa').style.opacity = t < .5 ? .35 : 1; }
-    const bars = document.getElementById('bars'); if (bars && bars.getBoundingClientRect().top < innerHeight * .85) bars.querySelectorAll('.bar').forEach(b => b.classList.add('on'));
   }
   /* ---------- 정거장: 휠 한 칸 = 한 판 (v5 엔진). 머무름 판은 03→04→05 / Before→After 가 각각 한 칸 (docs/28 B2 개정 2026-09-22) ---------- */
   const panels = () => [...document.querySelectorAll('.pan')];
@@ -209,11 +206,11 @@
     return {
       G1: { lefts: [L(cover), ...[...panelsEl].map(L), ...[...fulls].map(L)], centered: Math.abs((document.getElementById('main').getBoundingClientRect().left + 72) - (innerWidth - (document.getElementById('main').getBoundingClientRect().right - 72))) <= 2, scMax: Math.max(...[...document.querySelectorAll('.shot.live')].map(s => +s.style.getPropertyValue('--sc'))) },
       G2: { order: ['#s00', '.g-title .h1x', '.g-title .knums'].map(q => !!document.querySelector(q)) },
-      G3: { panels: panelsEl.length, heights: [...panelsEl].map(p => p.offsetHeight), vh: innerHeight, fill: [...panelsEl].map(p => { const ks = [...p.querySelectorAll('.txt, .dw > .dia, .dw > .stack, .dw > .shot, .g-title')].map(k => k.getBoundingClientRect()); return Math.round((Math.max(...ks.map(r => r.bottom)) - Math.min(...ks.map(r => r.top))) / p.offsetHeight * 100); }), overflow: [...panelsEl].filter(p => p.scrollHeight > p.clientHeight + 1).map(p => p.id) },
+      G3: { panels: panelsEl.length, heights: [...panelsEl].map(p => p.offsetHeight), vh: innerHeight, fill: [...panelsEl].map(p => { const ks = [...p.querySelectorAll('.txt, .dw > .dia, .dw > .stack, .dw > .shot, .g-title, .teaser')].map(k => k.getBoundingClientRect()); return Math.round((Math.max(...ks.map(r => r.bottom)) - Math.min(...ks.map(r => r.top))) / p.offsetHeight * 100); }), overflow: [...panelsEl].filter(p => p.scrollHeight > p.clientHeight + 1).map(p => p.id) },
       G4: { fullW: [...fulls].map(f => Math.round(f.getBoundingClientRect().width)), gridW: Math.round(document.getElementById('main').clientWidth - 152) },
       G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, pinned: wipe ? Math.round(wipe.querySelector('.pan').getBoundingClientRect().top) : null, dwells: document.querySelectorAll('[data-dwell]').length },
 
-      G7: { bars: document.querySelectorAll('.bar').length, on: document.querySelectorAll('.bar.on').length },
+      G7: { nums: document.querySelectorAll('#nums0 div').length, dup: !!document.getElementById('nums8') },
       G8: { next: document.getElementById('next-link').querySelector('.big').textContent, ft: !!document.querySelector('.ft'), cta: !!document.querySelector('#s10 .btn[data-project]') },
       G10: { title: document.getElementById('hd-title').textContent, notSelf: document.getElementById('next-link').getAttribute('href').indexOf(pj.slug) < 0 },
       B1: { html: cs(document.documentElement).overflowX, body: cs(document.body).overflow, stops: stops().length },
