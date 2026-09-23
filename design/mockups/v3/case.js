@@ -39,7 +39,9 @@
     <section class="pan" id="s01">${TXT('01 OVERVIEW', D.s01.h || '업무 요청을 받아 처리하는 담당자를 위한 도구', P(D.s01.p))}<div class="dw">${D.s01.pic ? pic(D.s01.pic) + `<span class="capn">${esc(D.s01.pic.cap)}</span>` : '<div class="dia" data-morph data-t="1"></div>'}</div></section>
     <section class="pan" id="s02">${TXT('02 PROBLEM', D.s02.h || '네 갈래로 흩어져 들어온 요청', P(D.s02.p))}<div class="dw">${hasBefore ? pic(D.s07.before) + `<span class="capn">${esc(D.s07.before.cap)}</span>` : pic(D.hero)}</div></section>
     <div class="g-dwell" data-dwell><section class="pan" id="s03">${TXT('03 → 05 &nbsp;WORKFLOW', esc(D.s03.h || '네 갈래로 들어온 요청'), `<p>${D.s03.p[0]}</p>`)}<div class="dw"><div class="dia" data-morph data-scrub></div></div></section></div>
-    <section class="pan" id="s06">${TXT('06 SOLUTION', D.s06.h || '필수 항목을 채워야 보낼 수 있는 양식', P(D.s06.p) + (D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((sp, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(sp.cap)}</span></li>`).join('')}</ul>` : ''))}<div class="dw" id="solbox">${pic(D.s06.screen, 'spotted')}<span class="capn">${esc(D.s06.screen.cap)}</span></div></section>
+    <section class="pan" id="s06">${TXT('06 SOLUTION', D.s06.h || '필수 항목을 채워야<br>보낼 수 있는 양식', P(D.s06.p)
+      + (D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((sp, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(sp.cap)}</span></li>`).join('')}</ul>` : ''))}<div class="dw" id="solbox">${pic(D.s06.screen, 'spotted')}<span class="capn">${esc(D.s06.screen.cap)}</span></div></section>
+    ${(D.s06.screens || []).map((sc, i) => `<section class="pan${sc.pic.phone ? ' phone' : ''}" id="s06-${i + 1}">${TXT('06 &nbsp;' + esc(sc.lab), sc.h, P(sc.p))}<div class="dw">${pic(sc.pic)}<span class="capn">${esc(sc.pic.cap)}</span></div></section>`).join('')}
     ${hasBefore
       ? `<div class="g-dwell" data-dwell data-wipe><section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw"><div class="stack">${pic(D.s07.before)}${pic(D.s07.after, 'after')}<i class="edge"></i></div><div class="wcaps"><span class="wb">${esc(D.s07.before.cap)}</span><span class="arr">→</span><span class="wa" style="opacity:.35">${esc(D.s07.after.cap)}</span></div></div></section></div>`
       : `<section class="pan" id="s07">${TXT('07 BEFORE &amp; AFTER', D.s07.h || '길 네 개가 하나로', P(D.s07.p))}<div class="dw">${pic(D.s07.after)}<span class="capn">${esc(D.s07.after.cap)}</span></div></section>`}
@@ -70,8 +72,8 @@
       targets.forEach(t => {
         let w;
         if (t.classList.contains('dia')) { w = (h - 48) * 640 / 360; }
-        else { const cap = pan.classList.contains('cover') ? null : box.querySelector(':scope > .capn, :scope > .wcaps'); w = (h - (cap ? cap.offsetHeight + 8 : 0) - 12) * 1280 / 800; }
-        const dw = Math.max(320, Math.min(box.clientWidth, w)); t.style.setProperty('--dw', dw + 'px'); pan.style.setProperty('--tw', dw + 'px');   // 문단도 그림 폭에 맞춘다
+        else { const cap = pan.classList.contains('cover') ? null : box.querySelector(':scope > .capn, :scope > .wcaps'); const R = pan.classList.contains('phone') ? 390 / 844 : 1280 / 800; w = (h - (cap ? cap.offsetHeight + 8 : 0) - 12) * R; }
+        const dw = Math.max(320, Math.min(box.clientWidth, w)); t.style.setProperty('--dw', dw + 'px'); pan.style.setProperty('--tw', pan.classList.contains('phone') ? '44rem' : dw + 'px');   // 문단도 그림 폭에 맞춘다
       });
     });
     fit();
