@@ -36,4 +36,51 @@ test.describe('상세 — 문서형 뼈대', () => {
     await expect(page.locator('[data-teaser]')).toBeVisible();
     await expect(page.locator('main')).not.toContainText('WHAT I LEARNED');
   });
+
+  test('여백 주석의 한 장 그림은 모두 같은 폭', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, '데스크톱 — 폰은 모두 전폭');
+    const ws = await page.evaluate(() => [...document.querySelectorAll('[data-block="note"]')]
+      .map((n) => [...n.querySelectorAll<HTMLElement>('[data-frame]')])
+      .filter((fs) => fs.length === 1)
+      .map((fs) => Math.round(fs[0].getBoundingClientRect().width)));
+    expect(ws.length).toBe(5);
+    expect(Math.max(...ws) - Math.min(...ws)).toBeLessThanOrEqual(1);
+  });
+
+  test('두 장 한 줄은 높이가 같고 칸을 넘지 않는다', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, '데스크톱 — 폰은 세로로 쌓는다');
+    const r = await page.evaluate(() => {
+      const n = [...document.querySelectorAll('[data-block="note"]')].find((x) => x.querySelectorAll('[data-frame]').length === 2)!;
+      const boxes = [...n.querySelectorAll<HTMLElement>('[data-frame] > div')].map((b) => b.getBoundingClientRect());
+      const col = n.querySelector<HTMLElement>('[data-row-figs]')!.parentElement!.getBoundingClientRect();
+      return { h: boxes.map((b) => b.height), right: Math.max(...boxes.map((b) => b.right)), colRight: col.right };
+    });
+    expect(Math.abs(r.h[0] - r.h[1])).toBeLessThanOrEqual(1);
+    expect(r.right).toBeLessThanOrEqual(r.colRight + 1);
+  });
+
+  test('여백 주석 글은 그림 왼쪽 칸에 있다', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, '데스크톱 — 폰은 글이 그림 위');
+    const r = await page.evaluate(() => {
+      const n = document.querySelectorAll('[data-block="note"]')[1];
+      const text = n.querySelector<HTMLElement>('[data-note-text]')!.getBoundingClientRect();
+      const fig = n.querySelector<HTMLElement>('[data-frame]')!.getBoundingClientRect();
+      return { textRight: text.right, figLeft: fig.left, top: Math.abs(text.top - fig.top) };
+    });
+    expect(r.textRight).toBeLessThanOrEqual(r.figLeft);
+    expect(r.top).toBeLessThanOrEqual(24);
+  });
+
+  test('폰: 여백 주석은 글이 위, 두 장은 세로로 쌓인다', async ({ page, isMobile }) => {
+    test.skip(!isMobile, '폰 전용');
+    const r = await page.evaluate(() => {
+      const n = [...document.querySelectorAll('[data-block="note"]')].find((x) => x.querySelectorAll('[data-frame]').length === 2)!;
+      const text = n.querySelector<HTMLElement>('[data-note-text]')!.getBoundingClientRect();
+      const [a, b] = [...n.querySelectorAll<HTMLElement>('[data-frame]')].map((f) => f.getBoundingClientRect());
+      return { textBottom: text.bottom, aTop: a.top, aBottom: a.bottom, bTop: b.top, aw: a.width, bw: b.width };
+    });
+    expect(r.aTop).toBeGreaterThanOrEqual(r.textBottom);
+    expect(r.bTop).toBeGreaterThanOrEqual(r.aBottom);
+    expect(Math.abs(r.aw - r.bw)).toBeLessThanOrEqual(1);
+  });
 });
