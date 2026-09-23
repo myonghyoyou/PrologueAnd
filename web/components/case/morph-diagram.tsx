@@ -9,6 +9,7 @@ const CHAIN: [number, string][] = [[160, '개인 링크'], [270, '요청폼'], [
 const B = SRC.map((y) => [150, y, 235, CY + (y - CY) * 0.12, 300, CY]);
 const A = SRC.map((y) => [110, y, 130, CY, 160, CY]);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 export function MorphDiagram({ t }: { t: number }) {
   const paths = useMemo(() => SRC.map((y, i) => {
@@ -32,13 +33,15 @@ export function MorphDiagram({ t }: { t: number }) {
           ))}
           <g style={{ opacity: Math.max(0, 1 - t * 2) }}>
             <path d={`M300 ${CY} H520`} fill="none" stroke="var(--navy-400)" strokeWidth={1.2} />
-            <circle cx={300} cy={CY} r={5} fill="var(--bone-50)" stroke="#8A96C2" />
+            <circle cx={300} cy={CY} r={5} fill="var(--bone-50)" stroke="var(--navy-400)" />
             <text x={300} y={CY + 28} textAnchor="middle" style={{ fontSize: 11, fill: 'var(--bone-500)' }}>담당자가 정리·기억</text>
             <path d={`M514 ${CY - 6} l12 12 M526 ${CY - 6} l-12 12`} fill="none" stroke="var(--navy-400)" strokeWidth={1.2} />
             <text x={520} y={CY + 28} textAnchor="middle" style={{ fontSize: 11, fill: 'var(--bone-500)' }}>몰입 중단</text>
           </g>
-          <g style={{ opacity: Math.min(1, Math.max(0, (t - 0.45) * 2)) }}>
-            <path d={`M160 ${CY} H566`} fill="none" stroke="var(--navy-800)" strokeWidth={2} />
+          <g style={{ opacity: clamp01((t - 0.45) * 2) }}>
+            {/* 사슬이 왼쪽부터 그려진다: 길이를 1 로 두고 dashoffset 1 → 0 (t 후반, 시안 case.js:96-97) */}
+            <path data-chain d={`M160 ${CY} H566`} fill="none" stroke="var(--navy-800)" strokeWidth={2}
+                  pathLength={1} strokeDasharray={1} strokeDashoffset={1 - clamp01((t - 0.5) * 2)} />
             {CHAIN.map(([x, n], i) => i < 4 ? (
               <g key={n}>
                 <circle cx={x} cy={CY} r={5} fill="var(--bone-50)" stroke="var(--navy-800)" />

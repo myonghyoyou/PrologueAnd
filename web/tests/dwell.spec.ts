@@ -43,3 +43,28 @@ test('폰: 머무름 구간이 빈 여백(120vh)을 남기지 않는다', async 
   expect(gaps.after03).toBeLessThan(120);
   expect(gaps.after07).toBeLessThan(120);
 });
+
+test('05 새 길 사슬이 t 후반에 그려진다 (시안 case.js:96-97)', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, '데스크톱 전용 — 폰은 t=1 고정');
+  await page.goto('/projects/por-favor-harry');
+  await page.waitForTimeout(600);
+  const read = async (k: number) => {
+    await scrollToY(page, await dwellY(page, '[data-dwell="3"]', k));
+    return page.evaluate(() => {
+      const d = document.querySelector('[data-dwell="3"]') as HTMLElement;
+      const c = d.querySelector('[data-chain]') as SVGPathElement;
+      return { t: Number(d.dataset.t), off: Number(c.getAttribute('stroke-dashoffset')), dash: c.getAttribute('stroke-dasharray'), len: c.getAttribute('pathLength') };
+    });
+  };
+  const a = await read(0);
+  expect(a.len).toBe('1');
+  expect(a.dash).toBe('1');
+  expect(a.off).toBeCloseTo(1, 2);                                   // 전반: 아직 안 그려짐
+  const b = await read(0.75);
+  expect(b.off).toBeCloseTo(1 - Math.min(1, Math.max(0, (b.t - 0.5) * 2)), 2);   // 후반: 1 → 0
+  expect(b.off).toBeGreaterThan(0);
+  expect(b.off).toBeLessThan(1);
+  expect((await read(1)).off).toBeCloseTo(0, 2);
+  // 하드코딩 색 없이 토큰으로
+  expect(await page.evaluate(() => document.querySelector('[data-dwell="3"] svg')!.innerHTML.includes('#8A96C2'))).toBe(false);
+});
