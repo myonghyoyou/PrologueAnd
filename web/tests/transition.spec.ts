@@ -152,3 +152,29 @@ test('I1 상세 → 상세(to-case) 전환에서는 표지 제목 이름이 꺼�
   expect(groups).toContain('::view-transition-group(root)');
   expect(groups.some((g) => g.includes('pj-title'))).toBe(false);
 });
+
+test('키보드 Enter 로 행을 열어도 제목이 morph 한다 (이름은 클릭 처리에서 붙인다)', async ({ page }) => {
+  await page.goto('/projects/por-favor-harry');
+  await recordTransitions(page);
+  await page.goto('/projects');
+  await page.locator('a[data-row]').focus();
+  await page.keyboard.press('Enter');
+  await page.waitForURL('**/projects/por-favor-harry');
+  await page.waitForFunction(() => (window as unknown as { __vt: { ready?: string }[] }).__vt[0]?.ready !== undefined, null, { timeout: 8000 });
+  const go = await lastVt(page);
+  expect(go?.ready).toBe('resolved');
+  expect(go?.groups).toContain('::view-transition-group(pj-title)');
+});
+
+test('Alt 클릭은 가로채지 않는다 (브라우저 기본 동작)', async ({ page }) => {
+  await page.goto('/projects');
+  const prevented = await page.evaluate(() => {
+    const a = document.querySelector('a[data-row]') as HTMLElement;
+    let p: boolean | null = null;
+    // 기본 동작(다운로드)을 실제로 일으키지 않도록, 문서 끝에서 결과만 읽고 취소한다
+    document.addEventListener('click', (e) => { p = e.defaultPrevented; e.preventDefault(); }, { once: true });
+    a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, altKey: true, button: 0 }));
+    return p;
+  });
+  expect(prevented).toBe(false);
+});
