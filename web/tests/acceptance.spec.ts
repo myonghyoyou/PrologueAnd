@@ -30,3 +30,17 @@ test('V9 모션 줄이기: 02 흐름은 완성(t=1), 와이프는 After 전부',
   expect(right).toBe(0);
   await ctx.close();
 });
+
+test('장 링크로 들어오면 그 장이 헤더 아래에서 시작', async ({ page }) => {
+  await page.goto('/projects/por-favor-harry#screens');
+  await page.waitForTimeout(800);
+  const top = await page.evaluate(() => document.getElementById('screens')!.getBoundingClientRect().top);
+  expect(Math.abs(top - 88)).toBeLessThanOrEqual(4);
+});
+
+test('상세에서도 휠이 부드럽게 굴러간다(Lenis smoothWheel)', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, '데스크톱 전용 — 터치는 Lenis 가 건드리지 않는다');
+  await page.goto('/projects/por-favor-harry');
+  await page.waitForTimeout(600);
+  expect(await page.evaluate(() => (window as unknown as { __lenis?: { options: { smoothWheel: boolean } } }).__lenis?.options.smoothWheel)).toBe(true);
+});
