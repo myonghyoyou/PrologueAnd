@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { scrollToY } from './helpers';
 
 test('표지에 숫자 3개와 메타 4행이 있다', async ({ page }) => {
   await page.goto('/projects/por-favor-harry');
@@ -8,7 +9,24 @@ test('표지에 숫자 3개와 메타 4행이 있다', async ({ page }) => {
 
 test('핫스팟 호버가 데이터 좌표와 맞는다', async ({ page }) => {
   await page.goto('/projects/por-favor-harry');
-  await page.locator('[data-spot="1"]').hover();
+  await page.waitForTimeout(600);
+  // locator.hover() 는 요소를 화면으로 스크롤한 뒤 한 번 더 스크롤해서, mouseenter 직후 mouseleave 가 와
+  // 하이라이트가 꺼지곤 했다(I5). 먼저 s06 정거장(판 위 − 64)에 서고, 실제 마우스를 항목 가운데로 옮긴다.
+  await scrollToY(page, await page.evaluate(() =>
+    document.getElementById('s06')!.getBoundingClientRect().top + window.scrollY - 64));
+  let spot = await page.locator('[data-spot="1"]').boundingBox();
+  const vh = page.viewportSize()!.height;
+  if (!spot || spot.y < 0 || spot.y + spot.height > vh) {
+    // 폰: 판이 길어 목록이 첫 화면 밖이다 — 목록이 화면 가운데 오게 한 번 더 옮긴다
+    await scrollToY(page, await page.evaluate(() =>
+      document.querySelector('[data-spot="1"]')!.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2));
+    spot = await page.locator('[data-spot="1"]').boundingBox();
+  }
+  await page.mouse.move(spot!.x + spot!.width / 2, spot!.y + spot!.height / 2);
+  await page.waitForFunction(() => {
+    const hl = document.querySelector('[data-spot-hl]') as HTMLElement | null;
+    return !!hl && getComputedStyle(hl).opacity === '1';
+  });
   const box = await page.evaluate(() => {
     const hl = document.querySelector('[data-spot-hl]') as HTMLElement;
     const sh = hl.parentElement as HTMLElement;
