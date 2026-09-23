@@ -4,6 +4,7 @@ import { validateStudy } from '../content/validate';
 import { resolveStudy } from '../content/resolve';
 import { figuresOf } from '../content/figures';
 import type { Study } from '../content/study-types';
+import { frameMode, rowMaxWidth } from '../lib/figure-rules';
 
 const pfh = () => getStudy('por-favor-harry')!;
 
@@ -52,4 +53,17 @@ test('없는 그림 파일은 오류', () => {
   const s = pfh();
   const missing: Study = { ...s, cover: { ...s.cover, hero: { ...s.cover.hero, src: '/screens/pfh/없는-파일.png' } } };
   expect(() => resolveStudy(missing)).toThrow();
+});
+
+test('그림 규칙: 세로로 긴 캡처만 창, 폰 칸은 아님', () => {
+  expect(frameMode(1280, 800, 'block')).toBe('plain');
+  expect(frameMode(1280, 1600, 'block')).toBe('long');
+  expect(frameMode(390, 844, 'phones')).toBe('plain');
+});
+
+test('그림 규칙: 한 줄의 최대 폭은 가장 낮은 원본 높이에서 정해진다', () => {
+  // 1280×800 두 장, 간격 12 → 높이 800 에서 폭 1280 두 장 + 틀 여백 7×2×2 + 간격 12
+  expect(rowMaxWidth([{ w: 1280, h: 800 }, { w: 1280, h: 800 }], 12)).toBe(1280 * 2 + 28 + 12);
+  // 높이가 낮은 쪽(720)이 상한을 정한다
+  expect(rowMaxWidth([{ w: 1280, h: 800 }, { w: 1280, h: 720 }], 12)).toBe(Math.round(720 * (1.6 + 1280 / 720)) + 28 + 12);
 });

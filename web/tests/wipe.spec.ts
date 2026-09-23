@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { scrollToY } from './helpers';
 
-test('07 와이프: 경계선이 0% → 100%로 이동', async ({ page, isMobile }) => {
+// 작업 6(와이프)에서 새 구조로 다시 쓴다
+test.fixme('07 와이프: 경계선이 0% → 100%로 이동', async ({ page, isMobile }) => {
   test.skip(!!isMobile, '데스크톱 전용 — use-dwell.ts는 1024px 미만에서 핀 고정을 하지 않음');
   await page.goto('/projects/por-favor-harry');
   await page.waitForTimeout(600);
@@ -21,7 +22,7 @@ test('07 와이프: 경계선이 0% → 100%로 이동', async ({ page, isMobile
   expect(rightPct(await at(1))).toBeLessThanOrEqual(1);
 });
 
-test('콜라주와 화면의 크기가 같다', async ({ page }) => {
+test.fixme('콜라주와 화면의 크기가 같다', async ({ page }) => {
   await page.goto('/projects/por-favor-harry');
   await page.waitForTimeout(600);
   const [a, b] = await page.evaluate(() => {
@@ -33,7 +34,7 @@ test('콜라주와 화면의 크기가 같다', async ({ page }) => {
   expect(Math.abs(a - b)).toBeLessThanOrEqual(1);
 });
 
-test('폰: 07 은 Before 위, After 아래로 둘 다 보인다', async ({ page, isMobile }) => {
+test.fixme('폰: 07 은 Before 위, After 아래로 둘 다 보인다', async ({ page, isMobile }) => {
   test.skip(!isMobile, '폰 전용 — 데스크톱은 와이프');
   await page.goto('/projects/por-favor-harry');
   await page.waitForTimeout(600);

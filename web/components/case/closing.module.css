@@ -1,0 +1,15 @@
+/* 끝 — Built with 한 줄 → 문의 → 다음 이야기 (명세 §4.2) */
+.closing{margin-top:160px;padding-bottom:40px}
+.built{font-size:13px;color:var(--bone-500);margin:0 0 20px}
+.cta{display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;background:var(--navy-800);color:#fff;border:0;border-radius:2px;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.btn:hover{background:var(--navy-700)}
+.tri{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid currentColor}
+.mail{color:var(--navy-800);font-weight:500}
+.teaser{margin-top:96px;border-top:1px solid var(--bone-200);padding-top:24px;display:flex;justify-content:space-between;align-items:center;gap:48px;color:inherit}
+.cap{display:block;font-size:13px;color:var(--bone-500);margin-bottom:6px}
+.big{font-size:clamp(28px,2.2vw,40px);font-weight:600;letter-spacing:-.02em;display:block;margin-bottom:8px}
+.tag{font-size:16px;line-height:1.7;color:var(--bone-700);margin:0}
+.teaser:hover .big{color:var(--navy-800)}
+.teaserImg{flex:none;width:320px;height:200px;object-fit:cover;border:1px solid var(--bone-300);background:var(--bone-0)}
+@media (max-width:1023px){ .closing{margin-top:96px} .teaser{flex-direction:column;align-items:flex-start;gap:24px;margin-top:64px} .teaserImg{width:100%;height:auto} }
