@@ -1,7 +1,7 @@
 import type { Project } from './types';
 
 export const projects: Project[] = [
-  { slug: 'por-favor-harry', title: 'Por favor, Harry', tagline: '흩어진 업무 요청을 하나의 Workflow로', problem: 'scattered', tags: ['Workflow Design', 'Internal Tool'], year: '2025', disclosure: 'full', order: 1, featured: true, published: true },
+  { slug: 'por-favor-harry', title: 'Por favor, Harry', tagline: '전화·메신저·메일·방문으로 오던 요청을 한 곳으로', problem: 'scattered', tags: ['Workflow Design', 'Internal Tool'], year: '2025', disclosure: 'full', order: 1, featured: true, published: true },
   { slug: 'daeryun-learning-hub', title: 'Daeryun Learning Hub', tagline: '1,220개의 종이 문제를 새로운 학습 경험으로', problem: 'paper', tags: ['Digital Transformation', 'Web Application'], year: '2025', disclosure: 'anonymized', order: 2, featured: true, published: false },
   { slug: 'hospital-ux', title: '병원 UI/UX 고도화', tagline: '복잡한 업무 화면을 더 빠르게 읽고 처리하도록', problem: 'legacy', tags: ['Enterprise UX', 'UI Redesign'], year: '2024–2025', disclosure: 'mockup', order: 3, featured: true, published: false },
   { slug: 'custom-commerce', title: 'Custom Commerce', tagline: '기성 쇼핑몰 프레임워크 없이 처음부터 구축한 Commerce Product', problem: 'idea', tags: ['Product Engineering', 'Commerce'], year: '2025', disclosure: 'full', order: 4, featured: true, published: false },
