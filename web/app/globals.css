@@ -6,6 +6,7 @@
   --bone-400:#B3AEA3;--bone-500:#8A857A;--bone-600:#66625A;--bone-700:#4A4741;--bone-800:#2E2C28;--bone-900:#1C1B18;
   --signal:#3B6FE0;--signal-soft:#DCEBFB;--success:#2E7D5B;--warning:#B7791F;--error:#C0392B;
   --ease-out:cubic-bezier(.2,.8,.2,1);
+  --shadow:0 24px 48px -24px rgba(28,27,24,.35);
   --grid:clamp(1272px, 80vw, 1760px);
   --gutter:72px;
   --hdr:64px;

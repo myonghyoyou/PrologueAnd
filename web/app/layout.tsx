@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Bodoni_Moda } from 'next/font/google';
 import localFont from 'next/font/local';
 import { LenisProvider } from '@/components/lenis-provider';
+import { InquiryDrawer } from '@/components/inquiry-drawer';
 import './globals.css';
 
 const serif = Bodoni_Moda({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-serif', display: 'swap' });
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <LenisProvider />
         {children}
+        <InquiryDrawer />
       </body>
     </html>
   );
