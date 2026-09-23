@@ -23,7 +23,7 @@ export function CaseView({ data, project, next }: { data: Case; project: Project
       <Pan id="s06" label="06 SOLUTION" title={data.s06.h}
            media={<Screen pic={data.s06.screen}><SpotOverlay spots={data.s06.spots} active={spot} /></Screen>}>
         <Para lines={data.s06.p} />
-        <SpotList spots={data.s06.spots} onHover={setSpot} />
+        <SpotList spots={data.s06.spots} active={spot} onHover={setSpot} />
       </Pan>
       {data.s06.screens.map((sc, i) => (
         <Pan key={sc.lab} id={`s06-${i + 1}`} kind={sc.pic.w < sc.pic.h ? 'phone' : 'text'}
