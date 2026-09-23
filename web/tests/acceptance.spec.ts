@@ -18,3 +18,15 @@ test.describe('상세 수용 기준', () => {
     await expect(page).toHaveURL(/\/projects$/);
   });
 });
+
+test('V9 모션 줄이기: 02 흐름은 완성(t=1), 와이프는 After 전부', async ({ browser }) => {
+  const ctx = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto('/projects/por-favor-harry');
+  await page.waitForTimeout(600);
+  expect(await page.evaluate(() => Number(document.querySelector<HTMLElement>('#flow [data-flow]')!.dataset.t))).toBe(1);
+  const right = await page.evaluate(() =>
+    Number((document.querySelector('[data-wipe-after]') as HTMLElement).style.clipPath.match(/inset\(0px\s+([\d.]+)%/)?.[1] ?? NaN));
+  expect(right).toBe(0);
+  await ctx.close();
+});
