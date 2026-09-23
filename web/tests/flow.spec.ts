@@ -31,6 +31,44 @@ test('02 는 지나가며 0 → 1: 윗변이 화면 85% 에서 0, 가운데가 4
   expect(await t(page, '#flow')).toBe(1);
 });
 
+test('02 끝(t=1): 네 갈래는 한 줄로 합쳐지고 갈래 이름은 사라진다', async ({ page }) => {
+  await scrollToY(page, await page.evaluate(() => {
+    const f = document.querySelector<HTMLElement>('#flow [data-flow]')!;
+    const r = f.getBoundingClientRect();
+    return r.top + window.scrollY + r.height / 2 - 0.4 * window.innerHeight + 20;
+  }));
+  await page.waitForTimeout(100);
+  expect(await t(page, '#flow')).toBe(1);
+  const r = await page.evaluate(() => {
+    const svg = document.querySelector('#flow [data-flow] svg')!;
+    return {
+      starts: [...svg.querySelectorAll('[data-src-path]')].map((p) => p.getAttribute('d')!.match(/^M40 ([\d.]+)/)![1]),
+      opacity: [...svg.querySelectorAll<SVGElement>('[data-src-label]')].map((l) => Number(getComputedStyle(l).opacity)),
+    };
+  });
+  expect(new Set(r.starts).size).toBe(1);
+  expect(r.opacity.every((o) => o === 0)).toBe(true);
+
+  // 첫 단계(요청 링크) 점은 합쳐진 선의 시작점에, 나머지 점은 화살표까지 같은 간격으로
+  const steps = await page.evaluate(() => [...document.querySelectorAll('#flow [data-flow] [data-step]')]
+    .map((c) => Number(c.getAttribute('cx'))));
+  expect(steps[0]).toBe(40);
+  const gaps = steps.slice(1).map((x, i) => x - steps[i]);
+  expect(Math.max(...gaps) - Math.min(...gaps)).toBeLessThan(0.01);
+});
+
+test('01 정지 상태는 네 갈래 그대로', async ({ page }) => {
+  const r = await page.evaluate(() => {
+    const svg = document.querySelector('#problem [data-flow] svg')!;
+    return {
+      starts: [...svg.querySelectorAll('[data-src-path]')].map((p) => p.getAttribute('d')!.match(/^M40 ([\d.]+)/)![1]),
+      opacity: [...svg.querySelectorAll<SVGElement>('[data-src-label]')].map((l) => Number(getComputedStyle(l).opacity)),
+    };
+  });
+  expect(new Set(r.starts).size).toBe(4);
+  expect(r.opacity.every((o) => o === 1)).toBe(true);
+});
+
 test('문구는 데이터에서, 그림 설명이 붙는다', async ({ page }) => {
   const r = await page.evaluate(() => {
     const svg = document.querySelector('#flow [data-flow] svg')!;
