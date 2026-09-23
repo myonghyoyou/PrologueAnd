@@ -57,3 +57,30 @@ test('불편한 점을 적고 Escape로 닫으면 포커스가 문의 버튼으�
   await trigger.click();
   await expect(page.locator('textarea[name="pain"]')).toHaveValue('요청이 네 갈래로 들어옵니다');
 });
+
+test('2단계에서 닫았다 다시 열면 포커스가 서랍 안 2단계 필드에 있고, Tab을 눌러도 서랍을 벗어나지 않는다', async ({ page }) => {
+  await page.goto('/projects');
+  const trigger = page.locator('header [data-open-drawer]');
+  await trigger.click();
+  await page.fill('textarea[name="pain"]', '요청이 네 갈래로 들어옵니다');
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page.locator('textarea[name="goal"]')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await trigger.click();
+
+  // 열릴 때(380ms 뒤) 포커스가 서랍 "안"의, 지금 보이는(2단계) 필드에 있어야 한다 — work(1단계, 숨김)가 아니라 goal(2단계)
+  await expect(page.locator('textarea[name="goal"]')).toBeFocused();
+  const focusedInsideDialogAndVisible = await page.evaluate(() => {
+    const dialog = document.querySelector('[role="dialog"]');
+    const active = document.activeElement as HTMLElement | null;
+    return !!dialog && !!active && dialog.contains(active) && active.offsetParent !== null;
+  });
+  expect(focusedInsideDialogAndVisible).toBe(true);
+
+  await page.keyboard.press('Tab');
+  const stillInsideDialog = await page.evaluate(() => {
+    const dialog = document.querySelector('[role="dialog"]');
+    return !!dialog && dialog.contains(document.activeElement);
+  });
+  expect(stillInsideDialog).toBe(true);
+});

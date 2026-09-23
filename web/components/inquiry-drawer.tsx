@@ -77,11 +77,16 @@ export function InquiryDrawer() {
     };
   }, [open]);
 
-  // 열릴 때 첫 textarea로 포커스, 닫힐 때 연 버튼으로 포커스 되돌리기 (시안 v3.js:131)
+  // 열릴 때 현재 단계(보이는 필드)의 첫 포커스 가능한 요소로 포커스, 닫힐 때 연 버튼으로 되돌리기 (시안 v3.js:131)
+  // step 이 close/reopen 사이에 그대로 유지되므로, DOM 순서상 첫 textarea(1단계 work)가 아니라
+  // "지금 보이는" 필드를 찾아야 한다 — 안 그러면 2단계에서 닫았다 다시 열 때 포커스가 숨은(.off) 요소를 겨냥해 아무 데도 못 가고,
+  // 서랍 밖(연 버튼)에 남아 Tab 트랩의 first/last 판정이 성립하지 않아 Tab이 배경으로 새어나간다.
   useEffect(() => {
     if (!open) { opener.current?.focus(); return; }
     const timer = setTimeout(() => {
-      drawer.current?.querySelector<HTMLTextAreaElement>('textarea')?.focus();
+      const scoped = form.current ? focusables(form.current) : [];
+      const target = scoped[0] ?? (drawer.current ? focusables(drawer.current)[0] : undefined);
+      target?.focus();
     }, 380);
     return () => clearTimeout(timer);
   }, [open]);
@@ -122,7 +127,12 @@ export function InquiryDrawer() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const v = read();
-    if (v.pain.trim().length < 2) { setError('가장 불편한 점을 한 줄만 적어주세요.'); setStep('step1'); return; }
+    if (v.pain.trim().length < 2) {
+      setError('가장 불편한 점을 한 줄만 적어주세요.');
+      setStep('step1');
+      if (form.current) form.current.scrollTop = 0;
+      return;
+    }
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email)) { setError('연락받을 메일 주소를 적어주세요.'); return; }
     setSending(true);
     try {
