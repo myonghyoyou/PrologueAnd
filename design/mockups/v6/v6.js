@@ -134,7 +134,7 @@ window.V6 = (function () {
   /* ---------- build ---------- */
   V.build = function () {
     world = document.getElementById('world'); svg = document.getElementById('pathsvg');
-    document.getElementById('restN').textContent = V3.projects.length;
+    document.getElementById('restN').textContent = (V3.published ? V3.published() : V3.projects).length;   // 공개된 Case Study 편수
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     svg.innerHTML = `<path class="knot" id="knot" d="${knotD}"/><path class="guide" d="${mainD}"/><path class="ink" id="ink" d="${mainD}"/>`;
     ink = document.getElementById('ink'); main = svg.querySelector('.guide'); L = main.getTotalLength();
