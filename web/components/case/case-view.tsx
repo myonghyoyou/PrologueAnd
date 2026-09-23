@@ -39,17 +39,6 @@ export function CaseView({ data, project, next }: { data: Case; project: Project
           return (
             <Pan id="s03" label={STEPS[k].lab} title={STEPS[k].h} media={<MorphDiagram t={t} />}>
               <Para lines={[STEPS[k].p]} />
-              {/* 05 에서만: 새 길의 다섯 단계를 글 아래 한 줄로 */}
-              {k === 2 ? (
-                <ol data-flow style={{ listStyle: 'none', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, margin: '12px 0 0', padding: 0, fontSize: 'clamp(13px,.95vw,16px)', color: 'var(--navy-800)' }}>
-                  {data.s05.flow.map((f, i) => (
-                    <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={{ border: '1px solid var(--navy-200)', borderRadius: 2, padding: '5px 10px', background: 'var(--bone-0)' }}>{f}</span>
-                      {i < data.s05.flow.length - 1 ? <span style={{ color: 'var(--bone-400)' }}>→</span> : null}
-                    </li>
-                  ))}
-                </ol>
-              ) : null}
             </Pan>
           );
         }}

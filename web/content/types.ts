@@ -20,7 +20,7 @@ export type Case = {
   s02: { h: string; p: string[]; diagram: 'before' };
   s03: { h: string; p: string[] };
   s04: { q: string; p: string[] };
-  s05: { h: string; flow: string[]; p: string[] };
+  s05: { h: string; p: string[] };
   s06: { h: string; p: string[]; screen: Pic; spots: Spot[]; screens: { lab: string; h: string; p: string[]; pic: Pic }[] };
   s07: { h: string; p: string[]; scatter: Scatter[]; after: Pic };
   s09: { h: string; p: string[] };

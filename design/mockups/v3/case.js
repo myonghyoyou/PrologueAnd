@@ -90,7 +90,7 @@
   const B = src.map((y, i) => [150, y, 235, CY + (y - CY) * 0.12, 300, CY]);   // 겹침 없음: 출발 높이를 유지하다 노드 앞에서 모인다 (2026-09-22)
   const A = src.map(y => [110, y, 130, CY, 160, CY]);
   const lerp = (a, b, t) => a + (b - a) * t;
-  const chain = [[160, '개인 링크'], [270, '요청폼'], [380, '심사 Queue'], [480, '약속일'], [580, '상태 공유']];
+  const chain = [[160, '요청 링크'], [270, '요청 양식'], [380, '심사 대기열'], [480, '처리 예정일'], [580, '진행 상황 안내']];   // 본문 용어와 같게 (docs/21 R4·R5)
   document.querySelectorAll('[data-morph]').forEach(d => {
     d.innerHTML = `<svg viewBox="0 0 640 360"><g class="all">${src.map((y, i) => `<text x="34" y="${y + 5}" text-anchor="end">${names[i]}</text>`).join('')}${src.map((y, i) => `<path class="before" data-i="${i}" d=""/>`).join('')}<g class="mb"><path class="before" d="M300 ${CY} H520"/><circle class="node" cx="300" cy="${CY}" r="5" style="stroke:#8A96C2"/><text x="300" y="${CY + 28}" text-anchor="middle">담당자가 정리·기억</text><path class="before" d="M514 ${CY - 6} l12 12 M526 ${CY - 6} l-12 12"/><text x="520" y="${CY + 28}" text-anchor="middle">몰입 중단</text></g><g class="ma"><path class="after mchain" d="M160 ${CY} H566"/>${chain.map(([x, n], i) => i < 4 ? `<circle class="node" cx="${x}" cy="${CY}" r="5"/><text x="${x}" y="${i === 0 ? CY + 56 : i % 2 ? CY - 20 : CY + 28}" text-anchor="middle">${n}</text>` : `<polygon class="flagp" points="566,${CY - 9} 582,${CY} 566,${CY + 9}"/><text x="582" y="${CY + 28}" text-anchor="middle">${n}</text>`).join('')}</g></g></svg>`;   // Before/After 캡션 없음 (2026-09-22)
     const mchain = d.querySelector('.mchain'); const L = mchain.getTotalLength(); mchain.style.strokeDasharray = L; let last = -1;
@@ -141,7 +141,7 @@
     panels().forEach(p => {
       const dw = p.closest('[data-dwell]');
       if (!dw) { out.push({ y: p.getBoundingClientRect().top + scrollY - 64, el: p }); return; }
-      const y0 = dw.getBoundingClientRect().top + scrollY, range = dw.offsetHeight - p.offsetHeight;
+      const y0 = dw.getBoundingClientRect().top + scrollY - 64, range = dw.offsetHeight - p.offsetHeight;   // 판과 같이 −64: 빼지 않으면 k=1 에서 판이 헤더 밑으로 들어간다 (2026-09-23)
       const ks = dw.hasAttribute('data-wipe') ? [0, 1] : [0, .5, 1];
       ks.forEach(k => out.push({ y: y0 + range * k, el: p }));
     });
@@ -163,7 +163,7 @@
   }
   const curStop = () => { const st = stops(); let k = 0; st.forEach((s, i) => { if (s.y <= (anim.active ? anim.target : scrollY) + 2) k = i; }); return { st, k }; };
   const goStop = dir => { const { st, k } = curStop(); setTarget(st[clamp(k + dir, 0, st.length - 1)].y); };
-  const goTo = (el, immediate) => { const dw = el.closest && el.closest('[data-dwell]'); const y = (dw || el).getBoundingClientRect().top + scrollY - (dw ? 0 : 64); if (immediate || reduced) { anim.active = false; scrollTo(0, y); onScroll(); } else setTarget(y); };
+  const goTo = (el, immediate) => { const dw = el.closest && el.closest('[data-dwell]'); const y = (dw || el).getBoundingClientRect().top + scrollY - 64; if (immediate || reduced) { anim.active = false; scrollTo(0, y); onScroll(); } else setTarget(y); };
   if (desktop() && !reduced) {
     // 휠: 스트림 하나(간격 100ms 안) = 한 칸. 90px부터 반응, 300ms 넘게 이어지면 480px마다 한 칸 더 (v5·v6과 같은 값)
     const WHEEL = { gap: 100, first: 90, more: 480 }; let acc = 0, lastEv = 0, stepped = false, streamStart = 0, lockUntil = 0, pending = 0;

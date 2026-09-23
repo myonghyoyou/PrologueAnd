@@ -13,7 +13,7 @@
 }
 *{box-sizing:border-box}
 html{overflow-x:clip}
-body{margin:0;background:var(--bone-50);color:var(--bone-900);font-family:var(--font-sans),"Apple SD Gothic Neo","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bone-50);color:var(--bone-900);font-family:var(--font-sans),"Apple SD Gothic Neo","Segoe UI",sans-serif;font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}   /* 16px·1.7 은 시안 v3.css:17 — 라벨·캡션·표의 줄 높이가 여기서 나온다 */
 a{color:inherit;text-decoration:none}
 .wrap{max-width:var(--grid);margin:0 auto;padding:0 var(--gutter)}
 .serif{font-family:var(--font-serif),Georgia,serif}

@@ -5,7 +5,7 @@ const Y = 1.6;
 const SRC = [40, 80, 120, 160].map((y) => Math.round(y * Y));
 const CY = Math.round(100 * Y);
 const NAMES = ['전화', '메신저', '이메일', '직접 방문'];
-const CHAIN: [number, string][] = [[160, '개인 링크'], [270, '요청폼'], [380, '심사 Queue'], [480, '약속일'], [580, '상태 공유']];
+const CHAIN: [number, string][] = [[160, '요청 링크'], [270, '요청 양식'], [380, '심사 대기열'], [480, '처리 예정일'], [580, '진행 상황 안내']];   // 본문 용어와 같게 (docs/21 R4·R5)
 const B = SRC.map((y) => [150, y, 235, CY + (y - CY) * 0.12, 300, CY]);
 const A = SRC.map((y) => [110, y, 130, CY, 160, CY]);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;

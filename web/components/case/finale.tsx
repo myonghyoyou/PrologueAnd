@@ -19,7 +19,7 @@ export function Finale({ data, next, slug }: { data: Case; next?: Project; slug:
           {data.s10.p.map((t, i) => <p key={i} className={s.p}>{t}</p>)}
           <div className={s.cta}>
             <button type="button" data-cta data-open-drawer data-project={slug} className={s.btn}>
-              이 프로젝트를 보고 문의하기
+              이 프로젝트를 보고 문의하기 <i className={s.tri} aria-hidden />
             </button>
             <a href="mailto:PrologueAnd@gmail.com" className={s.mail}>PrologueAnd@gmail.com</a>
           </div>
