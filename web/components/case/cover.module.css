@@ -2,7 +2,8 @@
 .cap{font-size:clamp(14px,1vw,17px);font-weight:500;letter-spacing:.01em;color:var(--bone-500)}
 .h1{font-size:clamp(44px,3.8vw,72px);font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:12px 0 0;word-break:keep-all}
 /* view-transition-name 은 CSS 모듈에 두면 css-loader 가 식별자를 해시로 바꿔 버린다(예: cover-module__xxx__pj-title) —
-   그래서 리터럴 pj-title 이 필요한 이 값만 cover.tsx 인라인 스타일로 붙인다 */
+   그래서 리터럴 pj-title 은 전역 app/transitions.css 의 [data-cover-title] [data-title] 규칙이 붙인다
+   (인라인이면 to-case 규칙이 이기지 못하고, clearNames 에 한 번 지워지면 돌아오지 않았다) */
 .meta{border-collapse:collapse;width:100%;max-width:34rem;font-size:clamp(14px,1vw,17px);margin-top:20px}
 .meta td{padding:7px 0;border-top:1px solid var(--bone-200);vertical-align:top}
 .meta td:first-child{color:var(--bone-500);width:6em}

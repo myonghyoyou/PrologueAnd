@@ -7,7 +7,9 @@
 ::view-transition-old(pj-title){animation:vt-out .18s ease-out both}
 ::view-transition-new(pj-title){animation:vt-fade .25s ease-out both}
 @keyframes vt-fade{from{opacity:0}to{opacity:1}}
-/* 상세 → 상세: 제목 morph 없이 root 페이드만 (시안 case.css:79) */
+/* 상세 표지 H1 의 공유 이름 — 전역 규칙이어야 한다(모듈은 이름을 해시한다). 목록 행은 클릭 때 인라인으로 붙는다 */
+[data-cover-title] [data-title]{view-transition-name:pj-title}
+/* 상세 → 상세: 제목 morph 없이 root 페이드만 (시안 case.css:79) — 위 규칙보다 구체적이라 이긴다 */
 html:active-view-transition-type(to-case) [data-title]{view-transition-name:none}
 @media (prefers-reduced-motion:reduce){
   ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}

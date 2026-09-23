@@ -131,3 +131,24 @@ test('C1 목록 → 상세 → 목록: 전환이 멈추지 않는다 (ready 성�
   expect(back?.path).toBe('/projects');
   expect(back?.rows).toBe(6);
 });
+
+test('I1 한 번 전환한 뒤에도 표지 제목이 이름을 지켜 돌아오는 morph 가 된다', async ({ page }) => {
+  const { back } = await roundTrip(page);
+  // 옛 화면(표지 H1)과 새 화면(목록 행) 양쪽에 pj-title 이 있어야 group 애니메이션이 생긴다
+  expect(back?.groups).toContain('::view-transition-group(pj-title)');
+  expect(back?.groups).toContain('::view-transition-old(pj-title)');
+});
+
+test('I1 상세 → 상세(to-case) 전환에서는 표지 제목 이름이 꺼져 제목 morph 가 없다', async ({ page }) => {
+  await page.goto('/projects/por-favor-harry');
+  const groups = await page.evaluate(async () => {
+    const vt = (document as Document & { startViewTransition: (a: unknown) => { ready: Promise<void>; finished: Promise<void> } })
+      .startViewTransition({ update: () => {}, types: ['to-case'] });
+    await vt.ready;
+    const g = document.getAnimations().map((x) => (x.effect as KeyframeEffect | null)?.pseudoElement ?? '').filter(Boolean);
+    await vt.finished;
+    return g;
+  });
+  expect(groups).toContain('::view-transition-group(root)');
+  expect(groups.some((g) => g.includes('pj-title'))).toBe(false);
+});

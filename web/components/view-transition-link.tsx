@@ -7,9 +7,10 @@ import { waitForPath } from '@/lib/route-commit';
 type VTDoc = Document & { startViewTransition?: (arg: unknown) => { finished: Promise<void> } };
 const NAME = 'pj-title';
 
-/** 문서에 pj-title 이 둘 이상이면 전환이 통째로 무시된다 — 항상 전부 지우고 하나만 붙인다 */
+/** 문서에 pj-title 이 둘 이상이면 전환이 통째로 무시된다 — 목록 행 제목의 이름은 전부 지우고 하나만 붙인다.
+ *  상세 표지 H1 의 이름은 transitions.css 의 전역 규칙이 준다 — 여기서 건드리지 않는다 */
 export function clearNames() {
-  document.querySelectorAll<HTMLElement>('[data-title]').forEach((el) => { el.style.viewTransitionName = ''; });
+  document.querySelectorAll<HTMLElement>('[data-row] [data-title]').forEach((el) => { el.style.viewTransitionName = ''; });
 }
 
 export function startVT(update: () => void | Promise<void>, types?: string[]) {
