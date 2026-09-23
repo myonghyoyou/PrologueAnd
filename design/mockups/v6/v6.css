@@ -55,7 +55,7 @@ body{overflow:hidden;background:var(--bone-100)}
 /* & marker: 화면 중앙 고정 */
 #marker{position:fixed;left:0;top:0;z-index:30;width:44px;height:44px;margin:0;padding:0;will-change:transform;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:30px;line-height:1;color:var(--navy-800);pointer-events:none;opacity:0;font-optical-sizing:none;font-variation-settings:"opsz" 24}
 #marker:before{display:none}
-#marker{display:none}   /* 임시(2026-09-20): 선이 &를 관통하는 문제(3번)의 처리 방식이 정해질 때까지 숨김. 이 줄만 지우면 복구 */
+#marker{display:none}   /* & 마커는 쓰지 않는다 (2026-09-23 결정). 선이 굽이쳐 점 근처에서 세로로 들어오는 구간이 많아 글자를 관통했고, 비켜 놓거나 선을 끊어 살릴 만큼의 값이 없다고 판단. 위치 계산은 남겨 둠 */
 /* header progress map */
 .hdr{pointer-events:none;background:linear-gradient(var(--bone-100) 70%,rgba(243,241,236,0))}
 .hdr>*{pointer-events:auto}
