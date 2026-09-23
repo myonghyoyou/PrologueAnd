@@ -14,7 +14,8 @@ export function Frame({ fig, sizes, ctx = 'block', grow = false, children }: {
   return (
     <figure className={s.fig} data-frame data-w={w} data-h={h}
             style={grow ? { flex: `${w / h} 1 0` } : { maxWidth: w + FRAME_PAD * 2 }}>
-      <div className={`${s.box} ${long ? s.long : ''}`} style={long ? undefined : { aspectRatio: `${w + 12} / ${h + 12}` }}>
+      <div className={`${s.box} ${long ? s.long : ''}`} data-lenis-prevent-wheel={long ? true : undefined}
+           style={long ? undefined : { aspectRatio: `${w + FRAME_PAD * 2} / ${h + FRAME_PAD * 2}` }}>
         <Image src={fig.src} alt={fig.alt} width={w} height={h} sizes={sizes} className={s.img} />
         {children}
       </div>

@@ -1,7 +1,7 @@
 /* 폰 칸 — 회색 띠 위, 높이는 640 과 원본 높이 중 작은 쪽, 1~3장 가운데 (명세 §4.3·§8) */
 .band{background:var(--bone-100);padding:40px 32px}
 .row{display:flex;gap:24px;justify-content:center;align-items:flex-start}
-.one{flex:none}
+.one{flex:0 1 auto;min-width:0}
 .cap{margin:12px 0 0;font-size:13px;line-height:1.5;color:var(--bone-500);text-align:center}
 @media (max-width:1023px){
   .band{margin-top:20px;padding:24px 16px}

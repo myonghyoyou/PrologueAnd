@@ -1,5 +1,5 @@
 'use client';
-import { useRef } from 'react';
+import { useRef, type CSSProperties } from 'react';
 import Image from 'next/image';
 import type { WipeBlock } from '@/content';
 import { ScatterCollage } from './scatter-collage';
@@ -16,12 +16,13 @@ export function WipeView({ b }: { b: WipeBlock }) {
   const reduced = useReducedMotion();
   const t = useScrollProgress(ref, wipeT, reduced ? 1 : undefined);
   const pct = (100 - t * 100).toFixed(2);
+  const ar = (b.after.w! + 12) / (b.after.h! + 12);   // 틀 12(=Frame 옛 공식) 를 더한 After 그림 비율
   return (
     <div className={g.g}>
       <div className={g.wide}>
         <div ref={ref} className={s.track} data-wipe-track>
           <div className={s.stage} data-wipe-stage>
-            <div className={s.stack}>
+            <div className={s.stack} style={{ '--ar': ar } as CSSProperties}>
               <div data-wipe-before className={s.layer}>
                 {Array.isArray(b.before)
                   ? <ScatterCollage items={b.before} />

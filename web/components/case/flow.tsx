@@ -52,12 +52,12 @@ export function Flow({ b }: { b: FlowBlock }) {
                 <path data-chain d={`M${X0} ${CY} H${X1}`} fill="none" stroke="var(--navy-800)" strokeWidth={2}
                       pathLength={1} strokeDasharray={1} strokeDashoffset={1 - clamp01((t - 0.5) * 2)} />
                 {stepX.map((x, i) => i < b.to.length - 1 ? (
-                  <g key={b.to[i]}>
+                  <g key={i}>
                     <circle cx={x} cy={CY} r={5} fill="var(--bone-50)" stroke="var(--navy-800)" />
                     <text x={x} y={i === 0 ? CY + 56 : i % 2 ? CY - 20 : CY + 28} textAnchor="middle" className={s.lbl}>{b.to[i]}</text>
                   </g>
                 ) : (
-                  <g key={b.to[i]}>
+                  <g key={`t${i}`}>
                     <polygon points={`${X1},${CY - 9} ${X1 + 16},${CY} ${X1},${CY + 9}`} fill="var(--navy-800)" />
                     <text x={X1 + 16} y={CY + 28} textAnchor="middle" className={s.lbl}>{b.to[i]}</text>
                   </g>

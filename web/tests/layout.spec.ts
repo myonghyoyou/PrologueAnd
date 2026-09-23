@@ -91,7 +91,7 @@ test.describe('상세 — 문서형 뼈대', () => {
       return { w: b.width, h: b.height, sh: box.scrollHeight, ch: box.clientHeight };
     });
     expect(r.h).toBeLessThanOrEqual(641);
-    expect(Math.abs(r.w / r.h - (390 + 12) / (844 + 12))).toBeLessThan(0.02);
+    expect(Math.abs(r.w / r.h - (390 + 14) / (844 + 14))).toBeLessThan(0.02);
     expect(r.sh).toBeLessThanOrEqual(r.ch + 1);   // 안에서 스크롤하지 않는다
   });
 
