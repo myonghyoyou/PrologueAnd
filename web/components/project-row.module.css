@@ -10,3 +10,5 @@ a.row:hover{background:var(--bone-100)}
 .soon .title,.soon .res{color:var(--bone-500)}
 .soon .tag{background:var(--bone-100);color:var(--bone-500)}
 .soonTag{margin-left:10px;font-size:12px;font-weight:500;color:var(--bone-500);border:1px solid var(--bone-300);border-radius:2px;padding:2px 7px;vertical-align:middle}
+/* 폰: 한 단, 행을 좌우로 늘리지 않는다 (시안 v3.css:333-335) — 늘리면 레이아웃 뷰포트가 넓어져 뷰 전환이 중단된다 */
+@media (max-width:1023px){ .row{grid-template-columns:1fr;padding:24px 0;margin:0} .num{display:none} }
