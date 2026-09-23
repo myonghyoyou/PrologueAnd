@@ -30,18 +30,19 @@ type Props = {
 export function ViewTransitionLink({ href, className, children, shareTitle, slug, vtType, ...rest }: Props) {
   const router = useRouter();
 
-  const mark = (e: PointerEvent<HTMLAnchorElement>) => {
+  const mark = (a: HTMLAnchorElement) => {
     if (!shareTitle) return;
     clearNames();
-    const t = e.currentTarget.querySelector<HTMLElement>('[data-title]');
+    const t = a.querySelector<HTMLElement>('[data-title]');
     if (t) t.style.viewTransitionName = NAME;
   };
 
   const go = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     const doc = document as VTDoc;
     if (!doc.startViewTransition) return;      // 미지원 브라우저는 기본 이동 — 장식이다
     e.preventDefault();
+    mark(e.currentTarget);                     // 키보드 Enter 는 pointerdown 이 없다 — 전환 직전에 이름을 붙인다
     if (slug) { try { sessionStorage.setItem('vt-slug', slug); } catch { /* 사생활 보호 창 */ } }
     const vt = startVT(async () => {
       // update 동안은 렌더링이 멈춰 rAF 가 오지 않는다 — 새 경로가 커밋되기를 기다린다 (최대 500ms)
@@ -52,5 +53,5 @@ export function ViewTransitionLink({ href, className, children, shareTitle, slug
     vt?.finished.finally(clearNames);
   };
 
-  return <Link href={href} className={className} onPointerDown={mark} onClick={go} {...rest}>{children}</Link>;
+  return <Link href={href} className={className} onPointerDown={(e: PointerEvent<HTMLAnchorElement>) => mark(e.currentTarget)} onClick={go} {...rest}>{children}</Link>;
 }
