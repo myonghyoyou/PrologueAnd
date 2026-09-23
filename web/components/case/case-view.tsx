@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { useFitPans, useStations } from './hooks';   // hooks.ts 는 세 훅을 re-export
 import { Pan, Para } from './pan';
 import { Screen } from './screen';
@@ -8,6 +9,8 @@ import { SpotList, SpotOverlay } from './hotspots';
 import { Finale } from './finale';
 import { MorphDiagram } from './morph-diagram';
 import { Dwell } from './dwell';
+import { ScatterCollage } from './scatter-collage';
+import { Wipe } from './wipe';
 import type { Case, Project } from '@/content';
 
 export function CaseView({ data, project, next }: { data: Case; project: Project; next?: Project }) {
@@ -62,6 +65,18 @@ export function CaseView({ data, project, next }: { data: Case; project: Project
           <Para lines={sc.p} />
         </Pan>
       ))}
+      <Dwell steps={2}>
+        {(t) => (
+          <Pan id="s07" label="07 BEFORE &amp; AFTER" title={data.s07.h}
+               media={<Wipe t={t}
+                            before={<ScatterCollage items={data.s07.scatter} />}
+                            after={<Image src={data.s07.after.src} alt={data.s07.after.alt} fill sizes="1120px"
+                                          style={{ objectFit: 'cover', objectPosition: 'top left', border: '1px solid var(--bone-900)', background: 'var(--bone-0)' }} />}
+                            caps={['Before(재현): 메신저·메일·전화·자리 방문으로 흩어진 요청', data.s07.after.cap]} />}>
+            <Para lines={data.s07.p} />
+          </Pan>
+        )}
+      </Dwell>
       <Finale data={data} next={next} slug={project.slug} />
     </main>
   );
