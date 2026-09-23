@@ -20,7 +20,7 @@
   /* ---------- 렌더 ---------- */
   const pic = (s, cls) => s.type === 'live'
     ? `<div class="shot live ${cls || ''}" data-src="${s.src}" title="${esc(s.cap || '')}"></div>`
-    : `<div class="shot img ${cls || ''}"><img src="${s.src}" alt="${esc(s.cap || '')}" loading="lazy" onerror="this.remove()"></div>`;
+    : `<div class="shot img ${cls || ''}"><img src="${s.src}" alt="${esc(s.alt || s.cap || '')}" loading="lazy" onerror="this.remove()"></div>`;
   const P = ps => (ps || []).map(t => `<p>${t}</p>`).join('');
   const hasBefore = !!D.s07.before;
   const nums = D.numbers.map(n => `<div><b>${esc(n.value)}</b><span>${esc(n.label)}</span></div>`).join('');
@@ -36,7 +36,7 @@
         <div class="knums" id="nums0">${nums}</div>
       </div>
     </section>
-    <section class="pan" id="s01">${TXT('01 OVERVIEW', D.s01.h || '업무 요청을 받아 처리하는 담당자를 위한 도구', P(D.s01.p))}<div class="dw"><div class="dia" data-morph data-t="1"></div></div></section>
+    <section class="pan" id="s01">${TXT('01 OVERVIEW', D.s01.h || '업무 요청을 받아 처리하는 담당자를 위한 도구', P(D.s01.p))}<div class="dw">${D.s01.pic ? pic(D.s01.pic) + `<span class="capn">${esc(D.s01.pic.cap)}</span>` : '<div class="dia" data-morph data-t="1"></div>'}</div></section>
     <section class="pan" id="s02">${TXT('02 PROBLEM', D.s02.h || '네 갈래로 흩어져 들어온 요청', P(D.s02.p))}<div class="dw">${hasBefore ? pic(D.s07.before) + `<span class="capn">${esc(D.s07.before.cap)}</span>` : pic(D.hero)}</div></section>
     <div class="g-dwell" data-dwell><section class="pan" id="s03">${TXT('03 → 05 &nbsp;WORKFLOW', esc(D.s03.h || '네 갈래로 들어온 요청'), `<p>${D.s03.p[0]}</p>`)}<div class="dw"><div class="dia" data-morph data-scrub></div></div></section></div>
     <section class="pan" id="s06">${TXT('06 SOLUTION', D.s06.h || '필수 항목을 채워야 보낼 수 있는 양식', P(D.s06.p) + (D.s06.spots ? `<ul class="spots" id="spots">${D.s06.spots.map((sp, i) => `<li data-i="${i}"><b>${i + 1}</b><span>${esc(sp.cap)}</span></li>`).join('')}</ul>` : ''))}<div class="dw" id="solbox">${pic(D.s06.screen, 'spotted')}<span class="capn">${esc(D.s06.screen.cap)}</span></div></section>
