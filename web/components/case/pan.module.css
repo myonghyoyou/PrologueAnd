@@ -2,6 +2,7 @@
   justify-content:flex-start;align-items:center;padding:clamp(28px,5vh,56px) 0 40px;box-sizing:border-box}
 .pan.cover{height:100vh;padding-top:clamp(80px,9vh,104px);align-items:stretch}   /* 표지 글은 그림 폭이 아니라 격자 전체 폭 (시안 case.css:28) */
 .pan.cover .txt{width:100%}
+.pan.cover{--capfs:14px}   /* 표지 캡션 14px (시안 case.css:33) */
 .txt{flex:none;padding-bottom:20px;width:var(--tw,100%);max-width:100%}
 .media{flex:none;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%}
 .label{display:block;font-size:clamp(12px,.85vw,16px);font-weight:600;letter-spacing:.06em;color:var(--navy-800);margin-bottom:10px;font-variant-numeric:tabular-nums}
@@ -9,7 +10,8 @@
 .p{font-size:clamp(16px,1.2vw,22px);line-height:1.7;color:var(--bone-700);max-width:var(--tw,56rem);margin:0 0 14px}
 .p:last-child{margin-bottom:0}
 @media (min-width:1024px) and (max-height:800px){
-  .h2{font-size:34px}.p{font-size:15px}.pan{padding-top:clamp(24px,4vh,40px)}
+  .h2{font-size:34px;margin-bottom:8px}.p{font-size:15px}.pan{padding-top:clamp(24px,4vh,40px)}
+  .txt{padding-bottom:18px}
 }
 @media (max-width:1023px){
   .pan{height:auto;min-height:0;padding:48px 0;display:block}

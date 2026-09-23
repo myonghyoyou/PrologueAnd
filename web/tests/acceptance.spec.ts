@@ -13,7 +13,7 @@ test.describe('상세 수용 기준', () => {
     expect(over).toEqual([]);
   });
 
-  test('V1-b 머무름 판도 단계마다 넘침 0 (05 의 흐름 줄이 붙어도)', async ({ page, isMobile }) => {
+  test('V1-b 머무름 판도 단계마다 넘침 0', async ({ page, isMobile }) => {
     test.skip(!!isMobile, '데스크톱 전용 — 폰은 판 높이가 내용대로다');
     const at = async (sel: string, k: number) => {
       const y = await page.evaluate(([s, r]) => {
