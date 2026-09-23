@@ -1,3 +1,4 @@
+@import './transitions.css';
 :root{
   --navy-950:#151A33;--navy-900:#1F2447;--navy-800:#2B3160;--navy-700:#3B4478;--navy-600:#4E5A94;
   --navy-500:#6675AC;--navy-400:#8A96C2;--navy-300:#AEB7D6;--navy-200:#CCD3E8;--navy-100:#E4E8F4;--navy-50:#F1F3F9;
