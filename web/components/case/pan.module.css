@@ -13,7 +13,7 @@
 }
 @media (max-width:1023px){
   .pan{height:auto;min-height:0;padding:48px 0;display:block}
-  .pan.cover{padding-top:72px}
+  .pan.cover{height:auto;padding-top:72px}
   .txt{width:auto}
   .media{margin-top:20px}
   .h2{font-size:28px}.p{font-size:16px}
