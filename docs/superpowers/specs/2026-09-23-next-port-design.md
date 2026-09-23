@@ -42,15 +42,19 @@ web/                              Next 15 · App Router · TypeScript
 | `useFitPans()` | 판마다 글 높이를 재고 그림 폭 결정(`--dw`), 문단 폭(`--tw`) | 다이어그램 640:360, 화면 1280:800, 폰 390:844, 표지 0.62 |
 | `useDwell(ref)` | 머무름 구간 진행률 t, `translateY` 붙이기 | 구간 120vh, 붙는 위치 top 64 |
 
+핫스팟·morph·와이프는 **자기 판 안의 `ref`로만** 대상을 잡는다(시안의 `#solbox` 같은 전역 id 참조를 옮기지 않는다).
+
 - **선택자는 데이터 속성만**: `data-pan`·`data-text`·`data-media`·`data-dwell`·`data-scrub`. CSS Modules가 클래스명을 해시해도 엔진이 끊기지 않는다.
 - **`ctrlKey`면 휠을 가로채지 않는다** — 시안의 버그(브라우저 확대 차단)를 옮기지 않는다.
 - 측정 시점: `document.fonts.ready` 이후 + `ResizeObserver`. 계산은 두 번 돌려 수렴(문단 폭 ↔ 그림 폭).
-- `history.scrollRestoration = 'manual'`, 뒤로가기·해시(`#s06`)는 정거장으로 스냅.
+- `history.scrollRestoration = 'manual'`, 뒤로가기·해시는 정거장으로 스냅.
+- **판 id 규칙**: `s00`(표지) `s01` `s02` `s03`(03~05 머무름) `s06` `s06-1`…`s06-6`(화면별) `s07`(머무름) `s09`(마지막). 해시 진입과 키 이동이 이 id를 쓴다.
 
 ## 3. 전환
 
 - `<ViewTransitionLink>`가 클릭을 가로채 `document.startViewTransition(() => router.push(href))`. 미지원 브라우저는 즉시 이동(폴백 없음 — 장식이다).
-- 공유 이름: 목록 행 제목과 상세 표지 H1에 `pj-title`, 헤더에 `hdr`.
+- 공유 이름: 상세 표지 H1에 `pj-title`(항상), 헤더에 `hdr`(세 화면 공통).
+- **목록 쪽은 클릭한 행에만** `pj-title`을 붙인다 — `view-transition-name`은 문서에 하나만 있어야 하므로, 클릭 직전에 그 행에 부여하고 전환이 끝나면(`finished`) 제거한다. 돌아올 때는 `sessionStorage('vt-slug')`로 행을 찾아 같은 방식으로 붙였다 뗀다. 여러 행에 동시에 붙으면 전환이 통째로 무시된다.
 - 상세 → 상세는 타입 `to-case`로 제목 morph 없이 좌측 밀림.
 - `prefers-reduced-motion`이면 전환·morph·와이프 모두 끄고 최종 상태.
 
@@ -62,18 +66,20 @@ type Case = {
   title; cap; meta: [string, string][]; numbers: { value; label; small }[]   // 숫자는 표지에만
   hero: Pic
   s01: { h; p: string[]; pic: Pic }
-  s02: { h; p: string[] }                    // 그림 = Before 다이어그램(고정 t=0)
+  s02: { h; p: string[]; diagram: 'before' } // 그림 = 다이어그램을 t=0 으로 고정 렌더 (07 데이터를 참조하지 않는다)
   s03: { h; p: string[] }; s04: { q; p: string[] }; s05: { h; flow: string[]; p: string[] }
   s06: { h; p: string[]; screen: Pic; spots: { x; y; w; h; cap }[]; screens: { lab; h; p: string[]; pic: Pic }[] }
-  s07: { h; p: string[]; scatter: { text; from; at }[]; after: Pic }   // Before = 콜라주
-  s09: { h; p: string[] }; s10: { p: string[]; next?: string }
+  s07: { h; p: string[]; scatter: { text; from; at }[]; after: Pic }   // Before = 콜라주, After = 화면
+  s09: { h; p: string[] }; s10: { p: string[]; next?: string }   // next 가 없거나 공개된 편이 없으면 티저는 "Projects / 나머지 작업은 정리하는 대로 올립니다"
+// Case 가 없는 slug 는 목록에서 "준비 중", 상세는 redirect('/projects')
 }
 ```
 
 - `content/projects.ts` 6건, `published`는 `por-favor-harry`만. 나머지 3편은 파일 없이 목록에서 "준비 중".
 - 이미지는 `public/screens/pfh/` 9장(1280×800, 폰 390×844) + 목록 티저. `next/image`에 실제 픽셀 크기와 `sizes`.
 - **흩어진 요청(A + B 결정 2026-09-23)**
-  - 02 Problem = **Before 다이어그램**(전화·메신저·이메일·직접 방문 → 담당자가 정리·기억 → 몰입 중단), 정지 상태.
+  - 02 Problem = **Before 다이어그램**(전화·메신저·이메일·직접 방문 → 담당자가 정리·기억 → 몰입 중단), `t=0` 정지 상태. 03~05 머무름은 같은 그림이 바뀌는 과정이므로 역할이 나뉜다.
+  - 07 = **와이프 유지**(2026-09-23). 와이프는 두 요소를 같은 상자에 겹쳐 `clip-path`로 가르므로 **콜라주와 화면의 크기가 같아야 한다** → 콜라주는 화면과 같은 **1280 × 800 비율의 고정 상자** 안에 담고, 글자 크기는 상자 폭에 비례(`cqw` 또는 `--dw` 기반)로 정한다. 상자 폭은 `useFitPans`가 화면과 동일하게 계산한다.
   - 07 Before = **말풍선 콜라주** 컴포넌트. 문장·출처·시각을 데이터로 받는다: `{ text: '단가표에 시작일 좀 넣어주세요', from: '메신저', at: '오전 9:12' }`, `{ text: '그거 어떻게 됐어요?', from: '자리로 찾아옴', at: '오후 2:05' }`, `{ text: '부재중 전화 3통', from: '전화', at: '오전 10:03' }` 등 5~7개. UI를 흉내 내지 않는다(제품 모사·실제 대화 유출을 피한다).
   - iframe 목업은 제품에 넣지 않는다.
 
@@ -82,12 +88,17 @@ type Case = {
 - 폼 9문항(docs/05 §7 그대로): 현재 업무 / 쓰는 도구 / 가장 불편한 점 / 사용 인원 / 반복 주기 / 개선·신규 / 원하는 결과 / 희망 일정 / 예산 범위. + **연락처(메일, 필수)**, 상세에서 열면 붙는 **프로젝트 slug(숨김)**.
 - 2단계: 1단계 = 업무·불편·인원·주기, 2단계 = 나머지 + 연락처. 필수는 **불편한 점**과 **연락처** 둘.
 - `POST /api/inquiry` → zod 검증 → `lib/mail.ts` → `{ ok: true }`. 실패 시 서랍에 안내 + `mailto:` 링크.
-- 발송은 **Gmail SMTP + 앱 비밀번호**(`PrologueAnd@gmail.com` → 본인, 받는 쪽에서 전달 설정). 도메인이 정해지면 `lib/mail.ts` 구현만 Resend로 교체한다. 키는 Vercel 환경변수(`GMAIL_USER`·`GMAIL_APP_PASSWORD`·`INQUIRY_TO`).
+- **발송**: Gmail SMTP + 앱 비밀번호. 보내는 계정과 받는 주소가 모두 `PrologueAnd@gmail.com`이다(`GMAIL_USER` = `INQUIRY_TO`).
+- **수신**: 그 편지함에서 Gmail 전달(Settings → Forwarding)로 실제 사용 주소에 자동 전달한다. 코드는 전달을 모른다 — 주소가 바뀌어도 배포가 필요 없다.
+- 앱 비밀번호는 계정에 2단계 인증이 켜져 있어야 만들 수 있다. 키는 Vercel 환경변수(`GMAIL_USER`·`GMAIL_APP_PASSWORD`·`INQUIRY_TO`), 저장소에 넣지 않는다.
+- 도메인이 정해지면 `lib/mail.ts` 구현만 Resend로 교체한다(API 계약·폼·화면은 그대로).
 - 스팸 대비는 허니팟 1개 + 5초 미만 제출 차단까지.
 
 ## 6. 스타일·폰트
 
 - `globals.css`에 토큰(navy/bone·`--ease-out`)과 리셋, 나머지는 CSS Modules. 시안 `case.css`·`v3.css`에서 상세·목록·헤더·서랍만 옮긴다.
+- **격자 공식**(넓은 화면 포함): 본문 컨테이너 `max-width: clamp(1272px, 80vw, 1760px)`, 좌우 여백 72px 대칭. 헤더는 같은 컨테이너에 맞춰 `padding: 0 max(72px, calc((100% - clamp(1272px,80vw,1760px)) / 2 + 72px))`. 글자는 `clamp()`로 창 폭에 비례(제목 40~64, 본문 16~22, 표지 H1 44~72).
+- **옮기지 않는 것**: `v3.css`의 `.case-head*`·`.nrail`·`.topbar`·`.shot.live`와 iframe 관련 규칙, `::view-transition-*(pj-title)` 중 `.case-head .h1` 선택자(상세가 `.h1x`로 바뀌었다). 대시보드(v6) 전용 규칙 전부.
 - Bodoni Moda는 `next/font/google`, Pretendard는 npm 패키지를 `next/font/local`로 자체 호스팅(CDN 의존 제거).
 
 ## 7. 검증 (수용 기준)
@@ -106,11 +117,34 @@ Playwright로 네 폭(2560·1440×900·1280×720·390)에서:
 | V8 | 문의: 필수 두 칸이 비면 막고, 채우면 200과 메일 1통 |
 | V9 | `prefers-reduced-motion`에서 morph·와이프가 최종 상태로 즉시 |
 
-## 8. 범위 밖
+## 8. 배포
 
-경로형 대시보드 · `?mob=1` 미리보기 · `__spec()` 전역 · 나머지 3편 본문 · 블로그 · SaaS · reCAPTCHA · 다국어.
+- Vercel, 루트 디렉터리 `web/`. 도메인이 정해질 때까지 **Vercel 기본 주소**를 쓴다(2026-09-23 결정).
+- `metadataBase`는 `NEXT_PUBLIC_SITE_URL`에서 읽고, 기본 주소로 도는 동안에는 `robots: noindex` — 브랜드 주소가 확정되기 전에 색인되지 않게. 도메인이 붙으면 환경변수만 바꾼다.
+- 환경변수: `NEXT_PUBLIC_SITE_URL`·`GMAIL_USER`·`GMAIL_APP_PASSWORD`·`INQUIRY_TO`.
+- 기존 GitHub Pages(목업)는 그대로 둔다 — 비교용.
 
-## 9. 미결
+## 9. 범위 밖
 
-- 실제 도메인(정해지면 메일 발송을 Resend로 교체, 사이트 주소·OG·robots도 그때).
+경로형 대시보드 · `?mob=1` 미리보기 · `__spec()`·`window.__case` 전역(테스트로만) · iframe 목업(`v2/img-src.html`)과 `.shot.live` 규칙 · 나머지 3편 본문 · 블로그 · SaaS · reCAPTCHA · 다국어.
+
+## 10. 미결
+
+- 실제 도메인(정해지면 메일 발송을 Resend로 교체, `NEXT_PUBLIC_SITE_URL`·OG·robots도 그때).
 - 나머지 3편의 공개 범위(docs/06 Week 1 §2 체크리스트).
+- `PrologueAnd@gmail.com`의 2단계 인증·앱 비밀번호 발급 — 안 되면 폼 서비스(Formspree 등)로 대체하고 `lib/mail.ts`만 교체한다.
+
+## 11. 검토 반영 (2026-09-23)
+
+`/reviewing-plans-for-gaps` 결과를 반영했다.
+| 지적 | 반영 |
+|---|---|
+| 와이프는 두 요소 크기가 같아야 성립 | 콜라주를 1280:800 고정 상자에 (§4) |
+| 02가 07 데이터를 참조 | `s02.diagram: 'before'`로 분리 (§4) |
+| 공유 요소 이름이 여러 행에 붙으면 전환이 깨짐 | 클릭한 행에만 부여·해제 규칙 (§3) |
+| 핫스팟이 전역 id에 묶임 | 판 안 `ref`로 (§2) |
+| 판 id 체계 없음 | `s00`~`s09` 규칙 명시 (§2) |
+| 다음 이야기 폴백 없음 | 타입 주석에 명시 (§4) |
+| 넓은 화면 격자 공식 없음 | `clamp(1272px,80vw,1760px)`·여백 72 (§6) |
+| 배포 절이 통째로 빠짐 | §8 신설 (기본 주소·noindex·환경변수) |
+| 안 옮길 CSS 목록 없음 | §6에 목록, §9에 추가 |
