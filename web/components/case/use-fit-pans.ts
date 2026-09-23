@@ -67,8 +67,22 @@ export function useFitPans() {
     document.fonts?.ready.then(run);
     const ro = new ResizeObserver(run);
     ro.observe(document.body);
+
+    // 글 블록 높이가 바뀌면(03 → 05 로 바뀌며 흐름 줄이 붙는 때 등) 그림을 다시 맞춘다.
+    // 맞추기는 --dw·--tw 만 바꾸므로, 글 높이가 더 이상 안 바뀌면 멈춘다 — 한 프레임에 한 번으로 묶는다.
+    let queued = 0;
+    const textRo = new ResizeObserver(() => {
+      if (queued) return;
+      queued = requestAnimationFrame(() => { queued = 0; run(); });
+    });
+    document.querySelectorAll<HTMLElement>('[data-pan] [data-text]').forEach((el) => textRo.observe(el));
+
     window.addEventListener('resize', run);
     const late = setTimeout(run, 300);       // 이미지 디코딩 뒤 한 번 더 (시안 case.js:84)
-    return () => { clearTimeout(late); ro.disconnect(); window.removeEventListener('resize', run); };
+    return () => {
+      clearTimeout(late); cancelAnimationFrame(queued);
+      ro.disconnect(); textRo.disconnect();
+      window.removeEventListener('resize', run);
+    };
   }, []);
 }
