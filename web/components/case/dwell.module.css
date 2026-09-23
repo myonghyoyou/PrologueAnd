@@ -1,0 +1,4 @@
+/* 머무름 구간: 판 높이 + 120vh 를 지나는 동안 판을 상단 64 에 붙인다 (시안 case.css:49) */
+.dwell{position:relative;padding-bottom:120vh}
+/* 폰: 붙이지 않으므로 구간도 없다 (시안 case.css:103) */
+@media (max-width:1023px){ .dwell{padding-bottom:0} .dwell [data-pan]{transform:none!important} }
