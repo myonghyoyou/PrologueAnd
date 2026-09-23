@@ -1,0 +1,13 @@
+/* 장 — 섹션 간격 128(폰 80), 시작 괘선 bone-200 1px (docs/14 §3.2·3.3). 장 링크로 들어오면 헤더(64) 아래 24 */
+.ch{margin-top:128px;scroll-margin-top:88px}
+.intro{border-top:1px solid var(--bone-200);padding-top:16px}
+.name{display:block}
+.block{margin-top:72px}
+.intro + .block{margin-top:48px}
+@media (max-width:1023px){
+  .ch{margin-top:80px}
+  .name{display:inline;margin-left:.5em}
+  .intro [data-chapter-label]{margin-bottom:8px}
+  .block{margin-top:56px}
+  .intro + .block{margin-top:32px}
+}

@@ -1,0 +1,10 @@
+/* 상세 격자 — 12칸, 간격 24 (명세 §4.1). 1440 창: 라벨 168 · 본문 648 · 넓게 936 · 여백 주석 글 264 · 그림 840 */
+.g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:start}
+.lab{grid-column:1/3}
+.body{grid-column:3/10}
+.wide{grid-column:3/13}
+.full{grid-column:1/13}
+.noteText{grid-column:1/4}
+.noteFigs{grid-column:4/13}
+/* 폰: 한 줄. 칸 지정은 무시되고 위에서 아래로 쌓인다 */
+@media (max-width:1023px){ .g{display:block} }

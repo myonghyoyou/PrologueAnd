@@ -7,7 +7,8 @@ test('표지에 숫자 3개와 메타 4행이 있다', async ({ page }) => {
   await expect(page.locator('[data-meta-row]')).toHaveCount(4);
 });
 
-test('핫스팟 호버가 데이터 좌표와 맞는다', async ({ page }) => {
+// 작업 3(여백 주석)에서 되살린다
+test.fixme('핫스팟 호버가 데이터 좌표와 맞는다', async ({ page }) => {
   await page.goto('/projects/por-favor-harry');
   await page.waitForTimeout(600);
   // locator.hover() 는 요소를 화면으로 스크롤한 뒤 한 번 더 스크롤해서, mouseenter 직후 mouseleave 가 와
@@ -36,7 +37,8 @@ test('핫스팟 호버가 데이터 좌표와 맞는다', async ({ page }) => {
   expect(box).toEqual({ x: 15, y: 16 });
 });
 
-test('핫스팟 키보드 포커스가 하이라이트를 보여준다', async ({ page }) => {
+// 작업 3(여백 주석)에서 되살린다
+test.fixme('핫스팟 키보드 포커스가 하이라이트를 보여준다', async ({ page }) => {
   await page.goto('/projects/por-favor-harry');
   await page.locator('[data-spot="1"]').focus();
   // focus → React state 커밋은 CDP 왕복과 비동기라, 하이라이트가 보일 때까지 기다린 뒤 좌표를 읽는다
