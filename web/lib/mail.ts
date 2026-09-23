@@ -10,7 +10,7 @@ const ROWS: [keyof InquiryInput, string][] = [
 
 export async function sendInquiry(input: InquiryInput): Promise<void> {
   const user = process.env.GMAIL_USER, pass = process.env.GMAIL_APP_PASSWORD;
-  const to = process.env.INQUIRY_TO ?? user;
+  const to = process.env.INQUIRY_TO || user;
   if (!user || !pass || !to) throw new Error('메일 환경변수가 없습니다');
 
   const text = ROWS
