@@ -41,6 +41,32 @@ export function useStations() {
     goY(st[clamp(k + dir, 0, st.length - 1)]);
   }, [stops, goY]);
 
+  // 해시로 들어오면 정거장으로 스냅한다 (명세 §2, 시안 case.js:195-196): 판이면 판 위 − 64,
+  // 머무름 구간 안이면 구간의 시작. 브라우저의 기본 해시 스크롤(요소 위 = 0, 헤더 밑)을 덮어쓴다.
+  useEffect(() => {
+    if (!window.matchMedia('(min-width:1024px)').matches) return;
+    let id = '';
+    try { id = decodeURIComponent(window.location.hash.slice(1)); } catch { return; }
+    const el = id ? document.getElementById(id) : null;
+    if (!el) return;
+    const jump = () => {
+      const dwell = el.closest<HTMLElement>('[data-dwell]');
+      const pan = el.closest<HTMLElement>('[data-pan]') ?? el;
+      const y = dwell ? dwell.getBoundingClientRect().top + window.scrollY
+                      : pan.getBoundingClientRect().top + window.scrollY - 64;
+      const to = Math.max(0, Math.round(y));
+      const l = getLenis();
+      if (l) l.scrollTo(to, { immediate: true, force: true }); else window.scrollTo(0, to);
+      // 같은 프레임 안에서 오갔다 제자리로 오면 scroll 이벤트가 오지 않는다 — 머무름 판의 붙이기를 다시 계산시킨다
+      // (시안 goTo 도 이동 뒤 onScroll() 을 직접 부른다)
+      window.dispatchEvent(new Event('scroll'));
+    };
+    jump();
+    // 글꼴·그림 맞추기와 브라우저의 늦은 해시 스크롤 뒤에도 한 번 더 (시안은 50ms 뒤 한 번)
+    const late = setTimeout(jump, 50);
+    return () => clearTimeout(late);
+  }, []);
+
   useEffect(() => {
     if (!window.matchMedia('(min-width:1024px)').matches) return;
     if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
