@@ -7,12 +7,15 @@
 
   /* ---------- 데이터 ---------- */
   const slug = new URLSearchParams(location.search).get('p');
-  const pj = V3.project(slug) || V3.project('por-favor-harry');
+  const asked = V3.project(slug);
+  if (asked && !asked.published) { location.replace('projects.html'); return; }   // 공개된 Case Study 만 (2026-09-23)
+  const pj = asked || V3.project('por-favor-harry');
   const D = V3.cases[pj.slug] || V3.cases['por-favor-harry'];
   const sample = !V3.cases[pj.slug];   // 다른 slug: 같은 본문에 제목만 (docs/25 전제)
   const title = sample ? pj.tagline : D.title;
   const nextSlug = D.s10.next && D.s10.next !== pj.slug ? D.s10.next : null;
-  const next = (nextSlug && V3.project(nextSlug)) || V3.projects.find(p => p.slug !== pj.slug);
+  const pub = V3.published().filter(p => p.slug !== pj.slug);
+  const next = (nextSlug && pub.find(p => p.slug === nextSlug)) || pub[0] || null;
   document.title = `Prologue & ${pj.title}`;
   document.getElementById('hd-title').textContent = pj.title;
   document.getElementById('hd-ask').dataset.project = pj.slug;
@@ -48,7 +51,8 @@
     <section class="pan finale" id="s09">
       <div class="two-col"><div class="txt"><span class="nlab">09 WHAT I LEARNED</span><h2>${D.s09.h || '도구보다 길부터'}</h2>${P(D.s09.p)}</div>
         <div class="txt" id="s10"><span class="nlab">10</span><h2>비슷한 문제가 있다면</h2>${P(D.s10.p)}<div class="cta"><a class="btn" href="#" data-open-drawer data-project="${pj.slug}">이 프로젝트를 보고 문의하기 <i class="tri"></i></a><a class="mail link" href="mailto:hello@prologue.and">hello@prologue.and</a></div></div></div>
-      <a class="teaser" href="case.html?p=${next.slug}" id="next-link"><div><span class="cap">다음 이야기</span><span class="big">${esc(next.title)}</span><p style="margin:0;color:var(--bone-700)">${esc(next.tagline)}</p></div><span class="shot img teaser-img"><img src="${V3.img(next)}" alt="${esc(next.title)}" loading="lazy" onerror="this.remove()"></span></a>
+      ${next ? `<a class="teaser" href="case.html?p=${next.slug}" id="next-link"><div><span class="cap">다음 이야기</span><span class="big">${esc(next.title)}</span><p style="margin:0;color:var(--bone-700)">${esc(next.tagline)}</p></div><span class="shot img teaser-img"><img src="${V3.img(next)}" alt="${esc(next.title)}" loading="lazy" onerror="this.remove()"></span></a>`
+        : `<a class="teaser" href="projects.html"><div><span class="cap">다음 이야기</span><span class="big">Projects</span><p style="margin:0;color:var(--bone-700)">나머지 작업은 정리하는 대로 올립니다.</p></div></a>`}
     </section>
     <footer class="ft"><nav><a href="projects.html">Projects</a><a href="mailto:hello@prologue.and">hello@prologue.and</a><a href="#" data-open-drawer>문의</a></nav><span>© 2026 Prologue&amp;</span></footer>`;
 
@@ -211,8 +215,8 @@
       G6: { hasWipe: !!wipe, t: wipe ? +tWipe().toFixed(2) : null, pinned: wipe ? Math.round(wipe.querySelector('.pan').getBoundingClientRect().top) : null, dwells: document.querySelectorAll('[data-dwell]').length },
 
       G7: { nums: document.querySelectorAll('#nums0 div').length, dup: !!document.getElementById('nums8') },
-      G8: { next: document.getElementById('next-link').querySelector('.big').textContent, ft: !!document.querySelector('.ft'), cta: !!document.querySelector('#s10 .btn[data-project]') },
-      G10: { title: document.getElementById('hd-title').textContent, notSelf: document.getElementById('next-link').getAttribute('href').indexOf(pj.slug) < 0 },
+      G8: { next: (document.getElementById('next-link') || document.querySelector('.teaser .big') || {}).textContent, ft: !!document.querySelector('.ft'), cta: !!document.querySelector('#s10 .btn[data-project]') },
+      G10: { title: document.getElementById('hd-title').textContent, notSelf: !document.getElementById('next-link') || document.getElementById('next-link').getAttribute('href').indexOf(pj.slug) < 0 },
       B1: { html: cs(document.documentElement).overflowX, body: cs(document.body).overflow, stops: stops().length },
       B6: { drawer: !!document.getElementById('drawer'), hdrProject: document.getElementById('hd-ask').dataset.project },
       H: { hdrH: document.querySelector('.hdr').offsetHeight, vt: cs(document.querySelector('.hdr')).viewTransitionName, strip: !!document.querySelector('.pmap'), pos: !!document.querySelector('.hdr .pos') },

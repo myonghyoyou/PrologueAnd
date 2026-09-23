@@ -228,6 +228,11 @@ footer{padding:96px 0 40px}
 .tabs button.on{color:var(--navy-800);border-color:var(--navy-800)}
 .prow{display:grid;grid-template-columns:40px 1fr;gap:16px;align-items:start;padding:16px 28px;margin:0 -28px;border-bottom:1px solid var(--bone-200);transition:background .15s}   /* 시트에서 승인된 밀도를 기본값으로 (docs/26 L1) */
 .prow:hover{background:var(--bone-100)}
+.prow.soon{cursor:default;color:var(--bone-500)}
+.prow.soon:hover{background:none}
+.prow.soon .h2,.prow.soon .res{color:var(--bone-500)}
+.prow.soon .tag{background:var(--bone-100);color:var(--bone-500)}
+.soon-tag{margin-left:10px;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--bone-500);border:1px solid var(--bone-300);border-radius:2px;padding:2px 7px;vertical-align:middle}
 .prow .num{padding-top:4px}
 .prow .h2{font-size:20px}
 .prow .h2 .amp{font-size:.9em;margin-right:.18em}

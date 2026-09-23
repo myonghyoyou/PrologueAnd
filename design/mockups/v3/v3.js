@@ -13,7 +13,7 @@ window.V3 = (function () {
     { key: 'idea', name: '제품이 필요한 아이디어', desc: '아이디어는 있는데 구조와 화면이 없어요.' }
   ];
   V.projects = [
-    { slug: 'por-favor-harry', title: 'Por favor, Harry', tagline: '흩어진 업무 요청을 하나의 Workflow로', problem: 'scattered', tags: ['Workflow Design', 'Internal Tool'], year: '2025', disclosure: 'full', order: 1, featured: true,
+    { slug: 'por-favor-harry', title: 'Por favor, Harry', tagline: '흩어진 업무 요청을 하나의 Workflow로', problem: 'scattered', tags: ['Workflow Design', 'Internal Tool'], year: '2025', disclosure: 'full', order: 1, featured: true, published: true,
       result: ['요청이 들어오는 길 4개 → 1개', '진행 상황을 요청자가 화면에서 직접 확인'] },
     { slug: 'daeryun-learning-hub', title: 'Daeryun Learning Hub', tagline: '1,220개의 종이 문제를 새로운 학습 경험으로', problem: 'paper', tags: ['Digital Transformation', 'Web Application'], year: '2025', disclosure: 'anonymized', order: 2, featured: true,
       result: ['채점·해설이 즉시', '문제집 1권 → 반복 학습 흐름'] },
@@ -26,6 +26,7 @@ window.V3 = (function () {
     { slug: 'shift-board', title: '교대 근무표', tagline: '카톡으로 돌던 근무표를 한 화면으로', problem: 'scattered', tags: ['Workflow Design', 'Mobile'], year: '2024', disclosure: 'mockup', order: 6, featured: false,
       result: ['근무표는 문서가 아니라 알림'] }
   ];
+  V.published = () => V.projects.filter(p => p.published).sort((a, b) => a.order - b.order);   // Case Study 가 공개된 것만 (2026-09-23: Por favor, Harry 한 편)
   V.featured = () => V.projects.filter(p => p.featured).sort((a, b) => a.order - b.order);
   V.projectFor = key => V.projects.find(p => p.problem === key && p.featured);
   V.project = slug => V.projects.find(p => p.slug === slug);

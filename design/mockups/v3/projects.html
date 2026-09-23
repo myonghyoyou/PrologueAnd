@@ -36,21 +36,21 @@
   function render() {
     const items = V3.projects.slice().sort((a, b) => a.order - b.order);
     document.getElementById('list').innerHTML = items.length ? items.map((p, i) => `
-      <a class="prow" href="case.html?p=${p.slug}">
+      <${p.published ? 'a' : 'div'} class="prow${p.published ? '' : ' soon'}"${p.published ? ` href="case.html?p=${p.slug}"` : ''}>
         <span class="num">${String(p.order).padStart(2, '0')}</span>
         <div>
-          <div class="h2">${p.title}</div>
+          <div class="h2">${p.title}${p.published ? '' : '<span class="soon-tag">준비 중</span>'}</div>
           <div class="meta">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}<span>${p.year}</span><span>${V3.problem(p.problem).name}</span>${p.featured ? '<span style="color:var(--navy-800)">대표</span>' : ''}</div>
           <p class="res">${p.tagline}</p>
         </div>
-      </a>`).join('')
+      </${p.published ? 'a' : 'div'}>`).join('')
       : `<div class="empty"><p>아직 이 유형의 작업이 없습니다.<br>비슷한 고민이 있으면 편하게 물어보세요.</p><a class="btn" href="#" data-open-drawer>프로젝트 문의 <i class="tri"></i></a></div>`;
   }
   render();
   // 전환 A: 클릭한 행의 제목만 공유 요소로(이름은 문서에 하나만). 돌아올 때를 위해 slug 기억
-  document.getElementById('list').addEventListener('click', e => { const a = e.target.closest('.prow'); if (!a) return; document.querySelectorAll('.prow.vt').forEach(r => r.classList.remove('vt')); a.classList.add('vt'); try { sessionStorage.setItem('vt-slug', new URL(a.href, location.href).searchParams.get('p')); } catch (err) {} });
+  document.getElementById('list').addEventListener('click', e => { const a = e.target.closest('a.prow'); if (!a) return; document.querySelectorAll('.prow.vt').forEach(r => r.classList.remove('vt')); a.classList.add('vt'); try { sessionStorage.setItem('vt-slug', new URL(a.href, location.href).searchParams.get('p')); } catch (err) {} });
   // 상세에서 돌아올 때: 같은 행에 이름을 붙여 제목이 제자리로 내려오게
-  addEventListener('pagereveal', e => { let slug = null; try { slug = sessionStorage.getItem('vt-slug'); } catch (err) {} if (!slug) return; const row = [...document.querySelectorAll('.prow')].find(r => r.getAttribute('href').includes('p=' + slug)); if (row) { row.classList.add('vt'); if (e.viewTransition) e.viewTransition.finished.finally(() => row.classList.remove('vt')); else row.classList.remove('vt'); } });
+  addEventListener('pagereveal', e => { let slug = null; try { slug = sessionStorage.getItem('vt-slug'); } catch (err) {} if (!slug) return; const row = [...document.querySelectorAll('a.prow')].find(r => r.getAttribute('href').includes('p=' + slug)); if (row) { row.classList.add('vt'); if (e.viewTransition) e.viewTransition.finished.finally(() => row.classList.remove('vt')); else row.classList.remove('vt'); } });
   V3.initLenis();
   V3.drawer.init();
 </script>
