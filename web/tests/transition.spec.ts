@@ -48,3 +48,9 @@ test('복귀: 클라이언트 내비게이션으로 /projects 에 도착하면 v
   const left = await page.evaluate(() => { try { return sessionStorage.getItem('vt-slug'); } catch { return null; } });
   expect(left).toBeNull();
 });
+
+test('V6 상세 표지 제목이 공유 이름을 갖는다', async ({ page }) => {
+  await page.goto('/projects/por-favor-harry');
+  const n = await page.evaluate(() => getComputedStyle(document.querySelector('[data-title]')!).viewTransitionName);
+  expect(n).toBe('pj-title');
+});

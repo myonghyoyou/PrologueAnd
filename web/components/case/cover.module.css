@@ -1,0 +1,13 @@
+.title{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end;padding:28px 0 0;width:100%}
+.cap{font-size:clamp(14px,1vw,17px);font-weight:500;letter-spacing:.01em;color:var(--bone-500)}
+.h1{font-size:clamp(44px,3.8vw,72px);font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:12px 0 0;word-break:keep-all}
+/* view-transition-name 은 CSS 모듈에 두면 css-loader 가 식별자를 해시로 바꿔 버린다(예: cover-module__xxx__pj-title) —
+   그래서 리터럴 pj-title 이 필요한 이 값만 cover.tsx 인라인 스타일로 붙인다 */
+.meta{border-collapse:collapse;width:100%;max-width:34rem;font-size:clamp(14px,1vw,17px);margin-top:20px}
+.meta td{padding:7px 0;border-top:1px solid var(--bone-200);vertical-align:top}
+.meta td:first-child{color:var(--bone-500);width:6em}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.nums b{display:block;font-size:clamp(40px,3vw,56px);font-weight:600;letter-spacing:-.03em;line-height:1;color:var(--navy-800);margin-bottom:10px}
+.nums span{font-size:clamp(14px,1vw,17px);color:var(--bone-700)}
+.nums small{display:block;font-size:clamp(11px,.8vw,13px);color:var(--bone-400);margin-top:4px;line-height:1.45}
+@media (max-width:1023px){ .title,.nums{grid-template-columns:1fr;gap:24px} .h1{font-size:34px} }
