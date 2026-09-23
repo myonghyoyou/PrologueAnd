@@ -1,13 +1,13 @@
 'use client';
-import { useState } from 'react';
 import type { Spot } from '@/content';
 import s from './hotspots.module.css';
 
-export function SpotList({ spots, onHover }: { spots: Spot[]; onHover: (i: number) => void }) {
+export function SpotList({ spots, active, onHover }: { spots: Spot[]; active: number; onHover: (i: number) => void }) {
   return (
     <ul className={s.spots} onMouseLeave={() => onHover(-1)}>
       {spots.map((sp, i) => (
-        <li key={i} data-spot={i} onMouseEnter={() => onHover(i)}>
+        <li key={i} data-spot={i} tabIndex={0} className={active === i ? s.on : undefined}
+            onMouseEnter={() => onHover(i)} onFocus={() => onHover(i)} onBlur={() => onHover(-1)}>
           <b>{i + 1}</b>
           <span>{sp.cap}</span>
         </li>
