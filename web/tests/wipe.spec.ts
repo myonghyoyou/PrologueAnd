@@ -32,3 +32,24 @@ test('콜라주와 화면의 크기가 같다', async ({ page }) => {
   });
   expect(Math.abs(a - b)).toBeLessThanOrEqual(1);
 });
+
+test('폰: 07 은 Before 위, After 아래로 둘 다 보인다', async ({ page, isMobile }) => {
+  test.skip(!isMobile, '폰 전용 — 데스크톱은 와이프');
+  await page.goto('/projects/por-favor-harry');
+  await page.waitForTimeout(600);
+  await expect(page.locator('[data-wipe-before]')).toBeVisible();
+  await expect(page.locator('[data-wipe-after]')).toBeVisible();
+  const r = await page.evaluate(() => {
+    const b = (document.querySelector('[data-wipe-before]') as HTMLElement).getBoundingClientRect();
+    const a = document.querySelector('[data-wipe-after]') as HTMLElement;
+    const ar = a.getBoundingClientRect();
+    const edge = document.querySelector('[data-wipe-edge]') as HTMLElement | null;
+    return { bh: b.height, ah: ar.height, bBottom: b.bottom, aTop: ar.top, clip: getComputedStyle(a).clipPath,
+             edge: edge ? getComputedStyle(edge).display : 'none' };
+  });
+  expect(r.bh).toBeGreaterThan(0);
+  expect(r.ah).toBeGreaterThan(0);
+  expect(r.aTop).toBeGreaterThanOrEqual(r.bBottom);
+  expect(r.clip).toBe('none');
+  expect(r.edge).toBe('none');
+});

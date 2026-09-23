@@ -1,0 +1,13 @@
+/* 07 와이프 (시안 case.css:64-67): 같은 크기의 두 층을 겹치고 After 를 왼쪽부터 드러낸다 */
+.stack{position:relative;width:var(--dw,100%);max-width:100%;aspect-ratio:1292/812}
+.layer{position:absolute;inset:0}
+.edge{position:absolute;top:0;bottom:0;width:2px;background:var(--navy-800);z-index:3;pointer-events:none}
+/* 폰: 붙이지 않으므로 와이프도 없다 — Before 위, After 아래로 쌓는다 (시안 case.css:104).
+   층은 흐름에 두되 relative 로 남긴다 — After 안의 next/image(fill)가 층을 기준으로 채우도록 */
+@media (max-width:1023px){
+  .stack{aspect-ratio:auto}
+  .layer{position:relative;inset:auto;aspect-ratio:1292/812}
+  .after{margin-top:12px;clip-path:none!important}
+  .edge{display:none}
+  .caps span{opacity:1!important}   /* 둘 다 보이므로 캡션도 둘 다 (시안은 데스크톱에서만 흐리게) */
+}
