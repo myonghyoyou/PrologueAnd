@@ -3,6 +3,7 @@ import { Bodoni_Moda } from 'next/font/google';
 import localFont from 'next/font/local';
 import { LenisProvider } from '@/components/lenis-provider';
 import { InquiryDrawer } from '@/components/inquiry-drawer';
+import { RouteCommit } from '@/components/route-commit';
 import './globals.css';
 
 const serif = Bodoni_Moda({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-serif', display: 'swap' });
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <LenisProvider />
         {children}
+        <RouteCommit />
         <InquiryDrawer />
       </body>
     </html>

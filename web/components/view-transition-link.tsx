@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { MouseEvent, PointerEvent, ReactNode } from 'react';
+import { waitForPath } from '@/lib/route-commit';
 
 type VTDoc = Document & { startViewTransition?: (arg: unknown) => { finished: Promise<void> } };
 const NAME = 'pj-title';
@@ -42,8 +43,10 @@ export function ViewTransitionLink({ href, className, children, shareTitle, slug
     e.preventDefault();
     if (slug) { try { sessionStorage.setItem('vt-slug', slug); } catch { /* 사생활 보호 창 */ } }
     const vt = startVT(async () => {
+      // update 동안은 렌더링이 멈춰 rAF 가 오지 않는다 — 새 경로가 커밋되기를 기다린다 (최대 500ms)
+      const committed = waitForPath(href);
       router.push(href);
-      await new Promise<void>((r) => requestAnimationFrame(() => r()));   // 새 화면이 그려진 뒤 스냅샷
+      await committed;
     }, vtType ? [vtType] : undefined);
     vt?.finished.finally(clearNames);
   };
