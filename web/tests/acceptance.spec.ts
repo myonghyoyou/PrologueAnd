@@ -109,3 +109,25 @@ test('V9 모션 줄이기에서 즉시 최종 상태 (중간 프레임 없음)',
 
   await ctx.close();
 });
+
+test.describe('해시로 들어오면 정거장에 선다 (명세 §2)', () => {
+  test('#s06 → s06 판 위가 헤더 아래 64', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, '데스크톱 전용 — 정거장 엔진은 1024px 이상');
+    await page.goto('/projects/por-favor-harry#s06');
+    await page.waitForTimeout(700);
+    const top = await page.evaluate(() => document.getElementById('s06')!.getBoundingClientRect().top);
+    expect(Math.abs(top - 64)).toBeLessThanOrEqual(2);
+  });
+
+  test('#s07 → 07 머무름 구간의 시작, 붙은 판 위가 64', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, '데스크톱 전용 — 정거장 엔진은 1024px 이상');
+    await page.goto('/projects/por-favor-harry#s07');
+    await page.waitForTimeout(700);
+    const r = await page.evaluate(() => ({
+      pan: (document.querySelector('[data-dwell="2"] [data-pan]') as HTMLElement).getBoundingClientRect().top,
+      t: Number((document.querySelector('[data-dwell="2"]') as HTMLElement).dataset.t),
+    }));
+    expect(Math.abs(r.pan - 64)).toBeLessThanOrEqual(2);
+    expect(r.t).toBeLessThan(0.5);   // 구간의 시작 — Before 쪽
+  });
+});
