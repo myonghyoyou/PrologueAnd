@@ -1,0 +1,79 @@
+/* 시안 v3.css:189~ (#backdrop, #drawer, .dh, .db, .fld, .chips, .grid, .df, .done …) 를 클래스 규칙으로 옮김 */
+
+.backdrop{position:fixed;inset:0;background:rgba(28,27,24,.45);z-index:50}
+
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:min(520px,100vw);
+  background:var(--bone-50);
+  z-index:51;
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;
+  transform:translateX(0);
+  transition:transform .35s var(--ease-out);
+}
+
+.head{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--bone-200)}
+.brand{font-size:20px;font-family:var(--font-serif),Georgia,serif}
+.amp{margin:0 .2em}
+.who{font-family:var(--font-sans),"Apple SD Gothic Neo","Segoe UI",sans-serif;font-size:16px;font-weight:600;letter-spacing:-.01em;margin-left:8px}
+.close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bone-300);border-radius:2px;font-size:16px;line-height:1;background:none;cursor:pointer;color:inherit}
+.close:hover{background:var(--bone-100)}
+
+.body{flex:1;overflow:auto;padding:28px 32px}
+
+.num{display:block;font-size:13px;font-weight:500;color:var(--bone-500);margin-bottom:6px}
+.h2{font-size:21px;font-weight:600;letter-spacing:-.02em;margin:0 0 20px}
+
+.off{display:none}
+.on{display:block}
+
+.fld{display:block;border:0;margin:0 0 16px;padding:0;font-size:13px;font-weight:500;color:var(--bone-700)}
+.fld b{color:var(--error);font-weight:600;margin-left:2px}
+.fld legend{padding:0;margin:0 0 6px;font-size:13px;font-weight:500;color:var(--bone-700)}
+.fld input,.fld textarea,.fld select{
+  display:block;width:100%;margin-top:6px;
+  font-family:inherit;font-size:15px;font-weight:400;color:var(--bone-900);
+  padding:10px 12px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);
+  outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.fld input:focus,.fld textarea:focus,.fld select:focus{border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
+.fld textarea{min-height:92px;resize:vertical}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips label{margin:0;display:inline-flex}
+.chips input{display:none}
+.chips span{display:inline-block;padding:6px 10px;border:1px solid var(--bone-300);border-radius:2px;font-size:13px;background:var(--bone-0);cursor:pointer;transition:all .15s}
+.chips input:checked+span{border-color:var(--navy-800);background:var(--navy-800);color:#fff}
+
+.grid,.grid2{display:grid;gap:12px;margin-bottom:16px}
+.grid{grid-template-columns:1fr 1fr 1fr}
+.grid2{grid-template-columns:1fr 1fr}
+.grid label,.grid2 label{display:block;font-size:13px;font-weight:500;color:var(--bone-700)}
+.grid select,.grid2 select{
+  display:block;width:100%;margin-top:6px;
+  font-family:inherit;font-size:15px;color:var(--bone-900);
+  padding:10px 12px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);
+  outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.grid select:focus,.grid2 select:focus{border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
+
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+
+.error{font-size:13px;color:var(--error);margin:0 0 16px}
+.error a{text-decoration:underline}
+
+.foot{display:flex;gap:10px;align-items:center;padding:20px 32px;border-top:1px solid var(--bone-200)}
+.foot button{padding:0 20px;height:44px;border-radius:2px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+.send{margin-left:auto;background:var(--navy-800);color:#fff;border:1px solid var(--navy-800)}
+.send:disabled{opacity:.6;cursor:default}
+.foot button:not(.send){background:none;border:1px solid var(--bone-300);color:var(--bone-700)}
+.foot button:not(.send):hover{background:var(--bone-100)}
+
+@media (max-width:1023px){
+  .drawer{width:100vw}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .drawer,.backdrop{transition:none!important}
+}
