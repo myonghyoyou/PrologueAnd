@@ -48,7 +48,7 @@ section{position:relative}
 /* 메뉴: 40px 테두리 버튼 — 대시보드(v6)·목록·상세가 같은 헤더 (docs/26 H1). 헤더는 문서 간 전환에서 고정(hdr) */
 .hdr{view-transition-name:hdr}
 .hdr nav{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:16px;font-weight:600}
-.hdr nav a,.hdr nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1;transition:background .15s,color .15s}
+.hdr nav a,.hdr nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1;background:var(--bone-50);transition:background .15s,color .15s}   /* 불투명: 헤더 그라데이션 아래쪽으로 뒤 내용이 비치지 않게 (2026-09-28) */
 .hdr nav a:hover,.hdr nav button:hover{background:var(--bone-900);color:var(--bone-50)}
 .hdr nav a.cur{border-color:transparent;color:var(--navy-800);pointer-events:none}
 .hdr .who{font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:-.01em;margin-left:14px;color:var(--bone-900)}
@@ -67,6 +67,7 @@ section{position:relative}
 .hdr.on-dark{background:linear-gradient(var(--navy-950) 70%,rgba(21,26,51,0));color:var(--bone-50)}
 .hdr.on-dark .brand{color:var(--bone-50)}
 .hdr.on-dark .brand .bamp{color:var(--navy-300)}
+.hdr.on-dark nav a:not(:hover),.hdr.on-dark nav button:not(:hover){background:var(--navy-950)}
 
 /* ---------- buttons ---------- */
 .btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;background:var(--navy-800);color:#fff;font-size:15px;font-weight:500;border-radius:2px;transition:background .15s;white-space:nowrap}

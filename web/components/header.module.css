@@ -16,7 +16,7 @@
 .nav{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:16px;font-weight:600}
 .back + .nav{margin-left:0}
 .nav a,.nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);
-  border-radius:2px;line-height:1;background:none;font:inherit;color:inherit;cursor:pointer;transition:background .15s,color .15s}
+  border-radius:2px;line-height:1;background:var(--bone-50);font:inherit;color:inherit;cursor:pointer;transition:background .15s,color .15s}
 .nav a:hover,.nav button:hover{background:var(--bone-900);color:var(--bone-50)}
 .nav .cur{border-color:transparent;color:var(--navy-800);pointer-events:none}
 @media (max-width:1023px){ .who{display:none} .back span{display:none} .back{padding:0 10px;height:36px} }

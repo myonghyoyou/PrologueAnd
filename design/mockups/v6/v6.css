@@ -69,7 +69,7 @@ body{overflow:hidden;background:var(--bone-100)}
 .pmap i.on:hover{background-color:var(--navy-900)}
 /* 메뉴: 글자 16px·600, 둘 다 2차 버튼(높이 40px, 1px bone-900 테두리, 채우기 없음 — 14 §3.3). 호버 시 반전. v3의 밑줄 호버는 끔 */
 .hdr nav{gap:10px;font-size:16px;font-weight:600;align-items:center}
-.hdr nav a,.hdr nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1;transition:background .15s,color .15s}
+.hdr nav a,.hdr nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1;background:var(--bone-100);transition:background .15s,color .15s}   /* 불투명: 헤더 아래쪽 그라데이션이 투명해지는 구간에서 경로 선이 버튼 안으로 비치지 않게 (2026-09-28) */
 .hdr nav a:after,.hdr nav button:after{display:none}
 .hdr nav a:hover,.hdr nav button:hover{background:var(--bone-900);color:var(--bone-50)}
 /* tune */
