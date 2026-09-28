@@ -71,12 +71,46 @@ test('02 끝(t=1): 네 갈래는 한 줄로 합쳐지고 갈래 이름은 사라
   expect(new Set(r.starts).size).toBe(1);
   expect(r.opacity.every((o) => o === 0)).toBe(true);
 
-  // 첫 단계(요청 링크) 점은 합쳐진 선의 시작점에, 나머지 점은 화살표까지 같은 간격으로
+  // 첫 단계 점은 합쳐진 선의 시작점에, 나머지 점은 끝점까지 같은 간격으로. 마지막 단계도 점이다(끝이라 속이 찬다)
   const steps = await page.evaluate(() => [...document.querySelectorAll('#flow [data-flow] [data-step]')]
     .map((c) => Number(c.getAttribute('cx'))));
   expect(steps[0]).toBe(40);
   const gaps = steps.slice(1).map((x, i) => x - steps[i]);
   expect(Math.max(...gaps) - Math.min(...gaps)).toBeLessThan(0.01);
+  const ends = await page.evaluate(() => {
+    const cs = [...document.querySelectorAll<SVGCircleElement>('#flow [data-flow] [data-step]')];
+    return { n: cs.length, r: cs.map((c) => Number(c.getAttribute('r'))), lastFill: cs[cs.length - 1].getAttribute('fill') };
+  });
+  expect(ends.n).toBe(5);
+  expect(ends.r.every((r) => r === 5)).toBe(true);           // 끝점까지 다 자랐다
+  expect(ends.lastFill).toBe('var(--navy-800)');
+  // 앞 그림(다시 정리 → 멈춤)은 보이지 않는다 — 글자는 투명하게 남는다(그림 글자 전체는 위 '문구는 데이터에서'가 읽는다)
+  const gone = await page.evaluate(() => [...document.querySelectorAll('#flow [data-flow] svg text')]
+    .filter((x) => x.textContent === '담당자가 다시 정리' || x.textContent === '업무 효율 저하')
+    .map((x) => { let o = 1; for (let e: Element | null = x; e && e.tagName !== 'svg'; e = e.parentElement) o *= Number(getComputedStyle(e).opacity); return o; }));
+  expect(gone).toEqual([0, 0]);
+});
+
+test('02 중간: 한 번에 하나씩 — 전·후가 겹치는 순간이 없다', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, '데스크톱에서 붙은 트랙으로 진행률을 맞춘다');
+  const at = async (k: number) => {
+    await scrollToY(page, await trackY(page, k));
+    return page.evaluate(() => {
+      const svg = document.querySelector('#flow [data-flow] svg')!;
+      const op = (el: Element | null) => (el ? Number(getComputedStyle(el).opacity) : 0);
+      const steps = [...svg.querySelectorAll('[data-step]')].map((c) => op(c.parentElement));
+      const labels = [...svg.querySelectorAll('[data-src-label]')].map(op);
+      return { t: Number(svg.closest<HTMLElement>('[data-flow]')!.dataset.t), steps: Math.max(...steps), labels: Math.max(...labels), stop: svg.textContent!.includes('업무 효율 저하') && op([...svg.querySelectorAll('text')].find((x) => x.textContent === '업무 효율 저하')!.parentElement) > 0 };
+    });
+  };
+  const a = await at(0.25);   // ① 잘라내는 중: 새 흐름은 아직 없다
+  expect(a.steps).toBe(0);
+  const b = await at(0.45);   // ② 모으는 중: 멈춤 표시는 이미 없고, 새 흐름도 아직 없다
+  expect(b.stop).toBe(false);
+  expect(b.steps).toBe(0);
+  const c = await at(0.75);   // ③ 긋는 중: 갈래 이름표는 이미 사라졌다
+  expect(c.labels).toBe(0);
+  expect(c.steps).toBeGreaterThan(0);
 });
 
 test('01 정지 상태는 네 갈래 그대로', async ({ page }) => {
