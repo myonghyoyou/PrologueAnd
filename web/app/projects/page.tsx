@@ -16,7 +16,6 @@ export default function ProjectsPage() {
         <VtReturn />
         <div className={s.head}>
           <h1 className={s.h1}>Projects</h1>
-          <p className={s.lead}>지금까지 한 일. 이름 뒤의 빈칸을 채워 온 것들입니다.</p>
         </div>
         <div>{allProjects().map((p) => <ProjectRow key={p.slug} project={p} />)}</div>
         <Footer />

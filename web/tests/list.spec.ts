@@ -35,3 +35,20 @@ test('목록 행이 화면 밖으로 삐져나오지 않는다 (폰에서 레이
     Math.max(...[...document.querySelectorAll('[data-row]')].map((r) => r.getBoundingClientRect().right)));
   expect(right).toBeLessThanOrEqual(vw);
 });
+
+test('마지막 행에는 아래 선이 없고, 바닥글 상단 선이 그 자리에 같은 폭으로 선다', async ({ page }) => {
+  await page.goto('/projects');
+  const r = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll<HTMLElement>('[data-row]')], last = rows[rows.length - 1];
+    const ft = document.querySelector<HTMLElement>('[data-footer]')!;
+    const lb = last.getBoundingClientRect(), fb = ft.getBoundingClientRect(), pb = rows[0].getBoundingClientRect();
+    return { lastBorder: getComputedStyle(last).borderBottomWidth, prevBorder: getComputedStyle(rows[0]).borderBottomWidth,
+      ftBorder: getComputedStyle(ft).borderTopWidth, gap: fb.top - lb.bottom, dl: fb.left - pb.left, dr: fb.right - pb.right };
+  });
+  expect(r.lastBorder).toBe('0px');
+  expect(r.prevBorder).toBe('1px');
+  expect(r.ftBorder).toBe('1px');
+  expect(Math.round(r.gap)).toBe(0);
+  expect(Math.abs(r.dl)).toBeLessThanOrEqual(0.5);
+  expect(Math.abs(r.dr)).toBeLessThanOrEqual(0.5);
+});

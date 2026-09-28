@@ -1,0 +1,6 @@
+/* 목록 바닥글 — 상단 선이 마지막 행의 아래 선을 대신한다(project-row.module.css .row:last-child).
+   데스크톱 행은 좌우로 28px 뻗어 있어(margin 0 -28px) 선 폭을 같게 맞춘다 */
+.ft{border-top:1px solid var(--bone-200);margin:0 -28px;padding:24px 28px 40px;display:flex;justify-content:space-between;font-size:12px;color:var(--bone-500)}
+.ft nav{display:flex;gap:20px}
+.ft button{background:none;border:0;font:inherit;color:inherit;cursor:pointer;padding:0}
+@media (max-width:1023px){ .ft{margin:0;padding:24px 0 40px} }
