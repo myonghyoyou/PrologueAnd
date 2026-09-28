@@ -25,9 +25,9 @@ npm run build
 `.env.example`을 복사해 `.env.local`을 만들고 값을 채운다. `.env.local`은 절대 커밋하지 않는다.
 
 - `NEXT_PUBLIC_SITE_URL` — 배포된 사이트 주소. 이 값이 `vercel.app`이나 `localhost`면 검색엔진 색인을 막는다(noindex).
-- `GMAIL_USER` — 문의 메일을 발송하는 Gmail 계정. `PrologueAnd@gmail.com`.
+- `GMAIL_USER` — 문의 메일을 발송하는 Gmail 계정. 지금은 `myonghyoyou@gmail.com`(Prologue& 전용 계정을 만들면 바꾼다).
 - `GMAIL_APP_PASSWORD` — 위 계정의 앱 비밀번호. 이 계정에 2단계 인증이 켜져 있어야 발급할 수 있다.
-- `INQUIRY_TO` — 문의 메일을 받는 주소. `PrologueAnd@gmail.com`.
+- `INQUIRY_TO` — 문의 메일을 받는 주소. 지금은 `myonghyoyou@gmail.com`. 비우면 `GMAIL_USER`로 받는다.
 
 ## 배포 체크리스트 (Vercel)
 
@@ -37,4 +37,4 @@ npm run build
 4. 배포본에서 손으로 세 가지를 확인한다(같은 빌드를 로컬에서 이미 검증했으므로 전체 테스트를 다시 돌리지 않는다).
    - [ ] `/projects`에서 Por favor, Harry로 들어가면 제목이 따라 움직인다.
    - [ ] 상세 페이지에서 휠 한 칸에 판이 하나씩 넘어간다.
-   - [ ] 문의를 실제로 한 통 보내서 `PrologueAnd@gmail.com`에 도착하고, Gmail 전달 설정을 통해 실제 주소까지 오는지 확인한다.
+   - [ ] 문의를 실제로 한 통 보내서 `myonghyoyou@gmail.com`에 도착하는지 확인한다(답장 주소가 문의자의 이메일로 잡히는지도).

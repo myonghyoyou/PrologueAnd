@@ -4,6 +4,7 @@ import { getLenis } from './lenis-provider';
 import { TOOLS, PEOPLE, REPEAT, KIND, WHEN, BUDGET } from '@/lib/inquiry-schema';
 import { getProject } from '@/content';
 import s from './inquiry-drawer.module.css';
+import { CONTACT_MAIL } from '@/lib/contact';
 
 type Step = 'step1' | 'step2' | 'done';
 
@@ -212,7 +213,7 @@ export function InquiryDrawer() {
 
             {error ? (
               <p className={s.error} role="alert">{error}{' '}
-                <a href="mailto:PrologueAnd@gmail.com">PrologueAnd@gmail.com</a>으로 바로 보내셔도 됩니다.</p>
+                <a href={`mailto:${CONTACT_MAIL}`}>{CONTACT_MAIL}</a>으로 바로 보내셔도 됩니다.</p>
             ) : null}
 
             <div className={s.foot}>

@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SCENES, W, H, KNOT_D, MAIN_D, DOTS } from './path';
 import { startEngine } from './engine';
 import s from './dashboard.module.css';
-
-const MAIL = 'PrologueAnd@gmail.com';
+import { CONTACT_MAIL } from '@/lib/contact';
 
 /** 데스크톱(1024 이상)에서만 경로를 따라 움직인다 — 그 아래는 CSS 가 세로 스택으로 푼다 */
 function useDesktop() {
@@ -95,7 +94,7 @@ export function Dashboard({ published }: { published: number }) {
           </section>
           <section className={`${s.scene} ${s.pan}`} id="p07" data-pan>
             <div className={s.txt}><h2 className={`${s.hl} ${s.hl3}`}>어떤 일이<br /><em>불편한지</em><br />알려주세요.</h2><p className={s.sub}>지금 상황을 한두 줄로 적어 보내 주세요. 이틀 안에 메일로 답장드립니다.</p></div>
-            <div className={s.below}><button type="button" className={s.btn} data-open-drawer>프로젝트 문의하기 <i className={s.tri} /></button><a className={s.mail} href={`mailto:${MAIL}`}>{MAIL}</a></div>
+            <div className={s.below}><button type="button" className={s.btn} data-open-drawer>프로젝트 문의하기 <i className={s.tri} /></button><a className={s.mail} href={`mailto:${CONTACT_MAIL}`}>{CONTACT_MAIL}</a></div>
           </section>
 
           {/* 8 — & — : 선이 끝에 닿아 멈추면 Prologue 아래에 & 가 떠오른다 */}
@@ -108,7 +107,7 @@ export function Dashboard({ published }: { published: number }) {
       </div>
 
       <footer className={s.ft}>
-        <nav><Link href="/projects">Projects</Link><a href={`mailto:${MAIL}`}>{MAIL}</a><button type="button" data-open-drawer>문의</button></nav>
+        <nav><Link href="/projects">Projects</Link><a href={`mailto:${CONTACT_MAIL}`}>{CONTACT_MAIL}</a><button type="button" data-open-drawer>문의</button></nav>
         <span>© 2026 Prologue&amp;</span>
       </footer>
     </div>

@@ -4,6 +4,7 @@ import { COVERS, type Project, type Study } from '@/content';
 import g from './grid.module.css';
 import t from './type.module.css';
 import s from './closing.module.css';
+import { CONTACT_MAIL } from '@/lib/contact';
 
 export function Closing({ study, next, slug }: { study: Study; next?: Project; slug: string }) {
   return (
@@ -17,7 +18,7 @@ export function Closing({ study, next, slug }: { study: Study; next?: Project; s
             <button type="button" data-cta data-open-drawer data-project={slug} className={s.btn}>
               이 프로젝트를 보고 문의하기 <i className={s.tri} aria-hidden />
             </button>
-            <a href="mailto:PrologueAnd@gmail.com" className={s.mail}>PrologueAnd@gmail.com</a>
+            <a href={`mailto:${CONTACT_MAIL}`} className={s.mail}>{CONTACT_MAIL}</a>
           </div>
         </div>
       </div>
