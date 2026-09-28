@@ -43,8 +43,8 @@ B2B 제품·웹 작업이 많은 곳의 프로젝트 페이지를 실제로 열�
 | 배치 | **A 에디토리얼 문서형** — 12칸 격자, 왼쪽 라벨 칸 + 본문 칸 |
 | 틀 | 고정 뼈대(표지 · 끝) + 가변 본문(장 N개, 블록 조합) |
 | 화면 설명 | **여백 주석형** — 설명은 왼쪽 3칸, 그림은 오른쪽 9칸 |
-| 03→05 다이어그램 | 화면에 붙지 않고 **지나가며 바뀜** |
-| Before & After | 와이프 유지. **화면에 붙는 유일한 곳** |
+| 03→05 다이어그램 | ~~화면에 붙지 않고 지나가며 바뀜~~ → **장 제목과 함께 화면에 붙어 스크롤로 바뀜**(2026-09-28 사용자 결정) |
+| Before & After | 와이프 유지. 장 제목과 함께 화면에 붙음. 남색 경계선 없음(2026-09-28) |
 | 나타남 효과 | 없음(docs/14 §3.6 "섹션 페이드업 없음") |
 | WHAT I LEARNED | **완전히 삭제** |
 | 끝 | Built with 한 줄 → 문의 → 다음 이야기. 역할은 표지 메타에만(반복하지 않음) |
@@ -65,7 +65,7 @@ B2B 제품·웹 작업이 많은 곳의 프로젝트 페이지를 실제로 열�
 | 여백 주석 그림 | 4–12 | 840px |
 
 ### 4.2 뼈대 (모든 프로젝트 같음)
-- **표지**: 윗줄(`Prologue & {프로젝트} · 문제 NN {유형}`) → 결과 문장 H1 → 개요 문단(1~2문장) + 메타 표(역할·기간·사용자·공개 범위) \| 숫자 3개 → 대표 화면(전폭) + 캡션. H1은 목록→상세 전환의 공유 이름(`pj-title`)을 그대로 가진다.
+- **표지**: 윗줄(프로젝트 이름만, 2026-09-28 사용자 결정) → 서비스를 소개하는 한 문장 H1 → 개요 문단(1~2문장) + 메타 표(역할·기간·사용자·공개 범위) \| 숫자 3개(선택, 없으면 글이 한 칸을 다 씀) → 대표 화면(전폭) + 캡션. H1은 목록→상세 전환의 공유 이름(`pj-title`)을 그대로 가진다.
 - **본문**: 장 N개(§4.3).
 - **끝**: Built with 한 줄(데이터에 있을 때만) → 문의 문단 + "이 프로젝트를 보고 문의하기" → 다음 이야기(제목 · 태그라인 · 표지 그림).
 
@@ -75,7 +75,7 @@ B2B 제품·웹 작업이 많은 곳의 프로젝트 페이지를 실제로 열�
 | 블록 | 모양 |
 |---|---|
 | `figure` | 그림 한 장. 칸 `wide`(넓게) 또는 `body`(본문) |
-| `note` | 여백 주석(라벨 · 제목 H3 · 문단) + 그림 1~3장(한 줄 높이 맞춤). 첫 그림에 핫스팟 가능 |
+| `note` | 여백 주석(라벨(선택) · 제목 H3 · 문단) + 그림 1~3장(한 줄 높이 맞춤). 첫 그림에 핫스팟 가능 |
 | `phones` | 여백 주석(선택) + 회색 띠 위 폰 화면 1~3장 |
 | `flow` | 흐름 다이어그램. `before`(정지) 또는 `morph`(지나가며 바뀜) |
 | `quote` | 통찰 한 문장(크게) + 선택 문단 |
@@ -84,12 +84,12 @@ B2B 제품·웹 작업이 많은 곳의 프로젝트 페이지를 실제로 열�
 ### 4.4 Por favor, Harry
 | 장 | 블록 |
 |---|---|
-| 01 문제 | flow(before) → quote("할 일 관리가 아니라, 요청이 들어오는 길의 문제였습니다.") |
+| 01 문제 | flow(before) → quote("할 일이 많고 적음을 떠나, 요청이 들어오는 경로가 너무 많은 것이 문제였습니다.") |
 | 02 바꾼 흐름 | flow(morph) |
-| 03 화면 | note(요청 양식 + 핫스팟 ①②③) → note(대리 등록) → note(업무 목록) → note(업무 상세) → note(진행 상황 + 내 요청, 두 장) → note(업데이트) → phones(폰) |
-| 04 Before & After | wipe(말풍선 콜라주 → 심사 대기) |
+| 03 화면 | note(요청 작성 + 핫스팟 ①②③) → note(대리 등록) → note(업무 목록) → note(업무 상세) → note(진행 상황 + 내 요청, 두 장) → note(업데이트) → phones(폰) |
+| 04 Before & After | wipe(말풍선 콜라주 → 검토 대기 목록) |
 
-지금 10단계의 흡수: Overview → 표지 개요 문단, Existing Workflow → 01 flow(before), Insight → 01 quote, Redesign → 02 flow(morph), Solution → 03, Impact → 표지 숫자, What I Learned → 삭제. 03의 여백 주석 라벨은 흐름 순서(들어온다 → 처리한다 → 돌려준다 → 어디서든)를 보여 준다.
+지금 10단계의 흡수: Overview → 표지 개요 문단, Existing Workflow → 01 flow(before), Insight → 01 quote, Redesign → 02 flow(morph), Solution → 03, Impact → 표지 숫자, What I Learned → 삭제. 03의 여백 주석에는 라벨을 두지 않는다(2026-09-28 사용자 결정 — 들어온다·처리한다·돌려준다 같은 단계 라벨이 군더더기). 제목이 그 역할을 한다.
 
 ## 5. 그림 규칙
 
@@ -105,20 +105,22 @@ B2B 제품·웹 작업이 많은 곳의 프로젝트 페이지를 실제로 열�
 | 순간 | 규칙 |
 |---|---|
 | 스크롤 | 브라우저 기본 + Lenis(lerp 0.1). 키보드는 브라우저 기본 |
-| `flow(morph)` | 붙지 않음. 그림 윗변이 화면 85%에 올 때 t=0, 그림 가운데가 화면 40%에 올 때 t=1. 그 사이 네 갈래 → 한 흐름 |
-| `wipe` | 이 블록만 화면에 붙는다(헤더 아래 88). 한 화면 높이만큼 스크롤하는 동안 경계선 왼 → 오. 붙이기는 CSS `position: sticky`를 먼저 쓰고, 조상 요소 때문에 붙지 않으면 JS로 |
+| `flow(morph)` | **장 전체(제목 + 그림)가 헤더 아래 80에 붙는다**(2026-09-28). 트랙 윗변이 80에 올 때 t=0, 한 화면 높이 스크롤하면 t=1, 이어서 0.2화면 동안 완성된 그림을 붙잡아 둔다. 폰은 붙지 않고 예전처럼 그림 윗변 85% → 가운데 40% 로 잰다 |
+| `wipe` | 장 전체(제목 + 그림)가 헤더 아래 80에 붙는다(2026-09-28, 제목이 보이도록). 한 화면 높이 스크롤하는 동안 After가 왼 → 오로 드러난다. 경계선(남색)은 두지 않는다. 붙이기는 CSS `position: sticky`(`pinned.tsx`) |
 | 나타남 | 없음 |
 | 핫스팟 | 호버·포커스(폰은 탭)로 영역 강조 |
+| `note(play)` | **재현 화면**(2026-09-28): 데스크톱·모션 허용에서는 캡처 대신 HTML로 다시 그린 제품 화면을 블록째 헤더 아래 80에 붙이고(스크롤 2.4화면), 스크롤이 문턱을 지나면 동작이 제 속도로 재생·되감긴다(칩 클릭 → 타이핑 → 첨부 업로드 → 버튼 활성). 지금 구역만 선명하고 나머지는 옅게(초점). 겹쳐 그리는 네모·흐린 막·여백 선은 쓰지 않는다. 폰·모션 줄이기는 캡처 + 핫스팟 그대로. 첫 적용: Por favor, Harry 요청 작성(`request-form-demo.tsx`), 비교 시트 `design/spec/10-hotspot-scroll.html` D2 |
 | 목록 → 상세 | 행 제목 → 표지 H1 공유 요소 전환, 돌아올 때도(docs/20, 지금 코드 그대로) |
 | 장 링크 | 장 id(`#problem`, `#flow`, `#screens`, `#before-after`)로 들어오면 그 장이 헤더 아래에서 시작(`scroll-margin-top: 88px`). id는 데이터에 영문으로 |
+| 장 간격 | 앞 내용 → 장 괘선 88(폰 56), 괘선 → 장 제목 40(폰 28). 2026-09-28 사용자 지적으로 128/16에서 조정 |
 | 모션 줄이기 | Lenis 끔, `flow(morph)`는 t=1, `wipe`는 After 전부 |
 
 ## 7. 데이터 구조
 
 ```ts
 type Study = {
-  cover: { cap: string; title: string; summary: string[];
-           meta: [string, string][]; numbers: Num[]; hero: Figure };
+  cover: { title: string; summary: string[];
+           meta: [string, string][]; numbers?: Num[]; hero: Figure };   // numbers 는 없거나 3개
   chapters: Chapter[];
   builtWith?: string[];
   cta: string;                            // 다음 이야기는 목록 순서로 정한다(지금과 같음)
@@ -126,7 +128,7 @@ type Study = {
 type Chapter = { id: string; name: string; h: string; p: string[]; blocks: Block[] };
 type Block =
   | { type: 'figure'; slot: 'wide' | 'body'; fig: Figure }
-  | { type: 'note';   label: string; h?: string; p?: string[]; figs: Figure[] }
+  | { type: 'note';   label?: string; h?: string; p?: string[]; figs: Figure[] }
   | { type: 'phones'; label?: string; h?: string; p?: string[]; figs: Figure[]; caption?: string }
   | { type: 'flow';   state: 'before' | 'morph'; from: string[]; hub: string; stop: string; to: string[];
                       alt: string; caption?: string }
