@@ -67,7 +67,7 @@ export function Dashboard({ published }: { published: number }) {
           </section>
           <section className={`${s.scene} ${s.pan}`} id="p03" data-pan>
             <div className={s.shapeArea}><div className={`${s.shape} ${s.flag}`}><i /></div></div>
-            <div className={s.txt}><h2 className={`${s.hl} ${s.hl2}`}>출시한 뒤에도<br />계속 고칩니다.</h2><p className={s.sub}>실제로 쓰기 시작하면 처음엔 보이지 않던 불편이 나옵니다. 쓰는 사람에게 듣고 다음 버전에 반영합니다.</p></div>
+            <div className={s.txt}><h2 className={`${s.hl} ${s.hl2}`}>출시했다고<br />끝이 아닙니다.</h2><p className={s.sub}>실제로 쓰기 시작하면 처음엔 보이지 않던 불편이 나옵니다. 쓰는 사람에게 듣고 다음 버전에 반영합니다.</p></div>
           </section>
           <section className={`${s.scene} ${s.pan}`} id="p04" data-pan>
             <div className={s.shapeArea}><div className={s.shape}>
@@ -78,7 +78,7 @@ export function Dashboard({ published }: { published: number }) {
           </section>
           <section className={`${s.scene} ${s.pan}`} id="p05" data-pan>
             <div className={s.shapeArea}><div className={`${s.shape} ${s.grid}`}><i style={{ left: '44%', top: '6%', width: '52%', height: '86%' }} /></div></div>
-            <div className={s.txt}><h2 className={`${s.hl} ${s.hl3}`}>고치거나,<br />만들거나,<br />시작하거나.</h2><p className={s.sub}>쓰던 시스템 고치기 · 엑셀과 종이로 하던 일을 웹으로 · 아이디어를 첫 제품으로</p></div>
+            <div className={s.txt}><h2 className={`${s.hl} ${s.hl2}`}>지금은<br />어느 쪽인가요?</h2><p className={s.sub}>쓰던 시스템이 불편한지, 엑셀과 종이로 하고 있는지, 아이디어만 있는지에 따라 시작하는 자리가 다릅니다.</p></div>
           </section>
           {/* 무엇을 칩 3개는 점 왼쪽에 세계 직접. 카메라가 점을 지나면 켜진다 */}
           <div className={`${s.scene} ${s.node}`} data-node><span>고치기</span><small>쓰던 시스템을 고칩니다</small></div>
@@ -94,7 +94,7 @@ export function Dashboard({ published }: { published: number }) {
             <div className={s.below}><Link className={s.btn} href="/projects">Projects 보기 <i className={s.tri} /></Link></div>
           </section>
           <section className={`${s.scene} ${s.pan}`} id="p07" data-pan>
-            <div className={s.txt}><h2 className={`${s.hl} ${s.hl3}`}>어떤 일이<br /><em>불편한지</em><br />알려주세요.</h2><p className={s.sub}>지금 어떻게 하고 있는지 한두 줄이면 충분합니다. 이틀 안에 메일로 답장드립니다.</p></div>
+            <div className={s.txt}><h2 className={`${s.hl} ${s.hl3}`}>어떤 일이<br /><em>불편한지</em><br />알려주세요.</h2><p className={s.sub}>지금 상황을 한두 줄로 적어 보내 주세요. 이틀 안에 메일로 답장드립니다.</p></div>
             <div className={s.below}><button type="button" className={s.btn} data-open-drawer>프로젝트 문의하기 <i className={s.tri} /></button><a className={s.mail} href={`mailto:${MAIL}`}>{MAIL}</a></div>
           </section>
 
