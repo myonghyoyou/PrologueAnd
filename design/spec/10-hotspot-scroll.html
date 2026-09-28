@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>핫스팟 스크롤 비교</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* 상세 화면(03 화면 · 요청 작성) 핫스팟을 스크롤로 움직이는 세 가지 안. 색·격자·틀은 web/ 상세와 같게 */
+:root{
+  --navy-800:#2B3160; --navy-400:#8A96C2; --navy-100:#E4E8F4;
+  --bone-0:#FFFFFF; --bone-50:#FAF9F6; --bone-100:#F3F1EC; --bone-200:#E8E5DE; --bone-300:#D6D2C8;
+  --bone-400:#B3AEA3; --bone-500:#8A857A; --bone-700:#4A4741; --bone-900:#1C1B18;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box}
+html{overflow-x:clip}
+body{margin:0;background:var(--bone-50);color:var(--bone-900);font-family:"Pretendard","Apple SD Gothic Neo","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.bar{position:fixed;top:0;left:0;right:0;z-index:20;height:56px;display:flex;align-items:center;gap:16px;padding:0 24px;background:var(--bone-50);border-bottom:1px solid var(--bone-200)}
+.bar h1{font-size:15px;font-weight:600;margin:0;letter-spacing:-.01em}
+.bar .sw{margin-left:auto;display:flex;gap:6px}
+.bar button{height:34px;padding:0 14px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);font:inherit;font-size:13px;font-weight:600;color:var(--bone-700);cursor:pointer}
+.bar button[aria-pressed="true"]{background:var(--navy-800);border-color:var(--navy-800);color:#fff}
+.bar .desc{font-size:13px;color:var(--bone-500);max-width:520px;line-height:1.4}
+.wrap{max-width:clamp(1272px,80vw,1760px);margin:0 auto;padding:0 72px}
+.g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:start}
+.intro{border-top:1px solid var(--bone-200);padding-top:40px;margin-top:120px}
+.lab{grid-column:1/3;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--navy-800)}
+.lab span{display:block}
+.body{grid-column:3/10}
+h2{font-size:clamp(30px,2.8vw,40px);font-weight:600;letter-spacing:-.025em;line-height:1.15;margin:0 0 16px}
+.lead{font-size:18px;line-height:1.6;color:var(--bone-700);margin:0;max-width:34rem}
+.hint{margin-top:24px;font-size:13px;color:var(--bone-500)}
+
+/* 붙는 장면 — 와이프와 같은 방식: 트랙 안에서 무대가 헤더 아래에 붙고, 형제 .room 을 지나는 동안 진행률 t 가 0 → 1 */
+.track{position:relative;margin-top:48px}
+.stage{position:sticky;top:80px}
+.room{height:280vh}
+.note{grid-column:1/4;padding-top:2px}
+.figs{grid-column:4/13;position:relative}
+h3{font-size:clamp(21px,1.7vw,24px);font-weight:600;letter-spacing:-.02em;line-height:1.25;margin:8px 0 10px}
+.spots{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.spots li{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--bone-200);border-radius:2px;background:var(--bone-0);font-size:14px;line-height:1.45;color:var(--bone-700);transition:border-color .2s,color .2s}
+.spots li b{flex:none;width:18px;height:18px;border-radius:50%;background:var(--navy-800);color:var(--bone-50);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.spots li.on{border-color:var(--navy-800);color:var(--bone-900)}
+/* 그림 틀 — 테두리 1 + 안쪽 여백 6 (web/ Frame 과 같음). 높이가 화면에 들어오게 폭을 제한 */
+.shot{background:var(--bone-0);border:1px solid var(--bone-900);padding:6px;width:min(100%, calc((100vh - 80px - 32px - 12px) * 2560 / 2136))}
+.pic{position:relative;overflow:hidden;aspect-ratio:2560/2136}
+.layer{position:absolute;inset:0;transform-origin:0 0;will-change:transform}
+.layer img{display:block;width:100%;height:100%}
+.ov{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.cap{margin-top:8px;font-size:13px;color:var(--bone-500)}
+/* 지시선은 무대 전체 위에 */
+.lead-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+/* D — 양식을 HTML 로 다시 그린다. 캡처(DPR 2, 2560×2136)의 CSS 크기 1280×1068 그대로 배치하고 틀 폭에 맞춰 축소 */
+.demo{position:absolute;left:0;top:0;width:1280px;height:1068px;transform-origin:0 0;background:#EFF1F4;display:none;font-family:"Pretendard",sans-serif;color:#1F2430}
+.demo .card{position:absolute;left:176px;top:24px;width:928px;height:1021px;background:#fff;border-radius:16px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px -12px rgba(16,24,40,.12)}
+.demo .t{position:absolute;white-space:nowrap}
+.demo .h{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.demo .sub{font-size:14px;color:#5C6372}
+.demo .lb{font-size:13px;font-weight:700}
+.demo .lb i{font-style:normal;font-weight:500;color:#99A1AF;margin-left:4px}
+.demo .chip{position:absolute;height:36px;border-radius:18px;background:#F7F8FA;color:#5C6372;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;transition:background .18s,color .18s,transform .18s}
+.demo .chip.on{background:#0F6B54;color:#fff;box-shadow:0 4px 10px -4px rgba(15,107,84,.55);animation:press .28s var(--ease)}
+@keyframes press{0%{transform:scale(1)}40%{transform:scale(.93)}100%{transform:scale(1)}}
+.demo .chip svg{margin-right:5px}
+.demo .field{position:absolute;left:196px;width:888px;border:1px solid #E6E8EC;border-radius:10px;background:#fff;font-size:14px;padding:0 13px;display:flex;align-items:center;transition:border-color .18s}
+.demo .field.area{align-items:flex-start;padding-top:12px;line-height:1.5}
+.demo .field{transition:border-color .18s,box-shadow .18s}
+.demo .field.typing{border-color:#0F6B54;box-shadow:0 0 0 3px rgba(15,107,84,.12)}
+.demo .caret{display:inline-block;width:1.5px;height:17px;background:#0F6B54;margin-left:1px;vertical-align:-3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.demo .att{position:absolute;left:196px;width:888px;height:48px;border-radius:12px;background:#F7F8FA;font-size:13px;color:#4B5160;display:flex;align-items:center;overflow:hidden}
+.demo .att .ic{width:37px;height:37px;margin:0 10px 0 6px;border-radius:9px;background:#fff;border:1px solid #ECEEF2;display:flex;align-items:center;justify-content:center}
+.demo .att .ic.blank{background:none;border-color:transparent}
+.demo .att .x{margin-left:auto;margin-right:20px;color:#99A1AF}
+.demo .att .up{position:absolute;left:0;bottom:0;height:2px;background:#0F6B54;width:0}
+.demo .btn{position:absolute;left:196px;top:970px;width:888px;height:50px;border-radius:25px;background:#C9D8D3;color:#fff;font-size:15px;font-weight:700;overflow:hidden}
+.demo .btn .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#0F6B54}
+.demo .btn span{position:relative;display:flex;height:100%;align-items:center;justify-content:center}
+/* 커서와 클릭 파문 — 양식을 채우는 사람의 손 */
+.demo .cur{position:absolute;left:0;top:0;width:24px;height:24px;z-index:6;pointer-events:none;opacity:0;transition:opacity .25s;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.demo .ring{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border:2px solid #0F6B54;border-radius:50%;z-index:5;pointer-events:none;animation:ring .5s ease-out forwards}
+@keyframes ring{to{transform:scale(4.5);opacity:0}}
+.demo .note-t{font-size:11px;color:#6B7280}
+/* E — 캡처를 층으로 나눠 띄운다. 3D 가 보이게 틀의 자르기를 푼다 */
+.pic.e3d{overflow:visible;perspective:2600px}
+.xp{position:absolute;inset:0;transform-style:preserve-3d;transform-origin:50% 55%;display:none}
+.xp .ly{position:absolute;inset:0;transform-style:preserve-3d}
+.xp .ly img{position:absolute;inset:0;width:100%;height:100%}
+.xp .ly .ed{position:absolute;border:1.5px solid #2B3160;opacity:0}
+.bar .curt{margin-left:auto;font-size:13px;color:var(--bone-700);display:flex;align-items:center;gap:6px}
+.bar .curt + .sw{margin-left:12px}
+/* D2·D3 초점: 지금 구역 밖은 옅게 — 덮는 막 없이 내용의 진하기만 바꾼다.
+   요소 자신의 opacity(첨부 파일이 들어오는 연출 등)와 겹치지 않게 filter 로 준다 */
+.demo > *{transition:filter .35s var(--ease)}
+/* D3 여백 선 — 카드 왼쪽 바깥, 축소되지 않는 층(글자 크기 그대로) */
+.rail{position:absolute;inset:0;pointer-events:none;display:none}
+.rail .track{position:absolute;width:1px;background:#D9DCE2}
+.rail .seg{position:absolute;width:1.5px;margin-left:-.25px;background:#2B3160;border-radius:1px}
+.rail .n{position:absolute;font-size:11px;letter-spacing:.06em;font-variant-numeric:tabular-nums;color:#A9AEB8;transform:translate(-100%,-1px);transition:color .25s,font-weight .25s}
+.rail .n.on{color:#2B3160;font-weight:600}
+.after{height:80vh;display:flex;align-items:center;justify-content:center;color:var(--bone-400);font-size:14px}
+.meter{position:fixed;left:24px;bottom:20px;z-index:20;font-size:12px;color:var(--bone-500);font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <h1>03 화면 · 요청 작성 — 핫스팟 스크롤 연출</h1>
+  <p class="desc" id="desc"></p>
+  <label class="curt"><input type="checkbox" id="curToggle" checked> 커서</label>
+  <div class="sw" role="group" aria-label="안 고르기">
+    <button type="button" data-v="a">A 옮겨 감 + 선 그리기</button>
+    <button type="button" data-v="b">B 지시선</button>
+    <button type="button" data-v="c">C 영역 확대</button>
+    <button type="button" data-v="d">D 채움 + 네모</button>
+    <button type="button" data-v="d1">D1 네모 없음</button>
+    <button type="button" data-v="d2">D2 초점</button>
+    <button type="button" data-v="d3">D3 초점 + 여백 선</button>
+    <button type="button" data-v="e">E 분해도</button>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="g intro">
+    <div class="lab">03<span>화면</span></div>
+    <div class="body">
+      <h2>요청 하나가 돌아오기까지</h2>
+      <p class="lead">요청 하나가 들어와 처리되고 요청한 사람에게 돌아가기까지, 화면 일곱 개가 이어집니다.</p>
+      <p class="hint">↓ 아래로 스크롤하면 장면이 화면에 붙고, 스크롤하는 동안 ① → ② → ③이 차례로 강조됩니다.</p>
+    </div>
+  </div>
+
+  <div class="track" id="track">
+    <div class="stage g" id="stage">
+      <div class="note">
+        <h3>꼭 필요한 항목을 채워야 보낼 수 있습니다</h3>
+        <ul class="spots" id="spots"></ul>
+      </div>
+      <div class="figs">
+        <div class="shot">
+          <div class="pic" id="pic">
+            <div class="layer" id="layer">
+              <img src="../../data/images/captures/pfh/form.png" alt="업무 요청하기 양식">
+            </div>
+            <div class="demo" id="demo" aria-hidden="true"></div>
+            <div class="xp" id="xp" aria-hidden="true"></div>
+            <div class="rail" id="rail" aria-hidden="true"><i class="track"></i><i class="seg"></i><span class="n">01</span><span class="n">02</span><span class="n">03</span></div>
+            <svg class="ov" id="ov" aria-hidden="true">
+              <path id="dim" fill="rgba(250,249,246,.62)" fill-rule="evenodd" d=""/>
+              <path id="hl" fill="none" stroke="#2B3160" stroke-width="1.5" d=""/>
+            </svg>
+          </div>
+        </div>
+        <p class="cap">요청 작성: 필요한 내용은 요청하는 사람이 처음부터 채웁니다.</p>
+      </div>
+      <svg class="lead-svg" id="leadSvg" aria-hidden="true"><path id="lead" fill="none" stroke="#2B3160" stroke-width="1" pathLength="1" stroke-dasharray="1"/></svg>
+    </div>
+    <div class="room" aria-hidden="true"></div>
+  </div>
+
+  <div class="after">다음 화면(대리 등록)이 이어지는 자리</div>
+</main>
+<div class="meter" id="meter"></div>
+
+<script>
+(() => {
+  // form.png(2560×2136) 기준 % — web/content/studies/por-favor-harry.ts 와 같은 값
+  const S = [
+    { x: 14.6, y: 19.6, w: 70.8, h: 15.8, cap: '유형과 제목을 먼저 고릅니다. 무엇을 바꾸는 요청인지가 여기서 정해집니다' },
+    { x: 14.6, y: 36.2, w: 70.8, h: 30.6, cap: '언제까지 필요한지, 어느 화면인지를 고르게 해서 다시 묻지 않습니다' },   // 「언제까지」 789 ~ 내용 칸 아래 끝 1410 (+16)
+    { x: 14.6, y: 67.6, w: 70.8, h: 18.4, cap: '화면 캡처와 파일을 붙여 말로 설명할 일을 줄입니다' },
+  ];
+  const DESC = {
+    a: '네모 하나가 ①에서 ②, ③으로 스크롤을 따라 미끄러져 옮겨 갑니다. 처음 붙을 때 테두리가 선으로 그려집니다.',
+    b: '단계마다 왼쪽 설명 항목에서 그림 속 영역까지 1px 지시선이 그려지고, 영역 테두리가 이어서 그려집니다.',
+    c: '캡처 전체에서 시작해 ①·②·③ 영역으로 차례로 다가가 확대됩니다. 작은 글자가 읽힐 만큼 커집니다.',
+    d: '스크롤이 지점을 지나면 커서가 양식을 채웁니다 — 유형 클릭 → 제목 타이핑 → 날짜 클릭 → 화면·내용 입력 → 파일 업로드 → 「요청하기」가 차오르며 켜짐. 위로 올리면 되감깁니다. 캡처가 아니라 HTML 로 다시 그린 양식입니다.',
+    d1: 'D 에서 겹쳐 그리던 것(네모·흐린 막)을 모두 뺐습니다. 양식 자체의 반응(눌림·타이핑·포커스·업로드)과 왼쪽 설명 ①②③만으로 보여 줍니다.',
+    d2: '네모 대신 초점: 지금 채우는 구역만 선명하고 나머지는 옅어집니다. 덮는 막 없이 내용의 진하기만 바뀝니다.',
+    d3: 'D2 의 초점에 여백 선을 더했습니다. 카드 왼쪽 바깥의 1px 길 위로 1.5px 선이 지금 구역을 따라 늘고 줄며 옮겨 가고, 작은 번호 01·02·03 이 함께 켜집니다.',
+    e: '캡처가 기울며 ①②③ 구역이 층으로 떠올라 벌어지고, 단계마다 해당 층이 앞으로 나옵니다. 끝에서 다시 한 장으로 합쳐집니다.',
+  };
+  const $ = (id) => document.getElementById(id);
+  const track = $('track'), stage = $('stage'), pic = $('pic'), layer = $('layer');
+  const ov = $('ov'), dim = $('dim'), hl = $('hl'), lead = $('lead'), leadSvg = $('leadSvg'), ul = $('spots');
+  ul.innerHTML = S.map((s, i) => `<li><b>${i + 1}</b><span>${s.cap}</span></li>`).join('');
+  const lis = [...ul.children];
+
+  // ---- D: 양식(캡처 CSS 좌표 그대로) — 스크롤은 신호만 주고, 동작은 제 속도로 재생·되감기 ----
+  const demo = $('demo'), xp = $('xp');
+  const T = { title: "거래처 단가표 양식에 '적용 시작일' 열 추가", screen: '거래처 단가표',
+    body: '분기마다 단가가 바뀌는데 현재 양식에는 시작일이 없어 거래처가 옛 단가로 발주하는 일이 반복됩니다. 3분기에만 4건.' };
+  const ICON = {
+    file: '<svg width="16" height="18" viewBox="0 0 16 18" aria-hidden="true"><path d="M3 1.5h6.5L13 5v11.5H3z" fill="#F1ECF8" stroke="#B9A6D6" stroke-width="1.2" stroke-linejoin="round"/><path d="M9.5 1.5V5H13" fill="none" stroke="#B9A6D6" stroke-width="1.2" stroke-linejoin="round"/><path d="M5.5 9h5M5.5 11.5h5M5.5 14h3" stroke="#B9A6D6" stroke-width="1.2" stroke-linecap="round"/></svg>',
+    clip: '<svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 4.5 5.9 9.6a1.6 1.6 0 0 0 2.3 2.3l5-5a3 3 0 0 0-4.2-4.2L3.8 7.9a4.2 4.2 0 0 0 5.9 5.9l3.2-3.2" fill="none" stroke="#5C6372" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    cursor: '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l13 7.2-5.6 1.5 3.3 6.3-2.6 1.3-3.3-6.3L5 17z" fill="#1C1B18" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>',
+  };
+  const chip = (x, w, y, label, id) => `<div class="chip"${id ? ` id="${id}"` : ''} style="left:${x}px;top:${y}px;width:${w}px">${label}</div>`;
+  demo.innerHTML = `<div class="card"></div>
+    <div class="t h" style="left:196px;top:48px">업무 요청하기</div>
+    <div class="t sub" style="left:196px;top:85px">요청을 남기시면 언제까지 처리되는지 알려드립니다. 전화 안 주셔도 됩니다.</div>
+    <div class="t lb" style="left:196px;top:127px">어느 시스템인가요</div>
+    ${chip(196, 71, 158, '업무포털')}
+    <div class="t lb" style="left:196px;top:214px">어떤 요청인가요</div>
+    ${chip(196, 49, 245, '오류')}${chip(253, 71, 245, '기능수정', 'cType')}${chip(332, 70, 245, '신규개발')}${chip(409, 60, 245, '보고서')}${chip(476, 83, 245, '데이터조회')}${chip(566, 82, 245, '데이터수정')}${chip(655, 70, 245, '권한계정')}${chip(733, 49, 245, '문의')}
+    <div class="t lb" style="left:196px;top:301px">제목</div>
+    <div class="field" id="fTitle" style="top:331px;height:40px"></div>
+    <div class="t lb" style="left:196px;top:391px">언제까지 필요하세요</div>
+    ${chip(196, 49, 422, '오늘')}${chip(253, 63, 422, '이번 주', 'cWhen')}${chip(323, 64, 422, '다음 주')}${chip(394, 85, 422, '급하지 않음')}
+    <div class="t lb" style="left:196px;top:478px">어느 화면인가요<i>선택</i></div>
+    <div class="field" id="fScreen" style="top:509px;height:40px"></div>
+    <div class="t lb" style="left:196px;top:568px">내용<i>선택</i></div>
+    <div class="field area" id="fBody" style="top:598px;height:107px"></div>
+    <div class="t lb" style="left:196px;top:726px">파일 첨부<i>선택 · 3개까지 · 개당 5MB · 이미지 · PDF · HTML</i></div>
+    <div class="att" id="a1" style="top:756px"><span class="ic">${ICON.file}</span>단가표_2026Q3.pdf<span class="x">×</span><i class="up"></i></div>
+    <div class="att" id="a2" style="top:812px"><span class="ic blank"></span>현재양식_캡처.png<span class="x">×</span><i class="up"></i></div>
+    ${chip(196, 71, 879, ICON.clip + '1개 더', 'cMore')}
+    <div class="t note-t" style="left:196px;top:933px">※ 고객 개인정보·연락처는 관리번호로 적어주세요.</div>
+    <div class="btn" id="bSend"><i class="fill"></i><span>요청하기</span></div>
+    <div class="cur" id="cur">${ICON.cursor}</div>`;
+  const fit = () => { demo.style.transform = `scale(${pic.clientWidth / 1280})`; };
+  // 양식 요소를 구역으로 나눈다(캡처 CSS 좌표의 top 으로): 0 유형·제목 / 1 언제까지·화면·내용 / 2 첨부 / other 나머지
+  const GROUP = new Map();
+  [...demo.children].forEach((n) => {
+    if (n.classList.contains('card') || n.classList.contains('cur')) return;
+    const y = n.id === 'bSend' ? 970 : parseFloat(n.style.top || '0');
+    // 내용 칸(560~720)도 ② 구역 — 날짜·화면을 고른 뒤 이어서 적는 칸이다
+    GROUP.set(n, y >= 210 && y < 385 ? 0 : y >= 385 && y < 720 ? 1 : y >= 720 && y < 915 ? 2 : 'other');
+  });
+  const rail = { top: 0, bot: 0, init: false };
+
+  // 사건 목록: at = 스크롤 진행률 문턱, dur = 앞으로 재생 시간(초). 되감기는 두 배 빠르다.
+  // aim = 커서가 향할 요소, click = 도착하면 파문
+  const CPS = 20;   // 타이핑 초당 글자 수
+  const EV = [
+    { at: 0.04, kind: 'chip', el: 'cType', dur: 0.3, click: true },
+    { at: 0.12, kind: 'type', el: 'fTitle', text: T.title, dur: T.title.length / CPS },
+    { at: 0.38, kind: 'chip', el: 'cWhen', dur: 0.3, click: true },
+    { at: 0.44, kind: 'type', el: 'fScreen', text: T.screen, dur: T.screen.length / CPS },
+    { at: 0.53, kind: 'type', el: 'fBody', text: T.body, dur: T.body.length / (CPS * 2.4) },
+    { at: 0.70, kind: 'attach', el: 'a1', dur: 0.9 },
+    { at: 0.78, kind: 'attach', el: 'a2', dur: 0.9 },
+    { at: 0.91, kind: 'button', el: 'bSend', dur: 0.7 },
+  ].map((e) => ({ ...e, v: 0, node: null, prevOn: false }));
+  const cur = { x: 1180, y: 1040, on: 0 };
+  const box = { ...S[0] };   // 강조 네모의 지금 위치(%) — 목표로 부드럽게 따라간다
+  let dT = 0, draw = 0, last = 0, loop = 0;
+
+  const esc = (x) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const ring = (x, y) => {
+    const r = document.createElement('i'); r.className = 'ring'; r.style.left = x + 'px'; r.style.top = y + 'px';
+    demo.appendChild(r); setTimeout(() => r.remove(), 600);
+  };
+  const aimOf = (e) => {
+    const n = e.node;
+    if (e.kind === 'type') {
+      // 커서는 입력 중인 글자 끝 근처(14px 글자 한 자 ≈ 13px). 내용 칸은 여러 줄이라 칸 왼쪽 위에 둔다
+      if (e.el === 'fBody') return { x: n.offsetLeft + 40, y: n.offsetTop + 44 };
+      const c = Math.round(e.text.length * e.v);
+      return { x: n.offsetLeft + 22 + Math.min(n.offsetWidth - 44, c * 13), y: n.offsetTop + n.offsetHeight / 2 + 12 };
+    }
+    if (e.kind === 'attach') return { x: n.offsetLeft + 60, y: n.offsetTop + 30 };
+    return { x: n.offsetLeft + n.offsetWidth / 2, y: n.offsetTop + n.offsetHeight / 2 + 4 };
+  };
+
+  function frame(ts) {
+    const dt = Math.min(0.05, (ts - (last || ts)) / 1000); last = ts;
+    const t = dT;
+    let lead = null;
+    EV.forEach((e) => {
+      e.node = e.node || $(e.el);
+      const target = t >= e.at ? 1 : 0;
+      const step = dt / e.dur * (target ? 1 : 2);
+      e.v = target ? Math.min(1, e.v + step) : Math.max(0, e.v - step);
+      if (t >= e.at) lead = e;
+      const n = e.node;
+      if (e.kind === 'chip') {
+        const on = e.v > 0.35;
+        if (on && !e.prevOn && target && e.click) { const a = aimOf(e); ring(a.x, a.y - 4); }
+        n.classList.toggle('on', on); e.prevOn = on;
+      }
+      if (e.kind === 'type') {
+        const k = e.v, c = Math.round(e.text.length * k), typing = k > 0 && k < 1;
+        const html = esc(e.text.slice(0, c)) + (typing ? '<span class="caret"></span>' : '');
+        if (n.innerHTML !== html) n.innerHTML = html;
+        n.classList.toggle('typing', typing);
+      }
+      if (e.kind === 'attach') {
+        const k = e.v;
+        const inn = ease(Math.min(1, k / 0.3));
+        n.style.opacity = String(inn);
+        n.style.transform = `translateX(${(1 - inn) * -18}px)`;
+        const up = n.querySelector('.up');
+        up.style.width = `${Math.min(1, Math.max(0, (k - 0.25) / 0.6)) * 100}%`;
+        up.style.opacity = k >= 0.98 ? '0' : '1';
+      }
+      if (e.kind === 'button') {
+        n.querySelector('.fill').style.width = `${ease(e.v) * 100}%`;
+      }
+    });
+    // 커서: 마지막으로 시작된 사건의 대상에게로 (약 0.2초 감속 이동)
+    const want = lead ? aimOf(lead) : { x: 1180, y: 1040 };
+    const f = 1 - Math.exp(-dt * 9);
+    cur.x += (want.x - cur.x) * f; cur.y += (want.y - cur.y) * f;
+    const c = $('cur');
+    c.style.transform = `translate(${cur.x - 5}px, ${cur.y - 3}px)`;
+    c.style.opacity = showCur && t > 0.02 && t < 0.99 ? '1' : '0';
+    // 강조 네모: 단계(① 0~0.33, ② ~0.66, ③)의 구역으로 따라간다. 처음 붙을 때 선이 그려진다
+    const si = t < 0.33 ? 0 : t < 0.66 ? 1 : 2;
+    const g = 1 - Math.exp(-dt * 7);
+    ['x', 'y', 'w', 'h'].forEach((k) => { box[k] += (S[si][k] - box[k]) * g; });
+    draw += ((t > 0.01 ? 1 : 0) - draw) * (1 - Math.exp(-dt * 5));
+    place(box, v === 'd' ? draw : 0, v === 'd' ? draw * 0.3 : 0);
+    active(t > 0.01 ? si : -1);
+
+    // D2·D3 초점: 지금 구역 + 지금 움직이는 요소만 선명, 나머지 0.32
+    if (v === 'd2' || v === 'd3') {
+      const busy = lead && lead.v < 1 ? lead.node : null;
+      GROUP.forEach((g, n) => {
+        const on = t <= 0.01 || g === si || n === busy || (n.id === 'bSend' && t >= 0.91);
+        n.style.filter = on ? '' : 'opacity(.32)';
+      });
+    }
+    // D3 여백 선: 가는 쪽 끝이 먼저(빠르게), 반대쪽 끝이 뒤따라(느리게) — 늘었다 줄며 옮겨 간다
+    if (v === 'd3') {
+      const R = $('rail'), W = pic.clientWidth, H = pic.clientHeight;
+      const x = W * 0.118;
+      const sec = S.map((r) => ({ a: H * r.y / 100 + 4, b: H * (r.y + r.h) / 100 - 4 }));
+      const tg = sec[si];
+      if (!rail.init) { rail.top = tg.a; rail.bot = tg.a; rail.init = true; }
+      const down = tg.a >= rail.top;
+      const fast = 1 - Math.exp(-dt * 14), slow = 1 - Math.exp(-dt * 6);
+      rail.top += (tg.a - rail.top) * (down ? slow : fast);
+      rail.bot += ((t > 0.01 ? tg.b : tg.a) - rail.bot) * (down ? fast : slow);
+      const tr = R.querySelector('.track'), sg = R.querySelector('.seg');
+      tr.style.left = x + 'px'; tr.style.top = sec[0].a + 'px'; tr.style.height = (sec[2].b - sec[0].a) + 'px';
+      sg.style.left = x + 'px'; sg.style.top = rail.top + 'px'; sg.style.height = Math.max(0, rail.bot - rail.top) + 'px';
+      R.querySelectorAll('.n').forEach((n, i) => {
+        n.style.left = (x - 10) + 'px'; n.style.top = sec[i].a + 'px';
+        n.classList.toggle('on', t > 0.01 && i === si);
+      });
+    }
+    loop = isD(v) ? requestAnimationFrame(frame) : 0;
+  }
+  // 모션 줄이기: 처음부터 다 채운 상태
+  const settle = () => { EV.forEach((e) => { e.v = 1; }); dT = 1; };
+
+  // ---- E: 바탕 한 장 + 구역 세 장(같은 캡처를 구역만 남기고 자름) ----
+  const img = '../../data/images/captures/pfh/form.png';
+  xp.innerHTML = `<div class="ly" id="ly0"><img src="${img}" alt=""></div>` + S.map((r, i) =>
+    `<div class="ly" id="ly${i + 1}"><img src="${img}" alt="" style="clip-path:inset(${r.y}% ${100 - r.x - r.w}% ${100 - r.y - r.h}% ${r.x}%)">` +
+    `<div class="ed" style="left:${r.x}%;top:${r.y}%;width:${r.w}%;height:${r.h}%"></div></div>`).join('');
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const ease = (k) => 1 - Math.pow(1 - k, 3);
+  const mix = (p, q, k) => ({ x: lerp(p.x, q.x, k), y: lerp(p.y, q.y, k), w: lerp(p.w, q.w, k), h: lerp(p.h, q.h, k) });
+  const PIN = 80, STEP = 0.8;   // 한 단계 = 0.8 화면 높이 스크롤, 셋이면 2.4 화면 (room 280vh 의 나머지는 완성 상태로 잠시 붙잡음)
+  const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const isD = (x) => x === 'd' || x === 'd1' || x === 'd2' || x === 'd3';
+  let showCur = true;
+  $('curToggle').addEventListener('change', (e) => { showCur = e.target.checked; });
+
+  let v = (location.hash.slice(1) || 'a');
+  const setV = (x) => {
+    v = x; history.replaceState(null, '', '#' + x);
+    document.querySelectorAll('[data-v]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === x)));
+    $('desc').textContent = DESC[x];
+    render();
+  };
+  document.querySelectorAll('[data-v]').forEach((b) => b.addEventListener('click', () => setV(b.dataset.v)));
+
+  // r 은 그림 기준 %. cam(확대·이동)을 적용한 뒤 틀 안 픽셀로 그린다 — 확대해도 선 굵기가 1.5px 그대로
+  let cam = { s: 1, tx: 0, ty: 0 };
+  const place = (r, draw, dimOp) => {
+    const W = pic.clientWidth, H = pic.clientHeight;
+    ov.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const x = cam.tx + cam.s * W * r.x / 100, y = cam.ty + cam.s * H * r.y / 100;
+    const w = cam.s * W * r.w / 100, h = cam.s * H * r.h / 100;
+    // 왼쪽 위 모서리에서 시작해 시계 방향으로 한 바퀴 — 둘레 길이로 대시를 잡아 "그려지는" 효과
+    hl.setAttribute('d', `M${x} ${y}H${x + w}V${y + h}H${x}Z`);
+    const len = 2 * (w + h);
+    hl.setAttribute('stroke-dasharray', `${len} ${len}`);
+    hl.setAttribute('stroke-dashoffset', (len * (1 - draw)).toFixed(1));
+    hl.style.opacity = draw > 0 ? 1 : 0;
+    dim.setAttribute('d', `M-2 -2H${W + 2}V${H + 2}H-2Z M${x} ${y}V${y + h}H${x + w}V${y}Z`);
+    dim.style.opacity = dimOp;
+  };
+  const active = (i) => lis.forEach((li, k) => li.classList.toggle('on', k === i));
+
+  function progress() {
+    const r = track.getBoundingClientRect();
+    return (PIN - r.top) / (innerHeight * STEP * S.length);
+  }
+
+  function render() {
+    const t = reduced ? 1 : progress();
+    const tc = clamp(t);
+    const p = tc * S.length;
+    const i = Math.min(S.length - 1, Math.floor(p));
+    const f = t >= 1 ? 1 : p - i;
+    $('meter').textContent = `진행 ${Math.round(tc * 100)}% · 단계 ${i + 1}`;
+    layer.style.transform = '';
+    cam = { s: 1, tx: 0, ty: 0 };
+    lead.style.opacity = 0;
+    layer.style.display = (isD(v) || v === 'e') ? 'none' : '';
+    demo.style.display = isD(v) ? 'block' : 'none';
+    $('rail').style.display = v === 'd3' ? 'block' : 'none';
+    if (!isD(v) || v === 'd' || v === 'd1') [...demo.children].forEach((n) => { n.style.filter = ''; });
+    xp.style.display = v === 'e' ? 'block' : 'none';
+    pic.classList.toggle('e3d', v === 'e');
+    ov.style.display = v === 'e' ? 'none' : '';
+
+    if (v === 'a') {
+      // 처음 6% 동안 테두리를 그리고, 각 단계 끝 30% 동안 다음 영역으로 옮겨 간다
+      const draw = clamp(t / 0.06);
+      const k = i < S.length - 1 ? ease(clamp((f - 0.7) / 0.3)) : 0;
+      place(mix(S[i], S[Math.min(i + 1, S.length - 1)], k), draw, draw);
+      active(k > 0.5 ? i + 1 : i);
+    }
+
+    if (v === 'b') {
+      // 단계마다: 앞 30% 지시선 → 영역 테두리, 뒤 15% 에서 지워지며 다음 단계로
+      const inL = clamp(f / 0.2), inR = clamp((f - 0.15) / 0.2);
+      const out = i < S.length - 1 ? clamp((f - 0.85) / 0.15) : 0;
+      const on = t > 0 ? 1 : 0;
+      place(S[i], on * inR * (1 - out), on * inR * (1 - out));
+      active(t > 0 ? i : -1);
+      // 지시선: 설명 항목 오른쪽 가운데 → 그림 왼쪽 바깥 꺾임 → 영역 왼쪽 가운데
+      const st = stage.getBoundingClientRect(), li = lis[i].getBoundingClientRect(), pr = pic.getBoundingClientRect();
+      const rx = pr.left + pr.width * S[i].x / 100, ry = pr.top + pr.height * (S[i].y + S[i].h / 2) / 100;
+      const sh = pic.parentElement.getBoundingClientRect();   // 그림 틀 바깥 테두리
+      const x0 = li.right + 4, y0 = li.top + li.height / 2, knee = (li.right + sh.left) / 2;   // 꺾임은 설명 칸과 그림 틀 사이 가운데
+      leadSvg.setAttribute('viewBox', `0 0 ${st.width} ${st.height}`);
+      lead.setAttribute('d', `M${x0 - st.left} ${y0 - st.top} H${knee - st.left} V${ry - st.top} H${rx - st.left}`);
+      lead.setAttribute('stroke-dashoffset', (1 - inL * (1 - out)).toFixed(3));
+      lead.style.opacity = t > 0 ? 1 : 0;
+    }
+
+    if (v === 'c') {
+      // 처음 10%: 전체 → ① 확대. 이후 각 단계 끝 30% 동안 다음 영역으로 카메라 이동
+      const W = pic.clientWidth, H = pic.clientHeight;
+      // 입력칸은 글자가 왼쪽에 있고 오른쪽은 비어 있다 — 영역 높이에 맞춰(최대 2.2배) 다가가고, 영역 왼쪽이 틀 왼쪽 6% 에 오게 둔다
+      const camOf = (r) => {
+        const sh = H * r.h / 100;
+        const s = Math.min(2.2, H / (sh * 1.5));
+        let tx = W * 0.06 - s * (W * r.x / 100), ty = H / 2 - s * (H * (r.y + r.h / 2) / 100);
+        tx = clamp(tx, W - s * W, 0); ty = clamp(ty, H - s * H, 0);
+        return { s, tx, ty };
+      };
+      const k = i < S.length - 1 ? ease(clamp((f - 0.7) / 0.3)) : 0;
+      const r = mix(S[i], S[Math.min(i + 1, S.length - 1)], k);
+      const c = camOf(r);
+      const zin = ease(clamp(t / 0.1));
+      cam = { s: lerp(1, c.s, zin), tx: lerp(0, c.tx, zin), ty: lerp(0, c.ty, zin) };
+      layer.style.transform = `translate(${cam.tx}px, ${cam.ty}px) scale(${cam.s})`;
+      place(r, zin, zin * 0.5);
+      active(t > 0 ? (k > 0.5 ? i + 1 : i) : -1);
+    }
+    renderDE(t, i, f);
+  }
+
+  // D·E 는 render 끝에서 그린다 — 위 분기들 다음에 붙인다
+  const renderDE = (t, i, f) => {
+    const k = i < S.length - 1 ? ease(clamp((f - 0.7) / 0.3)) : 0;
+    if (isD(v)) {
+      fit();
+      dT = reduced ? 1 : t;
+      if (reduced) settle();
+      if (!loop) { last = 0; loop = requestAnimationFrame(frame); }
+    }
+    if (v === 'e') {
+      const up = ease(clamp(t / 0.12)), down = ease(clamp((t - 0.9) / 0.1));
+      const e = up * (1 - down);
+      xp.style.transform = `scale(${1 - 0.1 * e}) rotateX(${34 * e}deg) rotateZ(${-7 * e}deg)`;
+      // 바탕에서는 세 구역을 비운다 — 층이 떠오르면 그 자리가 빈 칸(뽑아낸 서랍)으로 남아 내용이 두 번 보이지 않는다
+      const W = pic.clientWidth, H = pic.clientHeight;
+      const holes = S.map((r) => { const x = W * r.x / 100, y = H * r.y / 100, w = W * r.w / 100, h = H * r.h / 100; return `M${x} ${y}H${x + w}V${y + h}H${x}Z`; }).join(' ');
+      const base = $('ly0');
+      base.style.transform = 'translateZ(0)';
+      base.querySelector('img').style.clipPath = e > 0.01 ? `path(evenodd, "M0 0H${W}V${H}H0Z ${holes}")` : 'none';
+      base.style.opacity = String(1 - 0.35 * e);
+      S.forEach((_, j) => {
+        const lift = j === i ? 1 - k : j === i + 1 ? k : 0;
+        const ly = $('ly' + (j + 1));
+        ly.style.transform = `translateZ(${e * 10 + lift * e * 70}px)`;
+        ly.style.opacity = String(1 - 0.35 * e * (1 - lift));
+        ly.querySelector('.ed').style.opacity = String(lift * e);
+        ly.querySelector('img').style.filter = `brightness(${1 + 0.02 * lift})`;
+      });
+      active(t > 0 ? (k > 0.5 ? i + 1 : i) : -1);
+    }
+  };
+
+  // 스크롤 이벤트에서 바로 그린다 — 다음 프레임으로 미루면 탭이 느릴 때 한 박자 늦은 위치가 남는다
+  addEventListener('scroll', render, { passive: true });
+  addEventListener('resize', render);
+  setV(['a', 'b', 'c', 'd', 'd1', 'd2', 'd3', 'e'].includes(v) ? v : 'a');
+})();
+</script>
+</body>
+</html>
