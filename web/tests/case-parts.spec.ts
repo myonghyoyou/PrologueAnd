@@ -1,11 +1,25 @@
 import { test, expect } from '@playwright/test';
 import { scrollToY } from './helpers';
 
-test('표지: 윗줄은 프로젝트 이름만, 숫자 칸 없이 메타 4행', async ({ page }) => {
+test('표지: 윗줄은 프로젝트 이름만, 숫자 칸·정보 표(역할·기간·사용자·공개 범위) 없이 소개만', async ({ page }) => {
   await page.goto('/projects/por-favor-harry');
   await expect(page.locator('[data-cover-title] span').first()).toHaveText('Por favor, Harry');
   await expect(page.locator('[data-num]')).toHaveCount(0);
-  await expect(page.locator('[data-meta-row]')).toHaveCount(4);
+  await expect(page.locator('[data-cover] table')).toHaveCount(0);
+  const cover = await page.locator('[data-cover]').innerText();
+  for (const w of ['역할', '기간', '사용자', '공개 범위']) expect(cover).not.toContain(w);
+  await expect(page.locator('[data-cover] p').first()).toBeVisible();
+});
+
+test('표지 소개 문단은 대표 화면(캡처) 틀과 같은 폭', async ({ page }) => {
+  await page.goto('/projects/por-favor-harry');
+  const r = await page.evaluate(() => {
+    const p = document.querySelector<HTMLElement>('[data-summary]')!.getBoundingClientRect();
+    const f = document.querySelector<HTMLElement>('[data-cover] [data-frame]')!.getBoundingClientRect();
+    return { dl: p.left - f.left, dw: p.width - f.width };
+  });
+  expect(Math.abs(r.dl)).toBeLessThanOrEqual(1);
+  expect(Math.abs(r.dw)).toBeLessThanOrEqual(1);
 });
 
 // 데스크톱의 요청 작성 주석은 재현 양식(form-demo.spec.ts)이라 캡처 핫스팟은 폰·모션 줄이기에서만 보인다

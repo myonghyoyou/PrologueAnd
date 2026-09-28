@@ -1,4 +1,5 @@
 import type { Project, Study } from '@/content';
+import { FRAME_PAD } from '@/lib/figure-rules';
 import { Frame } from './frame';
 import s from './cover.module.css';
 
@@ -10,12 +11,8 @@ export function Cover({ study, project }: { study: Study; project: Project }) {
         <div>
           <span className={s.cap}>{project.title}</span>
           <h1 className={s.h1} data-title dangerouslySetInnerHTML={{ __html: c.title }} />
-          {c.summary.map((t, i) => <p key={i} className={s.summary}>{t}</p>)}
-          <table className={s.meta}>
-            <tbody>
-              {c.meta.map(([k, v]) => <tr key={k} data-meta-row><td>{k}</td><td>{v}</td></tr>)}
-            </tbody>
-          </table>
+          {/* 소개 문단은 아래 대표 화면 틀과 같은 폭 — 틀처럼 칸 폭과 원본 픽셀 폭(+틀 여백) 중 작은 쪽 */}
+          {c.summary.map((t, i) => <p key={i} className={s.summary} data-summary style={{ maxWidth: (c.hero.w ?? 0) + FRAME_PAD * 2 }}>{t}</p>)}
         </div>
         {c.numbers?.length ? (
           <div className={s.nums}>

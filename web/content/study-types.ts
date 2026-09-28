@@ -26,7 +26,7 @@ export type Chapter = { id: string; name: string; h: string; p: string[]; blocks
 /** 한 편 = 표지 + 장 N개 + 끝. 다음 이야기는 목록 순서로 정한다 */
 export type Study = {
   /** 윗줄은 프로젝트 이름만 쓴다(목록에서 가져옴). numbers 는 없거나 3개 */
-  cover: { title: string; summary: string[]; meta: [string, string][]; numbers?: Num[]; hero: Figure };
+  cover: { title: string; summary: string[]; numbers?: Num[]; hero: Figure };
   chapters: Chapter[];
   builtWith?: string[];
   cta: string;
