@@ -20,3 +20,10 @@
 .nav a:hover,.nav button:hover{background:var(--bone-900);color:var(--bone-50)}
 .nav .cur{border-color:transparent;color:var(--navy-800);pointer-events:none}
 @media (max-width:1023px){ .who{display:none} .back span{display:none} .back{padding:0 10px;height:36px} }
+/* 홈(경로형 대시보드): 무대 바탕이 bone-100 — 헤더 그라데이션·버튼 바탕을 맞춘다. 헤더의 빈 자리는 휠이 무대로 가도록 비운다 */
+@media (min-width:1024px){
+  .home{background:linear-gradient(var(--bone-100) 70%, rgba(243,241,236,0));pointer-events:none}
+  .home > *{pointer-events:auto}
+  .home .nav a,.home .nav button{background:var(--bone-100)}
+  .home .nav a:hover,.home .nav button:hover{background:var(--bone-900);color:var(--bone-50)}
+}

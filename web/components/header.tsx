@@ -6,7 +6,7 @@ type Props = { variant: 'home' | 'list' | 'case'; title?: string; project?: stri
 
 export function Header({ variant, title, project }: Props) {
   return (
-    <header className={s.hdr}>
+    <header className={variant === 'home' ? `${s.hdr} ${s.home}` : s.hdr}>
       <Link className={s.brand} data-brand href="/" aria-label="Prologue&">
         Prologue<span className={s.amp}>&amp;</span>
       </Link>

@@ -37,7 +37,7 @@ test('복귀: 클라이언트 내비게이션으로 /projects 에 도착하면 v
   await page.evaluate(() => { (window as unknown as { __navMarker?: boolean }).__navMarker = true; });
   await page.evaluate(() => sessionStorage.setItem('vt-slug', 'por-favor-harry'));
 
-  await page.locator('a[href="/projects"]').click();
+  await page.locator('header a[href="/projects"]').click();
   await page.waitForURL('**/projects');
 
   const survivedClientNav = await page.evaluate(() => (window as unknown as { __navMarker?: boolean }).__navMarker === true);

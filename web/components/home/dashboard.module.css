@@ -1,0 +1,111 @@
+/* 경로형 대시보드 — 시안 design/mockups/v6/v6.css 를 옮긴 것. 상태는 엔진이 data-* 로 붙인다(show·vis·on·done·arrive) */
+.root{--pw:640px;--ph:420px;--pad:40px}
+.stage{position:fixed;inset:0;overflow:clip;background:var(--bone-100);-webkit-user-select:none;user-select:none}   /* 대시보드 글자·도형은 드래그 선택 안 됨 */
+.world{--inv:1;position:absolute;left:0;top:0;width:2800px;height:5100px;transform-origin:0 0;will-change:transform}
+.root:not([data-ready]) .world{opacity:0}   /* 엔진이 카메라를 세우기 전 한 프레임 — 세계의 왼쪽 위가 비치지 않게 */
+.path{position:absolute;left:0;top:0;width:2800px;height:5100px;overflow:visible;pointer-events:none}
+.guide{fill:none;stroke:var(--navy-200);stroke-width:1.5}
+.ink{fill:none;stroke:var(--navy-800);stroke-width:2}
+.knot{fill:none;stroke:var(--navy-400);stroke-width:1.5}
+.dot{fill:var(--bone-50);stroke:var(--navy-800);stroke-width:1.5;transition:fill .25s}
+.dot[data-on]{fill:var(--navy-800)}
+
+/* 장면 — 위치만 세계 좌표, 크기는 CSS px(--inv = 1/scale 로 세계 스케일을 되돌린다, docs/22 §12-1).
+   판은 상자가 아니라 글자 자리: 배경·테두리 없음. 640×420 은 배치·겹침 계산용 영역 */
+.scene{position:absolute;box-sizing:border-box;transform:scale(var(--inv));transform-origin:0 0}
+.pan{width:var(--pw);height:var(--ph);padding:var(--pad);opacity:0;transform:translateY(8px) scale(var(--inv));
+  transition:opacity .35s var(--ease-out),transform .35s var(--ease-out)}
+.pan[data-show]{opacity:1;transform:scale(var(--inv))}
+.txt{position:relative;z-index:2}
+.hl{font-size:4.6rem;font-weight:600;letter-spacing:-.035em;line-height:1.05;margin:0;word-break:keep-all;color:var(--bone-900)}
+.hl em{font-style:normal;color:var(--navy-800)}
+.hl2{font-size:4.6rem}
+.hl3{font-size:4rem}
+.sub{font-size:1.05rem;line-height:1.55;color:var(--bone-700);margin:16px 0 0;max-width:34rem}
+
+/* 도형 — 시안 v3.css .shape */
+.shapeArea{position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.shape{position:absolute;inset:0;pointer-events:none;z-index:0}
+.shape i{position:absolute;display:block;background:var(--navy-100);border-radius:2px}
+.ring i{border-radius:50%;background:transparent;border:14px solid var(--navy-100)}
+.grid i{background:repeating-linear-gradient(0deg,var(--navy-100) 0 14px,transparent 14px 20px),repeating-linear-gradient(90deg,var(--navy-100) 0 14px,transparent 14px 20px)}
+.flag i{left:52%;top:8%;width:44%;height:72%;clip-path:polygon(0 0,100% 50%,0 100%)}
+.glyph i{left:46%;top:-8%;font-family:var(--font-serif),Georgia,serif;font-style:normal;font-size:420px;line-height:1;color:var(--navy-100);background:none;
+  font-optical-sizing:none;font-variation-settings:"opsz" 24}
+
+/* 버튼 — 시안 v3.css .btn */
+.btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;border:0;background:var(--navy-800);color:#fff;
+  font:inherit;font-size:15px;font-weight:500;line-height:1;border-radius:2px;cursor:pointer;transition:background .15s;white-space:nowrap}
+.btn:hover{background:var(--navy-700)}
+.btn.o{background:transparent;color:var(--bone-900);border:1px solid var(--bone-900)}
+.btn.o:hover{background:var(--bone-200)}
+.tri{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid currentColor}
+.below{position:absolute;left:var(--pad);bottom:var(--pad);display:flex;align-items:center;gap:12px;z-index:3}
+.mail{color:var(--bone-600);font-size:14px}
+
+/* 무엇을 칩: 점 왼쪽. left/top = 점에서 NGAP 왼쪽, 오른쪽 끝·세로 중앙을 그 자리에 맞춤 */
+.node{transform:scale(var(--inv)) translate(-100%,-50%);text-align:right;white-space:nowrap;opacity:0;transition:opacity .3s}
+.node[data-vis]{opacity:1}
+.node span{display:block;font-size:1rem;font-weight:500;line-height:1.7;color:var(--bone-500);transition:color .25s}
+.node small{display:block;font-size:12px;line-height:1.5;color:var(--bone-500);margin-top:2px;transition:color .25s}
+.node[data-on] span{color:var(--bone-900)}
+.node[data-on] small{color:var(--navy-800)}
+
+/* 0 hero (세계에 직접) */
+.hero{left:540px;top:300px;width:490px}
+.cta{display:flex;gap:12px;margin-top:28px}
+.hint{display:block;margin-top:56px;font-size:13px;color:var(--bone-500)}
+
+/* 8 end (세계에 직접) — 선 끝점 (1500,4676)은 Prologue 위 24px. 카메라는 묶음 가운데 (1500,4772) = 안에서 (400,72)에 서므로 되돌림 기준점도 거기 */
+.end{left:1100px;top:4700px;width:800px;text-align:center;transform-origin:400px 72px}
+.footTop,.footAmp{font-family:var(--font-serif),Georgia,serif;font-optical-sizing:none;font-variation-settings:"opsz" 24}
+.footTop{margin:0;font-size:44px;line-height:1;color:var(--bone-900)}
+.footAmp{margin:14px 0 0;height:44px;line-height:44px;font-size:34px;color:var(--navy-800);opacity:0;transform:translateY(-8px);
+  transition:opacity .7s var(--ease-out) .15s,transform .7s var(--ease-out) .15s}
+.end[data-arrive] .footAmp{opacity:1;transform:none}
+.footCap{margin:22px 0 0;font-size:14px;color:var(--bone-600)}
+
+/* 진행 지도: 헤더 가운데, 장면당 한 칸. 보이는 막대는 3px, 누르는 범위는 위아래 10px·칸 사이까지 */
+.pmap{position:fixed;left:50%;top:32px;transform:translate(-50%,-50%);z-index:41;display:flex;-webkit-user-select:none;user-select:none}
+.pmap button{display:block;box-sizing:border-box;width:29px;height:23px;padding:10px 3px 10px 0;border:0;margin:0;border-radius:0;
+  background:var(--bone-300);background-clip:content-box;cursor:pointer;transition:background-color .2s}
+.pmap button:last-child{width:26px;padding-right:0}
+.pmap button[data-done]{background-color:var(--navy-400)}
+.pmap button[data-on]{background-color:var(--navy-800)}
+.pmap button:hover{background-color:var(--navy-600)}
+.pmap button[data-on]:hover{background-color:var(--navy-900)}
+.pmap button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+/* 바닥글: 항상 화면 아래 */
+.ft{position:fixed;left:24px;bottom:16px;z-index:35;display:flex;align-items:center;gap:20px;font-size:12px;color:var(--bone-500);-webkit-user-select:none;user-select:none}
+.ft nav{display:flex;gap:20px}
+.ft button{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer}
+.ft a:hover,.ft button:hover{color:var(--bone-900)}
+
+@media (prefers-reduced-motion:reduce){
+  .pan,.node,.dot,.footAmp,.btn{transition:none}
+}
+
+/* ---- 폰·태블릿: 세로 스택. 엔진은 켜지지 않는다 ---- */
+@media (max-width:1023px){
+  .pmap,.path{display:none}
+  .stage{position:static;overflow:visible;background:var(--bone-50);-webkit-user-select:text;user-select:text}
+  .root:not([data-ready]) .world{opacity:1}
+  .world{position:static;width:auto;height:auto;transform:none!important;padding:calc(var(--hdr) + 8px + env(safe-area-inset-top,0px)) 16px 24px}
+  .scene{position:static;width:auto;height:auto;margin:0 0 16px;opacity:1;transform:none}
+  .pan{position:relative;padding:24px;overflow:hidden}   /* 도형이 판 밖으로 나가면 문서 폭이 늘어난다 */
+  .hl,.hl2,.hl3{font-size:2.4rem}
+  .sub{font-size:1rem;margin-top:12px}
+  .shapeArea{width:60%;height:60%;left:40%;opacity:.7}
+  .below{position:static;margin-top:20px;flex-wrap:wrap}
+  .node{margin:0 0 8px;padding:0 8px;text-align:left;white-space:normal;opacity:1}
+  .node span{color:var(--bone-900)}
+  .node small{color:var(--navy-800)}
+  .hero{padding:16px 8px 24px}
+  .hint{display:none}
+  .cta{flex-wrap:wrap}
+  .end{text-align:left;padding:24px 8px}
+  .footAmp{opacity:1;transform:none;margin-top:8px}
+  .footCap{margin-top:8px}
+  .ft{position:static;flex-wrap:wrap;padding:8px 24px 24px}
+}
