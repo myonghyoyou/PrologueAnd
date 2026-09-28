@@ -7,6 +7,16 @@ test('목록은 6행, 공개된 것만 링크', async ({ page }) => {
   await expect(page.locator('[data-row]:not(a)').first()).toContainText('준비 중');
 });
 
+test('행마다 연도는 2026, 대표 표시·문제 유형 문구는 없다', async ({ page }) => {
+  await page.goto('/projects');
+  const metas = await page.locator('[data-row]').evaluateAll((rows) => rows.map((r) => (r.querySelector('[data-title]')!.nextElementSibling as HTMLElement).innerText));
+  expect(metas).toHaveLength(6);
+  for (const m of metas) {
+    expect(m).toContain('2026');
+    for (const w of ['대표', '흩어진 요청', '불편한 기존 시스템', '종이·수작업', '제품이 필요한 아이디어']) expect(m).not.toContain(w);
+  }
+});
+
 test('목록은 가운데 읽기 폭이고 가로 스크롤이 없다', async ({ page }) => {
   await page.goto('/projects');
   const r = await page.locator('main').boundingBox();

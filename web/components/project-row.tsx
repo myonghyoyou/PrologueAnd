@@ -1,4 +1,4 @@
-import { PROBLEM_NAME, type Project } from '@/content';
+import type { Project } from '@/content';
 import { ViewTransitionLink } from './view-transition-link';
 import s from './project-row.module.css';
 
@@ -14,8 +14,6 @@ export function ProjectRow({ project: p }: { project: Project }) {
         <div className={s.meta}>
           {p.tags.map((t) => <span key={t} className={s.tag}>{t}</span>)}
           <span>{p.year}</span>
-          <span>{PROBLEM_NAME[p.problem]}</span>
-          {p.featured ? <span style={{ color: 'var(--navy-800)' }}>대표</span> : null}
         </div>
         <p className={s.res}>{p.tagline}</p>
       </div>
