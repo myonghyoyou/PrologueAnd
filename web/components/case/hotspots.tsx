@@ -22,7 +22,8 @@ export function SpotOverlay({ spots, active }: { spots: Spot[]; active: number }
     <>
       {spots.map((p, i) => (
         <b key={i} aria-hidden style={{ position: 'absolute', zIndex: 4, width: 18, height: 18, margin: '-9px 0 0 -9px',
-             left: `calc(6px + (100% - 12px) * ${p.x / 100})`, top: `calc(6px + (100% - 12px) * ${p.y / 100})`,
+             // 뱃지는 영역 왼쪽 위 모서리에 걸친다. 영역이 그림 가장자리에 붙어도 틀(overflow:hidden) 밖으로 잘리지 않게 9px 안쪽에서 멈춘다
+             left: `max(9px, calc(6px + (100% - 12px) * ${p.x / 100}))`, top: `max(9px, calc(6px + (100% - 12px) * ${p.y / 100}))`,
              borderRadius: '50%', background: 'var(--navy-800)', color: 'var(--bone-50)', fontSize: 11,
              display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</b>
       ))}

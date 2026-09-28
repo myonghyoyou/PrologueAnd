@@ -39,11 +39,12 @@ test.describe('상세 — 문서형 뼈대', () => {
 
   test('여백 주석의 한 장 그림은 모두 같은 폭', async ({ page, isMobile }) => {
     test.skip(!!isMobile, '데스크톱 — 폰은 모두 전폭');
+    // 요청 작성 주석은 데스크톱에서 재현 양식이라 캡처 틀이 숨는다 — 보이는 틀만 센다
     const ws = await page.evaluate(() => [...document.querySelectorAll('[data-block="note"]')]
-      .map((n) => [...n.querySelectorAll<HTMLElement>('[data-frame]')])
+      .map((n) => [...n.querySelectorAll<HTMLElement>('[data-frame]')].filter((f) => f.getBoundingClientRect().width > 0))
       .filter((fs) => fs.length === 1)
       .map((fs) => Math.round(fs[0].getBoundingClientRect().width)));
-    expect(ws.length).toBe(5);
+    expect(ws.length).toBe(4);
     expect(Math.max(...ws) - Math.min(...ws)).toBeLessThanOrEqual(1);
   });
 
@@ -108,6 +109,25 @@ test.describe('상세 — 문서형 뼈대', () => {
   });
 
   test('통찰 한 문장이 01 장 안에 있다', async ({ page }) => {
-    await expect(page.locator('#problem [data-block="quote"] blockquote')).toContainText('요청이 들어오는 길의 문제였습니다');
+    await expect(page.locator('#problem [data-block="quote"] blockquote')).toContainText('요청이 들어오는 경로가 너무 많은 것이 문제였습니다');
+  });
+
+  test('화면 장의 여백 주석에 단계 라벨(들어온다·처리한다·돌려준다·어디서든)이 없다', async ({ page }) => {
+    const text = await page.locator('#screens').innerText();
+    for (const w of ['들어온다', '처리한다', '돌려준다', '어디서든']) expect(text).not.toContain(w);
+  });
+
+  test('장 간격: 앞 내용 → 괘선 88(폰 56), 괘선 → 장 제목 40(폰 28)', async ({ page, isMobile }) => {
+    const r = await page.evaluate(() => {
+      const ch = document.getElementById('screens')!;   // 붙지 않는 장 — 앞 장(02)의 무대가 끝난 자리부터 잰다
+      const intro = ch.querySelector<HTMLElement>('[data-chapter-label]')!.parentElement!;
+      const prev = ch.previousElementSibling as HTMLElement;
+      return {
+        before: intro.getBoundingClientRect().top - prev.getBoundingClientRect().bottom,
+        after: parseFloat(getComputedStyle(intro).paddingTop),   // 괘선(border-top) 아래 여백
+      };
+    });
+    expect(Math.round(r.before)).toBe(isMobile ? 56 : 88);
+    expect(r.after).toBe(isMobile ? 28 : 40);
   });
 });

@@ -5,7 +5,8 @@ export type Figure = { src: string; alt: string; caption?: string; spots?: Spot[
 export type Num = { value: string; label: string; small?: string };
 
 export type FigureBlock = { type: 'figure'; slot: 'wide' | 'body'; fig: Figure };
-export type NoteBlock = { type: 'note'; label: string; h?: string; p?: string[]; figs: Figure[] };
+/** play: 데스크톱에서 캡처 대신 HTML 로 다시 그린 화면이 스크롤에 맞춰 움직인다(폰·모션 줄이기는 캡처 그대로) */
+export type NoteBlock = { type: 'note'; label?: string; h?: string; p?: string[]; figs: Figure[]; play?: 'pfh-request-form' };
 export type PhonesBlock = { type: 'phones'; label?: string; h?: string; p?: string[]; figs: Figure[]; caption?: string };
 export type FlowBlock = {
   type: 'flow'; state: 'before' | 'morph';
@@ -24,7 +25,8 @@ export type Chapter = { id: string; name: string; h: string; p: string[]; blocks
 
 /** 한 편 = 표지 + 장 N개 + 끝. 다음 이야기는 목록 순서로 정한다 */
 export type Study = {
-  cover: { cap: string; title: string; summary: string[]; meta: [string, string][]; numbers: Num[]; hero: Figure };
+  /** 윗줄은 프로젝트 이름만 쓴다(목록에서 가져옴). numbers 는 없거나 3개 */
+  cover: { title: string; summary: string[]; meta: [string, string][]; numbers?: Num[]; hero: Figure };
   chapters: Chapter[];
   builtWith?: string[];
   cta: string;

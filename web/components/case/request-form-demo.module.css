@@ -1,0 +1,50 @@
+/* Por favor, Harry 요청 양식 재현 — 캡처(form.png, DPR 2 → CSS 1280×1068)와 같은 자리·색. 틀 폭에 맞춰 통째로 축소한다.
+   비교 시트 design/spec/10-hotspot-scroll.html D2 안(초점만 — 네모·여백 선 없음)을 옮긴 것 */
+.frame{background:var(--bone-0);border:1px solid var(--bone-900);padding:6px;box-sizing:border-box;
+  width:min(100%, calc((100vh - 80px - 32px - 40px) * 1280 / 1068))}
+.pic{position:relative;overflow:hidden;aspect-ratio:1280/1068}
+.form{position:absolute;left:0;top:0;width:1280px;height:1068px;transform-origin:0 0;background:#EFF1F4;
+  font-family:var(--font-sans),"Pretendard",sans-serif;color:#1F2430}
+.form > *{transition:filter .35s var(--ease-out)}
+.card{position:absolute;left:176px;top:24px;width:928px;height:1021px;background:#fff;border-radius:16px;
+  box-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px -12px rgba(16,24,40,.12)}
+.t{position:absolute;white-space:nowrap}
+.h{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.sub{font-size:14px;color:#5C6372}
+.lb{font-size:13px;font-weight:700}
+.lb i{font-style:normal;font-weight:500;color:#99A1AF;margin-left:4px}
+.chip{position:absolute;height:36px;border-radius:18px;background:#F7F8FA;color:#5C6372;font-size:13px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;transition:background .18s,color .18s}
+.chip.on{background:#0F6B54;color:#fff;box-shadow:0 4px 10px -4px rgba(15,107,84,.55);animation:press .28s var(--ease-out)}
+@keyframes press{0%{transform:scale(1)}40%{transform:scale(.93)}100%{transform:scale(1)}}
+.chip svg{margin-right:5px}
+.field{position:absolute;left:196px;width:888px;border:1px solid #E6E8EC;border-radius:10px;background:#fff;font-size:14px;
+  padding:0 13px;display:flex;align-items:center;box-sizing:border-box;transition:border-color .18s,box-shadow .18s}
+.field.area{align-items:flex-start;padding-top:12px;line-height:1.5;white-space:normal}
+.field.typing{border-color:#0F6B54;box-shadow:0 0 0 3px rgba(15,107,84,.12)}
+.caret{display:inline-block;width:1.5px;height:17px;background:#0F6B54;margin-left:1px;vertical-align:-3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.att{position:absolute;left:196px;width:888px;height:48px;border-radius:12px;background:#F7F8FA;font-size:13px;color:#4B5160;
+  display:flex;align-items:center;overflow:hidden;opacity:0}
+.att .ic{width:37px;height:37px;margin:0 10px 0 6px;border-radius:9px;background:#fff;border:1px solid #ECEEF2;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+.att .blank{background:none;border-color:transparent}
+.att .x{margin-left:auto;margin-right:20px;color:#99A1AF}
+.att .up{position:absolute;left:0;bottom:0;height:2px;background:#0F6B54;width:0}
+.btn{position:absolute;left:196px;top:970px;width:888px;height:50px;border-radius:25px;background:#C9D8D3;color:#fff;font-size:15px;font-weight:700;overflow:hidden}
+.btn .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#0F6B54}
+.btn span{position:relative;display:flex;height:100%;align-items:center;justify-content:center}
+.note{font-size:11px;color:#6B7280}
+/* 양식을 채우는 사람의 손 */
+.cur{position:absolute;left:0;top:0;width:24px;height:24px;z-index:6;pointer-events:none;opacity:0;transition:opacity .25s;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.ring{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border:2px solid #0F6B54;border-radius:50%;z-index:5;pointer-events:none;animation:ring .5s ease-out forwards}
+@keyframes ring{to{transform:scale(4.5);opacity:0}}
+.cap{margin-top:8px;font-size:13px;line-height:1.5;color:var(--bone-500)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* 붙어서 움직이는 판은 데스크톱·모션 허용일 때만. 나머지는 캡처 + 핫스팟(note.tsx 의 원래 모습) */
+.live{display:none}
+.still{display:block}
+@media (min-width:1024px) and (prefers-reduced-motion:no-preference){
+  .live{display:block}
+  .still{display:none}
+}

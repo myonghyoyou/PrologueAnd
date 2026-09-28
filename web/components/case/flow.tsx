@@ -1,6 +1,7 @@
 'use client';
 import { useMemo, useRef } from 'react';
 import type { FlowBlock } from '@/content';
+import { pinT, usePin } from './pinned';
 import { useReducedMotion, useScrollProgress } from './use-scroll-progress';
 import g from './grid.module.css';
 import s from './flow.module.css';
@@ -19,7 +20,10 @@ const morphT = (r: DOMRect, vh: number) => (vh * 0.85 - r.top) / (vh * 0.45 + r.
 export function Flow({ b }: { b: FlowBlock }) {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
-  const t = useScrollProgress(ref, morphT, b.state === 'before' ? 0 : reduced ? 1 : undefined);
+  // 붙은 장(바꾼 흐름) 안이면 장 트랙의 진행률로, 아니면(폰) 그림이 화면을 지나가는 위치로 잰다
+  const pin = usePin();
+  const pinned = b.state === 'morph' && !!pin?.on;
+  const t = useScrollProgress(pinned ? pin!.ref : ref, pinned ? pinT : morphT, b.state === 'before' ? 0 : reduced ? 1 : undefined);
 
   const srcY = useMemo(() => spread(Y0, Y1, b.from.length).map(Math.round), [b.from.length]);
   // 뒤 절반(t 0.5→1)에 갈래 시작점이 가운데 줄로 모여 네 선이 한 선이 되고, 갈래 이름은 사라진다.
@@ -62,12 +66,14 @@ export function Flow({ b }: { b: FlowBlock }) {
                 {stepX.map((x, i) => i < b.to.length - 1 ? (
                   <g key={i}>
                     <circle data-step cx={x} cy={CY} r={5} fill="var(--bone-50)" stroke="var(--navy-800)" />
-                    <text x={x} y={i === 0 ? lerp(CY + 56, CY + 28, merge) : i % 2 ? CY - 20 : CY + 28} textAnchor="middle" className={s.lbl}>{b.to[i]}</text>
+                    {/* 첫 단계 이름은 점에서 오른쪽으로 편다 — 가운데 맞춤이면 긴 이름(Por favor, Harry)이 폰에서 그림 왼쪽 밖으로 나간다 */}
+                    <text x={i === 0 ? x - 8 : x} y={i === 0 ? lerp(CY + 56, CY + 28, merge) : i % 2 ? CY - 20 : CY + 28} textAnchor={i === 0 ? 'start' : 'middle'} className={s.lbl}>{b.to[i]}</text>
                   </g>
                 ) : (
                   <g key={`t${i}`}>
                     <polygon points={`${X1},${CY - 9} ${X1 + 16},${CY} ${X1},${CY + 9}`} fill="var(--navy-800)" />
-                    <text x={X1 + 16} y={CY + 28} textAnchor="middle" className={s.lbl}>{b.to[i]}</text>
+                    {/* 마지막 단계 이름은 화살표 끝에 오른쪽을 맞춘다 — 가운데 맞춤이면 그림 오른쪽 밖으로 나간다 */}
+                    <text x={X1 + 16} y={CY + 28} textAnchor="end" className={s.lbl}>{b.to[i]}</text>
                   </g>
                 ))}
               </g>

@@ -3,6 +3,9 @@ import { useState, type ReactNode } from 'react';
 import type { NoteBlock } from '@/content';
 import { Row } from './row';
 import { SpotList, SpotOverlay } from './hotspots';
+import { Pinned } from './pinned';
+import { RequestFormDemo } from './request-form-demo';
+import demo from './request-form-demo.module.css';
 import g from './grid.module.css';
 import t from './type.module.css';
 import s from './note.module.css';
@@ -21,6 +24,22 @@ export function NoteText({ label, h, p, children }: { label?: string; h?: string
 }
 
 export function Note({ b }: { b: NoteBlock }) {
+  // 재현 화면이 있는 주석: 데스크톱은 붙어서 스크롤로 채워지는 판, 폰·모션 줄이기는 아래의 캡처 + 핫스팟
+  if (b.play === 'pfh-request-form') {
+    const f = b.figs[0];
+    return (
+      <Pinned room={280}>
+        <div className={demo.live} data-note-live>
+          <RequestFormDemo h={b.h} spots={f.spots ?? []} alt={f.alt} caption={f.caption} />
+        </div>
+        <div className={demo.still}><NoteStill b={b} /></div>
+      </Pinned>
+    );
+  }
+  return <NoteStill b={b} />;
+}
+
+function NoteStill({ b }: { b: NoteBlock }) {
   const [spot, setSpot] = useState(-1);
   const spots = b.figs[0].spots ?? [];
   return (

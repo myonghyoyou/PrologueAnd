@@ -1,0 +1,11 @@
+/* 붙는 장 — 무대(장 도입 + 그림)가 헤더 아래 80 에 붙고, 형제 스페이서 .room 을 지나는 동안 그림이 움직인다.
+   sticky 는 부모(track)의 content box 안에서만 움직이므로 이동 거리는 padding 이 아니라 형제 블록으로 준다.
+   무대 높이는 내용만큼 — 그림 크기는 각 블록이 100vh 와 --intro-h(pinned.tsx 가 잰 도입 높이)로 정한다 */
+.track{position:relative}
+.stage{position:sticky;top:80px}
+.room{height:120vh}
+/* 폰·모션 줄이기: 붙이지 않고 평소처럼 흐른다 (pinned.tsx usePinOn 과 같은 조건) */
+@media (max-width:1023px), (prefers-reduced-motion:reduce){
+  .stage{position:static}
+  .room{display:none}
+}

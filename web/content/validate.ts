@@ -9,7 +9,8 @@ export function validateStudy(s: Study): string[] {
   const ids = s.chapters.map((c) => c.id);
   for (const id of ids) if (!/^[a-z0-9-]+$/.test(id)) errs.push(`장 id 는 영문 소문자·숫자·하이픈만: ${id}`);
   if (new Set(ids).size !== ids.length) errs.push('장 id 가 겹칩니다');
-  if (s.cover.numbers.length !== 3) errs.push(`표지 숫자는 3개: ${s.cover.numbers.length}개`);
+  const nums = s.cover.numbers?.length ?? 0;
+  if (nums !== 0 && nums !== 3) errs.push(`표지 숫자는 없거나 3개: ${nums}개`);
 
   const blocks = s.chapters.flatMap((c) => c.blocks);
   if (blocks.filter((b) => b.type === 'wipe').length > 1) errs.push('와이프는 한 편에 하나까지');

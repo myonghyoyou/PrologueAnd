@@ -1,11 +1,17 @@
-/* 장 — 섹션 간격 128(폰 80), 시작 괘선 bone-200 1px (docs/14 §3.2·3.3). 장 링크로 들어오면 헤더(64) 아래 24 */
-.ch{margin-top:128px;scroll-margin-top:88px}
-.intro{border-top:1px solid var(--bone-200);padding-top:16px}
+/* 장 — 앞 내용과 괘선 사이 88(폰 56), 괘선과 장 제목 사이 40(폰 28). 괘선은 bone-200 1px (docs/14 §3.2·3.3).
+   (2026-09-28: 128/16 이던 것을 사용자 지적으로 조정 — 괘선이 앞 장보다 뒤 장에 붙어 보이게) 장 링크로 들어오면 헤더(64) 아래 24 */
+.ch{margin-top:88px;scroll-margin-top:88px}
+.intro{border-top:1px solid var(--bone-200);padding-top:40px}
 .name{display:block}
 .block{margin-top:72px}
 .intro + .block{margin-top:48px}
+/* 붙는 장의 그림 칸: 도입과의 간격을 줄여 제목과 그림이 한 화면에 들어오게 (그림 크기는 wipe·flow 가 --intro-h 로 정한다) */
+@media (min-width:1024px) and (prefers-reduced-motion:no-preference){
+  .intro + .fill{margin-top:32px}
+}
 @media (max-width:1023px){
-  .ch{margin-top:80px}
+  .ch{margin-top:56px}
+  .intro{padding-top:28px}
   .name{display:inline;margin-left:.5em}
   .intro [data-chapter-label]{margin-bottom:8px}
   .block{margin-top:56px}

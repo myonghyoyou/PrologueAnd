@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { scrollToY } from './helpers';
 
-const PIN = 88;   // wipe.module.css .stage top
+const PIN = 80;   // pinned.module.css .stage top
 const trackY = (page: import('@playwright/test').Page, k: number) => page.evaluate(([k, pin]) => {
-  const tr = document.querySelector<HTMLElement>('[data-wipe-track]')!;
+  const tr = document.querySelector<HTMLElement>('#before-after [data-pin-track]')!;
   return tr.getBoundingClientRect().top + window.scrollY - pin + window.innerHeight * k;
 }, [k, PIN] as const);
 const right = (page: import('@playwright/test').Page) => page.evaluate(() =>
@@ -21,17 +21,30 @@ test('와이프: 무대가 붙은 채 경계선이 0% → 100%', async ({ page, 
   await scrollToY(page, await trackY(page, 0.5));
   expect(await right(page)).toBeGreaterThan(40);
   expect(await right(page)).toBeLessThan(60);
-  const top = await page.evaluate(() => document.querySelector<HTMLElement>('[data-wipe-stage]')!.getBoundingClientRect().top);
+  const top = await page.evaluate(() => document.querySelector<HTMLElement>('#before-after [data-pin-stage]')!.getBoundingClientRect().top);
   expect(Math.abs(top - PIN)).toBeLessThanOrEqual(2);
+  // 움직이는 동안 장 제목도 화면 안에 보인다
+  const h2 = await page.evaluate(() => document.querySelector<HTMLElement>('#before-after h2')!.getBoundingClientRect());
+  expect(h2.top).toBeGreaterThanOrEqual(64);
+  expect(h2.bottom).toBeLessThan(page.viewportSize()!.height);
   await scrollToY(page, await trackY(page, 1));
   expect(await right(page)).toBeLessThanOrEqual(1);
 });
 
-test('와이프 무대가 화면 안에 다 들어온다', async ({ page, isMobile }) => {
+test('와이프 무대(제목 + 그림 + 캡션)가 화면 안에 다 들어온다', async ({ page, isMobile }) => {
   test.skip(!!isMobile, '데스크톱 전용');
   await scrollToY(page, await trackY(page, 0.5));
-  const bottom = await page.evaluate(() => document.querySelector<HTMLElement>('[data-wipe-stage]')!.getBoundingClientRect().bottom);
-  expect(bottom).toBeLessThanOrEqual(page.viewportSize()!.height);
+  const r = await page.evaluate(() => {
+    const st = document.querySelector<HTMLElement>('#before-after [data-pin-stage]')!;
+    const last = [...st.querySelectorAll<HTMLElement>('*')].reduce((m, e) => Math.max(m, e.getBoundingClientRect().bottom), 0);
+    return { top: st.getBoundingClientRect().top, bottom: last };
+  });
+  expect(r.top).toBeGreaterThanOrEqual(64);
+  expect(r.bottom).toBeLessThanOrEqual(page.viewportSize()!.height);
+});
+
+test('와이프에 남색 경계선이 없다', async ({ page }) => {
+  await expect(page.locator('[data-wipe-edge]')).toHaveCount(0);
 });
 
 test('Before 콜라주: 데이터의 쪽지가 빠짐없이 그려진다(12장 이상)', async ({ page }) => {

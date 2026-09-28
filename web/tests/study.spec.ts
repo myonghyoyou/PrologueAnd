@@ -17,7 +17,7 @@ test('장 네 개: 문제 · 바꾼 흐름 · 화면 · Before & After', () => {
   expect(s.chapters.map((c) => c.id)).toEqual(['problem', 'flow', 'screens', 'before-after']);
   const screens = s.chapters[2].blocks.map((b) => b.type);
   expect(screens).toEqual(['note', 'note', 'note', 'note', 'note', 'note', 'phones']);
-  expect(s.cover.numbers).toHaveLength(3);
+  expect(s.cover.numbers ?? []).toHaveLength(0);
 });
 
 test('규칙을 어기면 이유를 돌려준다', () => {
@@ -33,6 +33,7 @@ test('규칙을 어기면 이유를 돌려준다', () => {
   if (pair.type !== 'note') throw new Error('03 다섯 번째 블록은 note 여야 한다');
   pair.figs[1] = { ...pair.figs[1], spots: [{ x: 1, y: 1, w: 1, h: 1, cap: '두 번째 그림의 핫스팟' }] };
   bad.cover.hero = { ...bad.cover.hero, alt: ' ' };
+  bad.cover.numbers = [{ value: '1', label: '하나' }, { value: '2', label: '둘' }];
   const errs = validateStudy(bad).join('\n');
   expect(errs).toContain('장 id');
   expect(errs).toContain('와이프는 한 편에 하나까지');
@@ -40,12 +41,14 @@ test('규칙을 어기면 이유를 돌려준다', () => {
   expect(errs).toContain('두 문장 이하');
   expect(errs).toContain('핫스팟은 여백 주석의 첫 그림에만');
   expect(errs).toContain('alt 가 비었습니다');
+  expect(errs).toContain('표지 숫자는 없거나 3개');
 });
 
 test('그림 크기는 파일에서 읽는다', () => {
   const figs = figuresOf(resolveStudy(pfh()));
   expect(figs.every((f) => (f.w ?? 0) > 0 && (f.h ?? 0) > 0)).toBe(true);
-  expect(figs.find((f) => f.src.endsWith('/form.png'))).toMatchObject({ w: 1280, h: 800 });
+  expect(figs.find((f) => f.src.endsWith('/form.png'))).toMatchObject({ w: 2560, h: 2136 });   // 2026-09-28 재촬영(폼 카드 전체, DPR 2)
+  expect(figs.find((f) => f.src.endsWith('/queue.png'))).toMatchObject({ w: 1280, h: 800 });
   expect(figs.find((f) => f.src.endsWith('/mobile.png'))).toMatchObject({ w: 390, h: 844 });
 });
 

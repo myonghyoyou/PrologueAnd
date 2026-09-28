@@ -14,29 +14,51 @@ test('01 은 정지 상태(t=0)', async ({ page }) => {
   expect(await t(page, '#problem')).toBe(0);
 });
 
-test('02 는 지나가며 0 → 1: 윗변이 화면 85% 에서 0, 가운데가 40% 에서 1', async ({ page }) => {
-  const y = (k: number) => page.evaluate((k) => {
-    const f = document.querySelector<HTMLElement>('#flow [data-flow]')!;
-    const r = f.getBoundingClientRect(), top = r.top + window.scrollY, vh = window.innerHeight;
-    const s0 = top - 0.85 * vh, s1 = top + r.height / 2 - 0.4 * vh;
-    return s0 + (s1 - s0) * k;
-  }, k);
-  await scrollToY(page, (await y(0)) - 20);
+const PIN = 80;   // pinned.module.css .stage top
+/** 데스크톱: 02 장 트랙 윗변이 PIN 에서 k 화면만큼 지난 스크롤 위치 */
+const trackY = (page: import('@playwright/test').Page, k: number) => page.evaluate(([k, pin]) => {
+  const tr = document.querySelector<HTMLElement>('#flow [data-pin-track]')!;
+  return tr.getBoundingClientRect().top + window.scrollY - pin + window.innerHeight * k;
+}, [k, PIN] as const);
+/** 폰: 그림 윗변이 화면 85% → 가운데가 40% 사이의 k 지점 */
+const passY = (page: import('@playwright/test').Page, k: number) => page.evaluate((k) => {
+  const f = document.querySelector<HTMLElement>('#flow [data-flow]')!;
+  const r = f.getBoundingClientRect(), top = r.top + window.scrollY, vh = window.innerHeight;
+  const s0 = top - 0.85 * vh, s1 = top + r.height / 2 - 0.4 * vh;
+  return s0 + (s1 - s0) * k;
+}, k);
+
+test('02 데스크톱: 제목과 함께 헤더 아래에 붙은 채 0 → 1', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, '데스크톱 전용 — 폰은 붙지 않는다');
+  await scrollToY(page, (await trackY(page, 0)) - 20);
   expect(await t(page, '#flow')).toBe(0);
-  await scrollToY(page, await y(0.5));
+  await scrollToY(page, await trackY(page, 0.5));
   const mid = await t(page, '#flow');
   expect(mid).toBeGreaterThan(0.4);
   expect(mid).toBeLessThan(0.6);
-  await scrollToY(page, (await y(1)) + 20);
+  const r = await page.evaluate(() => {
+    const st = document.querySelector<HTMLElement>('#flow [data-pin-stage]')!;
+    const h2 = document.querySelector<HTMLElement>('#flow h2')!.getBoundingClientRect();
+    const fig = document.querySelector<HTMLElement>('#flow [data-flow]')!.getBoundingClientRect();
+    return { top: st.getBoundingClientRect().top, h2Top: h2.top, figBottom: fig.bottom };
+  });
+  expect(Math.abs(r.top - PIN)).toBeLessThanOrEqual(2);
+  expect(r.h2Top).toBeGreaterThanOrEqual(64);                              // 제목이 보인다
+  expect(r.figBottom).toBeLessThanOrEqual(page.viewportSize()!.height);    // 그림도 화면 안에
+  await scrollToY(page, (await trackY(page, 1)) + 20);
   expect(await t(page, '#flow')).toBe(1);
 });
 
-test('02 끝(t=1): 네 갈래는 한 줄로 합쳐지고 갈래 이름은 사라진다', async ({ page }) => {
-  await scrollToY(page, await page.evaluate(() => {
-    const f = document.querySelector<HTMLElement>('#flow [data-flow]')!;
-    const r = f.getBoundingClientRect();
-    return r.top + window.scrollY + r.height / 2 - 0.4 * window.innerHeight + 20;
-  }));
+test('02 폰: 붙지 않고 지나가며 0 → 1', async ({ page, isMobile }) => {
+  test.skip(!isMobile, '폰 전용');
+  await scrollToY(page, (await passY(page, 0)) - 20);
+  expect(await t(page, '#flow')).toBe(0);
+  await scrollToY(page, (await passY(page, 1)) + 20);
+  expect(await t(page, '#flow')).toBe(1);
+});
+
+test('02 끝(t=1): 네 갈래는 한 줄로 합쳐지고 갈래 이름은 사라진다', async ({ page, isMobile }) => {
+  await scrollToY(page, isMobile ? (await passY(page, 1)) + 20 : (await trackY(page, 1)) + 20);
   await page.waitForTimeout(100);
   expect(await t(page, '#flow')).toBe(1);
   const r = await page.evaluate(() => {
@@ -75,9 +97,9 @@ test('문구는 데이터에서, 그림 설명이 붙는다', async ({ page }) =
     return { text: svg.textContent, label: svg.getAttribute('aria-label'), role: svg.getAttribute('role') };
   });
   expect(r.text).toContain('직접 방문');
-  expect(r.text).toContain('진행 상황 안내');
+  expect(r.text).toContain('진행 상황 모니터링');
   expect(r.role).toBe('img');
-  expect(r.label).toContain('한 줄 흐름');
+  expect(r.label).toContain('하나의 순서');
 });
 
 test('색은 토큰만', async ({ page }) => {

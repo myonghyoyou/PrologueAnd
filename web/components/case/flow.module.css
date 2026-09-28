@@ -1,6 +1,11 @@
 /* 흐름 다이어그램 — 흰 바탕 상자 안에 640×360 그림 */
 .fig{margin:0}
 .box{background:var(--bone-0);border:1px solid var(--bone-200);padding:24px;box-sizing:border-box}
+/* 붙은 장(바꾼 흐름): 상자 높이 ≤ 화면 높이 − (헤더 아래 80 + 도입 --intro-h + 간격 32 + 아래 여백 32).
+   그림은 640×320(2:1), 상자 안쪽 여백 48 → 폭 = (남은 높이 − 48) × 2 + 48 */
+@media (min-width:1024px) and (prefers-reduced-motion:no-preference){
+  [data-pin-stage] .box{width:min(100%, calc((100vh - 192px - var(--intro-h, 220px)) * 2 + 48px))}
+}
 .svg{width:100%;height:auto;display:block;overflow:visible}
 .lbl{font-size:11px;font-weight:500;fill:var(--bone-500)}
 .cap{margin-top:8px;font-size:13px;line-height:1.5;color:var(--bone-500)}
