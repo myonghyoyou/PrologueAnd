@@ -44,10 +44,15 @@ test('헤더 문의 버튼을 누르면 서랍이 열리고 첫 textarea로 포�
   expect(await page.evaluate(() => document.documentElement.hasAttribute('data-drawer-open'))).toBe(true);
   const dialog = page.locator('[role="dialog"]');
   await expect(dialog).toBeVisible();
+  const vw = page.viewportSize()?.width ?? 1440;
+  // 서랍은 .35s 동안 오른쪽에서 밀려 들어온다(translateX(100%) → none). 클릭 직후 한 번만 재면 전환 중간 값이 잡혀
+  // 가끔 실패했다 — 다 들어올 때까지 기다린 뒤, 오른쪽 끝이 화면 끝에 붙고 왼쪽 끝이 화면 안에 있는지 본다
+  await expect.poll(async () => {
+    const b = await dialog.boundingBox();
+    return b ? Math.round(b.x + b.width) : -1;
+  }).toBe(vw);
   const box = await dialog.boundingBox();
-  const viewport = page.viewportSize();
-  expect(box).not.toBeNull();
-  expect(box!.x).toBeLessThan((viewport?.width ?? 1440) - 10); // 화면 안으로 슬라이드 인 (translateX(100%) → none)
+  expect(box!.x).toBeLessThan(vw - 10);
   await expect(page.locator('textarea[name="work"]')).toBeFocused();
 });
 
