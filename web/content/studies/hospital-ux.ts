@@ -1,7 +1,8 @@
-import type { Figure, Study } from '../study-types';
+import type { Crop, Figure, Study } from '../study-types';
 import type { Spot } from '../types';
 
 const F = (name: string, alt: string, spots?: Spot[]): Figure => ({ src: `/screens/hux/${name}.png`, alt, spots });
+const C = (name: string, alt: string, x: number, y: number, w: number, h: number): Crop => ({ ...F(name, alt), crop: { x, y, w, h } });
 
 /** 병원 UI/UX 고도화 — 규칙 없이 한 장씩 만든 1차 화면을, 공통 규칙을 정해 22개 화면에 다시 적용한 이야기.
  *  캡처는 실제 화면에서 이름·병원명·업체명을 가린 것(재현 아님). 수치는 커밋 실측 또는 캡처에서 센 값 */
@@ -50,6 +51,39 @@ export const hospitalUx: Study = {
           before: F('inventory-before', '재고관리 1차 화면. 연두색 표 머리 아래 행마다 제품 정보가 여러 줄로 쌓여 한 화면에 아홉 행이 보인다.'),
           after: F('inventory-after', '재고관리 다시 설계한 화면. 왼쪽 위에 제목, 그 아래 도구줄, 옅은 회색 표 머리 아래 행이 낮아져 한 화면에 열두 행이 보이고 기능 버튼은 테두리형이다.'),
           caps: ['Before: 1차 화면', 'After: 다시 설계한 화면'] },
+      ],
+    },
+    {
+      id: 'rules', name: '정한 규칙',
+      h: '22개 화면에 같은 규칙을 적용했습니다',
+      p: ['색, 버튼, 입력칸 높이, 화면 틀, 아이콘을 공통 규칙(디자인 시스템)으로 먼저 정하고, 22개 화면을 이 규칙에 맞춰 다시 만들었습니다. 새 화면도 같은 규칙으로 만듭니다.'],
+      blocks: [
+        { type: 'sheet', caption: '왼쪽은 1차 화면에서 그대로 뽑은 것, 오른쪽은 22개 화면에 적용한 규칙입니다.',
+          rows: [
+            { rule: '색은 상태, 위험, 요청받은 기능 구분에만 씁니다',
+              before: { label: '표 머리 색 다섯 가지', show: { swatches: [
+                { hex: '#D7F3D4', name: '연두' }, { hex: '#DBE4F6', name: '연파랑' }, { hex: '#98F5E4', name: '청록' }, { hex: '#EFF2FF', name: '연보라' }, { hex: '#FEF2F2', name: '연분홍' }] } },
+              after: { label: '무채색 바탕, 색은 상태·위험·요청받은 구분에만', show: { swatches: [
+                { hex: '#F7F8FB', name: '표 머리' }, { hex: '#213B98', name: '주 버튼' }, { hex: '#BF2A1F', name: '위험' }, { hex: '#00803D', name: '완료' }, { hex: '#914312', name: '주의' },
+                { hex: '#7815D8', name: '재고 라벨' }, { hex: '#0C6534', name: '출고위치' }] } } },
+            { rule: '한 화면의 주 버튼은 하나입니다',
+              before: { label: '여섯 개 모두 다른 색', show: { crop: C('shipment-detail-before', '출고상세 1차 화면의 하단 버튼 줄. 수정완료, 물품코드수정, 회수, 폐기, 재고확인, 취소가 모두 다른 색이다.', 34.5, 70, 38.5, 6.5) } },
+              after: { label: '주 버튼 하나, 나머지는 테두리, 위험은 빨강', show: { buttons: [
+                { text: '수정완료', kind: 'primary' }, { text: '물품코드수정', kind: 'secondary' }, { text: '회수', kind: 'secondary' }, { text: '폐기', kind: 'danger' }] } } },
+            { rule: '목록 화면의 입력칸과 버튼 높이는 32px입니다',
+              before: { label: '28 · 30 · 32 · 40px', show: { heights: [28, 30, 32, 40] } },
+              after: { label: '목록 화면은 32px 하나', show: { heights: [32] } } },
+            { rule: '목록 화면은 제목, 도구줄, 표, 쪽 번호 순서입니다',
+              before: { label: '화면마다 다른 틀', show: { crop: C('set-before', '묶음 목록 1차 화면 윗부분. 가운데 떠 있는 제목, 양 끝으로 벌어진 탭 두 개, 가운데 검색칸, 청록색 표 머리가 보인다.', 26, 0, 54, 30) } },
+              after: { label: '모든 목록이 같은 순서', show: { frame: ['제목 · 소속', '도구줄', '표', '쪽 번호'] } } },
+            { rule: '메뉴는 업무별로 묶고, 아이콘은 한 벌만 씁니다',
+              before: { label: '이모지와 한 줄 나열', show: { crop: C('inventory-before', '1차 화면 왼쪽 메뉴. 이모지가 붙은 메뉴가 묶음 없이 가운데 정렬로 이어진다.', 0, 29, 10.5, 28) } },
+              after: { label: '선 아이콘과 업무별 묶음', show: { crop: C('inventory-after', '다시 설계한 화면 왼쪽 메뉴. 자산 관리, 의료공학 같은 묶음 이름 아래 선 아이콘이 붙은 메뉴가 놓여 있다.', 0, 4.5, 11.5, 26.5) } } },
+          ] },
+        { type: 'rule', h: '재고관리 한 행에 규칙을 적용했습니다',
+          p: '출고, 수정, 수리 버튼은 무채색 테두리로 바꿨습니다. 색은 폐기(빨강)와, 병원 쪽에서 색으로 구분해 달라고 한 재고 라벨(보라)·출고위치(초록)에만 남겼습니다.',
+          before: C('inventory-before', '재고관리 1차 화면의 기능 칸 세 행. 재고라벨, 출고, 수정, 수리, 폐기 버튼이 각기 다른 색으로 칠해져 있다.', 81, 28, 19, 24),
+          after: C('inventory-after', '재고관리 다시 설계한 화면의 기능 칸 세 행. 출고·수정·수리는 무채색 테두리, 폐기는 빨간 테두리, 재고 라벨은 보라 글자, 출고위치는 초록 버튼이다.', 81.5, 22, 16.5, 17) },
       ],
     },
     {

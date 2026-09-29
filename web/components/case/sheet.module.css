@@ -1,0 +1,35 @@
+/* 규칙 시트 — 틀 1px bone-900, 전 칸은 bone-50, 후 칸은 bone-0 */
+.fig{margin:0}
+.sheet{border:1px solid var(--bone-900)}
+.heads{display:grid;grid-template-columns:1fr 1fr;font-size:13px;font-weight:600;color:var(--bone-500);border-bottom:1px solid var(--bone-900)}
+.heads span{padding:12px 24px}
+.heads span + span{border-left:1px solid var(--bone-900);background:var(--bone-0)}
+.row + .row{border-top:1px solid var(--bone-200)}
+.rule{margin:0;padding:18px 24px 0;font-size:15px;font-weight:600;line-height:1.5;word-break:keep-all}
+.cells{display:grid;grid-template-columns:1fr 1fr}
+.before,.after{padding:10px 24px 22px;min-width:0}
+.before{background:var(--bone-50)}
+.after{border-left:1px solid var(--bone-900);background:var(--bone-0)}
+.lab{margin:0 0 10px;font-size:13px;color:var(--bone-600);word-break:keep-all}
+.lab em{display:none;font-style:normal;font-weight:600;margin-right:6px;color:var(--bone-900)}
+.swatches{display:flex;flex-wrap:wrap;gap:10px}
+.swatches span{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--bone-600)}
+.swatches i{display:block;width:28px;height:28px;border:1px solid rgba(0,0,0,.1)}
+.bars{display:flex;align-items:flex-end;gap:10px}
+.bars span{display:flex;align-items:center;justify-content:center;width:64px;border:1px solid var(--bone-400);background:var(--bone-50);font-size:12px;color:var(--bone-600);box-sizing:border-box}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:4px;border:1px solid #C2C7D1;background:#fff;color:var(--bone-900);font-size:13px;font-weight:500;box-sizing:border-box}
+.primary{background:#213B98;border-color:#213B98;color:#fff}
+.danger{border-color:#BF2A1F;color:#BF2A1F}
+.frame{display:grid;gap:6px;font-size:12px;color:var(--bone-600)}
+.frame span{display:block;padding:6px 10px;border:1px solid var(--bone-300);background:var(--bone-50)}
+.frame .tbl{height:84px;background:repeating-linear-gradient(var(--bone-50) 0 20px,var(--bone-200) 20px 21px)}
+.cap{margin-top:8px;font-size:13px;line-height:1.5;color:var(--bone-500)}
+@media (max-width:1023px){
+  .heads{display:none}
+  .rule{padding:16px 16px 0}
+  .cells{grid-template-columns:1fr}
+  .before,.after{padding:10px 16px 18px}
+  .after{border-left:0;border-top:1px dashed var(--bone-300)}
+  .lab em{display:inline}
+}

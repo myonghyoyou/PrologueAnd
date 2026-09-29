@@ -1,0 +1,9 @@
+/* 적용 한 쌍 — 나란히, 높이 맞춤. 폰은 위아래 */
+.pair{display:flex;gap:16px;align-items:flex-start}
+.one{min-width:0}
+.one > figure{max-width:none!important}
+.tag{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--bone-700)}
+@media (max-width:1023px){
+  .pair{flex-direction:column;max-width:none!important;margin-top:20px}
+  .one{flex:none!important;width:100%}
+}
