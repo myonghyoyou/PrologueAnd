@@ -108,3 +108,53 @@ test('자른 캡처: 창이 원본의 지정 영역과 같은 비율이다(줄�
   }).filter((d) => d.w > 1.5 || d.h > 1.5).length);
   expect(bad).toBe(0);
 });
+
+test.describe('04 전/후 전환', () => {
+  test.beforeEach(async ({ page }) => { await page.goto(URL); });
+
+  test('여섯 주석 모두 단추가 있고, 기본은 후', async ({ page }) => {
+    await expect(page.locator('#screens [data-side-toggle]')).toHaveCount(6);
+    const first = page.locator('#screens [data-block="note"]').first();
+    await expect(first.locator('button[data-side="after"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(first.locator('[data-swap]')).toHaveAttribute('data-side', 'after');
+  });
+
+  test('전을 누르면 1차 화면이 보이고 핫스팟이 숨는다. 후로 돌아오면 핫스팟이 다시 있다', async ({ page }) => {
+    const first = page.locator('#screens [data-block="note"]').first();
+    await expect(first.locator('[data-spot]')).toHaveCount(3);
+    await first.locator('button[data-side="before"]').click();
+    await expect(first.locator('button[data-side="before"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(first.locator('[data-swap]')).toHaveAttribute('data-side', 'before');
+    await expect.poll(() => first.locator('[data-before]').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
+    await expect(first.locator('[data-spot]')).toHaveCount(0);
+    await expect(first.locator('[data-spot-hl]')).toHaveCount(0);
+    await first.locator('button[data-side="after"]').click();
+    await expect(first.locator('[data-spot]')).toHaveCount(3);
+  });
+
+  test('핫스팟을 가리킨 채 전으로 바꾸면 강조가 남지 않고, 후로 돌아오면 강조 없이 시작한다', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, '마우스 가리키기 — 데스크톱');
+    const first = page.locator('#screens [data-block="note"]').first();
+    await first.locator('[data-spot="1"]').hover();
+    await first.locator('button[data-side="before"]').click();
+    await expect(first.locator('[data-spot-hl]')).toHaveCount(0);
+    await first.locator('button[data-side="after"]').click();
+    expect(await first.locator('[data-spot-hl]').evaluate((e) => getComputedStyle(e).opacity)).toBe('0');
+  });
+
+  test('키보드: Tab 으로 전 단추에 가서 Enter 로 바꾼다', async ({ page }) => {
+    const first = page.locator('#screens [data-block="note"]').first();
+    await first.locator('button[data-side="before"]').focus();
+    await page.keyboard.press('Enter');
+    await expect(first.locator('[data-swap]')).toHaveAttribute('data-side', 'before');
+  });
+});
+
+test('모션 줄이기: 전/후가 바로 바뀐다(전환 시간 0)', async ({ browser }) => {
+  const ctx = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(URL);
+  const d = await page.locator('#screens [data-before]').first().evaluate((e) => getComputedStyle(e).transitionDuration);
+  expect(d).toBe('0s');
+  await ctx.close();
+});

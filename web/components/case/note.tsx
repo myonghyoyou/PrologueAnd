@@ -1,6 +1,7 @@
 'use client';
 import { useState, type ReactNode } from 'react';
 import type { NoteBlock } from '@/content';
+import { Frame } from './frame';
 import { Row } from './row';
 import { Was } from './was';
 import { SpotList, SpotOverlay } from './hotspots';
@@ -43,17 +44,36 @@ export function Note({ b }: { b: NoteBlock }) {
 
 function NoteStill({ b }: { b: NoteBlock }) {
   const [spot, setSpot] = useState(-1);
+  const [side, setSide] = useState<'after' | 'before'>('after');
   const spots = b.figs[0].spots ?? [];
+  const showSpots = spots.length > 0 && side === 'after';
+  // 바꿀 때마다 가리키던 핫스팟을 놓는다 — 전에서는 강조가 없고, 후로 돌아와도 강조 없이 시작한다
+  const flip = (to: 'after' | 'before') => { setSpot(-1); setSide(to); };
   return (
     <div className={g.g}>
       <div className={`${g.noteText} ${s.text}`} data-note-text>
         <NoteText label={b.label} was={b.was} h={b.h} p={b.p}>
-          {spots.length ? <SpotList spots={spots} active={spot} onHover={setSpot} /> : null}
+          {showSpots ? <SpotList spots={spots} active={spot} onHover={setSpot} /> : null}
         </NoteText>
       </div>
       <div className={`${g.noteFigs} ${s.figs}`}>
-        <Row figs={b.figs} sizes="(max-width:1023px) 100vw, 1230px"
-             overlay={spots.length ? <SpotOverlay spots={spots} active={spot} /> : undefined} />
+        {b.beforeFig ? (
+          <div className={s.toggle} role="group" aria-label="캡처 전후" data-side-toggle>
+            <button type="button" data-side="after" aria-pressed={side === 'after'} onClick={() => flip('after')}>후</button>
+            <button type="button" data-side="before" aria-pressed={side === 'before'} onClick={() => flip('before')}>전</button>
+          </div>
+        ) : null}
+        <div className={s.swap} data-swap data-side={side}>
+          <div aria-hidden={side === 'before' ? true : undefined}>
+            <Row figs={b.figs} sizes="(max-width:1023px) 100vw, 1230px"
+                 overlay={showSpots ? <SpotOverlay spots={spots} active={spot} /> : undefined} />
+          </div>
+          {b.beforeFig ? (
+            <div className={s.before} data-before aria-hidden={side === 'before' ? undefined : true}>
+              <Frame fig={b.beforeFig} sizes="(max-width:1023px) 100vw, 1230px" />
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );

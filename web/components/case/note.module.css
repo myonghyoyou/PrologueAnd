@@ -1,3 +1,13 @@
 /* 여백 주석 — 글은 왼쪽 3칸, 그림은 오른쪽 9칸 (명세 §4.3). 폰은 글이 위 */
 .text{padding-top:2px}
+/* 전/후 전환 — 헤더 현재 위치 표시와 같은 반전. 전 캡처는 같은 틀 위에 겹친다 */
+.toggle{display:flex;justify-content:flex-end;margin-bottom:8px}
+.toggle button{height:28px;padding:0 12px;border:1px solid var(--bone-300);background:var(--bone-0);font:inherit;font-size:13px;font-weight:600;color:var(--bone-700);cursor:pointer}
+.toggle button + button{border-left:0}
+.toggle button[aria-pressed="true"]{background:var(--bone-900);border-color:var(--bone-900);color:var(--bone-50)}
+.toggle button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.swap{position:relative}
+.before{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s var(--ease-out)}
+.swap[data-side="before"] .before{opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){ .before{transition:none} }
 @media (max-width:1023px){ .figs{margin-top:20px} }
