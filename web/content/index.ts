@@ -1,9 +1,10 @@
 import { projects, COVERS } from './projects';
 import { porFavorHarry } from './studies/por-favor-harry';
+import { hospitalUx } from './studies/hospital-ux';
 import type { Project } from './types';
 import type { Study } from './study-types';
 
-export const studies: Record<string, Study> = { 'por-favor-harry': porFavorHarry };
+export const studies: Record<string, Study> = { 'por-favor-harry': porFavorHarry, 'hospital-ux': hospitalUx };
 export const allProjects = (): Project[] => [...projects].sort((a, b) => a.order - b.order);
 export const publishedProjects = (): Project[] => allProjects().filter((p) => p.published);
 export const getProject = (slug: string): Project | undefined => projects.find((p) => p.slug === slug);

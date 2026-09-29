@@ -12,6 +12,10 @@ test('Por favor, Harry 는 콘텐츠 규칙을 지킨다', () => {
   expect(validateStudy(pfh())).toEqual([]);
 });
 
+test('병원 UI/UX 고도화도 콘텐츠 규칙을 지킨다', () => {
+  expect(validateStudy(getStudy('hospital-ux')!)).toEqual([]);
+});
+
 test('장 네 개: 문제 → Before & After → 바꾼 흐름 → 화면 (문제를 먼저, 해결은 그다음)', () => {
   const s = pfh();
   expect(s.chapters.map((c) => c.id)).toEqual(['problem', 'before-after', 'flow', 'screens']);

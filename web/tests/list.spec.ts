@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('목록은 6행, 공개된 것만 링크', async ({ page }) => {
   await page.goto('/projects');
   await expect(page.locator('[data-row]')).toHaveCount(6);
-  await expect(page.locator('a[data-row]')).toHaveCount(1);
+  await expect(page.locator('a[data-row]')).toHaveCount(2);
   await expect(page.locator('[data-row]:not(a)').first()).toContainText('준비 중');
 });
 

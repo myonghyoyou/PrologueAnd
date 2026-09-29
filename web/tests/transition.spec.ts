@@ -104,7 +104,7 @@ async function roundTrip(page: import('@playwright/test').Page) {
   const settled = (n: number) => page.waitForFunction(
     (k) => (window as unknown as { __vt: { ready?: string }[] }).__vt[k]?.ready !== undefined, n, { timeout: 8000 });
 
-  await page.locator('a[data-row]').click();
+  await page.locator('a[data-row][data-slug="por-favor-harry"]').click();
   await page.waitForURL('**/projects/por-favor-harry');
   await settled(0);
   const go = await lastVt(page);
@@ -157,7 +157,7 @@ test('키보드 Enter 로 행을 열어도 제목이 morph 한다 (이름은 클
   await page.goto('/projects/por-favor-harry');
   await recordTransitions(page);
   await page.goto('/projects');
-  await page.locator('a[data-row]').focus();
+  await page.locator('a[data-row][data-slug="por-favor-harry"]').focus();
   await page.keyboard.press('Enter');
   await page.waitForURL('**/projects/por-favor-harry');
   await page.waitForFunction(() => (window as unknown as { __vt: { ready?: string }[] }).__vt[0]?.ready !== undefined, null, { timeout: 8000 });
