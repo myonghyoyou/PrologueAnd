@@ -1,5 +1,5 @@
 import { imageSize, publicFile } from '../lib/image-size';
-import type { Block, Figure, Study } from './study-types';
+import { isScatterHero, type Block, type Figure, type Study } from './study-types';
 
 const sized = (f: Figure): Figure => ({ ...f, ...imageSize(publicFile(f.src)) });
 
@@ -17,7 +17,7 @@ function block(b: Block): Block {
 export function resolveStudy(s: Study): Study {
   return {
     ...s,
-    cover: { ...s.cover, hero: sized(s.cover.hero) },
+    cover: { ...s.cover, hero: isScatterHero(s.cover.hero) ? s.cover.hero : sized(s.cover.hero) },
     chapters: s.chapters.map((c) => ({ ...c, blocks: c.blocks.map(block) })),
   };
 }

@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Spot } from '@/content';
 import { PIN, usePin } from './pinned';
+import { Was } from './was';
 import g from './grid.module.css';
 import t from './type.module.css';
 import hs from './hotspots.module.css';
@@ -53,7 +54,7 @@ const Chip = ({ x, w, y, k, children }: { x: number; w: number; y: number; k?: s
  * 겹쳐 그리는 네모·선은 쓰지 않는다(2026-09-28 사용자 결정, 비교 시트 D2). 왼쪽 설명 ①②③ 이 함께 켜진다.
  * 구역은 spots(캡처 기준 %) 와 같다: ① 유형·제목 ② 언제까지·화면·내용 ③ 첨부
  */
-export function RequestFormDemo({ h, spots, alt, caption }: { h?: string; spots: Spot[]; alt: string; caption?: string }) {
+export function RequestFormDemo({ was, h, spots, alt, caption }: { was?: string; h?: string; spots: Spot[]; alt: string; caption?: string }) {
   const pin = usePin();
   const pic = useRef<HTMLDivElement>(null);
   const form = useRef<HTMLDivElement>(null);
@@ -152,6 +153,7 @@ export function RequestFormDemo({ h, spots, alt, caption }: { h?: string; spots:
   return (
     <div className={g.g}>
       <div className={g.noteText} data-note-text>
+        <Was text={was} />
         {h ? <h3 className={t.h3} dangerouslySetInnerHTML={{ __html: h }} /> : null}
         <ul className={hs.spots}>
           {spots.map((sp, i) => (

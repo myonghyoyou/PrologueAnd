@@ -1,5 +1,5 @@
 import { figuresOf } from './figures';
-import type { Figure, Study } from './study-types';
+import { isScatterHero, type Figure, type Study } from './study-types';
 
 const sentences = (t: string) => (t.match(/[.!?](?=\s|$)/g) ?? []).length;
 
@@ -11,6 +11,8 @@ export function validateStudy(s: Study): string[] {
   if (new Set(ids).size !== ids.length) errs.push('장 id 가 겹칩니다');
   const nums = s.cover.numbers?.length ?? 0;
   if (nums !== 0 && nums !== 3) errs.push(`표지 숫자는 없거나 3개: ${nums}개`);
+
+  if (isScatterHero(s.cover.hero) && !s.cover.hero.alt.trim()) errs.push('alt 가 비었습니다: 표지 문제 장면');
 
   const blocks = s.chapters.flatMap((c) => c.blocks);
   if (blocks.filter((b) => b.type === 'wipe').length > 1) errs.push('와이프는 한 편에 하나까지');

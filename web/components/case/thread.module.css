@@ -1,0 +1,15 @@
+/* 같은 요청이 여러 번 — 왼쪽 세로 선에 점, 오른쪽에 메시지. 선·점은 흐름 그림과 같은 말(1px navy-200 선, 흰 속 빈 점) */
+.fig{margin:0}
+.list{list-style:none;margin:0;padding:0 0 0 28px;position:relative}
+.list::before{content:"";position:absolute;left:5px;top:10px;bottom:10px;width:1px;background:var(--navy-200)}
+.item{position:relative}
+/* 점은 메시지 시각 줄에 — 사이의 "~뒤"는 선 위에 점 없이 */
+.meta::before{content:"";position:absolute;left:-28px;top:5px;width:11px;height:11px;box-sizing:border-box;border-radius:50%;
+  border:1.5px solid var(--navy-400);background:var(--bone-50)}
+.gap{display:block;margin:14px 0 14px -2px;font-size:13px;font-weight:500;color:var(--error);font-variant-numeric:tabular-nums}
+.meta{position:relative;display:flex;gap:10px;font-size:13px;color:var(--bone-500);font-variant-numeric:tabular-nums}
+.meta time{color:var(--bone-700);font-weight:500}
+.msg{display:inline-block;margin:6px 0 0;padding:12px 16px;max-width:30rem;background:var(--bone-0);border:1px solid var(--bone-200);border-radius:2px;
+  font-size:16px;line-height:1.55;color:var(--bone-900);word-break:keep-all}
+.mark{background:var(--navy-100);color:var(--navy-800);font-weight:600;padding:0 2px;border-radius:2px}
+.cap{margin-top:20px;font-size:13px;line-height:1.5;color:var(--bone-500)}

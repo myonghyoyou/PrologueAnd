@@ -8,7 +8,7 @@ export function Phones({ b }: { b: PhonesBlock }) {
   return (
     <div className={g.g}>
       <div className={g.noteText} data-note-text>
-        <NoteText label={b.label} h={b.h} p={b.p} />
+        <NoteText label={b.label} was={b.was} h={b.h} p={b.p} />
       </div>
       <div className={`${g.noteFigs} ${s.band}`} data-phones-band>
         <div className={s.row}>

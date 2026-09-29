@@ -11,11 +11,11 @@ test('표지: 윗줄은 프로젝트 이름만, 숫자 칸·정보 표(역할·�
   await expect(page.locator('[data-cover] p').first()).toBeVisible();
 });
 
-test('표지 소개 문단은 대표 화면(캡처) 틀과 같은 폭', async ({ page }) => {
+test('표지 소개 문단은 표지 그림(문제 장면) 틀과 같은 폭', async ({ page }) => {
   await page.goto('/projects/por-favor-harry');
   const r = await page.evaluate(() => {
     const p = document.querySelector<HTMLElement>('[data-summary]')!.getBoundingClientRect();
-    const f = document.querySelector<HTMLElement>('[data-cover] [data-frame]')!.getBoundingClientRect();
+    const f = document.querySelector<HTMLElement>('[data-cover] [data-hero-scatter], [data-cover] [data-frame]')!.getBoundingClientRect();
     return { dl: p.left - f.left, dw: p.width - f.width };
   });
   expect(Math.abs(r.dl)).toBeLessThanOrEqual(1);

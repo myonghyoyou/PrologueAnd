@@ -10,7 +10,7 @@ test.describe('상세 — 문서형 뼈대', () => {
     const chs = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('[data-chapter]')].map((c) => ({
       id: c.id, lab: (c.querySelector('[data-chapter-label]')!.textContent ?? '').replace(/\s+/g, ' ').trim(),
     })));
-    expect(chs.map((c) => c.id)).toEqual(['problem', 'flow', 'screens', 'before-after']);
+    expect(chs.map((c) => c.id)).toEqual(['problem', 'before-after', 'flow', 'screens']);
     expect(chs.map((c) => c.lab.slice(0, 2))).toEqual(['01', '02', '03', '04']);
   });
 

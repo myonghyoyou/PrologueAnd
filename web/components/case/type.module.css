@@ -5,4 +5,6 @@
 .h3{font-size:clamp(21px,1.7vw,24px);font-weight:600;letter-spacing:-.02em;line-height:1.25;margin:8px 0 10px;word-break:keep-all}
 .lead{font-size:clamp(17px,1.3vw,19px);line-height:1.6;color:var(--bone-700);margin:0 0 14px;max-width:34rem;word-break:keep-all}
 .p{font-size:16px;line-height:1.7;color:var(--bone-700);margin:0 0 12px;word-break:keep-all}
+.was{font-size:15px;line-height:1.6;color:var(--bone-500);margin:0 0 4px;word-break:keep-all}
+.was b{display:block;margin-bottom:2px;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--bone-400)}
 .lead:last-child,.p:last-child{margin-bottom:0}

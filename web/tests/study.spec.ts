@@ -12,10 +12,10 @@ test('Por favor, Harry 는 콘텐츠 규칙을 지킨다', () => {
   expect(validateStudy(pfh())).toEqual([]);
 });
 
-test('장 네 개: 문제 · 바꾼 흐름 · 화면 · Before & After', () => {
+test('장 네 개: 문제 → Before & After → 바꾼 흐름 → 화면 (문제를 먼저, 해결은 그다음)', () => {
   const s = pfh();
-  expect(s.chapters.map((c) => c.id)).toEqual(['problem', 'flow', 'screens', 'before-after']);
-  const screens = s.chapters[2].blocks.map((b) => b.type);
+  expect(s.chapters.map((c) => c.id)).toEqual(['problem', 'before-after', 'flow', 'screens']);
+  const screens = s.chapters[3].blocks.map((b) => b.type);
   expect(screens).toEqual(['note', 'note', 'note', 'note', 'note', 'note', 'phones']);
   expect(s.cover.numbers ?? []).toHaveLength(0);
 });
@@ -23,13 +23,13 @@ test('장 네 개: 문제 · 바꾼 흐름 · 화면 · Before & After', () => {
 test('규칙을 어기면 이유를 돌려준다', () => {
   const bad: Study = structuredClone(pfh());
   bad.chapters[0].id = '문제';
-  const wipe = bad.chapters[3].blocks[0];
-  bad.chapters[3].blocks.push(structuredClone(wipe));
-  const note = bad.chapters[2].blocks[1];
+  const wipe = bad.chapters[1].blocks[0];
+  bad.chapters[1].blocks.push(structuredClone(wipe));
+  const note = bad.chapters[3].blocks[1];
   if (note.type !== 'note') throw new Error('03 두 번째 블록은 note 여야 한다');
   note.figs = [note.figs[0], note.figs[0], note.figs[0], note.figs[0]];
   note.p = ['하나입니다. 둘입니다. 셋입니다.'];
-  const pair = bad.chapters[2].blocks[4];
+  const pair = bad.chapters[3].blocks[4];
   if (pair.type !== 'note') throw new Error('03 다섯 번째 블록은 note 여야 한다');
   pair.figs[1] = { ...pair.figs[1], spots: [{ x: 1, y: 1, w: 1, h: 1, cap: '두 번째 그림의 핫스팟' }] };
   bad.cover.hero = { ...bad.cover.hero, alt: ' ' };
@@ -53,9 +53,22 @@ test('그림 크기는 파일에서 읽는다', () => {
 });
 
 test('없는 그림 파일은 오류', () => {
-  const s = pfh();
-  const missing: Study = { ...s, cover: { ...s.cover, hero: { ...s.cover.hero, src: '/screens/pfh/없는-파일.png' } } };
+  const missing: Study = structuredClone(pfh());
+  const note = missing.chapters[3].blocks[1];
+  if (note.type !== 'note') throw new Error('04 두 번째 블록은 note 여야 한다');
+  note.figs[0] = { ...note.figs[0], src: '/screens/pfh/없는-파일.png' };
   expect(() => resolveStudy(missing)).toThrow();
+});
+
+test('표지 그림은 결과 화면이 아니라 문제 장면, 01 장은 같은 요청이 세 번 온 장면으로 시작한다', () => {
+  const s = pfh();
+  expect('scatter' in s.cover.hero).toBe(true);
+  const first = s.chapters[0].blocks[0];
+  if (first.type !== 'thread') throw new Error('01 첫 블록은 thread 여야 한다');
+  expect(first.items).toHaveLength(3);
+  expect(first.items.every((m) => m.text.includes('단가표'))).toBe(true);
+  // 화면 장의 주석은 모두 "전에는"이 있다
+  expect(s.chapters[3].blocks.every((b) => (b.type === 'note' || b.type === 'phones') && !!b.was)).toBe(true);
 });
 
 test('그림 규칙: 세로로 긴 캡처만 창, 폰 칸은 아님', () => {

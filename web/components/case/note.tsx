@@ -2,6 +2,7 @@
 import { useState, type ReactNode } from 'react';
 import type { NoteBlock } from '@/content';
 import { Row } from './row';
+import { Was } from './was';
 import { SpotList, SpotOverlay } from './hotspots';
 import { Pinned } from './pinned';
 import { RequestFormDemo } from './request-form-demo';
@@ -10,12 +11,13 @@ import g from './grid.module.css';
 import t from './type.module.css';
 import s from './note.module.css';
 
-/** 여백 주석 글: 라벨(앞부분 굵게, " · " 뒤는 흐리게) · 제목 · 문단. 폰 칸(phones.tsx)도 쓴다 */
-export function NoteText({ label, h, p, children }: { label?: string; h?: string; p?: string[]; children?: ReactNode }) {
+/** 여백 주석 글: 라벨(앞부분 굵게, " · " 뒤는 흐리게) · 전에는 · 제목 · 문단. 폰 칸(phones.tsx)도 쓴다 */
+export function NoteText({ label, was, h, p, children }: { label?: string; was?: string; h?: string; p?: string[]; children?: ReactNode }) {
   const [head, ...rest] = (label ?? '').split(' · ');
   return (
     <>
       {label ? <div className={t.lab}>{head}{rest.length ? <i> · {rest.join(' · ')}</i> : null}</div> : null}
+      <Was text={was} />
       {h ? <h3 className={t.h3} dangerouslySetInnerHTML={{ __html: h }} /> : null}
       {p?.map((x, i) => <p key={i} className={t.p}>{x}</p>)}
       {children}
@@ -30,7 +32,7 @@ export function Note({ b }: { b: NoteBlock }) {
     return (
       <Pinned room={280}>
         <div className={demo.live} data-note-live>
-          <RequestFormDemo h={b.h} spots={f.spots ?? []} alt={f.alt} caption={f.caption} />
+          <RequestFormDemo was={b.was} h={b.h} spots={f.spots ?? []} alt={f.alt} caption={f.caption} />
         </div>
         <div className={demo.still}><NoteStill b={b} /></div>
       </Pinned>
@@ -45,7 +47,7 @@ function NoteStill({ b }: { b: NoteBlock }) {
   return (
     <div className={g.g}>
       <div className={`${g.noteText} ${s.text}`} data-note-text>
-        <NoteText label={b.label} h={b.h} p={b.p}>
+        <NoteText label={b.label} was={b.was} h={b.h} p={b.p}>
           {spots.length ? <SpotList spots={spots} active={spot} onHover={setSpot} /> : null}
         </NoteText>
       </div>

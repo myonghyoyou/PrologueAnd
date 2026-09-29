@@ -1,8 +1,8 @@
-import type { Figure, Study } from './study-types';
+import { isScatterHero, type Figure, type Study } from './study-types';
 
 /** 표지 대표 화면부터 블록 순서대로, 한 편의 모든 그림 */
 export function figuresOf(s: Study): Figure[] {
-  const out: Figure[] = [s.cover.hero];
+  const out: Figure[] = isScatterHero(s.cover.hero) ? [] : [s.cover.hero];
   for (const c of s.chapters) {
     for (const b of c.blocks) {
       if (b.type === 'figure') out.push(b.fig);
