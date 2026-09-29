@@ -1,4 +1,4 @@
-import { isScatterHero, type Project, type Study } from '@/content';
+import { heroFigure, isScatterHero, type Project, type Study } from '@/content';
 import { FRAME_PAD } from '@/lib/figure-rules';
 import { Frame } from './frame';
 import { DayBoard } from './day-board';
@@ -9,7 +9,8 @@ const SCATTER_W = 1292, SCATTER_H = 812;
 
 export function Cover({ study, project }: { study: Study; project: Project }) {
   const c = study.cover;
-  const heroW = isScatterHero(c.hero) ? SCATTER_W : (c.hero.w ?? 0) + FRAME_PAD * 2;
+  const fig = heroFigure(c.hero);
+  const heroW = fig ? (fig.w ?? 0) + FRAME_PAD * 2 : SCATTER_W;
   return (
     <section className={s.cover} data-cover>
       <div className={c.numbers?.length ? s.title : `${s.title} ${s.solo}`} data-cover-title>
@@ -35,7 +36,7 @@ export function Cover({ study, project }: { study: Study; project: Project }) {
             </div>
             {c.hero.caption ? <figcaption className={s.scatterCap}>{c.hero.caption}</figcaption> : null}
           </figure>
-        ) : <Frame fig={c.hero} sizes="(max-width:1023px) 100vw, 1616px" />}
+        ) : fig ? <Frame fig={fig} sizes="(max-width:1023px) 100vw, 1616px" /> : null}
       </div>
     </section>
   );

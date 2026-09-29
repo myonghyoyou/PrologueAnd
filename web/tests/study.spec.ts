@@ -83,3 +83,34 @@ test('그림 규칙: 한 줄의 최대 폭은 가장 낮은 원본 높이에서 
   // 높이가 낮은 쪽(720)이 상한을 정한다
   expect(rowMaxWidth([{ w: 1280, h: 800 }, { w: 1280, h: 720 }], 12)).toBe(Math.round(720 * (1.6 + 1280 / 720)) + 28 + 12);
 });
+
+test('새 블록 검증: 표 칸 수, 시트 행 수, 자르기 범위, 표지 번호', () => {
+  const bad: Study = structuredClone(pfh());
+  bad.cover.hero = { pinned: { src: '/screens/pfh/queue.png', alt: '대시보드' }, pins: [{ x: 120, y: 10, text: '밖' }] };
+  const crop = { src: '/screens/pfh/queue.png', alt: '부분', crop: { x: 90, y: 0, w: 20, h: 10 } };
+  bad.chapters[0].blocks.push(
+    { type: 'table', cols: ['a', 'b'], rows: [['1']] },
+    { type: 'sheet', rows: [{ rule: '하나', before: { label: '전', show: { heights: [28] } }, after: { label: '후', show: { crop } } }] },
+    { type: 'rule', h: '한 쌍', before: crop, after: crop },
+  );
+  const errs = validateStudy(bad).join('\n');
+  expect(errs).toContain('표지 번호');
+  expect(errs).toContain('표 칸 수');
+  expect(errs).toContain('시트 행');
+  expect(errs).toContain('자르기 범위');
+});
+
+test('새 그림도 크기를 파일에서 읽는다(자른 캡처·전 캡처·번호 한 장)', () => {
+  const s: Study = structuredClone(pfh());
+  s.cover.hero = { pinned: { src: '/screens/pfh/queue.png', alt: '대시보드' }, pins: [{ x: 10, y: 10, text: '하나' }] };
+  const note = s.chapters[3].blocks[1];
+  if (note.type !== 'note') throw new Error('04 두 번째 블록은 note 여야 한다');
+  note.beforeFig = { src: '/screens/pfh/tasks.png', alt: '전' };
+  s.chapters[0].blocks.push({ type: 'rule', h: '한 쌍',
+    before: { src: '/screens/pfh/form.png', alt: '전', crop: { x: 0, y: 0, w: 50, h: 50 } },
+    after: { src: '/screens/pfh/queue.png', alt: '후', crop: { x: 0, y: 0, w: 50, h: 50 } } });
+  const figs = figuresOf(resolveStudy(s));
+  expect(figs.every((f) => (f.w ?? 0) > 0 && (f.h ?? 0) > 0)).toBe(true);
+  expect(figs.some((f) => f.src.endsWith('/tasks.png') && f.alt === '전')).toBe(true);
+  expect(figs.filter((f) => f.src.endsWith('/form.png')).length).toBeGreaterThanOrEqual(1);
+});

@@ -12,5 +12,5 @@ export const nextProject = (slug: string): Project | undefined =>
   publishedProjects().filter((p) => p.slug !== slug)[0];
 export { COVERS };
 export type { Project, Spot, Scatter } from './types';
-export type { Study, Chapter, Block, Figure, Num, NoteBlock, PhonesBlock, FlowBlock, QuoteBlock, WipeBlock, FigureBlock, ThreadBlock, ScatterHero } from './study-types';
-export { isScatterHero } from './study-types';
+export type { Study, Chapter, Block, Figure, Num, NoteBlock, PhonesBlock, FlowBlock, QuoteBlock, WipeBlock, FigureBlock, ThreadBlock, ScatterHero, PinnedHero, Hero, Crop, TableBlock, TableCell, SheetBlock, SheetRow, SheetCell, SheetShow, RuleBlock } from './study-types';
+export { isScatterHero, isPinnedHero, heroFigure } from './study-types';
