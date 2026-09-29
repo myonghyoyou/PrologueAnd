@@ -32,6 +32,21 @@ test('지금 쓰는 것은 6개를 넘으면 400', async ({ request }) => {
   expect(res.status()).toBe(400);
 });
 
+test('발송 설정 확인은 값 없이 들어 있는지만 알려 준다', async ({ request }) => {
+  const res = await request.get('/api/inquiry');
+  expect(res.status()).toBe(200);
+  const j = await res.json();
+  expect(Object.keys(j).sort()).toEqual(['pass', 'passLength16', 'to', 'user']);
+  expect(Object.values(j).every((v) => typeof v === 'boolean')).toBe(true);
+});
+
+test('설정이 없으면 502 와 이유 config', async ({ request }) => {
+  // 테스트 서버에는 메일 환경변수가 없다
+  const res = await request.post('/api/inquiry', { data: ok });
+  expect(res.status()).toBe(502);
+  expect((await res.json()).reason).toBe('config');
+});
+
 test('5초 미만 제출은 거른다', async ({ request }) => {
   const res = await request.post('/api/inquiry', { data: { ...ok, elapsed: 1200 } });
   expect(res.status()).toBe(200);

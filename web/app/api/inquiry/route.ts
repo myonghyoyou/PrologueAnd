@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { inquirySchema } from '@/lib/inquiry-schema';
-import { sendInquiry } from '@/lib/mail';
+import { MailError, mailConfig, sendInquiry } from '@/lib/mail';
+
+/** 발송 설정 확인 — 메일은 보내지 않고, 값 대신 들어 있는지만 알려 준다(앱 비밀번호는 공백을 뺀 길이가 16자여야 한다) */
+export async function GET() {
+  const { user, pass, to } = mailConfig();
+  return NextResponse.json({ user: !!user, pass: !!pass, passLength16: pass.length === 16, to: !!to });
+}
 
 export async function POST(req: Request) {
   let body: unknown;
@@ -20,7 +26,9 @@ export async function POST(req: Request) {
     await sendInquiry(data);
     return NextResponse.json({ ok: true, sent: true });
   } catch (e) {
-    console.error('inquiry send failed', e);
-    return NextResponse.json({ ok: false, error: '보내지 못했습니다' }, { status: 502 });
+    const reason = e instanceof MailError ? e.reason : 'send';
+    // Vercel 함수 로그에 이유가 남는다(비밀번호 값은 남기지 않는다)
+    console.error('inquiry send failed', reason, e instanceof MailError ? e.detail ?? '' : e);
+    return NextResponse.json({ ok: false, error: '보내지 못했습니다', reason }, { status: 502 });
   }
 }
