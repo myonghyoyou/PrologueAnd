@@ -16,6 +16,7 @@
   .stack{width:100%;aspect-ratio:auto}
   .layer{position:relative;inset:auto;aspect-ratio:var(--ar)}
   .after{margin-top:12px;clip-path:none!important}
+  [data-wipe-before]:has([data-day-board]){aspect-ratio:auto}   /* 어느 하루 판은 폰에서 목록 — 높이가 글을 따른다 */
   .caps{flex-direction:column;gap:4px}
   .caps span{opacity:1!important}
   .caps .arrow{display:none}

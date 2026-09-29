@@ -18,13 +18,14 @@ export type FlowBlock = {
   alt: string; caption?: string;
 };
 export type QuoteBlock = { type: 'quote'; text: string; p?: string };
-export type WipeBlock = { type: 'wipe'; before: Scatter[] | Figure; after: Figure; caps: [string, string] };
+/** before 가 요청 목록이면 어느 하루 판(day-board)으로 그린다. mark: 같은 요청을 알아볼 낱말 */
+export type WipeBlock = { type: 'wipe'; before: Scatter[] | Figure; mark?: string; after: Figure; caps: [string, string] };
 /** 같은 요청이 여러 번 온 장면 — 시각 순서대로, 사이에 흐른 시간이 붙는다 */
 export type ThreadBlock = { type: 'thread'; items: Scatter[]; mark?: string; caption?: string };   // mark: 메시지마다 표시할 같은 낱말
 export type Block = FigureBlock | NoteBlock | PhonesBlock | FlowBlock | QuoteBlock | WipeBlock | ThreadBlock;
 
 /** 표지 그림을 결과 화면 대신 문제 장면(흩어진 요청 더미)으로 — 문제를 먼저 보여 준다 */
-export type ScatterHero = { scatter: Scatter[]; alt: string; caption?: string };
+export type ScatterHero = { scatter: Scatter[]; mark?: string; alt: string; caption?: string };
 export const isScatterHero = (h: Figure | ScatterHero): h is ScatterHero => 'scatter' in h;
 
 /** 장 — id 는 주소(#problem), name 은 왼쪽 라벨 칸. 번호는 순서대로 자동 */

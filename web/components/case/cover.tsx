@@ -1,7 +1,7 @@
 import { isScatterHero, type Project, type Study } from '@/content';
 import { FRAME_PAD } from '@/lib/figure-rules';
 import { Frame } from './frame';
-import { ScatterCollage } from './scatter-collage';
+import { DayBoard } from './day-board';
 import s from './cover.module.css';
 
 /** 문제 장면(흩어진 요청 더미)의 틀 — 와이프 뒤의 결과 화면(queue 1280×800 + 틀 12)과 같은 크기라, 02 장에서 이 더미가 그 화면으로 바뀐다 */
@@ -30,8 +30,8 @@ export function Cover({ study, project }: { study: Study; project: Project }) {
       <div className={s.hero}>
         {isScatterHero(c.hero) ? (
           <figure className={s.scatter} data-hero-scatter style={{ maxWidth: SCATTER_W }}>
-            <div className={s.scatterBox} role="img" aria-label={c.hero.alt} style={{ aspectRatio: `${SCATTER_W} / ${SCATTER_H}` }}>
-              <ScatterCollage items={c.hero.scatter} />
+            <div className={s.scatterBox} role="img" aria-label={c.hero.alt} style={{ ['--ar' as string]: `${SCATTER_W} / ${SCATTER_H}` }}>
+              <DayBoard items={c.hero.scatter} mark={c.hero.mark} />
             </div>
             {c.hero.caption ? <figcaption className={s.scatterCap}>{c.hero.caption}</figcaption> : null}
           </figure>

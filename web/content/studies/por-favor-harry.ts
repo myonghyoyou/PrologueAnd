@@ -31,7 +31,7 @@ export const porFavorHarry: Study = {
   cover: {
     title: '사내 업무 요청을 한 곳에서<br>받고 처리하는 플랫폼',
     summary: ['전화·메신저·메일·자리 방문으로 흩어져 오던 요청을 담당자 한 사람이 모두 다시 정리하고 있었습니다.'],
-    hero: { scatter: DAY,
+    hero: { scatter: DAY, mark: '단가표',
       alt: '재현한 어느 하루. 메신저·메일·전화·자리 방문으로 담당자에게 온 요청 14건이 쪽지처럼 흩어져 있고, 단가표 건은 세 번 온다.',
       caption: '재현: 어느 하루, 네 갈래로 담당자에게 온 요청 14건' },
   },
@@ -57,7 +57,7 @@ export const porFavorHarry: Study = {
       p: ['전화·메신저·메일·방문으로 오던 요청이 한 화면에 카드로 모입니다. 담당자는 요청이 올 때마다 대응하지 않고, 이 목록을 한 번에 검토합니다.'],
       blocks: [
         { type: 'wipe',
-          before: DAY,
+          before: DAY, mark: '단가표',
           after: F('queue', 'Por favor, Harry 담당자 대시보드. 심사 대기 목록에 요청 두 건이 카드로 놓여 있다.'),
           caps: ['Before(재현): 메신저·메일·전화·자리 방문으로 흩어진 요청', 'After: 검토를 기다리는 요청이 한 곳에 카드로'] },
       ],

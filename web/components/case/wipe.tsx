@@ -2,7 +2,7 @@
 import { useRef, type CSSProperties } from 'react';
 import Image from 'next/image';
 import type { WipeBlock } from '@/content';
-import { ScatterCollage } from './scatter-collage';
+import { DayBoard } from './day-board';
 import { pinT, usePin } from './pinned';
 import { useScrollProgress } from './use-scroll-progress';
 import g from './grid.module.css';
@@ -22,7 +22,7 @@ export function WipeView({ b }: { b: WipeBlock }) {
         <div className={s.stack} style={{ '--ar': ar } as CSSProperties}>
           <div data-wipe-before className={s.layer}>
             {Array.isArray(b.before)
-              ? <ScatterCollage items={b.before} />
+              ? <DayBoard items={b.before} mark={b.mark} />
               : <Image src={b.before.src} alt={b.before.alt} fill sizes="(max-width:1023px) 100vw, 1343px" className={s.img} />}
           </div>
           <div data-wipe-after className={`${s.layer} ${s.after}`} style={{ clipPath: `inset(0 ${pct}% 0 0)` }}>

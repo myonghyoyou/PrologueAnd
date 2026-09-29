@@ -100,3 +100,35 @@ test('마지막 판에 문의 버튼과 다음 이야기가 있다', async ({ pa
   await expect(page.locator('[data-cta]')).toBeVisible();
   await expect(page.locator('[data-teaser]')).toBeVisible();
 });
+
+test('표지 어느 하루: 데스크톱은 네 칸에 14건, 같은 요청 셋에 표시, 카드는 제 시각보다 위에 서지 않는다', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, '데스크톱 — 폰은 목록');
+  await page.goto('/projects/por-favor-harry');
+  await page.waitForTimeout(500);
+  const r = await page.evaluate(() => {
+    const box = document.querySelector<HTMLElement>('[data-cover] [data-day-board]')!;
+    const k = box.clientWidth / 1280;
+    const cards = [...box.querySelectorAll<HTMLElement>('[data-day-card]')];
+    return {
+      cols: box.querySelectorAll('[data-day-col]').length, n: cards.length,
+      badges: box.querySelectorAll('[data-day-card] span').length,
+      // 밀려난 거리(판 좌표) — 0 이상이어야 하고, 겹침을 피해 밀린 것도 한 시간(약 84) 안
+      shift: cards.map((c) => (parseFloat(c.style.top) / k) - Number(c.dataset.y)),
+    };
+  });
+  expect(r.cols).toBe(4);
+  expect(r.n).toBe(14);
+  expect(r.badges).toBeGreaterThanOrEqual(3);
+  expect(Math.min(...r.shift)).toBeGreaterThanOrEqual(-0.5);
+  expect(Math.max(...r.shift)).toBeLessThan(84);
+});
+
+test('폰: 표지 어느 하루는 시각 순 목록으로 읽힌다', async ({ page, isMobile }) => {
+  test.skip(!isMobile, '폰 전용');
+  await page.goto('/projects/por-favor-harry');
+  const rows = page.locator('[data-cover] [data-day-row]');
+  await expect(rows).toHaveCount(14);
+  await expect(rows.first()).toBeVisible();
+  expect(await rows.first().evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(13);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+});

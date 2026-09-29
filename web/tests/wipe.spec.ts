@@ -47,15 +47,17 @@ test('와이프에 남색 경계선이 없다', async ({ page }) => {
   await expect(page.locator('[data-wipe-edge]')).toHaveCount(0);
 });
 
-test('Before 콜라주: 데이터의 쪽지가 빠짐없이 그려진다(12장 이상)', async ({ page }) => {
+test('Before 어느 하루: 데이터의 요청이 빠짐없이 그려진다(12건 이상, 데스크톱은 칸 · 폰은 목록)', async ({ page, isMobile }) => {
   const { getStudy } = await import('../content');
   const wipe = getStudy('por-favor-harry')!.chapters.flatMap((c) => c.blocks).find((b) => b.type === 'wipe')!;
   const n = wipe.type === 'wipe' && Array.isArray(wipe.before) ? wipe.before.length : 0;
   expect(n).toBeGreaterThanOrEqual(12);
-  await expect(page.locator('[data-wipe-before] [data-scatter-item]')).toHaveCount(n);
+  const sel = isMobile ? '[data-wipe-before] [data-day-row]' : '[data-wipe-before] [data-day-card]';
+  await expect(page.locator(sel)).toHaveCount(n);
+  await expect(page.locator(sel).first()).toBeVisible();
 });
 
-test('콜라주와 화면의 크기가 같다', async ({ page }) => {
+test('Before 판과 After 화면의 크기가 같다', async ({ page }) => {
   const [a, b] = await page.evaluate(() => {
     const r1 = (document.querySelector('[data-wipe-before]') as HTMLElement).getBoundingClientRect();
     const r2 = (document.querySelector('[data-wipe-after]') as HTMLElement).getBoundingClientRect();
