@@ -1,0 +1,33 @@
+/* 고르기 칸 — 버튼은 서랍의 입력 칸과 같은 모양(1px bone-300, 2px 라운드, 초점 signal). 목록은 버튼 바로 아래(자리가 모자라면 위)에 뜬다 */
+.sel{position:relative;display:block;font-size:13px;font-weight:500;color:var(--bone-700)}
+.lab{display:block}
+.btn{display:flex;align-items:center;gap:8px;width:100%;margin-top:6px;padding:10px 12px;border:1px solid var(--bone-300);border-radius:2px;
+  background:var(--bone-0);font:inherit;font-size:15px;font-weight:400;color:var(--bone-900);text-align:left;cursor:pointer;outline:none;
+  transition:border-color .15s,box-shadow .15s}
+.btn:hover{border-color:var(--bone-400)}
+.btn:focus-visible,.sel[data-open] .btn{border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
+.val{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph{color:var(--bone-500)}
+.chev{flex:none;width:12px;height:12px;color:var(--bone-500);transition:transform .2s var(--ease-out)}
+.sel[data-open] .chev{transform:rotate(180deg);color:var(--bone-900)}
+
+/* 목록(위로 열 때 bottom 50 = 버튼 높이 44 + 간격 6) — 닫혀 있을 때도 그려 둔 채(높이를 재야 위·아래를 정한다) 보이지 않게. 열리면 위에서 살짝 내려오며 펼쳐지고, 칸이 차례로 뜬다 */
+.list{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:5;margin:0;padding:4px;list-style:none;
+  background:var(--bone-0);border:1px solid var(--bone-900);border-radius:2px;box-shadow:0 12px 24px -12px rgba(28,27,24,.28);
+  max-height:240px;overflow:auto;outline:none;
+  opacity:0;visibility:hidden;transform:translateY(-4px) scaleY(.96);transform-origin:top center;
+  transition:opacity .16s var(--ease-out),transform .2s var(--ease-out),visibility 0s linear .2s}
+.list.up{top:auto;bottom:50px;transform-origin:bottom center;transform:translateY(4px) scaleY(.96)}
+.sel[data-open] .list{opacity:1;visibility:visible;transform:none;transition:opacity .16s var(--ease-out),transform .2s var(--ease-out),visibility 0s}
+.opt{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:2px;font-size:14px;font-weight:400;color:var(--bone-900);cursor:pointer;
+  opacity:0;transform:translateY(-3px);transition:background .12s,opacity .18s var(--ease-out),transform .18s var(--ease-out)}
+.sel[data-open] .opt{opacity:1;transform:none;transition-delay:0s,calc(var(--i) * 22ms),calc(var(--i) * 22ms)}
+.opt span{flex:1}
+.opt.none{color:var(--bone-500)}
+.opt[data-active]{background:var(--bone-100)}
+.check{flex:none;width:12px;height:12px;color:var(--navy-800);opacity:0;transform:scale(.6);transition:opacity .15s,transform .15s var(--ease-out)}
+.opt[aria-selected="true"] .check{opacity:1;transform:none}
+.opt[aria-selected="true"]{font-weight:600}
+@media (prefers-reduced-motion:reduce){
+  .list,.opt,.chev,.check{transition:none!important}
+}

@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { getLenis } from './lenis-provider';
-import { TOOLS, PEOPLE, REPEAT, KIND, WHEN, BUDGET } from '@/lib/inquiry-schema';
+import { NEED, PEOPLE, WHEN, BUDGET } from '@/lib/inquiry-schema';
+import { Select } from './select';
 import { getProject } from '@/content';
 import s from './inquiry-drawer.module.css';
 import { CONTACT_MAIL } from '@/lib/contact';
@@ -51,7 +52,7 @@ export function InquiryDrawer() {
   // Escape로 닫기 + 열려 있는 동안 Tab/Shift+Tab을 서랍 안에 가둔다
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setOpen(false); return; }
+      if (e.key === 'Escape') { if (!e.defaultPrevented) setOpen(false); return; }   // 고르기 칸 목록의 Esc 는 목록만 닫는다(select.tsx)
       if (e.key !== 'Tab' || !open) return;
       const container = drawer.current;
       if (!container) return;
@@ -95,12 +96,9 @@ export function InquiryDrawer() {
   const read = () => {
     const fd = new FormData(form.current!);
     return {
-      work: String(fd.get('work') ?? ''),
-      tools: fd.getAll('tools').map(String),
+      need: String(fd.get('need') ?? '') || undefined,
       pain: String(fd.get('pain') ?? ''),
       people: String(fd.get('people') ?? '') || undefined,
-      repeat: String(fd.get('repeat') ?? '') || undefined,
-      kind: String(fd.get('kind') ?? '') || undefined,
       goal: String(fd.get('goal') ?? ''),
       when: String(fd.get('when') ?? '') || undefined,
       budget: String(fd.get('budget') ?? '') || undefined,
@@ -114,7 +112,7 @@ export function InquiryDrawer() {
 
   const next = () => {
     const v = read();
-    if (v.pain.trim().length < 2) { setError('가장 불편한 점을 한 줄만 적어주세요.'); return; }
+    if (v.pain.trim().length < 2) { setError('지금 상황을 한두 줄로 적어주세요.'); return; }
     setError('');
     setStep('step2');
     if (form.current) form.current.scrollTop = 0; // 시안 v3.js:108
@@ -129,7 +127,7 @@ export function InquiryDrawer() {
     e.preventDefault();
     const v = read();
     if (v.pain.trim().length < 2) {
-      setError('가장 불편한 점을 한 줄만 적어주세요.');
+      setError('지금 상황을 한두 줄로 적어주세요.');
       setStep('step1');
       if (form.current) form.current.scrollTop = 0;
       return;
@@ -184,27 +182,22 @@ export function InquiryDrawer() {
         ) : (
           <form ref={form} className={s.body} data-lenis-prevent onSubmit={submit} noValidate>
             <div className={step1 ? s.on : s.off}>
-              <span className={s.num}>1 / 2</span><div className={s.h2}>지금 하는 일</div>
-              <label className={s.fld}>어떤 일을 하고 계세요?<textarea name="work" rows={3} placeholder="예) 병동마다 비품 요청을 카톡이랑 엑셀로 받고 있어요" /></label>
-              <fieldset className={s.fld}><legend>지금 쓰는 것</legend>
-                <div className={s.chips}>{TOOLS.map((t) => (
-                  <label key={t}><input type="checkbox" name="tools" value={t} /><span>{t}</span></label>
+              <span className={s.num}>1 / 2</span><div className={s.h2}>어떤 일인가요</div>
+              <fieldset className={s.fld}><legend>무엇이 필요하세요?</legend>
+                <div className={s.need}>{NEED.map((o) => (
+                  <label key={o}><input type="radio" name="need" value={o} /><span>{o}</span></label>
                 ))}</div>
               </fieldset>
-              <label className={s.fld}>무엇이 가장 불편하세요? <b>*</b><textarea name="pain" rows={3} placeholder="한 줄이면 됩니다" /></label>
-              <div className={s.grid}>
-                <label>쓰는 사람<select name="people" defaultValue=""><option value="">고르지 않음</option>{PEOPLE.map((o) => <option key={o}>{o}</option>)}</select></label>
-                <label>얼마나 자주<select name="repeat" defaultValue=""><option value="">고르지 않음</option>{REPEAT.map((o) => <option key={o}>{o}</option>)}</select></label>
-                <label>고치기 / 새로 만들기<select name="kind" defaultValue=""><option value="">고르지 않음</option>{KIND.map((o) => <option key={o}>{o}</option>)}</select></label>
-              </div>
+              <label className={s.fld}>지금 상황 <b>*</b><textarea name="pain" rows={4} placeholder="한두 줄이면 됩니다. 예) 병동마다 비품 요청을 카톡이랑 엑셀로 받고 있어요" /></label>
+              <div className={s.fld}><Select name="people" label="누가 쓰나요" options={PEOPLE} /></div>
             </div>
 
             <div className={step1 ? s.off : s.on}>
               <span className={s.num}>2 / 2</span><div className={s.h2}>바라는 것과 연락처</div>
               <label className={s.fld}>이렇게 됐으면 (선택)<textarea name="goal" rows={3} placeholder="예) 요청이 한 곳으로 모이고, 진행 상황을 서로 물어보지 않아도 되게" /></label>
               <div className={s.grid2}>
-                <label>언제까지<select name="when" defaultValue=""><option value="">고르지 않음</option>{WHEN.map((o) => <option key={o}>{o}</option>)}</select></label>
-                <label>예산<select name="budget" defaultValue=""><option value="">고르지 않음</option>{BUDGET.map((o) => <option key={o}>{o}</option>)}</select></label>
+                <Select name="when" label="언제까지" options={WHEN} />
+                <Select name="budget" label="예산" options={BUDGET} />
               </div>
               <label className={s.fld}>이메일 <b>*</b><input name="email" type="email" placeholder="name@company.com" /></label>
               <label className={s.fld}>전화 (선택)<input name="phone" type="tel" placeholder="010-" /></label>
@@ -218,9 +211,10 @@ export function InquiryDrawer() {
 
             <div className={s.foot}>
               {step1 ? null : <button type="button" onClick={prev}>이전</button>}
+              {/* key 를 달리해 다른 요소로 그린다 — 같은 요소를 재사용하면 "다음" 클릭 중에 type 이 submit 으로 바뀌어 곧바로 제출된다 */}
               {step1
-                ? <button type="button" className={s.send} onClick={next}>다음</button>
-                : <button type="submit" className={s.send} disabled={sending}>{sending ? '보내는 중' : '보내기'}</button>}
+                ? <button key="next" type="button" className={s.send} onClick={next}>다음</button>
+                : <button key="send" type="submit" className={s.send} disabled={sending}>{sending ? '보내는 중' : '보내기'}</button>}
             </div>
           </form>
         )}

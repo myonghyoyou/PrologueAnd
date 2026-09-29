@@ -2,8 +2,7 @@ import nodemailer from 'nodemailer';
 import type { InquiryInput } from './inquiry-schema';
 
 const ROWS: [keyof InquiryInput, string][] = [
-  ['work', '지금 하는 일'], ['tools', '쓰는 것'], ['pain', '가장 불편한 점'],
-  ['people', '쓰는 사람'], ['repeat', '얼마나 자주'], ['kind', '고치기 / 새로 만들기'],
+  ['need', '무엇이 필요한지'], ['pain', '지금 상황'], ['people', '누가 쓰나요'],
   ['goal', '이렇게 됐으면'], ['when', '언제까지'], ['budget', '예산'],
   ['email', '이메일'], ['phone', '전화'], ['project', '보고 온 프로젝트'],
 ];

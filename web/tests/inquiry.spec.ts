@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const ok = { pain: '요청이 네 갈래로 들어옵니다', email: 'a@b.com', tools: ['엑셀', '카톡'], elapsed: 9000 };
+const ok = { need: '쓰던 시스템을 고치고 싶어요', pain: '요청이 네 갈래로 들어옵니다', email: 'a@b.com', people: '팀 (2~20명)', elapsed: 9000 };
 
 test('필수 두 칸이 비면 400', async ({ request }) => {
   const res = await request.post('/api/inquiry', { data: { pain: '', email: '', elapsed: 9000 } });
@@ -27,9 +27,11 @@ test('허니팟 칸은 브라우저가 자동 완성하지 않는 이름이고 �
   await expect(hp).toHaveAttribute('tabindex', '-1');
 });
 
-test('지금 쓰는 것은 6개를 넘으면 400', async ({ request }) => {
-  const res = await request.post('/api/inquiry', { data: { ...ok, tools: ['엑셀', '종이', '카톡', '이메일', '기존 시스템', '없음', '엑셀'] } });
+test('무엇이 필요한지는 보기 넷 중 하나, 필수 칸이 없으면 한국어 오류', async ({ request }) => {
+  expect((await request.post('/api/inquiry', { data: { ...ok, need: '아무거나' } })).status()).toBe(400);
+  const res = await request.post('/api/inquiry', { data: { email: 'a@b.com', elapsed: 9000 } });
   expect(res.status()).toBe(400);
+  expect((await res.json()).error).toBe('지금 상황을 적어주세요');
 });
 
 test('발송 설정 확인은 값 없이 들어 있는지만 알려 준다', async ({ request }) => {
@@ -53,7 +55,7 @@ test('5초 미만 제출은 거른다', async ({ request }) => {
   expect((await res.json()).sent).toBe(false);
 });
 
-test('헤더 문의 버튼을 누르면 서랍이 열리고 첫 textarea로 포커스가 간다', async ({ page }) => {
+test('헤더 문의 버튼을 누르면 서랍이 열리고 첫 질문(무엇이 필요하세요)으로 포커스가 간다', async ({ page }) => {
   await page.goto('/projects');
   await page.click('header [data-open-drawer]');
   expect(await page.evaluate(() => document.documentElement.hasAttribute('data-drawer-open'))).toBe(true);
@@ -68,14 +70,14 @@ test('헤더 문의 버튼을 누르면 서랍이 열리고 첫 textarea로 포�
   }).toBe(vw);
   const box = await dialog.boundingBox();
   expect(box!.x).toBeLessThan(vw - 10);
-  await expect(page.locator('textarea[name="work"]')).toBeFocused();
+  await expect(page.locator('input[name="need"]').first()).toBeFocused();
 });
 
-test('불편한 점이 비어 있으면 다음을 눌러도 1단계에 머물고 한국어 오류가 뜬다', async ({ page }) => {
+test('지금 상황이 비어 있으면 다음을 눌러도 1단계에 머물고 한국어 오류가 뜬다', async ({ page }) => {
   await page.goto('/projects');
   await page.click('header [data-open-drawer]');
   await page.getByRole('button', { name: '다음' }).click();
-  await expect(page.locator('[role="dialog"] [role="alert"]')).toContainText('가장 불편한 점을 한 줄만 적어주세요.');
+  await expect(page.locator('[role="dialog"] [role="alert"]')).toContainText('지금 상황을 한두 줄로 적어주세요.');
   await expect(page.locator('textarea[name="pain"]')).toBeVisible();
 });
 
@@ -102,7 +104,7 @@ test('2단계에서 닫았다 다시 열면 포커스가 서랍 안 2단계 필�
   await page.keyboard.press('Escape');
   await trigger.click();
 
-  // 열릴 때(380ms 뒤) 포커스가 서랍 "안"의, 지금 보이는(2단계) 필드에 있어야 한다 — work(1단계, 숨김)가 아니라 goal(2단계)
+  // 열릴 때(380ms 뒤) 포커스가 서랍 "안"의, 지금 보이는(2단계) 필드에 있어야 한다 — 1단계(숨김)가 아니라 goal(2단계)
   await expect(page.locator('textarea[name="goal"]')).toBeFocused();
   const focusedInsideDialogAndVisible = await page.evaluate(() => {
     const dialog = document.querySelector('[role="dialog"]');
@@ -128,4 +130,82 @@ test('상세에서 포커스된 문의 버튼에 Space 를 누르면 서랍이 �
   await page.waitForTimeout(700);
   expect(await page.evaluate(() => document.documentElement.hasAttribute('data-drawer-open'))).toBe(true);
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
+});
+
+test.describe('고르기 칸', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/projects');
+    await page.click('header [data-open-drawer]');
+    await page.waitForTimeout(450);
+  });
+
+  test('누르면 목록이 뜨고, 고르면 닫히며 값이 폼에 실린다', async ({ page }) => {
+    const sel = page.locator('[data-select="people"]');
+    await sel.getByRole('button').click();
+    await expect(sel).toHaveAttribute('data-open', '');
+    await expect(sel.getByRole('listbox')).toBeVisible();
+    await sel.getByRole('option', { name: '팀 (2~20명)' }).click();
+    await expect(sel).not.toHaveAttribute('data-open', '');
+    await expect(sel.getByRole('button')).toContainText('팀 (2~20명)');
+    await expect(sel.locator('input[type="hidden"]')).toHaveValue('팀 (2~20명)');
+    await expect(sel.getByRole('option', { name: '팀 (2~20명)' })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  test('키보드: ↓ 로 열고 ↓↓ Enter 로 고른다. 초점은 버튼으로 돌아온다', async ({ page }) => {
+    const sel = page.locator('[data-select="people"]');
+    await sel.getByRole('button').focus();
+    await page.keyboard.press('ArrowDown');
+    await expect(sel.getByRole('listbox')).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(sel.locator('input[type="hidden"]')).toHaveValue('팀 (2~20명)');
+    await expect(sel.getByRole('button')).toBeFocused();
+  });
+
+  test('목록이 열린 채 Esc 는 목록만 닫고 서랍은 열려 있다', async ({ page }) => {
+    const sel = page.locator('[data-select="people"]');
+    await sel.getByRole('button').click();
+    await page.keyboard.press('Escape');
+    await expect(sel).not.toHaveAttribute('data-open', '');
+    expect(await page.evaluate(() => document.documentElement.hasAttribute('data-drawer-open'))).toBe(true);
+    await page.keyboard.press('Escape');
+    expect(await page.evaluate(() => document.documentElement.hasAttribute('data-drawer-open'))).toBe(false);
+  });
+
+  test('바깥을 누르면 닫힌다', async ({ page }) => {
+    const sel = page.locator('[data-select="people"]');
+    await sel.getByRole('button').click();
+    await page.locator('#inquiry-drawer-heading').click();   // 목록이 위로 열리면 바로 위 칸을 덮는다 — 서랍 제목을 누른다
+    await expect(sel).not.toHaveAttribute('data-open', '');
+  });
+
+  test('기본 select 는 남아 있지 않다', async ({ page }) => {
+    await expect(page.locator('[role="dialog"] select')).toHaveCount(0);
+  });
+});
+
+test('다음을 누르면 2단계로 넘어가기만 하고, 제출되거나 오류가 뜨지 않는다', async ({ page }) => {
+  await page.goto('/projects');
+  await page.click('header [data-open-drawer]');
+  await page.fill('textarea[name="pain"]', '요청이 네 갈래로 들어옵니다');
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page.locator('textarea[name="goal"]')).toBeVisible();
+  await page.waitForTimeout(300);
+  await expect(page.locator('[role="dialog"] [role="alert"]')).toHaveCount(0);
+});
+
+test('이전·보내기 버튼은 위쪽 선의 양 끝에 붙는다', async ({ page }) => {
+  await page.goto('/projects');
+  await page.click('header [data-open-drawer]');
+  await page.fill('textarea[name="pain"]', '요청이 네 갈래로 들어옵니다');
+  await page.getByRole('button', { name: '다음' }).click();
+  const r = await page.evaluate(() => {
+    const prev = [...document.querySelectorAll<HTMLElement>('[role="dialog"] button')].find((b) => b.textContent === '이전')!;
+    const foot = prev.parentElement!, send = foot.querySelector<HTMLElement>('button[type="submit"]')!;
+    const f = foot.getBoundingClientRect(), a = prev.getBoundingClientRect(), b = send.getBoundingClientRect();
+    return { left: a.left - f.left, right: f.right - b.right };
+  });
+  expect(Math.round(r.left)).toBe(0);
+  expect(Math.round(r.right)).toBe(0);
 });
