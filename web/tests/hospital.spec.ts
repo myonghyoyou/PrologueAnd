@@ -126,7 +126,8 @@ test.describe('04 전/후 전환', () => {
     await expect(first.locator('button[data-side="before"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(first.locator('[data-swap]')).toHaveAttribute('data-side', 'before');
     await expect.poll(() => first.locator('[data-before]').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
-    await expect(first.locator('[data-spot]')).toHaveCount(0);
+    // 목록은 자리를 지키며 가려진다(보이지 않고, 포커스도 안 된다)
+    expect(await first.locator('[data-spot]').evaluateAll((ls) => ls.every((l) => !l.checkVisibility({ visibilityProperty: true }) && !!l.closest('[inert]')))).toBe(true);
     await expect(first.locator('[data-spot-hl]')).toHaveCount(0);
     await first.locator('button[data-side="after"]').click();
     await expect(first.locator('[data-spot]')).toHaveCount(3);
@@ -157,4 +158,44 @@ test('모션 줄이기: 전/후가 바로 바뀐다(전환 시간 0)', async ({ 
   const d = await page.locator('#screens [data-before]').first().evaluate((e) => getComputedStyle(e).transitionDuration);
   expect(d).toBe('0s');
   await ctx.close();
+});
+
+test('태블릿(820): 자른 캡처가 원본 픽셀보다 크게 그려지지 않는다', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 820, height: 1000 } });
+  const page = await ctx.newPage();
+  await page.goto(URL);
+  const over = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('#rules [data-crop]')].filter((f) => {
+    const [, , w] = f.dataset.crop!.split(',').map(Number);
+    const img = f.querySelector('img')!;
+    return f.querySelector<HTMLElement>('[data-crop-win]')!.getBoundingClientRect().width > +img.getAttribute('width')! * w / 100 + 1;
+  }).length);
+  expect(over).toBe(0);
+  await ctx.close();
+});
+
+test('폰: 전을 눌러도 전/후 단추가 제자리에 있다(목록이 접히며 끌려 올라가지 않음)', async ({ page, isMobile }) => {
+  test.skip(!isMobile, '폰 전용');
+  await page.goto(URL);
+  const first = page.locator('#screens [data-block="note"]').first();
+  const btn = first.locator('button[data-side="before"]');
+  await btn.scrollIntoViewIfNeeded();
+  const y = () => btn.evaluate((b) => b.getBoundingClientRect().top + scrollY);
+  const y0 = await y();
+  await btn.click();
+  await expect(first.locator('[data-swap]')).toHaveAttribute('data-side', 'before');
+  expect(Math.abs((await y()) - y0)).toBeLessThanOrEqual(1);
+});
+
+test('핫스팟 강조를 켠 채(포커스·마우스를 옮기지 않고) 전으로 바꿨다 돌아오면 강조가 꺼져 있다', async ({ page }) => {
+  await page.goto(URL);
+  const first = page.locator('#screens [data-block="note"]').first();
+  // 마우스로 가리킨 뒤 마우스는 그대로 두고 JS click 으로 바꾼다 — 포커스가 없어 blur 가, 마우스가 안 움직여 mouseleave 가
+  // 강조를 대신 끄지 못한다. flip 의 초기화만 검사한다(포커스로 켜면 목록이 inert 가 될 때 blur 로 꺼져 flip 을 가린다)
+  await first.locator('[data-spot="1"]').hover();
+  await expect.poll(() => first.locator('[data-spot-hl]').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
+  await first.locator('button[data-side="before"]').evaluate((b) => (b as HTMLButtonElement).click());
+  await expect(first.locator('[data-swap]')).toHaveAttribute('data-side', 'before');
+  await first.locator('button[data-side="after"]').evaluate((b) => (b as HTMLButtonElement).click());
+  await expect(first.locator('[data-swap]')).toHaveAttribute('data-side', 'after');
+  expect(await first.locator('[data-spot-hl]').evaluate((e) => getComputedStyle(e).opacity)).toBe('0');
 });

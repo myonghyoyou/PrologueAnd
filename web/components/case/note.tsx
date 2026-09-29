@@ -49,11 +49,15 @@ function NoteStill({ b }: { b: NoteBlock }) {
   const showSpots = spots.length > 0 && side === 'after';
   // 바꿀 때마다 가리키던 핫스팟을 놓는다 — 전에서는 강조가 없고, 후로 돌아와도 강조 없이 시작한다
   const flip = (to: 'after' | 'before') => { setSpot(-1); setSide(to); };
+  const list = <SpotList spots={spots} active={spot} onHover={setSpot} />;
   return (
     <div className={g.g}>
       <div className={`${g.noteText} ${s.text}`} data-note-text>
         <NoteText label={b.label} was={b.was} h={b.h} p={b.p}>
-          {showSpots ? <SpotList spots={spots} active={spot} onHover={setSpot} /> : null}
+          {/* 전에서는 목록을 빼지 않고 가린다 — 빼면 폰에서 그 높이만큼 아래 단추가 끌려 올라가 두 번째 누름이 빗나간다 */}
+          {!spots.length ? null : b.beforeFig ? (
+            <div className={side === 'before' ? s.spotsOff : undefined} aria-hidden={side === 'before' ? true : undefined} inert={side === 'before'}>{list}</div>
+          ) : list}
         </NoteText>
       </div>
       <div className={`${g.noteFigs} ${s.figs}`}>

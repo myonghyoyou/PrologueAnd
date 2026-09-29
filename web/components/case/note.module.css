@@ -6,6 +6,7 @@
 .toggle button + button{border-left:0}
 .toggle button[aria-pressed="true"]{background:var(--bone-900);border-color:var(--bone-900);color:var(--bone-50)}
 .toggle button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.spotsOff{visibility:hidden}
 .swap{position:relative}
 .before{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s var(--ease-out)}
 .swap[data-side="before"] .before{opacity:1;pointer-events:auto}
