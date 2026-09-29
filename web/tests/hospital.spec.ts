@@ -199,3 +199,15 @@ test('핫스팟 강조를 켠 채(포커스·마우스를 옮기지 않고) 전�
   await expect(first.locator('[data-swap]')).toHaveAttribute('data-side', 'after');
   expect(await first.locator('[data-spot-hl]').evaluate((e) => getComputedStyle(e).opacity)).toBe('0');
 });
+
+test('03 시트(데스크톱): 행마다 규칙 · 전 · 후가 한 줄에 나란하고, 목록 틀 후는 실제 화면이다', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, '데스크톱 전용');
+  await page.goto(URL);
+  const bad = await page.locator('#rules [data-sheet-row]').evaluateAll((rows) => rows.filter((row) => {
+    const r = row.querySelector('h3')!.getBoundingClientRect();
+    const b = row.querySelector('[data-sheet-cell="before"]')!.getBoundingClientRect(), a = row.querySelector('[data-sheet-cell="after"]')!.getBoundingClientRect();
+    return !(Math.abs(r.top - b.top) <= 1 && Math.abs(b.top - a.top) <= 1 && r.right <= b.left + 1 && b.right <= a.left + 1 && Math.abs(b.height - a.height) <= 1);
+  }).length);
+  expect(bad).toBe(0);
+  await expect(page.locator('#rules [data-sheet-row]').nth(3).locator('[data-sheet-cell="after"] [data-crop]')).toHaveCount(1);
+});
