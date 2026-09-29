@@ -1,4 +1,4 @@
-import { heroFigure, isScatterHero, type Project, type Study } from '@/content';
+import { heroFigure, isPinnedHero, isScatterHero, type Project, type Study } from '@/content';
 import { FRAME_PAD } from '@/lib/figure-rules';
 import { Frame } from './frame';
 import { DayBoard } from './day-board';
@@ -36,6 +36,19 @@ export function Cover({ study, project }: { study: Study; project: Project }) {
             </div>
             {c.hero.caption ? <figcaption className={s.scatterCap}>{c.hero.caption}</figcaption> : null}
           </figure>
+        ) : isPinnedHero(c.hero) ? (
+          <div className={s.pinned} data-hero-pinned style={{ maxWidth: heroW }}>
+            <Frame fig={c.hero.pinned} sizes="(max-width:1023px) 100vw, 1616px">
+              {c.hero.pins.map((p, i) => (
+                // 틀 안(테두리 1 + 여백 6) 좌표 — 핫스팟과 같은 계산
+                <span key={i} className={s.pin} data-pin aria-hidden="true"
+                      style={{ left: `calc(6px + (100% - 12px) * ${p.x / 100})`, top: `calc(6px + (100% - 12px) * ${p.y / 100})` }}>{i + 1}</span>
+              ))}
+            </Frame>
+            <ol className={s.legend}>
+              {c.hero.pins.map((p, i) => <li key={i} data-pin-note><b aria-hidden="true">{i + 1}</b><span>{p.text}</span></li>)}
+            </ol>
+          </div>
         ) : fig ? <Frame fig={fig} sizes="(max-width:1023px) 100vw, 1616px" /> : null}
       </div>
     </section>

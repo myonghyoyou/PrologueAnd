@@ -39,3 +39,25 @@ test('폰: 표가 넘쳐도 페이지는 가로로 스크롤되지 않는다', a
   await page.goto(URL);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
 });
+
+test('표지: 1차 화면 한 장에 번호 셋, 설명 셋, 번호는 캡처 틀 안, 소개 폭 = 틀 폭', async ({ page }) => {
+  await page.goto(URL);
+  const hero = page.locator('[data-cover] [data-hero-pinned]');
+  await expect(hero.locator('[data-pin]')).toHaveCount(3);
+  await expect(hero.locator('ol [data-pin-note]')).toHaveCount(3);
+  const r = await page.evaluate(() => {
+    const f = document.querySelector<HTMLElement>('[data-hero-pinned] [data-frame]')!.getBoundingClientRect();
+    const pins = [...document.querySelectorAll<HTMLElement>('[data-hero-pinned] [data-pin]')].map((p) => p.getBoundingClientRect());
+    const sum = document.querySelector<HTMLElement>('[data-summary]')!.getBoundingClientRect();
+    return { inside: pins.every((p) => p.left >= f.left && p.right <= f.right && p.top >= f.top && p.bottom <= f.bottom), dw: Math.abs(sum.width - f.width) };
+  });
+  expect(r.inside).toBe(true);
+  expect(r.dw).toBeLessThanOrEqual(1);
+});
+
+test('폰: 번호 설명은 한 열', async ({ page, isMobile }) => {
+  test.skip(!isMobile, '폰 전용');
+  await page.goto(URL);
+  const xs = await page.locator('[data-pin-note]').evaluateAll((ls) => ls.map((l) => Math.round(l.getBoundingClientRect().left)));
+  expect(new Set(xs).size).toBe(1);
+});
