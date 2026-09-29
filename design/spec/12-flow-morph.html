@@ -48,21 +48,21 @@ svg{display:block;width:100%;height:auto;overflow:visible}
 <header class="bar">
   <h1>바꾼 흐름 전환 비교</h1>
   <span class="desc">스크롤하면 장이 헤더 아래에 붙고 그림이 진행됩니다(상세와 같은 방식). 오른쪽 아래 숫자는 진행률 t</span>
-  <nav><a href="#now">지금</a><a href="#a">A 한 번에 하나씩</a><a href="#b">B 교체</a><a href="#c">C 위아래</a></nav>
+  <nav><a href="#now">이전 구현</a><a href="#a">A 한 번에 하나씩</a><a href="#b">B 교체</a><a href="#c">C 위아래</a></nav>
 </header>
 
 <main class="wrap">
   <section id="now"><div class="track"><div class="stage">
-    <div class="g intro"><div class="lab">지금<small>상세에 들어가 있는 것</small></div>
+    <div class="g intro"><div class="lab">이전 구현<small>비교 기준</small></div>
       <div class="body"><h2>업무 요청을 받는 창구를 하나로 통일했습니다</h2>
-      <p class="lead">t 0.3~0.45에 선만 남는 빈 구간, 0.45~0.6에 전·후가 반씩 겹치는 구간, 0.55~0.8에 이름표가 선에서 떨어지고 점들이 서로 지나치는 구간이 있습니다.</p></div></div>
+      <p class="lead">A안을 적용하기 전 상세의 연출. t 0.3~0.45에 선만 남는 빈 구간, 0.45~0.6에 전·후가 반씩 겹치는 구간, 0.55~0.8에 이름표가 선에서 떨어지고 점들이 서로 지나치는 구간이 있습니다.</p></div></div>
     <div class="g"><div class="fig"><div class="box"><svg viewBox="0 0 640 320" data-v="now"></svg><span class="t"></span></div></div></div>
   </div><div class="room"></div></div></section>
 
   <section id="a"><div class="track"><div class="stage">
-    <div class="g intro"><div class="lab">A 한 번에 하나씩<small>추천</small></div>
+    <div class="g intro"><div class="lab">A 한 번에 하나씩<small>상세에 적용됨</small></div>
       <div class="body"><h2>업무 요청을 받는 창구를 하나로 통일했습니다</h2>
-      <p class="lead">① "담당자가 다시 정리 → 업무 효율 저하" 구간이 오른쪽부터 지워지고 ② 네 갈래가 이름표를 단 채 한 줄로 모인 뒤 ③ 그 줄 위로 새 흐름이 왼쪽부터 그려지며 단계가 하나씩 나타납니다. 겹치는 순간이 없습니다.</p></div></div>
+      <p class="lead">① "담당자가 다시 정리" 뒤 흐린 점선이 오른쪽부터 줄어들고 ② 네 갈래가 시작점·이름표를 단 채 한 점으로 모인 뒤 ③ 그 점에서 새 흐름이 왼쪽부터 그려지며 단계가 하나씩 나타나고, 채운 끝점에서 멈춥니다. 겹치는 순간이 없습니다.</p></div></div>
     <div class="g"><div class="fig"><div class="box"><svg viewBox="0 0 640 320" data-v="a"></svg><span class="t"></span></div></div></div>
   </div><div class="room"></div></div></section>
 
@@ -86,7 +86,8 @@ svg{display:block;width:100%;height:auto;overflow:visible}
 const FROM = ['전화', '메신저', '이메일', '직접 방문'];
 const TO = ['Por favor, Harry', '요청 내용 작성', '담당자 검토', '수락 여부·처리 예정일 전달', '진행 상황 모니터링'];
 const HUB = '담당자가 다시 정리', STOP = '업무 효율 저하';
-const CY = 160, Y0 = 64, Y1 = 256, SX = 40, X1 = 566, HX = 300, KX = 520;
+const CY = 160, Y0 = 64, Y1 = 256, SX = 40, X1 = 566, HX = 300, KX = 609;   // KX: 전 그림의 끝점 — 전·후 그림의 좌우 가운데가 같아지는 자리(web/ flow.tsx 와 같음)
+const SHIFT = 17;                                                       // 전·후 그림 모두 상자 가운데(이름표 실측 폭 기준)
 const PIN = 80;
 const lerp = (a, b, t) => a + (b - a) * t;
 const c01 = (v) => Math.min(1, Math.max(0, v));
@@ -107,13 +108,17 @@ function before(o = {}) {
   let s = '';
   SRC.forEach((y0, i) => {
     const y = lerp(y0, CY, merge);
-    s += txt(34, y + 4 + dy, FROM[i], 'end', lbl);
+    s += txt(30, y + 4 + dy, FROM[i], 'end', lbl);
     if (src > 0) s += `<path d="${curve(y)}" transform="translate(0 ${dy})" fill="none" stroke="${color}" stroke-width="${width}" opacity="${src}"/>`;
+    // 갈래의 시작점 — 모이면 네 점이 한 점이 된다(거의 모이면 셋은 흐려져 겹친 고리가 뭉쳐 보이지 않게)
+    const dop = Math.min(src, i === 0 ? 1 : 1 - seg(merge, .55, .9));
+    if (dop > 0) s += `<circle cx="${SX}" cy="${y + dy}" r="5" fill="${B50}" stroke="${N400}" opacity="${dop}"/>`;
   });
-  if (cut < 1) s += `<path d="M${HX} ${CY + dy} H${KX}" fill="none" stroke="${N400}" stroke-width="1.2" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${cut}" opacity="${src}"/>`;
+  // 다시 정리한 뒤: 끊기는 X 대신 흐려지는 점선이 빈 점에서 멈춘다. 잘라낼 때는 오른쪽부터 줄어든다
+  if (cut < 1) s += `<path d="M${HX} ${CY + dy} H${lerp(KX, HX, cut).toFixed(1)}" fill="none" stroke="${N400}" stroke-width="1.2" stroke-dasharray="3 5" opacity="${src}"/>`;
   if (hub > 0) s += `<circle cx="${HX}" cy="${CY + dy}" r="${5 * hub}" fill="${B50}" stroke="${N400}" opacity="${Math.min(src, hub)}"/>`;
   s += txt(HX, CY + 28 + dy, HUB, 'middle', Math.min(src, hubLbl));
-  if (stop > 0) s += `<path d="M${KX - 6} ${CY - 6 + dy} l12 12 M${KX + 6} ${CY - 6 + dy} l-12 12" fill="none" stroke="${N400}" stroke-width="1.2" opacity="${Math.min(src, stop)}"/>` + txt(KX, CY + 28 + dy, STOP, 'middle', Math.min(src, stop));
+  if (stop > 0) s += `<circle cx="${KX}" cy="${CY + dy}" r="5" fill="${B50}" stroke="#B3AEA3" opacity="${Math.min(src, stop)}"/>` + txt(KX + 8, CY + 28 + dy, STOP, 'end', Math.min(src, stop));
   return s;
 }
 /** 새 흐름: 펜이 왼쪽에서 오른쪽으로 지나가며 선을 긋고, 지나간 자리의 단계 점·이름이 나타난다 */
@@ -158,7 +163,7 @@ const V = {
     const cut = ease(seg(t, .10, .32)), merge = ease(seg(t, .34, .58)), draw = ease(seg(t, .58, .94));
     const stop = 1 - seg(t, .10, .18), hubLbl = 1 - seg(t, .20, .30), hub = 1 - seg(t, .30, .42);
     const lbl = c01(1 - (merge - .45) * 2.5);                               // 이름표는 선 끝을 따라 모이다가, 서로 겹치기 전에 사라진다
-    let s = '<g transform="translate(14,0)">';
+    let s = `<g transform="translate(${SHIFT},0)">`;
     s += before({ cut, stop, hubLbl, hub, merge, lbl });
     s += after(draw);
     return s + '</g>';
@@ -166,14 +171,14 @@ const V = {
   // B: 앞 그림이 위로 살짝 뜨며 사라지고(0.15–0.38), 끝나 갈 때쯤 새 흐름이 그려진다(0.36–0.90)
   b(t) {
     const out = ease(seg(t, .15, .38)), draw = ease(seg(t, .36, .90));
-    let s = `<g transform="translate(14,${(-10 * out).toFixed(1)})" opacity="${(1 - out).toFixed(3)}">${out < 1 ? before() : ''}</g>`;
-    s += `<g transform="translate(14,0)">${after(draw)}</g>`;
+    let s = `<g transform="translate(${SHIFT},${(-10 * out).toFixed(1)})" opacity="${(1 - out).toFixed(3)}">${out < 1 ? before() : ''}</g>`;
+    s += `<g transform="translate(${SHIFT},0)">${after(draw)}</g>`;
     return s;
   },
   // C: 앞 그림은 위에서 흐려지고(0.08–0.26), 아래에 새 흐름이 그려진다(0.30–0.90)
   c(t) {
     const dim = ease(seg(t, .08, .26)), draw = ease(seg(t, .30, .90));
-    let s = `<g transform="translate(14,-20)">`;
+    let s = `<g transform="translate(${SHIFT},-20)">`;
     s += txt(-6, 36, '전', 'start', 1, 'tag');
     s += `<g opacity="${(1 - .55 * dim).toFixed(3)}">${before()}</g>`;
     s += `<path d="M0 ${CY + 150} H600" stroke="${'#E8E5DE'}" stroke-width="1"/>`;
