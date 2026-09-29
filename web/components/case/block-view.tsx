@@ -6,6 +6,7 @@ import { Phones } from './phones';
 import { Quote } from './quote';
 import { WipeView } from './wipe';
 import { Thread } from './thread';
+import { Table } from './table';
 import g from './grid.module.css';
 
 /** 블록 한 개. 종류가 늘면 case 를 더한다 */
@@ -31,5 +32,7 @@ export function BlockView({ b }: { b: Block }) {
       return <WipeView b={b} />;
     case 'thread':
       return <Thread b={b} />;
+    case 'table':
+      return <Table b={b} />;
   }
 }

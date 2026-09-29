@@ -1,0 +1,10 @@
+/* 화면별 차이 표 — 본문 칸 폭, 머리줄 아래 진한 괘선, 행 사이 옅은 괘선 */
+.fig{margin:0}
+.scroll{overflow-x:auto}
+.t{border-collapse:collapse;width:100%;min-width:520px;font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums}
+.t thead th{font-size:13px;font-weight:600;text-align:left;color:var(--bone-600);padding:10px 12px 10px 0;border-bottom:1px solid var(--bone-900)}
+.t tbody th,.t td{padding:12px 12px 12px 0;border-bottom:1px solid var(--bone-200);text-align:left;font-weight:400;vertical-align:middle;word-break:keep-all}
+.t tfoot th,.t tfoot td{padding:12px 12px 12px 0;border-top:1px solid var(--bone-900);text-align:left;font-weight:600}
+.sw{display:inline-block;width:14px;height:14px;margin-right:8px;border:1px solid rgba(0,0,0,.12);vertical-align:-2px}
+.hex{margin-left:6px;font-size:13px;color:var(--bone-500)}
+.cap{margin-top:8px;font-size:13px;line-height:1.5;color:var(--bone-500)}
