@@ -18,7 +18,8 @@
 .nav a,.nav button{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);
   border-radius:2px;line-height:1;background:var(--bone-50);font:inherit;color:inherit;cursor:pointer;transition:background .15s,color .15s}
 .nav a:hover,.nav button:hover{background:var(--bone-900);color:var(--bone-50)}
-.nav .cur{border-color:transparent;color:var(--navy-800);pointer-events:none}
+.nav .cur{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1;
+  background:var(--bone-900);color:var(--bone-50);cursor:default}   /* 지금 있는 곳: 버튼 모양 그대로, 호버와 같은 반전 */
 @media (max-width:1023px){ .who{display:none} .back span{display:none} .back{padding:0 10px;height:36px} }
 /* 홈(경로형 대시보드): 무대 바탕이 bone-100 — 헤더 그라데이션·버튼 바탕을 맞춘다. 헤더의 빈 자리는 휠이 무대로 가도록 비운다 */
 @media (min-width:1024px){

@@ -52,3 +52,17 @@ test('마지막 행에는 아래 선이 없고, 바닥글 상단 선이 그 자�
   expect(Math.abs(r.dl)).toBeLessThanOrEqual(0.5);
   expect(Math.abs(r.dr)).toBeLessThanOrEqual(0.5);
 });
+
+test('헤더의 Projects 는 지금 있는 곳 — 버튼 모양 그대로 색만 반전', async ({ page }) => {
+  await page.goto('/projects');
+  const cur = page.locator('header [data-nav-current]');
+  await expect(cur).toHaveText('Projects');
+  await expect(cur).toHaveAttribute('aria-current', 'page');
+  const [a, b] = await Promise.all([cur, page.locator('header button[data-open-drawer]')].map((l) => l.evaluate((el) => {
+    const c = getComputedStyle(el); return { h: el.getBoundingClientRect().height, bw: c.borderTopWidth, bg: c.backgroundColor, fg: c.color };
+  })));
+  expect(Math.round(a.h)).toBe(Math.round(b.h));      // 문의 버튼과 같은 높이·테두리
+  expect(a.bw).toBe(b.bw);
+  expect(a.bg).toBe('rgb(28, 27, 24)');                // bone-900
+  expect(a.fg).toBe('rgb(250, 249, 246)');             // bone-50
+});

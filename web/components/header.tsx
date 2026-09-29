@@ -17,7 +17,7 @@ export function Header({ variant, title, project }: Props) {
         </ViewTransitionLink>
       ) : null}
       <nav className={s.nav}>
-        {variant === 'list' ? <span className={s.cur}>Projects</span> : variant === 'home' ? <Link href="/projects">Projects</Link> : null}
+        {variant === 'list' ? <span className={s.cur} aria-current="page" data-nav-current>Projects</span> : variant === 'home' ? <Link href="/projects">Projects</Link> : null}
         <button type="button" data-open-drawer data-project={project ?? ''}>문의</button>
       </nav>
     </header>
