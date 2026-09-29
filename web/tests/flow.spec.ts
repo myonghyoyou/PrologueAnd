@@ -139,3 +139,35 @@ test('문구는 데이터에서, 그림 설명이 붙는다', async ({ page }) =
 test('색은 토큰만', async ({ page }) => {
   expect(await page.evaluate(() => document.querySelector('#flow [data-flow] svg')!.innerHTML.includes('#8A96C2'))).toBe(false);
 });
+
+/** 그림 안에서 보이는 것(투명도 > 0) 전체를 감싸는 상자의 가운데가 그림 가운데에서 얼마나 벗어났는지(그림 폭 대비) */
+const offCenter = (page: import('@playwright/test').Page, sel: string) => page.evaluate((sel) => {
+  const svg = document.querySelector<SVGSVGElement>(`${sel} [data-flow] svg`)!, sr = svg.getBoundingClientRect();
+  const vis = (e: Element) => { for (let x: Element | null = e; x && x !== svg; x = x.parentElement) if (Number(getComputedStyle(x).opacity) === 0) return false; return true; };
+  const rs = [...svg.querySelectorAll('text, circle, path')].filter(vis).map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0);
+  const l = Math.min(...rs.map((r) => r.left)), r = Math.max(...rs.map((r) => r.right));
+  return ((l + r) / 2 - (sr.left + sr.width / 2)) / sr.width;
+}, sel);
+
+test('전 그림: 갈래마다 시작점이 있고, 끝은 X 가 아니라 흐린 빈 점, 그림은 가운데', async ({ page }) => {
+  const r = await page.evaluate(() => {
+    const svg = document.querySelector('#problem [data-flow] svg')!;
+    return {
+      dots: svg.querySelectorAll('[data-src-dot]').length,
+      x: [...svg.querySelectorAll('path')].some((p) => /l12 12/.test(p.getAttribute('d') ?? '')),
+      stop: !!svg.querySelector('[data-stop]'),
+      tail: svg.querySelector('[data-tail]')?.getAttribute('stroke-dasharray'),
+    };
+  });
+  expect(r.dots).toBe(4);
+  expect(r.x).toBe(false);
+  expect(r.stop).toBe(true);
+  expect(r.tail).toBeTruthy();
+  expect(Math.abs(await offCenter(page, '#problem'))).toBeLessThan(0.03);
+});
+
+test('새 흐름(t=1)도 그림 가운데', async ({ page, isMobile }) => {
+  await scrollToY(page, isMobile ? (await passY(page, 1)) + 20 : (await trackY(page, 1)) + 20);
+  await page.waitForTimeout(100);
+  expect(Math.abs(await offCenter(page, '#flow'))).toBeLessThan(0.03);
+});
