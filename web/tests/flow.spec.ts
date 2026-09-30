@@ -171,3 +171,13 @@ test('새 흐름(t=1)도 그림 가운데', async ({ page, isMobile }) => {
   await page.waitForTimeout(100);
   expect(Math.abs(await offCenter(page, '#flow'))).toBeLessThan(0.03);
 });
+
+test('전 그림: 갈래 이름표가 상자 안(폰에서 긴 이름 "직접 방문"도)', async ({ page }) => {
+  const out = await page.evaluate(() => {
+    const box = document.querySelector<HTMLElement>('#problem [data-flow] > div')!.getBoundingClientRect();
+    return [...document.querySelectorAll<SVGTextElement>('#problem [data-flow] [data-src-label]')]
+      .filter((t) => { const r = t.getBoundingClientRect(); return r.left < box.left + 2 || r.right > box.right - 2; })
+      .map((t) => t.textContent);
+  });
+  expect(out).toEqual([]);
+});

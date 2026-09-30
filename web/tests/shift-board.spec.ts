@@ -258,3 +258,25 @@ test('폰: 표지 번호 ②·③이 왼쪽 칸 이름(D조 G열, 이름 끝 그
   });
   for (const l of r.lefts) expect(l).toBeGreaterThanOrEqual(r.name);
 });
+
+test('01 흐름: 글자가 선과 겹치지 않고, 갈래 이름표는 점에서 8 이상 떨어진다', async ({ page }) => {
+  await page.goto(URL);
+  const r = await page.evaluate(() => {
+    const svg = document.querySelector<SVGSVGElement>('#problem [data-flow] svg')!;
+    const paths = [...svg.querySelectorAll<SVGPathElement>('path')];
+    const texts = [...svg.querySelectorAll<SVGTextElement>('text')].filter((t) => Number(getComputedStyle(t).opacity) > 0 && t.textContent);
+    const hit: string[] = [];
+    for (const t of texts) {
+      const b = t.getBBox();
+      for (let x = b.x; x <= b.x + b.width; x += 1.5) for (let y = b.y; y <= b.y + b.height; y += 1.5) {
+        const pt = svg.createSVGPoint(); pt.x = x; pt.y = y;
+        if (paths.some((p) => p.isPointInStroke(pt))) { hit.push(t.textContent!); x = Infinity; break; }
+      }
+    }
+    const dots = [...svg.querySelectorAll<SVGCircleElement>('[data-src-dot]')].map((c) => c.getBBox());
+    const gaps = [...svg.querySelectorAll<SVGTextElement>('[data-src-label]')].map((t, i) => dots[i].x - (t.getBBox().x + t.getBBox().width));
+    return { hit: [...new Set(hit)], minGap: Math.min(...gaps) };
+  });
+  expect(r.hit).toEqual([]);
+  expect(r.minGap).toBeGreaterThanOrEqual(8);
+});

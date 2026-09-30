@@ -52,7 +52,7 @@ export function Flow({ b }: { b: FlowBlock }) {
                 const y = lerp(y0, CY, merge);
                 return (
                   <g key={`s${i}`}>
-                    <text data-src-label x={30} y={y + 4} textAnchor="end" className={s.lbl} style={{ opacity: lbl }}>{b.from[i]}</text>
+                    <text data-src-label x={25} y={y + 4} textAnchor="end" className={s.lbl} style={{ opacity: lbl }}>{b.from[i]}</text>
                     <path data-src-path d={curve(y)} fill="none" stroke="var(--navy-400)" strokeWidth={1.2} />
                     {/* 갈래의 시작점 — 모이면 네 점이 한 점이 되고, 그 자리에 새 흐름의 첫 점이 선다 */}
                     <circle data-src-dot cx={SX} cy={y} r={5} fill="var(--bone-50)" stroke="var(--navy-400)"
@@ -63,10 +63,12 @@ export function Flow({ b }: { b: FlowBlock }) {
               {/* 다시 정리한 뒤: 끊기는 X 대신 흐려지는 점선이 빈 점에서 멈춘다. 잘라낼 때는 오른쪽부터 줄어든다 */}
               {cut < 1 ? <path data-tail d={`M${HX} ${CY} H${lerp(KX, HX, cut).toFixed(1)}`} fill="none" stroke="var(--navy-400)" strokeWidth={1.2} strokeDasharray="3 5" /> : null}
               {hub > 0 ? <circle cx={HX} cy={CY} r={5 * hub} fill="var(--bone-50)" stroke="var(--navy-400)" style={{ opacity: hub }} /> : null}
-              <text x={HX} y={CY + 28} textAnchor="middle" className={s.lbl} style={{ opacity: hubLbl }}>{b.hub}</text>
+              {/* 모이는 점 이름은 점의 오른쪽 아래 — 가운데 아래는 아래 갈래 곡선이 지나가 글자와 겹친다(폰은 글자가 커서 더) */}
+              <text x={HX + 10} y={CY + 24} textAnchor="start" className={s.lbl} style={{ opacity: hubLbl }}>{b.hub}</text>
               <g style={{ opacity: stop }}>
                 <circle data-stop cx={KX} cy={CY} r={5} fill="var(--bone-50)" stroke="var(--bone-400)" />
-                <text x={KX + 8} y={CY + 28} textAnchor="end" className={s.lbl}>{b.stop}</text>
+                {/* 끝점 이름은 점선 위 — 아래에 두면 폰에서 모이는 점 이름과 부딪힌다 */}
+                <text x={KX + 8} y={CY - 14} textAnchor="end" className={s.lbl}>{b.stop}</text>
               </g>
               {draw > 0 ? <path data-chain d={`M${SX} ${CY} H${Math.min(penX, X1).toFixed(1)}`} fill="none" stroke="var(--navy-800)" strokeWidth={2} /> : null}
               {stepX.map((x, i) => {
