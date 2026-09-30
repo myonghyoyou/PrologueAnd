@@ -198,3 +198,40 @@ test('본문·alt: 운영·효과 주장과 공개하지 않는 낱말이 없고
   // "공지가 나간 뒤에야"는 표지 소개 한 곳만(명세 5-1 같은 사실은 한 번)
   expect((text.match(/공지가 나간 뒤에야/g) ?? []).length).toBe(1);
 });
+
+test('확인 목록 문구: 같은 틀·같은 사실을 되풀이하지 않는다', async ({ page }) => {
+  await page.goto(URL);
+  const main = await page.evaluate(() => document.querySelector('main')!.innerText);
+  // "칸을 다 채우면 그대로 결재로 넘어갔다"(02)와 같은 틀의 "결재는 그대로 올라갔다"를 03 에서 되풀이하지 않는다
+  expect(main).not.toContain('결재는 그대로 올라갔습니다');
+  // 편성 횟수를 다시 센다는 말은 표와 5번 "전에는" 두 곳만
+  expect(main).not.toContain('처음부터 다시 세어야');
+  // 03 도입은 2번 주석 제목("내 담당만 고치고")과 같은 말을 하지 않는다
+  expect(main).not.toContain('맡은 조만 짜고 고칩니다');
+});
+
+test('데스크톱: 01 표 칸이 줄을 넘기면 마지막 줄에 한두 글자만 남지 않는다', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, '데스크톱 — 폰은 표가 가로로 밀린다(기존 동작)');
+  await page.goto(URL);
+  const short = await page.locator('#problem [data-table] td').evaluateAll((tds) => tds.flatMap((td) => {
+    const r = document.createRange(); r.selectNodeContents(td);
+    const lines = [...r.getClientRects()].filter((x) => x.width > 0);
+    const last = lines[lines.length - 1];
+    return lines.length > 1 && last.width < 40 ? [td.textContent] : [];
+  }));
+  expect(short).toEqual([]);
+});
+
+test('03 주석 제목: "한 달치" · "두 번" · "몇 번"이 줄 사이에서 갈라지지 않는다', async ({ page }) => {
+  await page.goto(URL);
+  const split = await page.locator('#screens [data-note-text] h3').evaluateAll((hs) => hs.flatMap((h) => {
+    const node = h.firstChild as Text; const t = node.textContent ?? '';
+    return ['한 달치', '두 번', '몇 번'].flatMap((w) => {
+      const i = t.replace(/\u00a0/g, ' ').indexOf(w);
+      if (i < 0) return [];
+      const top = (k: number) => { const r = document.createRange(); r.setStart(node, k); r.setEnd(node, k + 1); return r.getBoundingClientRect().top; };
+      return Math.abs(top(i) - top(i + w.length - 1)) > 2 ? [w] : [];
+    });
+  }));
+  expect(split).toEqual([]);
+});
