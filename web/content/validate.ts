@@ -39,6 +39,13 @@ export function validateStudy(s: Study): string[] {
       for (const r of b.rows) for (const c of [r.before, r.after]) if ('crop' in c.show && !cropOk(c.show.crop)) errs.push(`자르기 범위가 캡처 밖입니다: ${c.show.crop.src}`);
     }
     if (b.type === 'rule') for (const c of [b.before, b.after]) if (!cropOk(c)) errs.push(`자르기 범위가 캡처 밖입니다: ${c.src}`);
+    if (b.type === 'steps') {
+      if (b.rows.length < 1 || b.rows.length > 2) errs.push(`순서 비교 줄은 1~2개: ${b.rows.length}개`);
+      for (const r of b.rows) if (r.steps.length < 3 || r.steps.length > 6) errs.push(`순서 비교 칸은 3~6개: ${r.label} ${r.steps.length}개`);
+      if (b.rows.length === 2 && b.rows[0].steps.length !== b.rows[1].steps.length) errs.push('순서 비교 두 줄의 칸 수가 다릅니다');
+      if (b.rows.some((r) => !r.label.trim() || r.steps.some((x) => !x.trim()))) errs.push('순서 비교에 빈 글자가 있습니다');
+      if (!b.alt.trim()) errs.push('alt 가 비었습니다: 순서 비교');
+    }
   }
   for (const f of figuresOf(s)) {
     if (!f.alt.trim()) errs.push(`alt 가 비었습니다: ${f.src}`);

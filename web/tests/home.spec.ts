@@ -44,7 +44,7 @@ test.describe('홈 — 데스크톱', () => {
   test('진행 지도 칸을 누르면 그 장면으로 — Projects 장면은 공개 편수와 목록 링크', async ({ page }) => {
     await page.locator('[data-pmap] button').nth(6).click();
     await settle(page, 6);
-    await expect(page.locator('#p06 [data-published]')).toHaveText('2');
+    await expect(page.locator('#p06 [data-published]')).toHaveText('3');
     await expect(page.locator('#p06').getByRole('link', { name: /Projects 보기/ })).toHaveAttribute('href', '/projects');
   });
 

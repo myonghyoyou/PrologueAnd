@@ -9,13 +9,15 @@ test('병원 편이 열리고, 표지 제목과 소개가 명세 문구다', asy
   await expect(page.locator('[data-summary]')).toHaveText('기능이 늘 때마다 화면을 따로 만들어, 같은 시스템인데 화면마다 색과 버튼 크기가 달랐습니다.');
 });
 
-test('목록에 병원 행이 링크로, 두 편이 서로를 다음 이야기로 가리킨다', async ({ page }) => {
+test('다음 이야기: Por favor, Harry → 문제 은행 → 병원 → Por favor, Harry', async ({ page }) => {
   await page.goto('/projects');
   await expect(page.locator('a[data-row][data-slug="hospital-ux"]')).toHaveAttribute('href', URL);
+  await page.goto('/projects/por-favor-harry');
+  await expect(page.locator('[data-teaser]')).toContainText('문제 은행');
+  await page.goto('/projects/problem-bank');
+  await expect(page.locator('[data-teaser]')).toContainText('병원 UI/UX 고도화');
   await page.goto(URL);
   await expect(page.locator('[data-teaser]')).toContainText('Por favor, Harry');
-  await page.goto('/projects/por-favor-harry');
-  await expect(page.locator('[data-teaser]')).toContainText('병원 UI/UX 고도화');
 });
 
 test('04 화면: 여백 주석 여섯, "전에는" 여섯', async ({ page }) => {
@@ -186,7 +188,10 @@ test('폰: 전을 눌러도 전/후 단추가 제자리에 있다(목록이 접�
   expect(Math.abs((await y()) - y0)).toBeLessThanOrEqual(1);
 });
 
-test('핫스팟 강조를 켠 채(포커스·마우스를 옮기지 않고) 전으로 바꿨다 돌아오면 강조가 꺼져 있다', async ({ page }) => {
+test('핫스팟 강조를 켠 채(포커스·마우스를 옮기지 않고) 전으로 바꿨다 돌아오면 강조가 꺼져 있다', async ({ page, isMobile }) => {
+  // 폰 배치에서는 돌아올 때 목록이 멈춰 있는 포인터 밑에 다시 나타나 브라우저가 새 hover 로 강조를 켠다(실제 터치에는 멈춰 있는 포인터가 없다).
+  // flip 의 초기화는 데스크톱에서만 가를 수 있다
+  test.skip(!!isMobile, '데스크톱 — 폰은 남아 있는 포인터가 hover 를 다시 켠다');
   await page.goto(URL);
   const first = page.locator('#screens [data-block="note"]').first();
   // 마우스로 가리킨 뒤 마우스는 그대로 두고 JS click 으로 바꾼다 — 포커스가 없어 blur 가, 마우스가 안 움직여 mouseleave 가
@@ -210,4 +215,19 @@ test('03 시트(데스크톱): 행마다 규칙 · 전 · 후가 한 줄에 나�
   }).length);
   expect(bad).toBe(0);
   await expect(page.locator('#rules [data-sheet-row]').nth(3).locator('[data-sheet-cell="after"] [data-crop]')).toHaveCount(1);
+});
+
+test('병원 적용 한 쌍은 그대로: 전·후 라벨, 글 칸 제목', async ({ page }) => {
+  await page.goto(URL);
+  const r = page.locator('#rules [data-rule]');
+  await expect(r.locator('[data-rule-tag]')).toHaveText(['전', '후']);
+  await expect(r.locator('h3')).toHaveText('재고관리 한 행에 규칙을 적용했습니다');
+});
+
+test('병원 전환 단추는 그대로 그림 위, 라벨 후·전', async ({ page }) => {
+  await page.goto(URL);
+  const tg = page.locator('#screens [data-side-toggle]').first();
+  await expect(tg.locator('button')).toHaveText(['후', '전']);
+  await expect(tg).toHaveAttribute('aria-label', '캡처 전후');
+  expect(await tg.evaluate((e) => !!e.closest('[data-note-text]'))).toBe(false);
 });

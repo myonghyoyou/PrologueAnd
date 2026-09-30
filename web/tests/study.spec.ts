@@ -16,6 +16,10 @@ test('병원 UI/UX 고도화도 콘텐츠 규칙을 지킨다', () => {
   expect(validateStudy(getStudy('hospital-ux')!)).toEqual([]);
 });
 
+test('문제 은행도 콘텐츠 규칙을 지킨다', () => {
+  expect(validateStudy(getStudy('problem-bank')!)).toEqual([]);
+});
+
 test('장 네 개: 문제 → Before & After → 바꾼 흐름 → 화면 (문제를 먼저, 해결은 그다음)', () => {
   const s = pfh();
   expect(s.chapters.map((c) => c.id)).toEqual(['problem', 'before-after', 'flow', 'screens']);
@@ -117,4 +121,15 @@ test('새 그림도 크기를 파일에서 읽는다(자른 캡처·전 캡처·
   expect(figs.every((f) => (f.w ?? 0) > 0 && (f.h ?? 0) > 0)).toBe(true);
   expect(figs.some((f) => f.src.endsWith('/tasks.png') && f.alt === '전')).toBe(true);
   expect(figs.filter((f) => f.src.endsWith('/form.png')).length).toBeGreaterThanOrEqual(1);
+});
+
+test('순서 비교 규칙: 줄 1~2, 칸 3~6, 두 줄 칸 수 같음, 빈 글자 없음', () => {
+  const s: Study = structuredClone(getStudy('problem-bank')!);
+  const b = s.chapters.find((c) => c.id === 'order')!.blocks[0];
+  if (b.type !== 'steps') throw new Error('steps 가 아님');
+  b.rows[1].steps.pop();
+  b.rows[0].label = '';
+  const errs = validateStudy(s);
+  expect(errs.some((e) => e.includes('칸 수가 다릅니다'))).toBe(true);
+  expect(errs.some((e) => e.includes('빈 글자'))).toBe(true);
 });

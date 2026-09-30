@@ -6,6 +6,8 @@
 .toggle button + button{border-left:0}
 .toggle button[aria-pressed="true"]{background:var(--bone-900);border-color:var(--bone-900);color:var(--bone-50)}
 .toggle button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+/* 이름을 바꾼 단추(sides)는 글 칸 문단 아래 — 그림 위 한 줄을 차지하지 않아 다른 주석과 그림 윗변이 맞는다 */
+.toggleText{justify-content:flex-start;margin:16px 0 0}
 .spotsOff{visibility:hidden}
 .swap{position:relative}
 .before{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s var(--ease-out)}

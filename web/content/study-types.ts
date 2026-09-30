@@ -8,7 +8,8 @@ export type FigureBlock = { type: 'figure'; slot: 'wide' | 'body'; fig: Figure }
 /** play: 데스크톱에서 캡처 대신 HTML 로 다시 그린 화면이 스크롤에 맞춰 움직인다(폰·모션 줄이기는 캡처 그대로) */
 /** was: 이 화면이 없던 때의 모습 한 줄 — 제목 위에 "전에는"으로 붙어 개선을 비교할 기준이 된다.
  *  beforeFig: 있으면 그림 위 "후 · 전" 단추로 1차 화면을 같은 틀에서 보인다 */
-export type NoteBlock = { type: 'note'; label?: string; was?: string; h?: string; p?: string[]; figs: Figure[]; beforeFig?: Figure; play?: 'pfh-request-form' };
+/** sides: 전환 단추 두 칸의 이름(없으면 "후"·"전"). 있으면 단추를 글 칸 문단 아래에 둔다 */
+export type NoteBlock = { type: 'note'; label?: string; was?: string; h?: string; p?: string[]; figs: Figure[]; beforeFig?: Figure; sides?: [string, string]; play?: 'pfh-request-form' };
 export type PhonesBlock = { type: 'phones'; label?: string; was?: string; h?: string; p?: string[]; figs: Figure[]; caption?: string };
 export type FlowBlock = {
   type: 'flow'; state: 'before' | 'morph';
@@ -38,9 +39,11 @@ export type SheetCell = { label: string; show: SheetShow };
 export type SheetRow = { rule: string; before: SheetCell; after: SheetCell };
 /** 규칙 시트 — 행마다 규칙 한 줄, 그 아래 전(1차 화면에서 뽑음) · 후(정한 규칙) */
 export type SheetBlock = { type: 'sheet'; rows: SheetRow[]; caption?: string };
-/** 적용 한 쌍 — 같은 부분을 자른 전·후 캡처 */
-export type RuleBlock = { type: 'rule'; h: string; p?: string; before: Crop; after: Crop };
-export type Block = FigureBlock | NoteBlock | PhonesBlock | FlowBlock | QuoteBlock | WipeBlock | ThreadBlock | TableBlock | SheetBlock | RuleBlock;
+/** 적용 한 쌍 — 같은 부분을 자른 두 캡처. tags 없으면 "전"·"후". h 가 없으면 글 칸 없이 넓은 칸에 한 쌍과 캡션만 */
+export type RuleBlock = { type: 'rule'; h?: string; p?: string; tags?: [string, string]; caption?: string; before: Crop; after: Crop };
+/** 순서 비교 — 줄마다 라벨과 단계 칸. 두 줄이면 같은 열 격자라 같은 순번 칸이 세로로 맞는다. "…" 칸은 선 없이 글자만 */
+export type StepsBlock = { type: 'steps'; rows: { label: string; steps: string[] }[]; alt: string; caption?: string };
+export type Block = FigureBlock | NoteBlock | PhonesBlock | FlowBlock | QuoteBlock | WipeBlock | ThreadBlock | TableBlock | SheetBlock | RuleBlock | StepsBlock;
 
 /** 표지 그림을 결과 화면 대신 문제 장면(흩어진 요청 더미)으로 — 문제를 먼저 보여 준다 */
 export type ScatterHero = { scatter: Scatter[]; mark?: string; alt: string; caption?: string };

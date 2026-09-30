@@ -1,0 +1,27 @@
+/* 순서 비교 — 라벨 칸 + 같은 열 격자. 전 줄은 흐리게, 마지막 줄(지금)은 진하게. 화살표는 칸 사이 간격 가운데 */
+.fig{margin:0}
+.row{display:grid;grid-template-columns:120px minmax(0,1fr);column-gap:24px;align-items:center}
+.row + .row{margin-top:20px}
+.label{margin:0;font-size:13px;font-weight:600;color:var(--bone-500);word-break:keep-all}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));column-gap:28px;align-items:stretch}
+.step{position:relative;display:flex;align-items:center;justify-content:center;min-height:52px;padding:8px 10px;border:1px solid var(--bone-400);
+  font-size:15px;line-height:1.35;color:var(--bone-500);text-align:center;word-break:keep-all;box-sizing:border-box}
+.row[data-last] .label{color:var(--bone-900)}
+.row[data-last] .step{border-color:var(--bone-900);color:var(--bone-900)}
+.step[data-gap]{border-color:transparent}
+.arrow{position:absolute;left:100%;top:50%;width:28px;height:1px;background:currentColor;opacity:.6}
+.arrow::after{content:'';position:absolute;right:0;top:-3px;border:3.5px solid transparent;border-left:5px solid currentColor;border-right:0}
+.cap{margin-top:8px;font-size:13px;line-height:1.5;color:var(--bone-500)}
+/* 태블릿(641~1023): 라벨을 위로 올리고 칸은 가로 한 줄 그대로 — 세로로 쌓으면 넓은 칸 열 개가 길게 늘어진다 */
+@media (max-width:1023px){
+  .row{grid-template-columns:1fr;row-gap:8px}
+  .row + .row{margin-top:24px}
+  .steps{column-gap:20px}
+  .arrow{width:20px}
+}
+/* 폰(640 이하): 칸이 위에서 아래로, 화살표는 아래 방향 */
+@media (max-width:640px){
+  .steps{grid-template-columns:1fr;row-gap:20px}
+  .arrow{left:50%;top:100%;width:1px;height:20px}
+  .arrow::after{right:-3px;top:auto;bottom:0;border:3.5px solid transparent;border-top:5px solid currentColor;border-bottom:0}
+}

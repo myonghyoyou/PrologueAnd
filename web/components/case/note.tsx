@@ -50,6 +50,14 @@ function NoteStill({ b }: { b: NoteBlock }) {
   // 바꿀 때마다 가리키던 핫스팟을 놓는다 — 전에서는 강조가 없고, 후로 돌아와도 강조 없이 시작한다
   const flip = (to: 'after' | 'before') => { setSpot(-1); setSide(to); };
   const list = <SpotList spots={spots} active={spot} onHover={setSpot} />;
+  const [aName, bName] = b.sides ?? ['후', '전'];
+  // 이름을 바꾼 단추(sides)는 글 칸 문단 아래 — 그림 위 한 줄을 차지하지 않아 다른 주석과 그림 윗변이 맞는다
+  const toggle = b.beforeFig ? (
+    <div className={b.sides ? `${s.toggle} ${s.toggleText}` : s.toggle} role="group" aria-label={b.sides ? '화면 상태' : '캡처 전후'} data-side-toggle>
+      <button type="button" data-side="after" aria-pressed={side === 'after'} onClick={() => flip('after')}>{aName}</button>
+      <button type="button" data-side="before" aria-pressed={side === 'before'} onClick={() => flip('before')}>{bName}</button>
+    </div>
+  ) : null;
   return (
     <div className={g.g}>
       <div className={`${g.noteText} ${s.text}`} data-note-text>
@@ -58,15 +66,11 @@ function NoteStill({ b }: { b: NoteBlock }) {
           {!spots.length ? null : b.beforeFig ? (
             <div className={side === 'before' ? s.spotsOff : undefined} aria-hidden={side === 'before' ? true : undefined} inert={side === 'before'}>{list}</div>
           ) : list}
+          {b.sides ? toggle : null}
         </NoteText>
       </div>
       <div className={`${g.noteFigs} ${s.figs}`}>
-        {b.beforeFig ? (
-          <div className={s.toggle} role="group" aria-label="캡처 전후" data-side-toggle>
-            <button type="button" data-side="after" aria-pressed={side === 'after'} onClick={() => flip('after')}>후</button>
-            <button type="button" data-side="before" aria-pressed={side === 'before'} onClick={() => flip('before')}>전</button>
-          </div>
-        ) : null}
+        {b.sides ? null : toggle}
         <div className={s.swap} data-swap data-side={side}>
           <div aria-hidden={side === 'before' ? true : undefined}>
             <Row figs={b.figs} sizes="(max-width:1023px) 100vw, 1230px"

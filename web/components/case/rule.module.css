@@ -1,10 +1,14 @@
 /* 적용 한 쌍 — 나란히, 높이 맞춤. 폰은 위아래 */
+.col{width:100%}
 .pair{display:flex;gap:16px;align-items:flex-start}
 .one{min-width:0}
 .tag{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--bone-700)}
+.cap{margin:8px 0 0;font-size:13px;line-height:1.5;color:var(--bone-500)}
 /* 데스크톱만 줄 폭(rowMaxWidth)이 크기를 정한다. 폰·태블릿은 CropView 자체 최대 폭(원본 px)을 지킨다 */
 @media (min-width:1024px){ .one > figure{max-width:none!important} }
 @media (max-width:1023px){
-  .pair{flex-direction:column;max-width:none!important;margin-top:20px}
+  .col{max-width:none!important}
+  .pair{flex-direction:column}
+  .withText{margin-top:20px}   /* 위에 글이 있을 때만 */
   .one{flex:none!important;width:100%}
 }
