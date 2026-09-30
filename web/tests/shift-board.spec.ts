@@ -15,7 +15,7 @@ test('표지 제목·소개가 명세 문구다', async ({ page }) => {
   ]);
   await expect(page.locator('[data-pin-note]')).toHaveText([
     '1담당자 한 명의 파일이 늦으면, 합친 파일에서 그 담당의 세로줄이 통째로 비었습니다.',
-    '2정민준 님이 3월 2일과 5일, 한 주에 두 번 들어가 있습니다. 눈으로 찾기 전에는 알 수 없었습니다.',
+    '2최하은 님이 3월 3일과 6일, 한 주에 두 번 들어가 있습니다. 눈으로 찾기 전에는 알 수 없었습니다.',
     '3문민준 님은 이미 퇴사한 분입니다. 지난달 파일을 복사해 쓰다 보니 이름이 그대로 남았습니다.',
   ]);
 });
@@ -234,4 +234,27 @@ test('03 주석 제목: "한 달치" · "두 번" · "몇 번"이 줄 사이에�
     });
   }));
   expect(split).toEqual([]);
+});
+
+test('최종 리뷰 반영: 같은 말·같은 틀을 되풀이하지 않는다', async ({ page }) => {
+  await page.goto(URL);
+  const main = await page.evaluate(() => document.querySelector('main')!.innerText);
+  // 02 문단의 "걸러야 할 칸"을 4번 제목에서 되풀이하지 않는다
+  expect((main.match(/걸러야 할 칸/g) ?? []).length).toBeLessThanOrEqual(1);
+  // "지난달 파일"은 표지 소개 · 표지 번호 ③ · 표 한 줄까지
+  expect((main.match(/지난달 파일/g) ?? []).length).toBeLessThanOrEqual(3);
+  // "전에는" 줄에서 "~해 봐야 ~했습니다" 틀은 한 번만
+  const was = await page.locator('#screens [data-was]').allInnerTexts();
+  expect(was.filter((w) => /봐야/.test(w)).length).toBeLessThanOrEqual(1);
+});
+
+test('폰: 표지 번호 ②·③이 왼쪽 칸 이름(D조 G열, 이름 끝 그림 x 40.96%)을 덮지 않는다', async ({ page, isMobile }) => {
+  test.skip(!isMobile, '폰 전용 — 번호 22px 에 그림이 가장 좁다');
+  await page.goto(URL);
+  const r = await page.evaluate(() => {
+    const f = document.querySelector<HTMLElement>('[data-hero-pinned] [data-frame] img')!.getBoundingClientRect();
+    const ps = [...document.querySelectorAll<HTMLElement>('[data-hero-pinned] [data-pin]')].slice(1).map((p) => p.getBoundingClientRect().left - 4);   // 4 = 번호 둘레 고리
+    return { lefts: ps, name: f.left + f.width * 0.4096 };
+  });
+  for (const l of r.lefts) expect(l).toBeGreaterThanOrEqual(r.name);
 });
