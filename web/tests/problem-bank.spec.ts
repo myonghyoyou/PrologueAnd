@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { bannedWords } from './banned';
 
 // 문제 은행 상세 (명세 docs/superpowers/specs/2026-09-30-problem-bank-case-design.md)
 const URL = '/projects/problem-bank';
-const BANNED = ['문제은행', 'PC 에서'];
+// 표기 규칙(붙여 쓴 이름·띄어 쓴 조사) + 공개하지 않는 낱말(저장소 밖 목록)
+const BANNED = ['문제은행', 'PC 에서', ...(bannedWords() ?? [])];
 
 test('문제 은행 편이 열리고 표지 제목·소개가 명세 문구다', async ({ page }) => {
   await page.goto(URL);

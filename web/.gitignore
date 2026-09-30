@@ -43,3 +43,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 공개하지 않는 낱말 목록 — 저장소에 넣지 않는다(tests/banned.ts 가 읽는다)
+/tests/banned.local.json
