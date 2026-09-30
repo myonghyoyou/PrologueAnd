@@ -2,14 +2,15 @@ import { test, expect } from '@playwright/test';
 import { allProjects, publishedProjects, getStudy, nextProject } from '../content';
 import { bannedWords } from './banned';
 
-test('프로젝트는 6건이고 공개는 Por favor, Harry · 문제 은행 · 병원 UI/UX 고도화 세 건', () => {
+test('프로젝트는 6건이고 공개는 Por favor, Harry · 문제 은행 · 병원 UI/UX 고도화 · 교대 근무표 네 건', () => {
   expect(allProjects()).toHaveLength(6);
-  expect(publishedProjects().map((p) => p.slug)).toEqual(['por-favor-harry', 'problem-bank', 'hospital-ux']);
+  expect(publishedProjects().map((p) => p.slug)).toEqual(['por-favor-harry', 'problem-bank', 'hospital-ux', 'shift-board']);
 });
 
 test('공개된 상세만 Study 데이터가 있다', () => {
   expect(getStudy('por-favor-harry')).toBeTruthy();
   expect(getStudy('problem-bank')).toBeTruthy();
+  expect(getStudy('shift-board')).toBeTruthy();
   expect(getStudy('custom-commerce')).toBeUndefined();
 });
 

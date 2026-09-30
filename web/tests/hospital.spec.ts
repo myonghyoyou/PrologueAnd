@@ -9,7 +9,7 @@ test('병원 편이 열리고, 표지 제목과 소개가 명세 문구다', asy
   await expect(page.locator('[data-summary]')).toHaveText('기능이 늘 때마다 화면을 따로 만들어, 같은 시스템인데 화면마다 색과 버튼 크기가 달랐습니다.');
 });
 
-test('다음 이야기: Por favor, Harry → 문제 은행 → 병원 → Por favor, Harry', async ({ page }) => {
+test('다음 이야기: Por favor, Harry → 문제 은행 → 병원 → 교대 근무표 → Por favor, Harry', async ({ page }) => {
   await page.goto('/projects');
   await expect(page.locator('a[data-row][data-slug="hospital-ux"]')).toHaveAttribute('href', URL);
   await page.goto('/projects/por-favor-harry');
@@ -17,6 +17,8 @@ test('다음 이야기: Por favor, Harry → 문제 은행 → 병원 → Por fa
   await page.goto('/projects/problem-bank');
   await expect(page.locator('[data-teaser]')).toContainText('병원 UI/UX 고도화');
   await page.goto(URL);
+  await expect(page.locator('[data-teaser]')).toContainText('교대 근무표');
+  await page.goto('/projects/shift-board');
   await expect(page.locator('[data-teaser]')).toContainText('Por favor, Harry');
 });
 
