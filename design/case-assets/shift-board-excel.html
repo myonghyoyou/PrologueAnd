@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>2026년 3월 근무편성표_취합.xlsx</title>
+<!-- 교대 근무표 상세 표지(명세 3장). Windows 한국어 Excel 을 리본을 접은 상태로 연 화면. 이름은 모두 가명 -->
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1280px;height:800px;overflow:hidden;background:#fff;font-family:"Segoe UI","Malgun Gothic",sans-serif;color:#262626;-webkit-font-smoothing:antialiased}
+/* 제목 표시줄 */
+.title{position:absolute;top:0;left:0;right:0;height:32px;background:#217346;color:#fff;display:flex;align-items:center;font-size:12px}
+.auto{display:flex;align-items:center;gap:6px;padding-left:12px}
+.tog{width:28px;height:14px;border:1px solid #fff;border-radius:7px;position:relative}
+.tog i{position:absolute;left:2px;top:2px;width:8px;height:8px;border-radius:50%;background:#fff}
+.qa{display:flex;gap:14px;padding-left:16px;font-size:14px}
+.qa svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:1.3}
+.fname{position:absolute;left:0;right:0;text-align:center;pointer-events:none;font-size:12px}
+.search{position:absolute;left:760px;width:260px;height:22px;border-radius:4px;background:rgba(255,255,255,.2);display:flex;align-items:center;gap:6px;padding:0 8px;font-size:12px;color:#e6f2ea}
+.user{position:absolute;right:150px;width:22px;height:22px;border-radius:50%;background:#dff6dd;color:#0e5c2f;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.win{position:absolute;right:0;top:0;display:flex;height:32px}
+.win span{width:46px;display:flex;align-items:center;justify-content:center}
+.win svg{width:10px;height:10px;fill:none;stroke:#fff;stroke-width:1}
+/* 메뉴 탭(리본 접힘) */
+.tabs{position:absolute;top:32px;left:0;right:0;height:32px;background:#f3f3f3;border-bottom:1px solid #e1e1e1;display:flex;align-items:stretch;padding:0 6px;font-size:13px}
+.tabs span{display:flex;align-items:center;padding:0 11px}
+.tabs .on{color:#185c37;font-weight:600;box-shadow:inset 0 -3px #185c37}
+.tabs .sp{flex:1}
+.btn{align-self:center;height:24px;border:1px solid #c8c8c8;border-radius:4px;padding:0 10px;display:flex;align-items:center;gap:6px;font-size:12px;margin-left:8px;background:#fff}
+.btn.g{background:#107c41;border-color:#107c41;color:#fff}
+/* 수식 입력줄 */
+.fx{position:absolute;top:64px;left:0;right:0;height:36px;display:flex;align-items:center;padding:0 8px;background:#fff;border-bottom:1px solid #d4d4d4}
+.nb{width:96px;height:24px;border:1px solid #c8c8c8;display:flex;align-items:center;justify-content:space-between;padding:0 6px;font-size:12px}
+.ic{display:flex;gap:16px;padding:0 14px;color:#9a9a9a;font-size:13px;font-style:italic}
+.fin{flex:1;height:24px;border:1px solid #c8c8c8;display:flex;align-items:center;padding:0 8px;font-family:"Malgun Gothic";font-size:14px}
+/* 시트 */
+.grid{position:absolute;top:100px;left:0;right:17px;bottom:48px;overflow:hidden;background:#fff}
+table{border-collapse:collapse;table-layout:fixed;font-family:"Malgun Gothic";font-size:14.67px}
+td,th{height:22px;padding:0 4px;white-space:nowrap;overflow:hidden;border:1px solid #d4d4d4;font-weight:400}
+thead th{height:20px;background:#f3f3f3;color:#444;font-family:"Segoe UI";font-size:12px;text-align:center;border-color:#d0d0d0}
+tbody th{background:#f3f3f3;color:#444;font-family:"Segoe UI";font-size:12px;text-align:center;border-color:#d0d0d0}
+th.hot{background:#d3f0e0;color:#0e5c2f;font-weight:600}
+thead th.hot{box-shadow:inset 0 -2px #107c41}
+tbody th.hot{box-shadow:inset -2px 0 #107c41}
+th.corner{background:#f3f3f3}
+/* 사람이 그어 넣은 표 */
+td.b{border:1px solid #000}
+td.t{font-size:18.67px;font-weight:700;text-align:center;border:1px solid #d4d4d4}
+td.h{background:#d9d9d9;text-align:center;font-weight:700}
+td.c{text-align:center}
+tr.sat td.b{background:#ddebf7}
+tr.sun td.b{background:#fce4d6}
+td.red{color:#c00000}
+td.sel{position:relative;outline:2px solid #107c41;outline-offset:-2px}
+td.sel::after{content:"";position:absolute;right:-4px;bottom:-4px;width:6px;height:6px;background:#107c41;border:1px solid #fff}
+/* 오른쪽 스크롤 막대 */
+.vs{position:absolute;top:100px;right:0;width:17px;bottom:48px;background:#f7f7f7;border-left:1px solid #e1e1e1}
+.vs i{position:absolute;left:4px;right:4px;top:22px;height:120px;border-radius:4px;background:#c2c2c2}
+/* 시트 탭 */
+.sheets{position:absolute;left:0;right:0;bottom:22px;height:26px;background:#f3f3f3;border-top:1px solid #d4d4d4;display:flex;align-items:stretch;font-size:12px}
+.nav{display:flex;align-items:center;gap:12px;padding:0 12px;color:#8a8a8a;font-size:10px}
+.sheets .s{display:flex;align-items:center;padding:0 14px;color:#444;border-right:1px solid #e1e1e1}
+.sheets .s.on{background:#fff;color:#107c41;font-weight:700;box-shadow:inset 0 -2px #107c41}
+.plus{display:flex;align-items:center;padding:0 10px;color:#666;font-size:16px}
+.hs{flex:1;display:flex;align-items:center;padding:0 10px}
+.hs i{display:block;margin-left:30%;width:200px;height:8px;border-radius:4px;background:#c2c2c2}
+/* 상태 표시줄 */
+.status{position:absolute;left:0;right:0;bottom:0;height:22px;background:#f3f3f3;border-top:1px solid #e1e1e1;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#444}
+.status .sp{flex:1}
+.views{display:flex;gap:10px;margin-right:16px}
+.views b{width:14px;height:11px;border:1px solid #666}
+.views b.on{background:#c8c8c8}
+.zoom{display:flex;align-items:center;gap:8px}
+.zoom i{display:block;width:100px;height:1px;background:#666;position:relative}
+.zoom i::after{content:"";position:absolute;left:48px;top:-5px;width:4px;height:11px;background:#444}
+</style>
+</head>
+<body>
+<div class="title">
+  <div class="auto"><span>자동 저장</span><span class="tog"><i></i></span><span>끔</span></div>
+  <div class="qa">
+    <svg viewBox="0 0 16 16"><path d="M2 2h9l3 3v9H2z"/><path d="M5 2v4h6V2M4 14v-5h8v5"/></svg>
+    <svg viewBox="0 0 16 16"><path d="M5 5H11a3 3 0 010 6H6"/><path d="M7 2L4 5l3 3"/></svg>
+    <svg viewBox="0 0 16 16"><path d="M11 5H5a3 3 0 000 6h5"/><path d="M9 2l3 3-3 3"/></svg>
+  </div>
+  <div class="fname">2026년 3월 근무편성표_취합.xlsx - Excel</div>
+  <div class="search">&#9906;&nbsp;검색</div>
+  <div class="user">송</div>
+  <div class="win">
+    <span><svg viewBox="0 0 10 10"><path d="M0 5h10"/></svg></span>
+    <span><svg viewBox="0 0 10 10"><path d="M.5.5h9v9h-9z"/></svg></span>
+    <span><svg viewBox="0 0 10 10"><path d="M0 0l10 10M10 0L0 10"/></svg></span>
+  </div>
+</div>
+<div class="tabs">
+  <span>파일</span><span class="on">홈</span><span>삽입</span><span>페이지 레이아웃</span><span>수식</span><span>데이터</span><span>검토</span><span>보기</span><span>도움말</span>
+  <span class="sp"></span>
+  <span class="btn">메모</span><span class="btn g">공유 &#9662;</span>
+</div>
+<div class="fx">
+  <div class="nb"><span id="nb">G19</span><span>&#9662;</span></div>
+  <div class="ic"><span>&#10005;</span><span>&#10003;</span><span>fx</span></div>
+  <div class="fin" id="fin">문민준</div>
+</div>
+<div class="grid"><table id="t"></table></div>
+<div class="vs"><i></i></div>
+<div class="sheets">
+  <div class="nav"><span>&#9664;</span><span>&#9654;</span></div>
+  <div class="s">A권역(송민재)</div><div class="s">B권역(김서연)</div><div class="s">대기(박도현)</div><div class="s on">취합</div>
+  <div class="plus">&#8853;</div>
+  <div class="hs"><i></i></div>
+</div>
+<div class="status"><span>준비</span><span class="sp"></span>
+  <div class="views"><b class="on"></b><b></b><b></b></div>
+  <div class="zoom"><span>&#8722;</span><i></i><span>+</span><span>100%</span></div>
+</div>
+<script>
+// 열: A 날짜 · B 요일 · C 휴일 · D~G A권역 A~D조 · H~K B권역 A~D조 · L~M 주간 대기 A·B조 · N~P 빈 열
+const W = [56, 36, 88, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 72, 72, 72];
+const COLS = 'ABCDEFGHIJKLMNOP'.split('');
+const DAYS = ['일','월','화','수','목','금','토','일','월','화','수','목','금','토','일','월'];
+const HOLI = { 1: '삼일절', 2: '대체공휴일' };
+// 파일에 심은 문제(명세 3-3): A조 정민준이 3/2·3/5 한 주에 두 번, D조 3/16 에 퇴사한 문민준, B권역 네 열은 빈칸
+const A = ['강민준','정민준','윤민준','장민준','정민준','송민준','오민준','서민준','신민준','권민준','황민준','안민준','한민준','김민준','이민준','박민준'];
+const B = ['양서연','손서연','배서연','백서연','허서연','남서연','구서연','노서연','이서연','박서연','최서연','정서연','강서연','류서연','전서연','홍서연'];
+const C = ['송도윤','류도윤','전도윤','홍도윤','고도윤','조도윤','윤도윤','장도윤','임도윤','한도윤','오도윤','권도윤','신도윤','황도윤','안도윤','백도윤'];
+const D = ['남하은','구하은','김하은','이하은','박하은','최하은','정하은','강하은','조하은','윤하은','장하은','임하은','한하은','오하은','서하은','문민준'];
+const WA = { 1: '손시우', 2: '배시우', 7: '백시우', 8: '허시우', 14: '남시우', 15: '구시우' };
+const WB = { 1: '이하준', 2: '박하준', 7: '최하준', 8: '정하준', 14: '강하준', 15: '조하준' };
+const ROWS = 28, SEL = { col: 'G', row: 19 };
+
+const t = document.getElementById('t');
+t.innerHTML = '<colgroup><col style="width:36px">' + W.map((w) => `<col style="width:${w}px">`).join('') + '</colgroup>';
+const head = document.createElement('thead');
+head.innerHTML = '<tr><th class="corner"></th>' + COLS.map((c) => `<th class="${c === SEL.col ? 'hot' : ''}">${c}</th>`).join('') + '</tr>';
+t.appendChild(head);
+const body = document.createElement('tbody');
+const cell = (txt, cls = '') => `<td class="${cls}">${txt}</td>`;
+const blank = (n) => Array.from({ length: n }, () => '<td></td>').join('');
+for (let r = 1; r <= ROWS; r++) {
+  const tr = document.createElement('tr');
+  let html = `<th class="${r === SEL.row ? 'hot' : ''}">${r}</th>`;
+  if (r === 1) html += `<td class="t" colspan="13">2026년 3월 휴일 당직·대기 근무편성표</td>` + blank(3);
+  else if (r === 2) html += cell('날짜', 'b h') + cell('요일', 'b h') + cell('휴일', 'b h') + `<td class="b h" colspan="4">A권역 휴일 당직</td><td class="b h" colspan="4">B권역 휴일 당직</td><td class="b h" colspan="2">주간 대기</td>` + blank(3);
+  else if (r === 3) html += cell('', 'b h') + cell('', 'b h') + cell('', 'b h') + ['A조','B조','C조','D조','A조','B조','C조','D조','A조','B조'].map((x) => cell(x, 'b h')).join('') + blank(3);
+  else if (r <= 19) {
+    const d = r - 3, dow = DAYS[d - 1], off = dow === '일' || !!HOLI[d];
+    tr.className = off ? 'sun' : dow === '토' ? 'sat' : '';
+    const i = d - 1, sel = (col) => (col === SEL.col && r === SEL.row ? ' sel' : '');
+    html += cell(`3/${d}`, 'b c' + (off ? ' red' : '')) + cell(dow, 'b c' + (off ? ' red' : '')) + cell(HOLI[d] || '', 'b' + (off ? ' red' : ''))
+      + cell(A[i], 'b' + sel('D')) + cell(B[i], 'b' + sel('E')) + cell(C[i], 'b' + sel('F')) + cell(D[i], 'b' + sel('G'))
+      + cell('', 'b') + cell('', 'b') + cell('', 'b') + cell('', 'b')
+      + cell(WA[d] || '', 'b') + cell(WB[d] || '', 'b') + blank(3);
+  } else html += blank(16);
+  tr.innerHTML = html;
+  body.appendChild(tr);
+}
+t.appendChild(body);
+
+// 번호 좌표(그림 % — 명세 3-4). 모두 빈 칸 위: ① B권역 빈 열 가운데 6행 ② C8 오른쪽 끝(옆이 D8 정민준) ③ H19 왼쪽(옆이 G19 문민준)
+const at = (col, row) => t.rows[row].cells[COLS.indexOf(col) + 1].getBoundingClientRect();
+const pct = (x, y) => ({ x: +(x / 12.8).toFixed(1), y: +(y / 8).toFixed(1) });
+const h6 = at('H', 6), k6 = at('K', 6), c8 = at('C', 8), h19 = at('H', 19);
+window.PINS = [
+  pct((h6.left + k6.right) / 2, (h6.top + h6.bottom) / 2),
+  pct(c8.right - 22, (c8.top + c8.bottom) / 2),
+  pct(h19.left + 24, (h19.top + h19.bottom) / 2),
+];
+</script>
+</body>
+</html>
