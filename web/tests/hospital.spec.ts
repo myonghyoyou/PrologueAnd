@@ -233,3 +233,18 @@ test('병원 전환 단추는 그대로 그림 위, 라벨 후·전', async ({ p
   await expect(tg).toHaveAttribute('aria-label', '캡처 전후');
   expect(await tg.evaluate((e) => !!e.closest('[data-note-text]'))).toBe(false);
 });
+
+test('구내전화표 핫스팟: 번호 뱃지가 왼쪽 선에 맞고, 1번 강조가 2번 뱃지와 겹치지 않는다', async ({ page }) => {
+  await page.goto(URL);
+  const n = page.locator('#screens [data-block="note"]').filter({ hasText: '번호표가 더 넓게 펼쳐집니다' });
+  await n.locator('[data-spot="0"]').focus();
+  await expect.poll(() => n.locator('[data-spot-hl]').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
+  const r = await n.evaluate((el) => {
+    const badges = [...el.querySelectorAll<HTMLElement>('[data-frame] b')].map((b) => b.getBoundingClientRect());
+    const hl = el.querySelector('[data-spot-hl]')!.getBoundingClientRect();
+    const ov = (a: DOMRect, b: DOMRect) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+    return { dx: Math.abs(badges[0].left - badges[1].left), overlap: ov(hl, badges[1]) };
+  });
+  expect(r.dx).toBeLessThanOrEqual(1);
+  expect(r.overlap).toBe(false);
+});
