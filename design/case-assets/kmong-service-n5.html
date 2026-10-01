@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>크몽 서비스 N5 변형</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500&display=swap">
+<style>
+/* N5(navy-900 바탕 + bone 판) 색은 그대로, 눈에 띄게 하는 방법만 다르게 한 변형 3개.
+   a 흰 덩어리 하나 + 큰 문구 · b 엑셀 파일 세 개 → 화면 하나 장면 · c 로고의 & 를 크게 */
+*{box-sizing:border-box}
+body{margin:0;background:#888;font-family:"Pretendard",sans-serif;-webkit-font-smoothing:antialiased;word-break:keep-all;padding:20px}
+section{position:relative;overflow:hidden;margin:0 0 40px;width:652px;height:488px;padding:50px;background:#1F2447;color:#FAF9F6}
+.hl{background:#FAF9F6;color:#2B3160;padding:0 .14em;border-radius:6px}
+h1{font-weight:900;letter-spacing:-.045em;margin:0;line-height:1.1}
+
+/* 가상 관리자 화면 */
+.dash{width:640px;height:400px;background:#fff;border-radius:8px;display:grid;grid-template-columns:120px 1fr;overflow:hidden;font-size:11px;color:#1C1B18;text-align:left}
+.dash .sb{background:#151A33;color:#CCD3E8;padding:14px 10px}
+.dash .sb b{display:flex;align-items:center;gap:6px;color:#fff;font-size:12px;margin-bottom:16px}
+.dash .sb b i{width:16px;height:16px;border-radius:4px;background:#3B6FE0}
+.dash .sb div{padding:6px 8px;border-radius:5px;margin-bottom:2px}
+.dash .sb div.on{background:#2B3160;color:#fff}
+.dash .mn{padding:14px 16px;background:#FAF9F6}
+.dash .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.dash .hd h6{margin:0;font-size:14px}
+.dash .hd span{font-size:10px;color:#8A857A;background:#fff;border:1px solid #E8E5DE;border-radius:5px;padding:3px 8px}
+.dash .kp{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.dash .kp div{background:#fff;border:1px solid #E8E5DE;border-radius:7px;padding:8px 10px}
+.dash .kp em{display:block;font-style:normal;font-size:9.5px;color:#8A857A}
+.dash .kp b{display:block;font-size:18px;margin-top:3px;color:#2B3160}
+.dash .kp small{font-size:9px;color:#2E7D5B}
+.dash .kp small.w{color:#C0392B}
+.dash .tb{background:#fff;border:1px solid #E8E5DE;border-radius:7px;overflow:hidden}
+.dash table{width:100%;border-collapse:collapse}
+.dash th{font-size:9.5px;font-weight:600;color:#8A857A;text-align:left;padding:7px 10px;background:#F3F1EC}
+.dash td{padding:7px 10px;border-top:1px solid #F3F1EC;white-space:nowrap}
+.st{font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px}
+.st.a{background:#E2EFE8;color:#2E7D5B}.st.b{background:#F5EBDB;color:#8A5A12}.st.c{background:#E4E8F4;color:#2B3160}.st.d{background:#F6E0DD;color:#C0392B}
+.scrn{position:absolute;border-radius:8px;box-shadow:0 18px 40px rgba(0,0,0,.3)}
+
+/* a */
+#a h1{font-size:62px}
+#a .scrn{right:50px;bottom:50px;transform:scale(.62);transform-origin:100% 100%}
+
+/* b */
+#b h1{font-size:50px}
+#b .files{position:absolute;left:50px;bottom:62px;width:190px;height:170px}
+#b .file{position:absolute;width:150px;height:118px;background:#F3F1EC;border-radius:6px;padding:10px;color:#4A4741;font-size:10px;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+#b .file b{display:block;font-size:10.5px;color:#1C1B18;margin-bottom:6px;white-space:nowrap}
+#b .file i{display:block;height:9px;margin:4px 0;background:repeating-linear-gradient(90deg,#D6D2C8 0 30px,transparent 30px 34px);opacity:.9}
+#b .arr{position:absolute;left:258px;bottom:132px;font-size:34px;font-weight:900;color:#FAF9F6}
+#b .scrn{right:50px;bottom:50px;transform:scale(.48);transform-origin:100% 100%}
+#b .lab{position:absolute;font-size:12px;font-weight:700;color:#AEB7D6}
+
+/* c */
+#c .amp{position:absolute;right:20px;top:-60px;font-family:"Bodoni Moda",serif;font-size:520px;line-height:1;color:transparent;-webkit-text-stroke:1.5px #4E5A94}
+#c h1{position:relative;font-size:54px}
+#c .brand{position:relative;font-size:14px;font-weight:700;color:#AEB7D6;margin-bottom:14px}
+#c .scrn{right:50px;bottom:50px;transform:scale(.55);transform-origin:100% 100%}
+
+/* ac1·ac2 — a(큰 문구 + 화면 하나) + c(& · Prologue&). & 는 50px 안쪽에 들어오게 */
+.mix .brand{position:relative;font-size:15px;font-weight:700;color:#AEB7D6;margin-bottom:14px;letter-spacing:.01em}
+.mix h1{position:relative;font-size:58px}
+.mix .scrn{right:50px;bottom:50px;transform:scale(.55);transform-origin:100% 100%}
+.mix .amp{position:absolute;font-family:"Bodoni Moda",serif;line-height:.8}
+/* ac1: 선으로 그린 & — 선 굵기·밝기를 올려 작게 줄여도 남게 */
+#ac1 .amp{right:50px;top:50px;font-size:300px;color:transparent;-webkit-text-stroke:3px #6675AC}
+/* ac2: 면으로 칠한 & — 바탕보다 한 단계 밝은 navy-800 */
+/* ac3: ac1 의 & 를 화면 뒤에서 솟아오르게 — 문구 뒤를 지나지 않음 */
+#ac3 .amp{right:50px;bottom:150px;font-size:270px;color:transparent;-webkit-text-stroke:3px #6675AC}
+#ac3 .scrn{z-index:1;transform:scale(.5)}
+#ac2 .amp{right:58px;top:50px;font-size:330px;color:#2B3160}
+
+/* nc1·nc2 — 원래 N5(태그 · 문구 · 본 판 · 화면) + N5-c 의 & (50px 안쪽, 화면 뒤에서 솟음) */
+.n5 .tag{position:relative;display:inline-block;font-size:12px;font-weight:700;color:#2B3160;background:#FAF9F6;border-radius:4px;padding:4px 8px}
+.n5 .brand{position:relative;font-size:15px;font-weight:700;color:#AEB7D6;letter-spacing:.01em}
+.n5 h1{position:relative;font-size:50px;margin-top:16px}
+.n5 .panel{position:absolute;left:50px;right:50px;bottom:50px;height:150px;background:#FAF9F6;border-radius:14px;padding:18px 20px;color:#2B3160;z-index:1}
+.n5 .panel b{display:block;font-size:15px;font-weight:800;line-height:1.5}
+.n5 .panel span{display:block;font-size:12px;font-weight:600;margin-top:6px;opacity:.75}
+.n5 .scrn{right:68px;bottom:68px;transform:scale(.5);transform-origin:100% 100%;z-index:2}
+.n5 .amp{position:absolute;right:50px;bottom:170px;font-family:"Bodoni Moda",serif;font-size:250px;line-height:.8;color:transparent;-webkit-text-stroke:3px #6675AC}
+</style>
+</head>
+<body>
+
+<section id="a">
+  <h1>엑셀로 하던 일<br><span class="hl">웹 시스템</span>으로</h1>
+  <div class="scrn" data-dash></div>
+</section>
+
+<section id="b">
+  <h1>엑셀로 하던 일<br><span class="hl">웹 시스템</span>으로</h1>
+  <div class="files">
+    <div class="file" style="left:0;top:0;transform:rotate(-6deg)"><b>요청목록_최종.xlsx</b><i></i><i></i><i></i><i></i></div>
+    <div class="file" style="left:24px;top:22px;transform:rotate(3deg)"><b>재고현황_9월.xlsx</b><i></i><i></i><i></i><i></i></div>
+    <div class="file" style="left:44px;top:48px;transform:rotate(-2deg)"><b>담당자별_정리(2).xlsx</b><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="arr">→</div>
+  <div class="scrn" data-dash></div>
+</section>
+
+<section id="c">
+  <div class="amp">&amp;</div>
+  <div class="brand">Prologue&amp;</div>
+  <h1>엑셀로 하던 일<br><span class="hl">웹 시스템</span>으로</h1>
+  <div class="scrn" data-dash></div>
+</section>
+
+<section id="ac1" class="mix">
+  <div class="amp">&amp;</div>
+  <div class="brand">Prologue&amp;</div>
+  <h1>엑셀로 하던 일<br><span class="hl">웹 시스템</span>으로</h1>
+  <div class="scrn" data-dash></div>
+</section>
+
+<section id="ac2" class="mix">
+  <div class="amp">&amp;</div>
+  <div class="brand">Prologue&amp;</div>
+  <h1>엑셀로 하던 일<br><span class="hl">웹 시스템</span>으로</h1>
+  <div class="scrn" data-dash></div>
+</section>
+
+<section id="ac3" class="mix">
+  <div class="amp">&amp;</div>
+  <div class="brand">Prologue&amp;</div>
+  <h1>엑셀로 하던 일<br><span class="hl">웹 시스템</span>으로</h1>
+  <div class="scrn" data-dash></div>
+</section>
+
+<section id="nc1" class="n5">
+  <div class="amp">&amp;</div>
+  <span class="tag">사내 업무 시스템 개발</span>
+  <h1>엑셀로 하던 일<br><span class="hl">웹 시스템</span>으로</h1>
+  <div class="panel"><b>업무 정리<br>→ 화면 설계<br>→ 개발</b><span>PC · 모바일</span></div>
+  <div class="scrn" data-dash></div>
+</section>
+
+<section id="nc2" class="n5">
+  <div class="amp">&amp;</div>
+  <div class="brand">Prologue&amp;</div>
+  <h1>엑셀로 하던 일<br><span class="hl">웹 시스템</span>으로</h1>
+  <div class="panel"><b>업무 정리<br>→ 화면 설계<br>→ 개발</b><span>사내 업무 시스템 · PC · 모바일</span></div>
+  <div class="scrn" data-dash></div>
+</section>
+
+<script>
+const DASH = `<div class="dash">
+  <div class="sb"><b><i></i>업무 포털</b><div class="on">대시보드</div><div>업무 요청</div><div>재고 관리</div><div>근무표</div><div>설정</div></div>
+  <div class="mn"><div class="hd"><h6>대시보드</h6><span>이번 주</span></div>
+    <div class="kp"><div><em>새 요청</em><b>12</b><small>오늘 3건</small></div><div><em>처리 중</em><b>5</b><small>담당 3명</small></div><div><em>이번 주 완료</em><b>18</b><small>지난주보다 4건 ↑</small></div><div><em>기한 임박</em><b>2</b><small class="w">내일까지</small></div></div>
+    <div class="tb"><table><tr><th>요청</th><th>요청한 사람</th><th>담당</th><th>상태</th><th>기한</th></tr>
+      <tr><td>거래처 단가표에 시작일 열 추가</td><td>김서연</td><td>박도현</td><td><span class="st b">처리 중</span></td><td>9/19</td></tr>
+      <tr><td>비품 신청 화면 필수값 추가</td><td>이지우</td><td>박도현</td><td><span class="st c">검토</span></td><td>9/22</td></tr>
+      <tr><td>출고 화면 날짜 검색</td><td>최민준</td><td>정하늘</td><td><span class="st d">기한 임박</span></td><td>9/17</td></tr>
+      <tr><td>월말 보고서 양식</td><td>한유진</td><td>정하늘</td><td><span class="st a">완료</span></td><td>9/15</td></tr>
+      <tr><td>검사 결과 엑셀 내려받기</td><td>오세훈</td><td>박도현</td><td><span class="st a">완료</span></td><td>9/14</td></tr>
+    </table></div></div></div>`;
+document.querySelectorAll('[data-dash]').forEach((el) => { el.innerHTML = DASH; });
+</script>
+</body>
+</html>

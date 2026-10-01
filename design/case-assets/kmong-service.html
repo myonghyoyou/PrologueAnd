@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>크몽 서비스 업무 웹 시스템화</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* 크몽 서비스 "업무의 웹 시스템화" 이미지 — 메인 652×488(흰 배경 금지, 가장자리 50px 안쪽, 가격 문구 금지) + 상세 3장(폭 1200, 높이 3000 이하).
+   상세에도 가격은 넣지 않는다(패키지 칸에서만) */
+:root{--navy:#2B3160;--navy2:#3A4178;--ink:#1C1B18;--bone:#FAF9F6;--line:#E8E5DE;--line2:#D6D2C8;--mut:#8A857A;--txt:#4A4741}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bone);font-family:"Pretendard",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;word-break:keep-all}
+section{margin:0 0 40px}
+/* 메인 */
+#main{width:652px;height:488px;background:var(--navy);color:#fff;padding:50px;position:relative;overflow:hidden}
+#main .brand{font-size:15px;font-weight:600;letter-spacing:.02em;opacity:.7}
+#main h1{font-size:33px;line-height:1.3;letter-spacing:-.03em;font-weight:700;margin:12px 0 0}
+#main .vis{position:absolute;left:50px;right:50px;bottom:50px;display:flex;align-items:center;gap:16px}
+.xl{background:#fff;border-radius:2px;padding:8px;width:206px}
+.xl table{border-collapse:collapse;width:100%;font-size:10px;color:#555}
+.xl td{border:1px solid #D9D9D9;height:17px;padding:0 4px;white-space:nowrap;overflow:hidden}
+.xl tr:first-child td{background:#EEF1EA;color:#333;font-weight:600}
+.xl td.y{background:#FFF2B3}
+.xl .nm{font-size:11px;color:#3A7A3A;font-weight:700;margin:0 0 6px}
+.arr{font-size:28px;opacity:.8}
+.app{flex:1;background:var(--bone);border-radius:2px;padding:10px;color:var(--ink)}
+.app .bar{display:flex;gap:6px;margin-bottom:8px}
+.app .bar i{font-style:normal;font-size:10px;padding:3px 7px;border-radius:9px;background:#fff;border:1px solid var(--line2);color:var(--txt)}
+.app .bar i.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.app .row{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:2px;padding:7px 8px;margin-top:5px;font-size:11px}
+.app .row b{font-weight:600;flex:1}
+.app .row em{font-style:normal;font-size:10px;padding:2px 6px;border-radius:8px}
+.s1{background:#E3F1E8;color:#1E6B3C}.s2{background:#FFF1DD;color:#9A4B00}.s3{background:#E6EEF8;color:#1F4F8A}
+.app .row span{color:var(--mut);font-size:10px}
+/* 상세 */
+.img{width:1200px;background:var(--bone);padding:80px}
+.kick{font-size:18px;font-weight:700;letter-spacing:.04em;color:var(--navy);margin:0 0 14px}
+h2{font-size:42px;line-height:1.25;letter-spacing:-.025em;font-weight:700;margin:0 0 20px}
+h3{font-size:26px;line-height:1.3;letter-spacing:-.02em;font-weight:700;margin:0 0 10px}
+p.lead{font-size:21px;line-height:1.65;color:var(--txt);margin:0;max-width:960px}
+.sec{margin-top:88px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px}
+.card{background:#fff;border:1px solid var(--line2);border-radius:2px;padding:24px 26px}
+.card b{display:block;font-size:21px;margin-bottom:8px}
+.card span{font-size:17px;line-height:1.6;color:var(--txt)}
+.list{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:32px}
+.list div{border-top:2px solid var(--navy);padding:14px 0 0;font-size:19px;font-weight:600}
+.list div span{display:block;font-size:16px;font-weight:400;color:var(--txt);margin-top:6px;line-height:1.5}
+.steps{margin-top:36px;border-top:1px solid var(--ink)}
+.step{display:grid;grid-template-columns:70px 260px 1fr;gap:20px;padding:22px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.step i{font-style:normal;font-size:28px;font-weight:700;color:var(--navy)}
+.step b{font-size:22px}
+.step span{font-size:18px;line-height:1.6;color:var(--txt)}
+table.pk{width:100%;border-collapse:collapse;margin-top:36px;font-size:18px}
+.pk th{text-align:left;padding:0 16px 14px 0;border-bottom:1px solid var(--ink);font-size:20px}
+.pk th small{display:block;font-size:15px;color:var(--mut);font-weight:500;margin-top:4px}
+.pk td{padding:14px 16px 14px 0;border-bottom:1px solid var(--line);color:var(--txt);vertical-align:top;line-height:1.5}
+.pk td:first-child{color:var(--mut);font-weight:600;width:16%}
+.case{display:grid;grid-template-columns:420px 1fr;gap:36px;padding:32px 0;border-bottom:1px solid var(--line);align-items:center}
+.case:first-of-type{border-top:1px solid var(--ink)}
+.case img{width:420px;height:420px;display:block;border:1px solid var(--ink)}
+.case b{display:block;font-size:26px;margin-bottom:10px;letter-spacing:-.02em}
+.case p{font-size:18px;line-height:1.65;color:var(--txt);margin:0 0 12px}
+.case small{font-size:16px;color:var(--navy);font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- 메인 652×488 -->
+<section id="main">
+  <div class="brand">Prologue&amp;</div>
+  <h1>엑셀과 종이로 하던 업무를<br>사내 웹 시스템으로 만듭니다</h1>
+  <div class="vis">
+    <div class="xl">
+      <p class="nm">요청목록_최종(2).xlsx</p>
+      <table>
+        <tr><td>날짜</td><td>요청</td><td>담당</td><td>상태</td></tr>
+        <tr><td>9/12</td><td>단가표 수정</td><td>?</td><td class="y">확인중</td></tr>
+        <tr><td>9/13</td><td>비품 화면</td><td></td><td></td></tr>
+        <tr><td>9/13</td><td>단가표 건</td><td>?</td><td class="y">??</td></tr>
+        <tr><td>9/15</td><td>인쇄 여백</td><td></td><td></td></tr>
+      </table>
+    </div>
+    <div class="arr">→</div>
+    <div class="app">
+      <div class="bar"><i class="on">전체 4</i><i>처리 중 2</i><i>완료 1</i></div>
+      <div class="row"><b>단가표 양식 수정</b><em class="s2">처리 중</em><span>9/19까지</span></div>
+      <div class="row"><b>비품 신청 화면</b><em class="s3">검토</em><span>9/22까지</span></div>
+      <div class="row"><b>인쇄 여백 수정</b><em class="s1">완료</em><span>9/15</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 상세 1: 어떤 일을 맡기나 -->
+<section class="img" id="d1">
+  <p class="kick">이런 업무를 맡겨 주세요</p>
+  <h2>손으로 옮겨 적고 다시 확인하는 일이<br>많은 업무를 웹 시스템으로 만듭니다</h2>
+  <div class="cards">
+    <div class="card"><b>같은 내용을 여러 파일에 옮겨 적습니다</b><span>받은 요청이나 재고 수량을 엑셀 여러 개에 나눠 적다 보니, 어느 파일이 최신인지 매번 확인해야 합니다.</span></div>
+    <div class="card"><b>처리 상황을 사람에게 물어야 압니다</b><span>누가 무엇을 언제 처리했는지 기록이 없어, 진행 상황을 확인하려면 담당자를 찾아가야 합니다.</span></div>
+    <div class="card"><b>기성 솔루션이 우리 순서와 맞지 않습니다</b><span>기능은 많은데 우리 회사의 결재 순서나 양식과 달라서 결국 엑셀로 돌아갑니다.</span></div>
+    <div class="card"><b>담당자가 바뀌면 방법도 사라집니다</b><span>일하는 방법이 한 사람의 파일과 기억에만 있어, 인수인계 때마다 처음부터 다시 배웁니다.</span></div>
+  </div>
+  <div class="sec">
+    <p class="kick">만들 수 있는 것</p>
+    <h3>업무에 맞춰 필요한 화면만 만듭니다</h3>
+    <div class="list">
+      <div>업무 요청 접수<span>요청 양식, 담당자 검토, 처리 상황 확인</span></div>
+      <div>재고 · 비품 · 장비 관리<span>입고와 출고, 상태 표시, 변경 기록</span></div>
+      <div>사내 학습 · 점검표<span>문제 풀이와 채점, 점검 항목 기록</span></div>
+      <div>근무표 · 일정<span>순번 이어 짜기, 공지 전 확인</span></div>
+      <div>로그인과 권한<span>쓰는 사람, 담당자, 관리자 나누기</span></div>
+      <div>엑셀 등록 · 내려받기<span>기존 양식을 그대로 올리고 내려받기</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 상세 2: 진행 순서와 패키지 범위 -->
+<section class="img" id="d2">
+  <p class="kick">진행 순서</p>
+  <h2>화면부터 그리지 않습니다</h2>
+  <p class="lead">업무가 어디서 들어오고 누가 같은 내용을 몇 번씩 옮겨 적는지 먼저 확인합니다. 없어도 되는 단계를 뺀 뒤에 화면을 설계하고, 확인을 받은 다음 개발합니다.</p>
+  <div class="steps">
+    <div class="step"><i>1</i><b>업무 듣기</b><span>지금 쓰는 엑셀과 양식, 가장 불편한 점을 듣고 맞는 패키지를 정합니다.</span></div>
+    <div class="step"><i>2</i><b>업무 흐름과 화면 목록</b><span>작업 시작 후 5일 안에 업무 흐름도와 만들 화면 목록을 공유합니다.</span></div>
+    <div class="step"><i>3</i><b>화면 설계안 확인</b><span>주요 화면의 설계안을 보여 드리고, 확인을 받은 뒤 개발을 시작합니다.</span></div>
+    <div class="step"><i>4</i><b>개발과 중간 공유</b><span>매주 한 번 테스트 화면으로 만든 만큼을 직접 눌러 보실 수 있게 공유합니다.</span></div>
+    <div class="step"><i>5</i><b>검수와 수정</b><span>처음 정한 화면 목록으로 함께 확인하고, 패키지의 수정 횟수 안에서 고칩니다.</span></div>
+    <div class="step"><i>6</i><b>납품</b><span>소스 코드와 설치 방법, 사용 안내서를 전달합니다.</span></div>
+  </div>
+  <div class="sec">
+    <p class="kick">패키지 범위</p>
+    <h3>화면 수와 쓰는 사람의 역할로 나눕니다</h3>
+    <table class="pk">
+      <thead><tr><th></th><th>STANDARD<small>업무 하나</small></th><th>DELUXE<small>요청부터 처리까지</small></th><th>PREMIUM<small>여러 사람이 쓰는 시스템</small></th></tr></thead>
+      <tbody>
+        <tr><td>화면</td><td>5개 이하</td><td>10개 이하</td><td>20개 이하</td></tr>
+        <tr><td>권한</td><td>로그인 1종</td><td>2단계(쓰는 사람 · 담당자)</td><td>3단계(쓰는 사람 · 담당자 · 관리자)</td></tr>
+        <tr><td>엑셀</td><td>내려받기</td><td>내려받기</td><td>일괄 등록 · 내려받기, 기존 데이터 옮기기</td></tr>
+        <tr><td>기록</td><td>–</td><td>상태와 처리 기록</td><td>상태와 처리 기록, 변경 기록</td></tr>
+        <tr><td>모바일</td><td>대응</td><td>대응</td><td>대응</td></tr>
+        <tr><td>견줄 사례</td><td>–</td><td>업무 요청 시스템(화면 7개)</td><td>사내 문제 풀이 앱(화면 20개)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 상세 3: 만든 것 -->
+<section class="img" id="d3">
+  <p class="kick">지금까지 만든 것</p>
+  <h2>업무 흐름부터 정리하고 만들었습니다</h2>
+  <div style="margin-top:36px">
+    <div class="case"><img src="../../data/images/kmong/pfh/00-cover.png" alt=""><div><b>업무 요청 시스템</b><p>여러 경로로 흩어져 오던 요청을 한 목록에서 받습니다. 요청한 사람은 처리 상황을 화면에서 직접 확인합니다.</p><small>요청 양식 · 심사 대기 · 업무 목록 · 진행 상황</small></div></div>
+    <div class="case"><img src="../../data/images/kmong/pbank/00-cover.png" alt=""><div><b>사내 문제 풀이 앱</b><p>직원 약 200명이 해마다 인쇄해 풀던 문제집 1,220문항을 웹으로 옮겼습니다. 답을 내면 바로 채점되고, 지금도 운영하며 보완하고 있습니다.</p><small>풀이와 채점 · 풀이 기록 · 문제 변경 기록 · 엑셀 일괄 등록</small></div></div>
+    <div class="case"><img src="../../data/images/kmong/hux/00-cover.png" alt=""><div><b>병원 사내 시스템 화면 개선</b><p>화면마다 달랐던 색과 버튼을 공통 규칙으로 정하고 22개 화면에 적용했습니다. 재고 목록은 한 화면에 9행에서 12행이 보입니다.</p><small>디자인 규칙 · 목록 화면 · 첫 화면 · 로그인</small></div></div>
+  </div>
+</section>
+
+</body>
+</html>

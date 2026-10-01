@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>크몽 서비스 이미지 시안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* 크몽 서비스 이미지 시안 3안 — Prologue& 사이트 색과 무관하게, 레퍼런스(크몽 상위·Upwork 상위)에서 출발.
+   A 밝은 제품 화면형(Upwork 계열) · B 검정+라임 고대비형(크몽 어두운 바탕 계열을 다르게) · C 스프레드시트 초록형.
+   화면 그림은 캡처가 아니라 가상 데이터로 그린 관리자 화면(.dash) */
+*{box-sizing:border-box}
+body{margin:0;background:#E9EAEE;font-family:"Pretendard",sans-serif;-webkit-font-smoothing:antialiased;word-break:keep-all;padding:20px}
+section{margin:0 0 40px;position:relative;overflow:hidden}
+.thumb{width:652px;height:488px}
+.detail{width:1200px}
+
+/* ── 공통: 가상 관리자 화면 ── */
+.dash{width:640px;height:400px;background:#fff;border-radius:8px;display:grid;grid-template-columns:120px 1fr;overflow:hidden;font-size:11px;color:#1E293B;text-align:left}
+.dash .sb{background:#0F172A;color:#CBD5E1;padding:14px 10px}
+.dash .sb b{display:flex;align-items:center;gap:6px;color:#fff;font-size:12px;margin-bottom:16px}
+.dash .sb b i{width:16px;height:16px;border-radius:4px;background:#3B82F6}
+.dash .sb div{padding:6px 8px;border-radius:5px;margin-bottom:2px}
+.dash .sb div.on{background:#1E293B;color:#fff}
+.dash .mn{padding:14px 16px;background:#F8FAFC}
+.dash .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.dash .hd h6{margin:0;font-size:14px}
+.dash .hd span{font-size:10px;color:#64748B;background:#fff;border:1px solid #E2E8F0;border-radius:5px;padding:3px 8px}
+.dash .kp{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.dash .kp div{background:#fff;border:1px solid #E2E8F0;border-radius:7px;padding:8px 10px}
+.dash .kp em{display:block;font-style:normal;font-size:9.5px;color:#64748B}
+.dash .kp b{display:block;font-size:18px;margin-top:3px}
+.dash .kp small{font-size:9px;color:#16A34A}
+.dash .kp small.w{color:#DC2626}
+.dash .tb{background:#fff;border:1px solid #E2E8F0;border-radius:7px;overflow:hidden}
+.dash table{width:100%;border-collapse:collapse}
+.dash th{font-size:9.5px;font-weight:600;color:#64748B;text-align:left;padding:7px 10px;background:#F1F5F9}
+.dash td{padding:7px 10px;border-top:1px solid #F1F5F9;white-space:nowrap}
+.dash .st{font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px}
+.st.a{background:#DCFCE7;color:#15803D}.st.b{background:#FEF3C7;color:#B45309}.st.c{background:#DBEAFE;color:#1D4ED8}.st.d{background:#FEE2E2;color:#B91C1C}
+/* 노트북 틀 */
+.laptop{position:relative}
+.laptop .scr{background:#111827;border-radius:12px 12px 0 0;padding:9px 9px 7px}
+.laptop .base{height:12px;background:linear-gradient(#D1D5DB,#9CA3AF);border-radius:0 0 10px 10px;margin:0 -28px}
+.phone{position:absolute;width:118px;height:236px;background:#111827;border-radius:18px;padding:6px}
+.phone .in{width:100%;height:100%;background:#F8FAFC;border-radius:13px;padding:10px 8px;font-size:8px;color:#1E293B;overflow:hidden}
+.phone .in b{display:block;font-size:10px;margin-bottom:6px}
+.phone .in div{background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:5px 6px;margin-bottom:5px}
+.phone .in div span{float:right}
+
+/* ── A 밝은 제품 화면형 ── */
+.A{background:#F3F5F8;color:#0F172A}
+.A .blue{color:#2563FF}
+.A.thumb{padding:50px}
+.A .lab{font-size:12px;font-weight:700;letter-spacing:.12em;color:#64748B}
+.A h1{font-size:40px;line-height:1.12;font-weight:900;letter-spacing:-.04em;margin:10px 0 0}
+.A .feats{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:236px;margin-top:22px}
+.A .feats div{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:8px 9px;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:7px}
+.A .feats i{width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;color:#fff;flex:none}
+.A .band{position:absolute;left:50px;bottom:50px;right:50px;justify-content:center;display:flex;align-items:center;gap:10px;background:#0F172A;color:#fff;border-radius:22px;padding:9px 16px 9px 10px;font-size:12px;font-weight:700}
+.A .band i{width:22px;height:22px;border-radius:50%;background:#2563FF;display:flex;align-items:center;justify-content:center;font-style:normal}
+.A .dev{position:absolute;left:316px;top:118px;transform:scale(.43);transform-origin:0 0}
+
+/* ── B 검정 + 라임 ── */
+.B{background:#0D0E11;color:#fff}
+.B .lime{color:#C8F535}
+.B.thumb{padding:50px}
+.B .tag{display:inline-block;font-size:12px;font-weight:700;color:#0D0E11;background:#C8F535;border-radius:4px;padding:4px 8px}
+.B h1{font-size:54px;line-height:1.1;font-weight:900;letter-spacing:-.045em;margin:18px 0 0}
+.B h1 u{text-decoration:none;background:linear-gradient(transparent 68%,rgba(200,245,53,.28) 68%)}
+.B .pills{position:absolute;left:50px;bottom:50px;display:flex;gap:7px}
+.B .pills span{font-size:12px;font-weight:600;color:#C9CDD4;border:1px solid #3A3D45;border-radius:14px;padding:6px 11px}
+.B .tilt{position:absolute;right:58px;bottom:80px;width:640px;height:400px;transform:rotate(-6deg) scale(.42);transform-origin:100% 100%;box-shadow:0 30px 60px rgba(0,0,0,.6);border-radius:8px}
+
+/* ── C 스프레드시트 초록 ── */
+.C{background:#1D6B43;color:#fff;background-image:linear-gradient(#2F8558 1px,transparent 1px),linear-gradient(90deg,#2F8558 1px,transparent 1px);background-size:44px 22px}
+.C.thumb{padding:50px}
+.C h1{font-size:44px;line-height:1.15;font-weight:800;letter-spacing:-.04em;margin:0;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+.C h1 mark{background:#FFE27A;color:#1D3B2A;padding:0 6px;border-radius:3px}
+.C .lab{font-size:12px;font-weight:700;color:#C9F0D8;margin-bottom:10px}
+.C .split{position:absolute;left:50px;right:50px;bottom:50px;display:grid;grid-template-columns:1fr 34px 1fr;align-items:center}
+.C .xl{background:#fff;border-radius:3px;padding:6px;color:#333;font-family:"Malgun Gothic",sans-serif}
+.C .xl table{border-collapse:collapse;width:100%;font-size:10px}
+.C .xl td{border:1px solid #D4D4D4;height:18px;padding:0 4px;white-space:nowrap}
+.C .xl tr:first-child td{background:#E8F3EC;font-weight:700;color:#1D6B43}
+.C .xl td.y{background:#FFF2B3}.C .xl td.r{color:#C0392B}
+.C .xl .fn{font-size:10px;color:#1D6B43;font-weight:700;margin-bottom:4px}
+.C .arr{text-align:center;font-size:24px;font-weight:900;color:#FFE27A}
+.C .web{background:#fff;border-radius:8px;padding:8px;color:#1E293B;font-size:10.5px}
+.C .web .r{display:flex;align-items:center;gap:6px;padding:5px 6px;border-bottom:1px solid #F1F5F9}
+.C .web .r b{flex:1;font-weight:600}
+.C .web .h{display:flex;gap:5px;margin-bottom:5px}
+.C .web .h span{font-size:9px;border-radius:9px;padding:2px 7px;background:#F1F5F9;color:#475569}
+.C .web .h span.on{background:#1D6B43;color:#fff}
+
+/* ── 상세 공통 ── */
+.detail .in{padding:96px 90px}
+.detail .ey{font-size:20px;font-weight:800;letter-spacing:.08em}
+.detail h2{font-size:56px;line-height:1.2;font-weight:900;letter-spacing:-.04em;margin:16px 0 0}
+.detail p.s{font-size:23px;line-height:1.6;margin:22px 0 0}
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px}
+.cards3 div{border-radius:16px;padding:30px 28px}
+.cards3 b{display:block;font-size:24px;line-height:1.35;margin:14px 0 10px}
+.cards3 span{font-size:18px;line-height:1.6}
+.cards3 i{font-style:normal;font-size:15px;font-weight:800;letter-spacing:.06em}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:52px;border-radius:16px;overflow:hidden}
+.vs > div{padding:30px 32px}
+.vs h4{margin:0 0 18px;font-size:22px}
+.vs ul{margin:0;padding:0;list-style:none}
+.vs li{font-size:19px;line-height:1.5;padding:12px 0;display:flex;gap:12px}
+
+/* ── D 노랑 메모지 ── */
+.D{background:#FFD43B;color:#111}
+.D.thumb{padding:50px}
+.D h1{font-size:42px;line-height:1.16;font-weight:900;letter-spacing:-.045em;margin:0}
+.D h1 span{background:#111;color:#FFD43B;padding:0 8px}
+.D .notes{position:absolute;left:58px;bottom:50px;width:270px;height:190px}
+.D .pi{position:absolute;width:128px;height:110px;padding:12px;font-family:"Nanum Pen Script",cursive;font-size:21px;line-height:1.05;color:#222;box-shadow:0 6px 14px rgba(0,0,0,.18)}
+.D .arr{position:absolute;left:316px;bottom:118px;font-size:34px;font-weight:900}
+.D .card{position:absolute;right:50px;bottom:50px;width:230px;background:#fff;border:3px solid #111;border-radius:10px;padding:10px;box-shadow:6px 6px 0 #111;font-size:11px}
+.D .card b{display:block;font-size:13px;margin-bottom:6px}
+.D .card .st{font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px}
+.D .card div{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid #EEE}
+
+/* ── E 주황 포스터 ── */
+.E{background:#FF5A1F;color:#111}
+.E.thumb{padding:50px}
+.E .top{display:flex;justify-content:space-between;font:700 12px/1 "JetBrains Mono",monospace;letter-spacing:.06em;border-bottom:3px solid #111;padding-bottom:10px}
+.E h1{font-size:60px;line-height:1;font-weight:900;letter-spacing:-.06em;margin:18px 0 0}
+.E .grid{position:absolute;left:50px;right:50px;bottom:50px;display:grid;grid-template-columns:1fr 1fr 1fr;border:3px solid #111;background:#fff}
+.E .grid div{padding:12px 12px 10px;border-left:3px solid #111}
+.E .grid div:first-child{border-left:0}
+.E .grid b{display:block;font:800 26px/1 "JetBrains Mono",monospace;letter-spacing:-.04em}
+.E .grid span{display:block;font-size:12px;font-weight:700;margin-top:6px}
+
+/* ── F 대각선 전후 분할 ── */
+.F{background:#1D4ED8;color:#fff}
+.F.thumb{padding:50px}
+.F .left{position:absolute;inset:0;background:#D9DBE0;clip-path:polygon(0 0,46% 0,30% 100%,0 100%)}
+.F .left .xl{position:absolute;left:-30px;top:120px;width:300px;transform:rotate(-4deg);filter:grayscale(1);opacity:.75}
+.F .left .xl table{border-collapse:collapse;font-size:10px;color:#444;background:#fff}
+.F .left .xl td{border:1px solid #BBB;height:18px;padding:0 5px;white-space:nowrap}
+.F .lbl{position:absolute;font:800 11px/1 "Pretendard";letter-spacing:.12em;padding:5px 9px;border-radius:3px}
+.F h1{position:relative;margin:0 0 0 270px;font-size:38px;line-height:1.16;font-weight:900;letter-spacing:-.045em}
+.F h1 span{color:#FDE047}
+.F .scrn{position:absolute;right:50px;bottom:50px;transform:scale(.5);transform-origin:100% 100%;box-shadow:0 24px 50px rgba(0,0,0,.35);border-radius:8px}
+
+/* ── G 색 블록 격자 ── */
+.G{background:#EFEAFB;color:#111}
+.G.thumb{padding:50px}
+.G .bento{position:absolute;inset:50px;display:grid;grid-template-columns:1.6fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:10px}
+.G .bento > div{border-radius:16px;padding:16px;position:relative;overflow:hidden}
+.G .hero{grid-row:1/3;background:#111;color:#fff;display:flex;flex-direction:column;justify-content:space-between}
+.G .hero small{font-size:12px;font-weight:700;color:#A78BFA}
+.G .hero h1{margin:0;font-size:36px;line-height:1.15;font-weight:900;letter-spacing:-.045em}
+.G .hero h1 span{color:#A3E635}
+.G .t b{display:block;font-size:30px;line-height:1;font-weight:900}
+.G .t span{display:block;font-size:13px;font-weight:800;margin-top:8px}
+.G .t em{position:absolute;right:12px;bottom:10px;font-style:normal;font-size:34px;opacity:.9}
+
+/* ── B′ 라임 면적을 키운 B ── */
+.Bp{background:#0D0E11;color:#fff}
+.Bp.thumb{padding:50px}
+.Bp .tag{display:inline-block;font-size:12px;font-weight:700;color:#0D0E11;background:#C8F535;border-radius:4px;padding:4px 8px}
+.Bp h1{font-size:50px;line-height:1.1;font-weight:900;letter-spacing:-.045em;margin:16px 0 0}
+.Bp .lime{color:#C8F535}
+.Bp .panel{position:absolute;left:50px;right:50px;bottom:50px;height:150px;background:#C8F535;border-radius:14px;padding:18px 20px;color:#0D0E11}
+.Bp .panel b{display:block;font-size:15px;font-weight:800;line-height:1.5}
+.Bp .panel span{display:block;font-size:12px;font-weight:600;margin-top:6px;opacity:.75}
+.Bp .scrn{position:absolute;right:68px;bottom:68px;transform:scale(.5);transform-origin:100% 100%;box-shadow:0 18px 40px rgba(0,0,0,.35);border-radius:8px}
+
+/* ── E′ 브루탈 장치를 뺀 주황 ── */
+.Ep{background:#FF5A1F;color:#111}
+.Ep.thumb{padding:50px}
+.Ep .lab{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#111;border-radius:14px;padding:5px 11px}
+.Ep h1{font-size:50px;line-height:1.1;font-weight:900;letter-spacing:-.045em;margin:16px 0 0}
+.Ep h1 span{color:#fff}
+.Ep .chips{position:absolute;left:50px;bottom:50px;display:flex;flex-direction:column;gap:7px}
+.Ep .chips span{align-self:flex-start;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-radius:14px;padding:6px 11px}
+.Ep .scrn{position:absolute;right:50px;bottom:50px;transform:scale(.5);transform-origin:100% 100%;box-shadow:0 22px 44px rgba(120,30,0,.35);border-radius:10px}
+.EpD{background:#F7F5F2;color:#111}
+.EpD .or{color:#FF5A1F}
+
+/* 상세 D~G */
+.D .ink{background:#111;color:#FFD43B;padding:0 10px}
+.E .rule{border-top:4px solid #111}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=JetBrains+Mono:wght@700;800&display=swap">
+</head>
+<body>
+
+<!-- ═══ B′ 메인 ═══ -->
+<section class="thumb Bp" id="Bp-main">
+  <span class="tag">사내 업무 시스템 개발</span>
+  <h1>엑셀로 하던 일<br><span class="lime">웹 시스템</span>으로</h1>
+  <div class="panel"><b>업무 정리<br>→ 화면 설계<br>→ 개발</b><span>PC · 모바일</span></div>
+  <div class="scrn" data-dash></div>
+</section>
+
+<!-- ═══ E′ 메인 ═══ -->
+<section class="thumb Ep" id="Ep-main">
+  <span class="lab">사내 업무 시스템 개발</span>
+  <h1>엑셀로 하던 일<br><span>웹 시스템</span>으로</h1>
+  <div class="chips"><span>업무 정리부터</span><span>권한 · 기록</span><span>PC · 모바일</span></div>
+  <div class="scrn" data-dash></div>
+</section>
+
+<!-- ═══ B′ 상세 ═══ -->
+<section class="detail B" id="Bp-detail"><div class="in">
+  <span class="tag" style="font-size:18px;padding:6px 12px">이런 업무라면</span>
+  <h2>같은 내용을 파일 세 개에<br><span class="lime">옮겨 적고 계신가요?</span></h2>
+  <p class="s" style="color:#9CA3AF">엑셀과 종이로 하던 일을 사내 웹 시스템으로 만들면, 한 번 입력한 내용을 모두가 같은 화면에서 봅니다.</p>
+  <div class="cards3">
+    <div style="background:#17191E;border:1px solid #2A2D35"><i class="lime">01</i><b>어느 파일이 최신인지 매번 확인합니다</b><span style="color:#9CA3AF">요청과 재고를 엑셀 여러 개에 나눠 적습니다.</span></div>
+    <div style="background:#17191E;border:1px solid #2A2D35"><i class="lime">02</i><b>처리 상황을 사람에게 물어야 압니다</b><span style="color:#9CA3AF">누가 언제 처리했는지 기록이 없습니다.</span></div>
+    <div style="background:#17191E;border:1px solid #2A2D35"><i class="lime">03</i><b>담당자가 바뀌면 처음부터 배웁니다</b><span style="color:#9CA3AF">일하는 방법이 한 사람의 파일에만 있습니다.</span></div>
+  </div>
+  <div style="margin-top:64px;background:#C8F535;border-radius:24px;padding:44px 40px 0;color:#0D0E11;overflow:hidden">
+    <b style="font-size:34px;letter-spacing:-.03em">웹 시스템으로 바꾸면</b>
+    <div style="display:flex;gap:28px;margin:14px 0 30px;font-size:19px;font-weight:700"><span>✓ 모두 같은 화면에서 봅니다</span><span>✓ 처리 기록이 남습니다</span><span>✓ 역할마다 할 일이 나뉩니다</span></div>
+    <div style="display:flex;justify-content:center"><div style="box-shadow:0 -10px 40px rgba(0,0,0,.18);border-radius:10px 10px 0 0;height:560px;overflow:hidden"><div data-dash data-scale="1.5"></div></div></div>
+  </div>
+</div></section>
+
+<!-- ═══ E′ 상세 ═══ -->
+<section class="detail EpD" id="Ep-detail"><div class="in">
+  <div class="ey or">이런 업무라면</div>
+  <h2>같은 내용을 파일 세 개에<br><span class="or">옮겨 적고 계신가요?</span></h2>
+  <p class="s" style="color:#57534E">엑셀과 종이로 하던 일을 사내 웹 시스템으로 만들면, 한 번 입력한 내용을 모두가 같은 화면에서 봅니다.</p>
+  <div class="cards3">
+    <div style="background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06)"><i class="or">01</i><b>어느 파일이 최신인지 매번 확인합니다</b><span style="color:#57534E">요청과 재고를 엑셀 여러 개에 나눠 적습니다.</span></div>
+    <div style="background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06)"><i class="or">02</i><b>처리 상황을 사람에게 물어야 압니다</b><span style="color:#57534E">누가 언제 처리했는지 기록이 없습니다.</span></div>
+    <div style="background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06)"><i class="or">03</i><b>담당자가 바뀌면 처음부터 배웁니다</b><span style="color:#57534E">일하는 방법이 한 사람의 파일에만 있습니다.</span></div>
+  </div>
+  <div style="margin-top:64px;background:#FF5A1F;border-radius:24px;padding:44px 40px 0;overflow:hidden">
+    <b style="font-size:34px;letter-spacing:-.03em;color:#111">웹 시스템으로 바꾸면</b>
+    <div style="display:flex;gap:28px;margin:14px 0 30px;font-size:19px;font-weight:700;color:#fff"><span>✓ 모두 같은 화면에서 봅니다</span><span>✓ 처리 기록이 남습니다</span><span>✓ 역할마다 할 일이 나뉩니다</span></div>
+    <div style="display:flex;justify-content:center"><div style="box-shadow:0 -10px 40px rgba(120,30,0,.25);border-radius:10px 10px 0 0;height:560px;overflow:hidden"><div data-dash data-scale="1.5"></div></div></div>
+  </div>
+</div></section>
+
+<!-- ═══ D 메인: 노랑 메모지 ═══ -->
+<section class="thumb D" id="D-main">
+  <h1>메모와 엑셀로<br>하던 일을 <span>웹으로</span><br>옮겨 드립니다</h1>
+  <div class="notes">
+    <div class="pi" style="left:0;top:40px;background:#FFF;transform:rotate(-7deg)">최종_진짜<br>최종(2).xlsx</div>
+    <div class="pi" style="left:92px;top:0;background:#FF9BB3;transform:rotate(5deg)">단가표 건<br>어떻게 됐어요??</div>
+    <div class="pi" style="left:140px;top:80px;background:#9BD4FF;transform:rotate(-3deg)">재고 몇 개<br>남았지…</div>
+  </div>
+  <div class="arr">→</div>
+  <div class="card"><b>업무 요청 · 4건</b>
+    <div>단가표 양식 수정<span class="st b">처리 중</span></div>
+    <div>비품 신청 화면<span class="st c">검토</span></div>
+    <div>인쇄 여백 수정<span class="st a">완료</span></div></div>
+</section>
+
+<!-- ═══ E 메인: 주황 포스터 ═══ -->
+<section class="thumb E" id="E-main">
+  <div class="top"><span>CUSTOM WORK SYSTEM</span><span>EXCEL → WEB</span></div>
+  <h1>엑셀 업무,<br>웹 시스템으로<br>만듭니다</h1>
+  <div class="grid">
+    <div><b>01</b><span>업무 흐름 정리</span></div>
+    <div><b>02</b><span>화면 설계 확인</span></div>
+    <div><b>03</b><span>개발 · 모바일</span></div>
+  </div>
+</section>
+
+<!-- ═══ F 메인: 대각선 전후 분할 ═══ -->
+<section class="thumb F" id="F-main">
+  <div class="left"><div class="xl"><table>
+    <tr><td>날짜</td><td>요청</td><td>담당</td><td>상태</td></tr>
+    <tr><td>9/12</td><td>단가표 수정</td><td>?</td><td>확인중</td></tr>
+    <tr><td>9/13</td><td>비품 화면</td><td></td><td></td></tr>
+    <tr><td>9/13</td><td>단가표 건</td><td>?</td><td>??</td></tr>
+    <tr><td>9/15</td><td>인쇄 여백</td><td></td><td></td></tr>
+    <tr><td>9/16</td><td>재고 확인</td><td>?</td><td></td></tr>
+    <tr><td>9/17</td><td>보고서 양식</td><td></td><td>?</td></tr></table></div></div>
+  <span class="lbl" style="left:50px;top:50px;background:#111;color:#fff">BEFORE</span>
+  <span class="lbl" style="right:50px;top:50px;background:#FDE047;color:#111">AFTER</span>
+  <h1 style="margin-top:34px">엑셀로 하던 일<br><span>웹 시스템</span>으로</h1>
+  <div class="scrn" data-dash></div>
+</section>
+
+<!-- ═══ G 메인: 색 블록 격자 ═══ -->
+<section class="thumb G" id="G-main">
+  <div class="bento">
+    <div class="hero"><small>사내 업무 시스템 개발</small><h1>엑셀로<br>하던 일<br><span>웹으로</span></h1></div>
+    <div class="t" style="background:#FDA4AF"><b>권한</b><span>역할마다 나누기</span><em>🔐</em></div>
+    <div class="t" style="background:#FDE047"><b>엑셀</b><span>올리고 내려받기</span><em>📊</em></div>
+    <div class="t" style="background:#86EFAC"><b>기록</b><span>누가 언제 처리</span><em>🗂️</em></div>
+    <div class="t" style="background:#93C5FD"><b>모바일</b><span>PC와 같은 화면</span><em>📱</em></div>
+  </div>
+</section>
+
+<!-- ═══ D 상세 ═══ -->
+<section class="detail D" id="D-detail"><div class="in">
+  <div class="ey">이런 업무라면</div>
+  <h2>같은 내용을 파일 세 개에<br><span class="ink">옮겨 적고 계신가요?</span></h2>
+  <p class="s">엑셀과 종이로 하던 일을 사내 웹 시스템으로 만들면, 한 번 입력한 내용을 모두가 같은 화면에서 봅니다.</p>
+  <div class="cards3">
+    <div style="background:#fff;border:3px solid #111;box-shadow:8px 8px 0 #111;transform:rotate(-1deg)"><i>01</i><b>어느 파일이 최신인지 매번 확인합니다</b><span>요청과 재고를 엑셀 여러 개에 나눠 적습니다.</span></div>
+    <div style="background:#FF9BB3;border:3px solid #111;box-shadow:8px 8px 0 #111;transform:rotate(1deg)"><i>02</i><b>처리 상황을 사람에게 물어야 압니다</b><span>누가 언제 처리했는지 기록이 없습니다.</span></div>
+    <div style="background:#9BD4FF;border:3px solid #111;box-shadow:8px 8px 0 #111;transform:rotate(-1deg)"><i>03</i><b>담당자가 바뀌면 처음부터 배웁니다</b><span>일하는 방법이 한 사람의 파일에만 있습니다.</span></div>
+  </div>
+  <div style="margin-top:64px;background:#fff;border:3px solid #111;box-shadow:10px 10px 0 #111;border-radius:14px;padding:22px;display:flex;justify-content:center"><div data-dash data-scale="1.5"></div></div>
+</div></section>
+
+<!-- ═══ E 상세 ═══ -->
+<section class="detail E" id="E-detail"><div class="in">
+  <div class="top" style="font-size:16px"><span>01 / PROBLEM</span><span>EXCEL → WEB</span></div>
+  <h2 style="font-size:72px;line-height:1.02;letter-spacing:-.06em;margin-top:28px">같은 내용을<br>파일 세 개에<br>옮겨 적고 있다면</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border:4px solid #111;background:#fff;margin-top:52px">
+    <div style="padding:26px"><b style="font:800 40px/1 'JetBrains Mono'">3개</b><p style="font-size:19px;font-weight:700;margin:12px 0 0">최신본을 찾아야 하는 파일</p></div>
+    <div style="padding:26px;border-left:4px solid #111"><b style="font:800 40px/1 'JetBrains Mono'">?</b><p style="font-size:19px;font-weight:700;margin:12px 0 0">처리 상황을 아는 사람</p></div>
+    <div style="padding:26px;border-left:4px solid #111"><b style="font:800 40px/1 'JetBrains Mono'">0줄</b><p style="font-size:19px;font-weight:700;margin:12px 0 0">남아 있는 처리 기록</p></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;border:4px solid #111;border-top:0;background:#111;color:#fff">
+    <div style="padding:26px"><p style="font:700 14px/1 'JetBrains Mono';color:#FF5A1F;margin:0 0 14px">BEFORE</p><p style="font-size:20px;line-height:1.7;margin:0">파일을 열어 최신본부터 찾습니다<br>진행 상황은 담당자에게 묻습니다<br>권한 없이 누구나 고칩니다</p></div>
+    <div style="padding:26px;background:#fff;color:#111"><p style="font:700 14px/1 'JetBrains Mono';color:#FF5A1F;margin:0 0 14px">AFTER</p><p style="font-size:20px;line-height:1.7;margin:0;font-weight:700">모두 같은 화면에서 봅니다<br>상태와 처리 기록이 남습니다<br>역할마다 할 일이 나뉩니다</p></div>
+  </div>
+</div></section>
+
+<!-- ═══ F 상세 ═══ -->
+<section class="detail F" id="F-detail" style="background:#1D4ED8"><div class="in">
+  <div class="ey" style="color:#FDE047">이런 업무라면</div>
+  <h2>같은 내용을 파일 세 개에<br>옮겨 적고 계신가요?</h2>
+  <p class="s" style="color:#DBEAFE">엑셀과 종이로 하던 일을 사내 웹 시스템으로 만들면, 한 번 입력한 내용을 모두가 같은 화면에서 봅니다.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;margin-top:52px;border-radius:18px;overflow:hidden">
+    <div style="background:#D9DBE0;color:#374151;padding:34px;filter:grayscale(1)"><span class="lbl" style="position:static;display:inline-block;background:#111;color:#fff">BEFORE</span>
+      <ul style="list-style:none;padding:0;margin:22px 0 0;font-size:20px;line-height:1.5"><li style="padding:10px 0">✕ 파일을 열어 최신본부터 찾습니다</li><li style="padding:10px 0">✕ 진행 상황은 담당자에게 묻습니다</li><li style="padding:10px 0">✕ 권한 없이 누구나 고칩니다</li></ul></div>
+    <div style="background:#fff;color:#111;padding:34px"><span class="lbl" style="position:static;display:inline-block;background:#FDE047;color:#111">AFTER</span>
+      <ul style="list-style:none;padding:0;margin:22px 0 0;font-size:20px;line-height:1.5;font-weight:700"><li style="padding:10px 0;color:#1D4ED8">✓ 모두 같은 화면에서 봅니다</li><li style="padding:10px 0;color:#1D4ED8">✓ 상태와 처리 기록이 남습니다</li><li style="padding:10px 0;color:#1D4ED8">✓ 역할마다 할 일이 나뉩니다</li></ul></div>
+  </div>
+  <div style="margin-top:56px;display:flex;justify-content:center"><div data-dash data-scale="1.5" style="box-shadow:0 30px 60px rgba(0,0,0,.35);border-radius:10px"></div></div>
+</div></section>
+
+<!-- ═══ G 상세 ═══ -->
+<section class="detail G" id="G-detail"><div class="in">
+  <div class="ey" style="color:#7C3AED">이런 업무라면</div>
+  <h2>같은 내용을 파일 세 개에<br>옮겨 적고 계신가요?</h2>
+  <p class="s" style="color:#4B5563">엑셀과 종이로 하던 일을 사내 웹 시스템으로 만들면, 한 번 입력한 내용을 모두가 같은 화면에서 봅니다.</p>
+  <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;grid-template-rows:auto auto;gap:16px;margin-top:52px">
+    <div style="grid-row:1/3;background:#111;color:#fff;border-radius:24px;padding:34px;display:flex;flex-direction:column;justify-content:space-between"><b style="font-size:30px;line-height:1.3">웹 시스템으로<br>바꾸면</b><p style="font-size:19px;line-height:1.6;color:#D1D5DB;margin:24px 0 0">한 번 입력한 내용을 모두가 같은 화면에서 보고, 누가 언제 처리했는지 남습니다.</p></div>
+    <div style="background:#FDA4AF;border-radius:24px;padding:28px"><b style="font-size:24px">어느 파일이 최신?</b><p style="font-size:17px;line-height:1.55;margin:10px 0 0">→ 목록 하나에 모두 모입니다</p></div>
+    <div style="background:#FDE047;border-radius:24px;padding:28px"><b style="font-size:24px">누가 처리했지?</b><p style="font-size:17px;line-height:1.55;margin:10px 0 0">→ 담당자와 처리 기록이 붙습니다</p></div>
+    <div style="background:#86EFAC;border-radius:24px;padding:28px"><b style="font-size:24px">아무나 고쳐요</b><p style="font-size:17px;line-height:1.55;margin:10px 0 0">→ 역할마다 할 일이 나뉩니다</p></div>
+    <div style="background:#93C5FD;border-radius:24px;padding:28px"><b style="font-size:24px">자리에 없으면?</b><p style="font-size:17px;line-height:1.55;margin:10px 0 0">→ 모바일에서도 같은 화면</p></div>
+  </div>
+  <div style="margin-top:40px;background:#fff;border-radius:24px;padding:26px;display:flex;justify-content:center"><div data-dash data-scale="1.5"></div></div>
+</div></section>
+
+<!-- ═══ A 메인 ═══ -->
+<section class="thumb A" id="A-main">
+  <div class="lab">맞춤 업무 시스템 개발</div>
+  <h1>엑셀 업무를<br><span class="blue">웹 시스템</span>으로</h1>
+  <div class="feats">
+    <div><i style="background:#2563FF">✓</i>권한 관리</div>
+    <div><i style="background:#14C08C">↑</i>엑셀 등록</div>
+    <div><i style="background:#F59E0B">≡</i>처리 기록</div>
+    <div><i style="background:#8B5CF6">▢</i>모바일 대응</div>
+  </div>
+  <div class="dev"><div class="laptop"><div class="scr" data-dash></div><div class="base"></div></div>
+    <div class="phone" style="left:520px;top:170px"><div class="in" data-phone></div></div></div>
+  <div class="band"><i>✓</i>화면 설계부터 개발까지 한 번에</div>
+</section>
+
+<!-- ═══ B 메인 ═══ -->
+<section class="thumb B" id="B-main">
+  <span class="tag">사내 업무 시스템 개발</span>
+  <h1>엑셀로 하던 일<br><u class="lime">웹 시스템</u>으로</h1>
+  <div class="tilt" data-dash></div>
+  <div class="pills"><span>업무 정리부터</span><span>권한 · 기록</span><span>모바일</span></div>
+</section>
+
+<!-- ═══ C 메인 ═══ -->
+<section class="thumb C" id="C-main">
+  <div class="lab">사내 업무 시스템 개발</div>
+  <h1>엑셀 칸을<br><mark>웹 화면</mark>으로 바꿉니다</h1>
+  <div class="split">
+    <div class="xl"><div class="fn">요청목록_최종(2).xlsx</div><table>
+      <tr><td>날짜</td><td>요청</td><td>상태</td></tr>
+      <tr><td>9/12</td><td>단가표 수정</td><td class="y">확인중?</td></tr>
+      <tr><td>9/13</td><td>비품 화면</td><td></td></tr>
+      <tr><td>9/13</td><td>단가표 건</td><td class="r">중복</td></tr>
+      <tr><td>9/15</td><td>인쇄 여백</td><td></td></tr></table></div>
+    <div class="arr">→</div>
+    <div class="web"><div class="h"><span class="on">전체 4</span><span>처리 중 2</span><span>완료 1</span></div>
+      <div class="r"><b>단가표 양식 수정</b><span class="st b" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px;background:#FEF3C7;color:#B45309">처리 중</span></div>
+      <div class="r"><b>비품 신청 화면</b><span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px;background:#DBEAFE;color:#1D4ED8">검토</span></div>
+      <div class="r" style="border:0"><b>인쇄 여백 수정</b><span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px;background:#DCFCE7;color:#15803D">완료</span></div></div>
+  </div>
+</section>
+
+<!-- ═══ A 상세(첫 장) ═══ -->
+<section class="detail A" id="A-detail"><div class="in">
+  <div class="ey blue">이런 업무라면</div>
+  <h2>같은 내용을 파일 세 개에<br>옮겨 적고 계신가요?</h2>
+  <p class="s" style="color:#475569">엑셀과 종이로 하던 일을 사내 웹 시스템으로 만들면, 한 번 입력한 내용을 모두가 같은 화면에서 봅니다.</p>
+  <div class="cards3">
+    <div style="background:#fff;border:1px solid #E2E8F0"><i class="blue">01</i><b>어느 파일이 최신인지 매번 확인합니다</b><span style="color:#475569">요청과 재고를 엑셀 여러 개에 나눠 적습니다.</span></div>
+    <div style="background:#fff;border:1px solid #E2E8F0"><i class="blue">02</i><b>처리 상황을 사람에게 물어야 압니다</b><span style="color:#475569">누가 언제 처리했는지 기록이 없습니다.</span></div>
+    <div style="background:#fff;border:1px solid #E2E8F0"><i class="blue">03</i><b>담당자가 바뀌면 처음부터 배웁니다</b><span style="color:#475569">일하는 방법이 한 사람의 파일에만 있습니다.</span></div>
+  </div>
+  <div style="margin-top:72px;display:flex;justify-content:center"><div class="laptop" style="width:900px"><div class="scr" data-dash data-scale="1.36"></div><div class="base"></div></div></div>
+  <p style="text-align:center;font-size:18px;color:#64748B;margin:18px 0 0">요청, 처리 상황, 기한이 한 화면에 모입니다.</p>
+</div></section>
+
+<!-- ═══ B 상세(첫 장) ═══ -->
+<section class="detail B" id="B-detail"><div class="in">
+  <span class="tag" style="font-size:18px;padding:6px 12px">이런 업무라면</span>
+  <h2>같은 내용을 파일 세 개에<br><span class="lime">옮겨 적고 계신가요?</span></h2>
+  <p class="s" style="color:#9CA3AF">엑셀과 종이로 하던 일을 사내 웹 시스템으로 만들면, 한 번 입력한 내용을 모두가 같은 화면에서 봅니다.</p>
+  <div class="cards3">
+    <div style="background:#17191E;border:1px solid #2A2D35"><i class="lime">01</i><b>어느 파일이 최신인지 매번 확인합니다</b><span style="color:#9CA3AF">요청과 재고를 엑셀 여러 개에 나눠 적습니다.</span></div>
+    <div style="background:#17191E;border:1px solid #2A2D35"><i class="lime">02</i><b>처리 상황을 사람에게 물어야 압니다</b><span style="color:#9CA3AF">누가 언제 처리했는지 기록이 없습니다.</span></div>
+    <div style="background:#17191E;border:1px solid #2A2D35"><i class="lime">03</i><b>담당자가 바뀌면 처음부터 배웁니다</b><span style="color:#9CA3AF">일하는 방법이 한 사람의 파일에만 있습니다.</span></div>
+  </div>
+  <div class="vs">
+    <div style="background:#17191E"><h4 style="color:#9CA3AF">지금</h4><ul style="color:#D1D5DB">
+      <li><span style="color:#6B7280">✕</span>파일을 열어 최신본부터 찾습니다</li><li><span style="color:#6B7280">✕</span>진행 상황은 담당자에게 묻습니다</li><li><span style="color:#6B7280">✕</span>권한 없이 누구나 고칩니다</li></ul></div>
+    <div style="background:#C8F535;color:#0D0E11"><h4>웹 시스템으로 바꾸면</h4><ul>
+      <li><b>✓</b>모두 같은 화면에서 봅니다</li><li><b>✓</b>상태와 처리 기록이 남습니다</li><li><b>✓</b>역할마다 할 수 있는 일이 나뉩니다</li></ul></div>
+  </div>
+</div></section>
+
+<!-- ═══ C 상세(첫 장) ═══ -->
+<section class="detail C" id="C-detail" style="background-size:88px 44px"><div class="in">
+  <div class="ey" style="color:#FFE27A">이런 업무라면</div>
+  <h2>같은 내용을 파일 세 개에<br>옮겨 적고 계신가요?</h2>
+  <p class="s" style="color:#D7F2E2">엑셀과 종이로 하던 일을 사내 웹 시스템으로 만들면, 한 번 입력한 내용을 모두가 같은 화면에서 봅니다.</p>
+  <div class="cards3">
+    <div style="background:#fff;color:#1D3B2A"><i style="color:#1D6B43">01</i><b>어느 파일이 최신인지 매번 확인합니다</b><span style="color:#41644F">요청과 재고를 엑셀 여러 개에 나눠 적습니다.</span></div>
+    <div style="background:#fff;color:#1D3B2A"><i style="color:#1D6B43">02</i><b>처리 상황을 사람에게 물어야 압니다</b><span style="color:#41644F">누가 언제 처리했는지 기록이 없습니다.</span></div>
+    <div style="background:#fff;color:#1D3B2A"><i style="color:#1D6B43">03</i><b>담당자가 바뀌면 처음부터 배웁니다</b><span style="color:#41644F">일하는 방법이 한 사람의 파일에만 있습니다.</span></div>
+  </div>
+  <div class="vs" style="background:#fff;color:#1D3B2A">
+    <div style="border-right:2px dashed #CDE6D6"><h4 style="color:#1D6B43">엑셀 칸</h4><ul>
+      <li>· 요청목록_최종(2).xlsx</li><li>· 담당자 칸이 "?"</li><li>· 같은 요청이 두 줄</li></ul></div>
+    <div><h4 style="color:#1D6B43">웹 화면</h4><ul>
+      <li><mark style="background:#FFE27A">✓</mark> 목록 하나에 모두</li><li><mark style="background:#FFE27A">✓</mark> 담당자와 기한이 붙음</li><li><mark style="background:#FFE27A">✓</mark> 같은 요청은 하나로 합침</li></ul></div>
+  </div>
+</div></section>
+
+<script>
+// 가상 관리자 화면을 그린다(모든 시안이 같은 내용)
+const DASH = `<div class="dash">
+  <div class="sb"><b><i></i>업무 포털</b><div class="on">대시보드</div><div>업무 요청</div><div>재고 관리</div><div>근무표</div><div>설정</div></div>
+  <div class="mn"><div class="hd"><h6>대시보드</h6><span>이번 주</span></div>
+    <div class="kp"><div><em>새 요청</em><b>12</b><small>오늘 3건</small></div><div><em>처리 중</em><b>5</b><small>담당 3명</small></div><div><em>이번 주 완료</em><b>18</b><small>지난주보다 4건 ↑</small></div><div><em>기한 임박</em><b>2</b><small class="w">내일까지</small></div></div>
+    <div class="tb"><table><tr><th>요청</th><th>요청한 사람</th><th>담당</th><th>상태</th><th>기한</th></tr>
+      <tr><td>거래처 단가표에 시작일 열 추가</td><td>김서연</td><td>박도현</td><td><span class="st b">처리 중</span></td><td>9/19</td></tr>
+      <tr><td>비품 신청 화면 필수값 추가</td><td>이지우</td><td>박도현</td><td><span class="st c">검토</span></td><td>9/22</td></tr>
+      <tr><td>출고 화면 날짜 검색</td><td>최민준</td><td>정하늘</td><td><span class="st d">기한 임박</span></td><td>9/17</td></tr>
+      <tr><td>월말 보고서 양식</td><td>한유진</td><td>정하늘</td><td><span class="st a">완료</span></td><td>9/15</td></tr>
+      <tr><td>검사 결과 엑셀 내려받기</td><td>오세훈</td><td>박도현</td><td><span class="st a">완료</span></td><td>9/14</td></tr>
+    </table></div></div></div>`;
+const PHONE = `<b>업무 요청</b><div>단가표 시작일<span class="st b" style="font-size:7px;padding:1px 4px;border-radius:6px;background:#FEF3C7;color:#B45309">처리 중</span></div><div>비품 화면<span style="font-size:7px;padding:1px 4px;border-radius:6px;background:#DBEAFE;color:#1D4ED8">검토</span></div><div>날짜 검색<span style="font-size:7px;padding:1px 4px;border-radius:6px;background:#FEE2E2;color:#B91C1C">임박</span></div><div>월말 보고서<span style="font-size:7px;padding:1px 4px;border-radius:6px;background:#DCFCE7;color:#15803D">완료</span></div>`;
+document.querySelectorAll('[data-dash]').forEach((el) => {
+  el.insertAdjacentHTML('beforeend', DASH);
+  const s = el.dataset.scale;
+  if (s) { const d = el.lastElementChild; d.style.transform = `scale(${s})`; d.style.transformOrigin = '0 0'; el.style.width = 640 * s + 18 + 'px'; el.style.height = 400 * s + 16 + 'px'; }
+});
+document.querySelectorAll('[data-phone]').forEach((el) => { el.innerHTML = PHONE; });
+</script>
+</body>
+</html>
