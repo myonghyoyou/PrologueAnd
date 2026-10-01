@@ -3,7 +3,8 @@
 .lab i{font-style:normal;font-weight:500;color:var(--bone-500)}
 .h2{font-size:clamp(30px,2.8vw,40px);font-weight:600;letter-spacing:-.025em;line-height:1.15;margin:0 0 16px;word-break:keep-all}
 .h3{font-size:clamp(21px,1.7vw,24px);font-weight:600;letter-spacing:-.02em;line-height:1.25;margin:8px 0 10px;word-break:keep-all}
-.lead{font-size:clamp(17px,1.3vw,19px);line-height:1.6;color:var(--bone-700);margin:0 0 14px;max-width:34rem;word-break:keep-all}
+/* 리드 42rem: 1440 이하에서는 본문 칸(≤648)을 꽉 채워 제목·그림·표와 오른쪽 끝이 맞고, 넓은 창에서는 672 에서 멈춘다(한 줄 약 45자). 2026-10-01 */
+.lead{font-size:clamp(17px,1.3vw,19px);line-height:1.6;color:var(--bone-700);margin:0 0 14px;max-width:42rem;word-break:keep-all}
 .p{font-size:16px;line-height:1.7;color:var(--bone-700);margin:0 0 12px;word-break:keep-all}
 .was{font-size:15px;line-height:1.6;color:var(--bone-500);margin:0 0 4px;word-break:keep-all}
 .was b{display:block;margin-bottom:2px;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--bone-400)}
