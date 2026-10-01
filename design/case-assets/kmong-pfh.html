@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>크몽 Por favor, Harry</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* 크몽 포트폴리오 이미지 — 대표 1장(1200×1200) + 상세 4장(폭 1200, 높이 3000 이하). 색·틀은 사이트와 같게.
+   캡처는 1x(1280 기준) 좌표로 잘라 원래 크기 그대로 넣는다(form.png 만 2x 원본을 1x 로 줄여 넣음) */
+:root{--navy:#2B3160;--ink:#1C1B18;--bone:#FAF9F6;--line:#E8E5DE;--line2:#D6D2C8;--mut:#8A857A;--txt:#4A4741}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bone);font-family:"Pretendard",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;word-break:keep-all}
+.img{width:1200px;background:var(--bone);padding:80px;margin:0 0 40px}
+.sq{height:1200px;padding:80px 72px;display:flex;flex-direction:column;justify-content:space-between}
+.who{display:flex;gap:14px;align-items:baseline;font-size:22px}
+.who b{color:var(--navy);font-weight:700}
+.who span{color:var(--mut)}
+.kick{font-size:18px;font-weight:700;letter-spacing:.04em;color:var(--navy);margin:0 0 14px}
+h1{font-size:60px;line-height:1.22;letter-spacing:-.03em;font-weight:700;margin:28px 0 0}
+h2{font-size:42px;line-height:1.25;letter-spacing:-.025em;font-weight:700;margin:0 0 20px}
+h3{font-size:28px;line-height:1.3;letter-spacing:-.02em;font-weight:700;margin:0 0 10px}
+p.lead{font-size:21px;line-height:1.65;color:var(--txt);margin:0;max-width:960px}
+p.d{font-size:19px;line-height:1.6;color:var(--txt);margin:0 0 20px}
+.cap{font-size:17px;line-height:1.55;color:var(--mut);margin:14px 0 0}
+.sec{margin-top:88px}
+.blk{margin-top:64px}
+.frame{display:inline-block;background:#fff;border:1px solid var(--ink);padding:6px}
+.crop{background-repeat:no-repeat}
+.tag{display:inline-block;font-size:17px;font-weight:700;color:var(--mut);margin:0 0 12px;letter-spacing:.02em}
+.tag.n{color:var(--navy)}
+/* 쪽지 */
+.notes{display:grid;gap:14px}
+.note{background:#fff;border:1px solid var(--line2);border-radius:2px;padding:16px 18px}
+.note .m{display:flex;justify-content:space-between;font-size:15px;color:var(--mut);margin-bottom:8px}
+.note .m b{color:var(--navy);font-weight:700}
+.sq .note{padding:20px 22px}
+.note .t{font-size:20px;line-height:1.4}
+.note.hi{border:2px solid var(--navy);padding:15px 17px}
+/* 흐름 */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px}
+.step{border-top:2px solid var(--navy);padding-top:16px}
+.step i{font-style:normal;font-size:16px;font-weight:700;color:var(--navy)}
+.step b{display:block;font-size:22px;margin:6px 0 8px;letter-spacing:-.01em}
+.step span{font-size:17px;line-height:1.55;color:var(--txt)}
+/* 번호 */
+.marks{position:relative}
+.mk{position:absolute;left:0;width:1px;background:var(--navy)}
+.mk i{position:absolute;left:10px;top:-2px;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;font-style:normal;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.list{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:24px}
+.list div{display:flex;gap:12px;font-size:18px;line-height:1.55;color:var(--txt)}
+.list i{flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-style:normal;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.row{display:flex;gap:56px;align-items:flex-start}
+.phone{border:1px solid var(--ink);border-radius:28px;padding:10px;background:#fff}
+.phone .crop{border-radius:18px}
+.arrow{font-size:30px;color:var(--navy);margin:26px 0 18px;line-height:1}
+</style>
+</head>
+<body>
+
+<!-- 대표 1200×1200 -->
+<section class="img sq" id="cover">
+  <div class="who"><b>Por favor, Harry</b><span>사내 업무 요청 시스템</span></div>
+  <h1>흩어져 오던 업무 요청을<br>한곳에서 받고 처리합니다</h1>
+  <div>
+    <span class="tag">전에는 · 전화, 메신저, 메일, 자리 방문으로</span>
+    <div class="notes" style="grid-template-columns:1fr 1fr">
+      <div class="note"><div class="m"><b>메신저</b><span>오전 9:12</span></div><div class="t">단가표 양식에 시작일 좀 넣어주세요 급해요</div></div>
+      <div class="note"><div class="m"><b>전화</b><span>오전 10:03</span></div><div class="t">인쇄 여백 → 오늘 중? (전화 2번 옴)</div></div>
+      <div class="note"><div class="m"><b>메일</b><span>오전 10:21</span></div><div class="t">RE: RE: [요청] 거래처 코드 일괄 변경 건</div></div>
+      <div class="note"><div class="m"><b>자리로 찾아옴</b><span>오후 2:05</span></div><div class="t">단가표 건 어떻게 됐어요?</div></div>
+    </div>
+  </div>
+  <div><span class="tag n">지금은 · 요청이 한 목록에 카드로 쌓입니다</span><br>
+  <div class="frame"><div class="crop" style="width:1034px;height:326px;background-image:url(../../web/public/screens/pfh/queue.png);background-position:-236px -410px"></div></div></div>
+</section>
+
+<!-- 상세 1: 문제와 흐름 -->
+<section class="img" id="d1">
+  <p class="kick">01 전에는</p>
+  <h2>업무 요청이 네 갈래로 흩어져 들어왔습니다</h2>
+  <p class="lead">전화, 메신저, 메일, 자리 방문으로 온 요청을 담당자가 하나씩 다시 정리해 할 일 목록에 옮겨 적었습니다. 요청이 올 때마다 하던 일을 멈춰야 했고, "그거 어떻게 됐어요?" 하는 연락도 수시로 왔습니다.</p>
+  <div class="notes" id="day" style="grid-template-columns:repeat(3,1fr);margin-top:40px"></div>
+  <p class="cap">어느 하루 담당자에게 온 요청 14건을 다시 그렸습니다. 굵은 테두리의 단가표 건은 세 번 왔는데, 처음에는 "급해요"뿐이었고 언제까지 필요한지는 세 번째에야 나왔습니다.</p>
+
+  <div class="sec">
+    <p class="kick">02 바꾼 흐름</p>
+    <h2>요청은 한곳으로 들어와 이 순서로 처리됩니다</h2>
+    <div class="steps">
+      <div class="step"><i>1</i><b>요청 작성</b><span>요청한 사람이 유형, 제목, 언제까지, 어느 화면인지 채워서 보냅니다.</span></div>
+      <div class="step"><i>2</i><b>담당자 검토</b><span>들어온 요청을 한 목록에서 보고 수락, 되묻기, 보류, 병합 중에 고릅니다.</span></div>
+      <div class="step"><i>3</i><b>처리 예정일 전달</b><span>수락 여부와 언제까지 처리할지가 요청한 사람에게 갑니다.</span></div>
+      <div class="step"><i>4</i><b>진행 상황 확인</b><span>상태가 바뀔 때마다 알림이 가고, 요청한 사람이 화면에서 직접 봅니다.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 상세 2: 요청하는 사람의 화면 -->
+<section class="img" id="d2">
+  <p class="kick">03 요청하는 사람의 화면</p>
+  <h2>꼭 필요한 항목을 채워야 보낼 수 있습니다</h2>
+  <p class="lead" style="margin-bottom:36px">메신저로 "급해요" 한 줄만 오던 요청이, 무엇을 언제까지 바꾸는지 적힌 채로 들어옵니다.</p>
+  <div class="marks" style="display:inline-block;padding-right:64px">
+    <div class="frame"><div class="crop" style="width:928px;height:1020px;background-image:url(../../web/public/screens/pfh/form.png);background-size:1280px auto;background-position:-176px -24px"></div></div>
+    <!-- 영역 세로 위치: 핫스팟(form.png 기준 %)을 1x 로 바꾼 값 - 자른 위 24 + 틀 7 -->
+    <div class="mk" style="left:960px;top:192px;height:169px"><i>1</i></div>
+    <div class="mk" style="left:960px;top:370px;height:327px"><i>2</i></div>
+    <div class="mk" style="left:960px;top:705px;height:197px"><i>3</i></div>
+  </div>
+  <div class="list">
+    <div><i>1</i>유형과 제목을 먼저 고릅니다. 무엇을 바꾸는 요청인지가 여기서 정해집니다.</div>
+    <div><i>2</i>언제까지 필요한지, 어느 화면인지 고르고 내용을 적어서 다시 묻지 않습니다.</div>
+    <div><i>3</i>화면 캡처와 파일을 붙여 말로 설명할 일을 줄입니다.</div>
+  </div>
+
+  <div class="sec">
+    <h3>요청한 사람은 진행 상황을 화면에서 확인합니다</h3>
+    <p class="d">상태가 바뀔 때마다 알림이 갑니다. 약속한 날짜가 제목 아래 크게 적혀 있어, 따로 물어볼 일이 없습니다.</p>
+    <div class="frame"><div class="crop" style="width:928px;height:410px;background-image:url(../../web/public/screens/pfh/status.png);background-position:-176px -20px"></div></div>
+  </div>
+</section>
+
+<!-- 상세 3: 담당자의 화면 -->
+<section class="img" id="d3">
+  <p class="kick">04 담당자의 화면</p>
+  <h2>모인 요청을 한 번에 검토하고 업무로 넘깁니다</h2>
+
+  <div class="blk" style="margin-top:44px">
+    <h3>요청은 심사 대기 목록에 카드로 쌓입니다</h3>
+    <p class="d">요청이 올 때마다 대응하지 않고 이 목록을 한 번에 봅니다. 전화로 온 요청은 「요청 대신 등록」으로 같은 목록에 넣습니다.</p>
+    <div class="frame"><div class="crop" style="width:1026px;height:326px;background-image:url(../../web/public/screens/pfh/queue.png);background-position:-236px -410px"></div></div>
+  </div>
+  <div class="blk">
+    <h3>수락한 요청은 업무 목록으로 넘어갑니다</h3>
+    <p class="d">요청자 칸이 있어 누구의 요청에서 나온 일인지 바로 보입니다. 기한 옆의 "약속"은 요청한 사람과 정한 날짜입니다.</p>
+    <div class="frame"><div class="crop" style="width:1026px;height:220px;background-image:url(../../web/public/screens/pfh/tasks.png);background-position:-236px -270px"></div></div>
+  </div>
+  <div class="blk">
+    <h3>업무 화면에 요청 원문이 붙어 있습니다</h3>
+    <p class="d">요청이 걸린 업무는 지우거나 건너뛸 수 없고, 완료하면 요청한 사람의 화면이 바뀝니다.</p>
+    <div class="frame"><div class="crop" style="width:1026px;height:176px;background-image:url(../../web/public/screens/pfh/task.png);background-position:-236px -556px"></div></div>
+  </div>
+</section>
+
+<!-- 상세 4: 알림과 폰 -->
+<section class="img" id="d4">
+  <p class="kick">05 알림과 폰</p>
+  <h2>처리 결과는 사람이 다듬어서 내보냅니다</h2>
+  <p class="d">「공개」를 눌러야 요청한 사람에게 나갑니다. 담당자가 보는 글과 요청한 사람이 보는 글을 따로 적어, 내부에서 쓰는 말이 그대로 나가지 않습니다.</p>
+  <div class="frame"><div class="crop" style="width:1026px;height:500px;background-image:url(../../web/public/screens/pfh/news.png);background-position:-236px -88px"></div></div>
+
+  <div class="sec row">
+    <div style="flex:1;padding-top:40px">
+      <h3>자리에 없어도 폰에서 검토합니다</h3>
+      <p class="d">검토를 기다리는 요청이 폰 화면에 맞춰 세로 카드로 놓이고, 수락, 되묻기, 보류, 병합 버튼도 그대로 씁니다.</p>
+    </div>
+    <div class="phone"><div class="crop" style="width:390px;height:560px;background-image:url(../../web/public/screens/pfh/mobile.png);background-position:0 -40px"></div></div>
+  </div>
+</section>
+
+<script>
+const DAY = [
+  ['단가표 양식에 시작일 좀 넣어주세요 급해요', '메신저', '오전 9:12'],
+  ['[요청] 비품 신청 화면 필수값 추가 부탁드립니다', '메일', '오전 9:15'],
+  ['아 그리고 저번에 말한 비품 화면도요', '메신저', '오전 9:13'],
+  ['출고 화면 날짜 검색이 안 돼요ㅠ', '메신저', '오전 9:40'],
+  ['인쇄 여백 → 오늘 중? (전화 2번 옴)', '전화', '오전 10:03'],
+  ['RE: RE: [요청] 거래처 코드 일괄 변경 건', '메일', '오전 10:21'],
+  ['재고 수량이 음수로 나오는데 확인 부탁요', '메신저', '오전 10:48'],
+  ['부재중 3통 · 생산팀 최 대리', '전화', '오전 11:05'],
+  ['검사 결과 엑셀로 뽑을 수 있게 되나요', '메신저', '오전 11:40'],
+  ['월말 보고서 양식, 이번 주까지 될까요?', '메일', '오후 1:12'],
+  ['아까 말한 거 메일로 다시 보낼게요', '메신저', '오후 1:30'],
+  ['단가표 건 어떻게 됐어요?', '자리로 찾아옴', '오후 2:05'],
+  ['로그인이 자꾸 풀린대요, 옆 팀도요', '자리로 찾아옴', '오후 3:20'],
+  ['단가표 건 오늘 되나요?', '메신저', '오후 4:02'],
+];
+document.getElementById('day').innerHTML = DAY.map(([t, f, a]) =>
+  `<div class="note${t.includes('단가표') ? ' hi' : ''}"><div class="m"><b>${f}</b><span>${a}</span></div><div class="t">${t}</div></div>`).join('');
+</script>
+</body>
+</html>

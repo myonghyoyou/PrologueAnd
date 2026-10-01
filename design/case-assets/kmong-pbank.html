@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>크몽 문제 은행</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* 크몽 포트폴리오 이미지 — 문제 은행. 대표 1장(1200×1200) + 상세 4장(폭 1200, 높이 3000 이하). kmong-pfh.html 과 같은 틀.
+   PC 캡처는 2x(2560 폭)라 background-size 1280px 로 1x 좌표에서 자른다. 폰 캡처(1170 폭)는 390px 로 */
+:root{--navy:#2B3160;--ink:#1C1B18;--bone:#FAF9F6;--line:#E8E5DE;--line2:#D6D2C8;--mut:#8A857A;--txt:#4A4741}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bone);font-family:"Pretendard",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;word-break:keep-all}
+.img{width:1200px;background:var(--bone);padding:80px;margin:0 0 40px}
+.sq{height:1200px;padding:80px 72px;display:flex;flex-direction:column;justify-content:space-between}
+.who{display:flex;gap:14px;align-items:baseline;font-size:22px}
+.who b{color:var(--navy);font-weight:700}
+.who span{color:var(--mut)}
+.kick{font-size:18px;font-weight:700;letter-spacing:.04em;color:var(--navy);margin:0 0 14px}
+h1{font-size:60px;line-height:1.22;letter-spacing:-.03em;font-weight:700;margin:28px 0 0}
+h2{font-size:42px;line-height:1.25;letter-spacing:-.025em;font-weight:700;margin:0 0 20px}
+h3{font-size:28px;line-height:1.3;letter-spacing:-.02em;font-weight:700;margin:0 0 10px}
+p.lead{font-size:21px;line-height:1.65;color:var(--txt);margin:0;max-width:960px}
+p.d{font-size:19px;line-height:1.6;color:var(--txt);margin:0 0 20px}
+.cap{font-size:17px;line-height:1.55;color:var(--mut);margin:12px 0 0}
+.sec{margin-top:88px}
+.blk{margin-top:64px}
+.frame{display:inline-block;background:#fff;border:1px solid var(--ink);padding:6px;vertical-align:top}
+.crop{background-repeat:no-repeat}
+.pc{background-size:1280px auto}
+.ph{background-size:390px auto}
+.tag{display:inline-block;font-size:17px;font-weight:700;color:var(--mut);margin:0 0 12px;letter-spacing:.02em}
+.tag.n{color:var(--navy)}
+.phone{display:inline-block;border:1px solid var(--ink);border-radius:28px;padding:10px;background:#fff}
+.phone .crop{border-radius:18px}
+.row{display:flex;gap:40px;align-items:flex-start}
+/* 비교 표 */
+table.cmp{width:100%;border-collapse:collapse;font-size:19px;margin-top:40px}
+.cmp th{font-size:16px;font-weight:600;color:var(--mut);text-align:left;padding:0 16px 12px 0;border-bottom:1px solid var(--ink)}
+.cmp td{padding:16px 16px 16px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--txt)}
+.cmp td:first-child{color:var(--ink);font-weight:600;width:22%}
+.cmp td:last-child{color:var(--navy);font-weight:600}
+/* 순서 비교 */
+.steps{display:grid;grid-template-columns:150px 1fr;row-gap:18px;align-items:center;margin-top:36px}
+.steps .l{font-size:18px;font-weight:700;color:var(--mut)}
+.steps .l.n{color:var(--navy)}
+.chain{display:flex;align-items:center;gap:10px;flex-wrap:nowrap}
+.chain span{font-size:19px;padding:10px 16px;border:1px solid var(--line2);border-radius:2px;background:#fff;white-space:nowrap}
+.chain.n span{border-color:var(--navy);color:var(--navy);font-weight:600}
+.chain span.end{border-color:var(--ink);font-weight:700}
+.chain i{font-style:normal;color:var(--mut)}
+</style>
+</head>
+<body>
+
+<!-- 대표 1200×1200 -->
+<section class="img sq" id="cover">
+  <div class="who"><b>문제 은행</b><span>사내 학습 앱</span></div>
+  <h1>종이 문제집을 휴대폰에서 풀고<br>답을 내면 바로 채점합니다</h1>
+  <div class="row" style="gap:48px">
+    <div style="flex:1">
+      <span class="tag">전에는 · 인쇄한 문제집</span><br>
+      <div class="frame"><div class="crop pc" style="width:578px;height:228px;background-image:url(../../web/public/screens/pbank/paper-cover.png);background-position:-58px -112px"></div></div>
+      <p class="cap" style="margin-bottom:22px">7쪽 1번 문제. 답을 적을 칸이 없습니다.</p>
+      <div class="frame"><div class="crop" style="width:420px;height:200px;background-image:url(../../web/public/screens/pbank/paper-a1.png);background-size:420px auto"></div></div>
+      <p class="cap">답은 일곱 쪽 뒤 14쪽 정답표에 모여 있었습니다.</p>
+    </div>
+    <div>
+      <span class="tag n">지금은 · 휴대폰에서</span><br>
+      <div class="phone"><div class="crop ph" style="width:390px;height:560px;background-image:url(../../web/public/screens/pbank/play-m.png);background-position:0 -150px"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 상세 1: 문제 -->
+<section class="img" id="d1">
+  <p class="kick">01 전에는</p>
+  <h2>답 하나를 확인하려고 뒤쪽 정답표까지 넘겨야 했습니다</h2>
+  <p class="lead">사내 문제는 직군별 종이 문제집 두 권(83쪽, 52쪽)에 1,220문항이 있었습니다. 직원 약 200명이 해마다 인쇄해 풀고 한 해가 지나면 버렸고, 문제에 오타가 있어도 그해 문제집은 고칠 수 없었습니다.</p>
+  <div class="row" style="margin-top:40px;gap:24px">
+    <div><span class="tag">7쪽 · 1번 문제</span><br><div class="frame"><div class="crop" style="width:590px;height:235px;background-image:url(../../web/public/screens/pbank/paper-q1.png);background-size:590px auto"></div></div></div>
+    <div><span class="tag">14쪽 · 정답표</span><br><div class="frame"><div class="crop" style="width:420px;height:200px;background-image:url(../../web/public/screens/pbank/paper-a1.png);background-size:420px auto"></div></div></div>
+  </div>
+  <p class="cap">왼쪽 1번 문제의 답은 오른쪽 정답표 첫 줄 "1. 4"입니다.</p>
+  <table class="cmp">
+    <thead><tr><th>항목</th><th>종이 문제집</th><th>지금</th></tr></thead>
+    <tbody>
+      <tr><td>문제</td><td>1,220문항, 직군별 두 권</td><td>같은 문제를 휴대폰과 PC에서</td></tr>
+      <tr><td>한 해 인쇄</td><td>11,793쪽(1인 1부 기준)</td><td>인쇄하지 않음</td></tr>
+      <tr><td>답 확인</td><td>문제집 뒤쪽 정답표</td><td>답을 내면 바로 채점</td></tr>
+      <tr><td>잘못된 문제 고치기</td><td>다음 해 문제집에서</td><td>고치면 바로 반영, 기록 남음</td></tr>
+      <tr><td>팀마다 고친 문제</td><td>담당 부서가 해마다 합침</td><td>관리자가 화면에서 직접</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 상세 2: 푸는 순서 -->
+<section class="img" id="d2">
+  <p class="kick">02 푸는 순서</p>
+  <h2>답을 내면 그 자리에서 채점됩니다</h2>
+  <p class="lead">종이에서는 여러 문제를 푼 뒤 정답표로 넘어가 한꺼번에 맞춰 봤습니다. 지금은 한 문제마다 맞았는지 확인하고 다음 문제로 넘어갑니다.</p>
+  <div class="steps">
+    <div class="l">종이 문제집</div>
+    <div class="chain"><span>문제</span><i>→</i><span>문제</span><i>→</i><span>문제</span><i>→</i><span>…</span><i>→</i><span class="end">정답표</span></div>
+    <div class="l n">지금</div>
+    <div class="chain n"><span>문제</span><i>→</i><span>답</span><i>→</i><span>채점</span><i>→</i><span>해설 · 다시 풀기</span><i>→</i><span>다음 문제</span></div>
+  </div>
+
+  <div class="sec">
+    <h3>틀리면 다시 풀지, 정답을 볼지 고릅니다</h3>
+    <p class="d">틀리면 「다시 도전해보기」와 「바로 정답 보기」가 나옵니다.</p>
+    <div class="frame"><div class="crop" style="width:1024px;height:470px;background-size:1222.4px auto;background-position:-99.3px -143.2px;background-image:url(../../web/public/screens/pbank/play-wrong.png)"></div></div>
+  </div>
+  <div class="blk">
+    <h3>「바로 정답 보기」를 누르면 해설도 함께 나옵니다</h3>
+    <p class="d">내 답은 빨간 칸, 정답은 초록 칸으로 표시됩니다.</p>
+    <div class="frame"><div class="crop" style="width:1024px;height:527px;background-size:1222.4px auto;background-position:-99.3px -143.2px;background-image:url(../../web/public/screens/pbank/play-answer.png)"></div></div>
+  </div>
+</section>
+
+<!-- 상세 3: 이어서 풀기 · 이력 · 휴대폰 -->
+<section class="img" id="d3">
+  <p class="kick">03 푸는 사람의 화면</p>
+  <h2>어디까지 풀었고 무엇을 틀렸는지 남습니다</h2>
+
+  <div class="blk" style="margin-top:44px">
+    <h3>팀마다 푼 문제와 틀린 문제가 표시됩니다</h3>
+    <p class="d">한 팀을 다 풀면 틀린 문제만 골라 다시 풀 수 있습니다.</p>
+    <div class="frame"><div class="crop" style="width:1024px;height:460px;background-size:1222.4px auto;background-position:-99.3px -221.6px;background-image:url(../../web/public/screens/pbank/team-list.png)"></div></div>
+  </div>
+  <div class="blk">
+    <h3>낸 답과 정답이 날짜와 함께 남습니다</h3>
+    <p class="d">틀린 문제는 정답이 함께 적혀 있어, 무엇을 헷갈렸는지 나중에 다시 확인합니다.</p>
+    <div class="frame"><div class="crop" style="width:1024px;height:419px;background-size:1222.4px auto;background-position:-99.3px -183.4px;background-image:url(../../web/public/screens/pbank/history.png)"></div></div>
+  </div>
+  <div class="blk row" style="gap:32px">
+    <div style="width:300px;padding-top:24px">
+      <h3>휴대폰에서도 같은 순서로 풉니다</h3>
+      <p class="d">자리에 없어도 풀 수 있고, 틀리면 해설이 바로 아래에 나옵니다.</p>
+    </div>
+    <div class="phone"><div class="crop ph" style="width:320px;height:560px;background-image:url(../../web/public/screens/pbank/home-m.png);background-size:320px auto"></div></div>
+    <div class="phone"><div class="crop ph" style="width:320px;height:560px;background-image:url(../../web/public/screens/pbank/play-m.png);background-size:320px auto;background-position:0 -120px"></div></div>
+  </div>
+</section>
+
+<!-- 상세 4: 관리자 -->
+<section class="img" id="d4">
+  <p class="kick">04 관리자의 화면</p>
+  <h2>문제를 고치면 다음에 푸는 사람부터 바뀝니다</h2>
+  <p class="lead">오타 하나를 고치려 해도 다음 해 문제집까지 기다려야 했습니다. 지금은 관리자가 화면에서 고치고, 누가 언제 무엇을 바꿨는지 남습니다.</p>
+
+  <div class="blk" style="margin-top:48px">
+    <h3>변경 이력에 바꾸기 전 문장이 남습니다</h3>
+    <p class="d">"보증기 간"으로 잘못 띄어 쓴 곳을 고친 기록입니다. 고치기 전 문장은 줄이 그어진 채 남습니다.</p>
+    <div class="frame"><div class="crop pc" style="width:1004px;height:218px;background-image:url(../../web/public/screens/pbank/edit-history.png);background-position:-248px -492px"></div></div>
+  </div>
+  <div class="blk">
+    <h3>기존 문제집을 엑셀로 한 번에 옮깁니다</h3>
+    <p class="d">종이 문제집의 문제 번호를 그대로 넣어 한 번에 500행까지 등록합니다. 같은 팀 안에서 번호가 겹치는 행은 저장하지 않습니다.</p>
+    <div class="frame"><div class="crop pc" style="width:1004px;height:484px;background-image:url(../../web/public/screens/pbank/excel.png);background-position:-248px -186px"></div></div>
+  </div>
+</section>
+
+</body>
+</html>

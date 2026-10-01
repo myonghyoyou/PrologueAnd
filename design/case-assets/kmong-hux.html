@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>크몽 병원 UI/UX 고도화</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* 크몽 포트폴리오 이미지 — 병원 UI/UX 고도화. 대표 1장 + 상세 5장. kmong-pfh.html 과 같은 틀.
+   그림은 data-crop="파일 x y w h 폭"(% 좌표, 2560×1600 기준)을 스크립트가 잘라 넣는다.
+   AED 화면은 실제 모델명이 보여 쓰지 않는다 */
+:root{--navy:#2B3160;--ink:#1C1B18;--bone:#FAF9F6;--line:#E8E5DE;--line2:#D6D2C8;--mut:#8A857A;--txt:#4A4741}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bone);font-family:"Pretendard",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;word-break:keep-all}
+.img{width:1200px;background:var(--bone);padding:80px;margin:0 0 40px}
+.sq{height:1200px;padding:80px 72px;display:flex;flex-direction:column;justify-content:space-between}
+.who{display:flex;gap:14px;align-items:baseline;font-size:22px}
+.who b{color:var(--navy);font-weight:700}
+.who span{color:var(--mut)}
+.kick{font-size:18px;font-weight:700;letter-spacing:.04em;color:var(--navy);margin:0 0 14px}
+h1{font-size:60px;line-height:1.22;letter-spacing:-.03em;font-weight:700;margin:28px 0 0}
+h2{font-size:42px;line-height:1.25;letter-spacing:-.025em;font-weight:700;margin:0 0 20px}
+h3{font-size:28px;line-height:1.3;letter-spacing:-.02em;font-weight:700;margin:0 0 10px}
+p.lead{font-size:21px;line-height:1.65;color:var(--txt);margin:0;max-width:960px}
+p.d{font-size:19px;line-height:1.6;color:var(--txt);margin:0 0 20px}
+.cap{font-size:17px;line-height:1.55;color:var(--mut);margin:12px 0 0}
+.sec{margin-top:88px}
+.blk{margin-top:64px}
+.frame{display:inline-block;background:#fff;border:1px solid var(--ink);padding:6px;vertical-align:top}
+.crop{background-repeat:no-repeat}
+.tag{display:inline-block;font-size:17px;font-weight:700;color:var(--mut);margin:0 0 12px;letter-spacing:.02em}
+.tag.n{color:var(--navy)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+/* 표 */
+table.t{width:100%;border-collapse:collapse;font-size:19px;margin-top:36px}
+.t th{font-size:16px;font-weight:600;color:var(--mut);text-align:left;padding:0 16px 12px 0;border-bottom:1px solid var(--ink)}
+.t td{padding:14px 16px 14px 0;border-bottom:1px solid var(--line);color:var(--txt)}
+.t td:first-child{color:var(--ink);font-weight:600}
+.t tfoot td{color:var(--navy);font-weight:600;border-bottom:1px solid var(--ink);border-top:1px solid var(--ink)}
+.sw{display:inline-block;width:18px;height:18px;border:1px solid rgba(0,0,0,.15);vertical-align:-3px;margin-right:8px}
+/* 규칙 시트 */
+.rule{display:grid;grid-template-columns:300px 1fr 1fr;gap:28px;padding:28px 0;border-bottom:1px solid var(--line);align-items:start}
+.rule:first-of-type{border-top:1px solid var(--ink)}
+.rule .r{font-size:21px;font-weight:700;line-height:1.45}
+.rule .lb{font-size:15px;font-weight:600;color:var(--mut);margin-bottom:10px}
+.rule .lb.n{color:var(--navy)}
+.sws{display:flex;flex-wrap:wrap;gap:8px}
+.sws span{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--txt)}
+.sws i{width:34px;height:34px;border:1px solid rgba(0,0,0,.12)}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.btns b{height:32px;padding:0 12px;display:flex;align-items:center;font-size:14px;font-weight:600;border-radius:4px;border:1px solid #C9CED8;color:#1F2937;background:#fff}
+.btns b.p{background:#213B98;border-color:#213B98;color:#fff}
+.btns b.x{border-color:#BF2A1F;color:#BF2A1F}
+.hs{display:flex;gap:10px;align-items:flex-end}
+.hs span{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;color:var(--txt)}
+.hs i{width:56px;border:1px solid var(--ink);background:#fff}
+.nums{display:flex;gap:40px;margin-top:28px}
+.nums div{font-size:17px;color:var(--mut)}
+.nums b{display:block;font-size:40px;color:var(--navy);letter-spacing:-.02em;margin-bottom:2px}
+</style>
+</head>
+<body>
+
+<!-- 대표 1200×1200 -->
+<section class="img sq" id="cover">
+  <div class="who"><b>병원 UI/UX 고도화</b><span>사내 업무 시스템 화면 개선</span></div>
+  <h1>22개 화면에<br>같은 색·버튼·표 규칙을 적용했습니다</h1>
+  <div class="pair">
+    <div><span class="tag">Before · 화면마다 다른 색과 버튼</span><br><div class="frame" data-crop="inventory-before 0 0 100 100 500"></div></div>
+    <div><span class="tag n">After · 같은 규칙을 적용한 화면</span><br><div class="frame" data-crop="inventory-after 0 0 100 100 500"></div></div>
+  </div>
+  <div class="nums">
+    <div><b>22개</b>같은 규칙을 적용한 화면</div>
+    <div><b>9행 → 12행</b>한 화면에 보이는 재고 행</div>
+    <div><b>104 → 67px</b>재고 한 행의 높이</div>
+  </div>
+</section>
+
+<!-- 상세 1: 문제 -->
+<section class="img" id="d1">
+  <p class="kick">01 전에는</p>
+  <h2>화면마다 색과 크기를 따로 정했습니다</h2>
+  <p class="lead">재고, 출고, 의료소모품, 직원명부처럼 요청이 들어올 때마다 화면을 하나씩 더했고, 색과 크기는 화면을 만들 때마다 그 자리에서 정했습니다. 화면이 늘수록 제목 위치, 표 머리 색, 버튼 모양이 화면마다 달라졌습니다.</p>
+  <table class="t">
+    <thead><tr><th>화면</th><th>제목 위치</th><th>표 머리 색</th><th>한 행의 기능 버튼 색</th></tr></thead>
+    <tbody>
+      <tr><td>재고관리</td><td>가운데</td><td><i class="sw" style="background:#D7F3D4"></i>연두</td><td>5</td></tr>
+      <tr><td>출고내역</td><td>가운데</td><td><i class="sw" style="background:#DBE4F6"></i>연파랑</td><td>4</td></tr>
+      <tr><td>묶음 목록</td><td>가운데</td><td><i class="sw" style="background:#98F5E4"></i>청록</td><td>4</td></tr>
+      <tr><td>소모품 관리</td><td>왼쪽</td><td><i class="sw" style="background:#EFF2FF"></i>연보라</td><td>4</td></tr>
+      <tr><td>폐기내역</td><td>왼쪽</td><td><i class="sw" style="background:#FEF2F2"></i>연분홍</td><td>–</td></tr>
+    </tbody>
+    <tfoot><tr><td>다시 설계한 뒤(22개 화면 공통)</td><td>왼쪽 위</td><td><i class="sw" style="background:#F7F8FB"></i>옅은 회색</td><td>무채색, 필요한 곳만 색</td></tr></tfoot>
+  </table>
+  <p class="cap">1차 화면을 같은 기준으로 잰 값입니다.</p>
+  <div class="blk">
+    <h3>재고관리 1차 화면</h3>
+    <p class="d">제품 정보가 세로로 쌓여 행 하나가 104px이라 한 화면에 9행만 보였습니다. 한 행의 기능 버튼은 다섯 가지 색이었고, 검색칸과 도구 버튼 높이는 28px부터 40px까지 섞여 있었습니다.</p>
+    <div class="frame" data-crop="inventory-before 0 0 100 100 1026"></div>
+  </div>
+</section>
+
+<!-- 상세 2: Before & After -->
+<section class="img" id="d2">
+  <p class="kick">02 Before &amp; After</p>
+  <h2>재고관리 한 화면에 12행이 들어옵니다</h2>
+  <p class="lead">행 하나가 104px에서 67px로 줄어, 한 화면에 보이는 행이 9행에서 12행으로 늘었습니다.</p>
+  <div class="blk" style="margin-top:40px">
+    <span class="tag n">After · 다시 설계한 재고관리</span><br>
+    <div class="frame" data-crop="inventory-after 0 0 100 100 1026"></div>
+  </div>
+  <div class="blk">
+    <h3>기능 버튼은 테두리형으로 바꿨습니다</h3>
+    <p class="d">출고, 수정, 수리는 무채색 테두리로 바꾸고, 색은 폐기(빨강)와 병원 쪽에서 구분해 달라고 한 재고 라벨(보라)·출고위치(초록)에만 남겼습니다.</p>
+    <div class="pair">
+      <div><span class="tag">Before</span><br><div class="frame" data-crop="inventory-before 81 28 19 24 494"></div></div>
+      <div><span class="tag n">After</span><br><div class="frame" data-crop="inventory-after 81.5 22 16.5 17 494"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 상세 3: 규칙 -->
+<section class="img" id="d3">
+  <p class="kick">03 정한 규칙</p>
+  <h2>22개 화면에 같은 규칙을 적용했습니다</h2>
+  <p class="lead" style="margin-bottom:40px">색, 버튼, 입력칸 높이, 화면 틀, 아이콘을 공통 규칙으로 먼저 정하고, 22개 화면을 이 규칙에 맞춰 다시 만들었습니다. 새 화면도 같은 규칙으로 만듭니다.</p>
+  <div class="rule">
+    <div class="r">색은 상태, 위험, 요청받은 기능 구분에만 씁니다</div>
+    <div><div class="lb">전 · 표 머리 색 다섯 가지</div><div class="sws"><span><i style="background:#D7F3D4"></i>연두</span><span><i style="background:#DBE4F6"></i>연파랑</span><span><i style="background:#98F5E4"></i>청록</span><span><i style="background:#EFF2FF"></i>연보라</span><span><i style="background:#FEF2F2"></i>연분홍</span></div></div>
+    <div><div class="lb n">후 · 무채색 바탕, 필요한 곳만 색</div><div class="sws"><span><i style="background:#F7F8FB"></i>표 머리</span><span><i style="background:#213B98"></i>주 버튼</span><span><i style="background:#BF2A1F"></i>위험</span><span><i style="background:#00803D"></i>완료</span><span><i style="background:#914312"></i>주의</span></div></div>
+  </div>
+  <div class="rule">
+    <div class="r">한 화면의 주 버튼은 하나입니다</div>
+    <div><div class="lb">전 · 여섯 개 모두 다른 색</div><div class="frame" data-crop="shipment-detail-before 34.5 70 38.5 6.5 320"></div></div>
+    <div><div class="lb n">후 · 주 버튼 하나, 나머지는 테두리, 위험은 빨강</div><div class="btns"><b class="p">수정완료</b><b>물품코드수정</b><b>회수</b><b class="x">폐기</b></div></div>
+  </div>
+  <div class="rule">
+    <div class="r">목록 화면의 입력칸과 버튼 높이는 32px입니다</div>
+    <div><div class="lb">전 · 네 가지 높이</div><div class="hs"><span><i style="height:28px"></i>28</span><span><i style="height:30px"></i>30</span><span><i style="height:32px"></i>32</span><span><i style="height:40px"></i>40</span></div></div>
+    <div><div class="lb n">후 · 32px 하나</div><div class="hs"><span><i style="height:32px"></i>32</span></div></div>
+  </div>
+  <div class="rule">
+    <div class="r">목록 화면은 제목, 도구줄, 표, 쪽 번호 순서입니다</div>
+    <div><div class="lb">전 · 화면마다 다른 틀</div><div class="frame" data-crop="set-before 26 0 54 30 320"></div></div>
+    <div><div class="lb n">후 · 모든 목록이 같은 순서</div><div class="frame" data-crop="inventory-after 11.5 0 88.5 96 320"></div></div>
+  </div>
+  <div class="rule">
+    <div class="r">메뉴는 업무별로 묶고, 아이콘은 한 벌만 씁니다</div>
+    <div><div class="lb">전 · 이모지와 한 줄 나열</div><div class="frame" data-crop="inventory-before 0 29 10.5 28 200"></div></div>
+    <div><div class="lb n">후 · 선 아이콘과 업무별 묶음</div><div class="frame" data-crop="inventory-after 0 4.5 11.5 26.5 200"></div></div>
+  </div>
+</section>
+
+<!-- 상세 4: 화면 1 -->
+<section class="img" id="d4">
+  <p class="kick">04 화면</p>
+  <h2>표는 더 많이 보이고, 처리할 일은 위에 놓입니다</h2>
+  <p class="lead">같은 규칙을 적용하면서 화면마다 필요한 것도 함께 고쳤습니다.</p>
+  <div class="blk" style="margin-top:48px">
+    <h3>처리할 일의 건수가 첫 화면 위에 놓입니다</h3>
+    <p class="d">첫 화면에는 IP 대역과 PC 사양 차트 두 개만 있었습니다. 점검 기한 초과, 신고 미완료, 미확인 공지, 내게 온 설문 건수를 위에 먼저 보여 줍니다.</p>
+    <div class="pair"><div><span class="tag">Before</span><br><div class="frame" data-crop="dashboard-before 0 0 100 100 494"></div></div><div><span class="tag n">After</span><br><div class="frame" data-crop="dashboard-after 0 0 100 100 494"></div></div></div>
+  </div>
+  <div class="blk">
+    <h3>장비 정보가 두 칸 격자에 정리됩니다</h3>
+    <p class="d">장비 정보가 칸 안에서 세 줄씩 쌓이고, 카테고리 색이 칸 전체를 칠해 글자가 묻혔습니다. 두 칸 격자에 고정하고, 카테고리 색은 가는 띠로만 남겼습니다.</p>
+    <div class="pair"><div><span class="tag">Before</span><br><div class="frame" data-crop="shipment-before 0 0 100 100 494"></div></div><div><span class="tag n">After</span><br><div class="frame" data-crop="shipment-after 0 0 100 100 494"></div></div></div>
+  </div>
+  <div class="blk">
+    <h3>명부가 화면의 중심에 옵니다</h3>
+    <p class="d">화면에서 가장 큰 것은 병원 선택 버튼(55px)이었습니다. 36px로 줄이고, 검색과 부서 바로가기, 동기화 상태를 도구줄 한 줄에 모았습니다.</p>
+    <div class="pair"><div><span class="tag">Before</span><br><div class="frame" data-crop="staff-before 0 0 100 100 494"></div></div><div><span class="tag n">After</span><br><div class="frame" data-crop="staff-after 0 0 100 100 494"></div></div></div>
+  </div>
+</section>
+
+<!-- 상세 5: 화면 2 -->
+<section class="img" id="d5">
+  <p class="kick">05 화면</p>
+  <h2>번호표와 로그인 화면도 같은 규칙으로 고쳤습니다</h2>
+  <div class="blk" style="margin-top:40px">
+    <h3>번호표가 더 넓게 펼쳐집니다</h3>
+    <p class="d">번호표가 좁은 카드 안에 들어가 화면 폭의 절반만 썼습니다. 검색과 부서 선택을 넓은 도구줄로 펴고, 즐겨찾기 별을 키워 누르기 쉽게 했습니다.</p>
+    <div class="pair"><div><span class="tag">Before</span><br><div class="frame" data-crop="extension-before 0 0 100 100 494"></div></div><div><span class="tag n">After</span><br><div class="frame" data-crop="extension-after 0 0 100 100 494"></div></div></div>
+  </div>
+  <div class="blk">
+    <h3>입력칸이 배경과 또렷하게 나뉩니다</h3>
+    <p class="d">흐릿한 방울 무늬 위에 옅은 밑줄 입력칸이 놓여 있었습니다. 화면을 병원 이름 칸과 입력 칸으로 나누고, 글자와 바탕의 명암 차이는 8.06:1로 계산해 정했습니다.</p>
+    <div class="pair"><div><span class="tag">Before</span><br><div class="frame" data-crop="login-before 0 0 100 100 494"></div></div><div><span class="tag n">After</span><br><div class="frame" data-crop="login-after 0 0 100 100 494"></div></div></div>
+  </div>
+</section>
+
+<script>
+// data-crop="파일 x y w h 폭" — % 좌표(2560×1600 기준)의 영역을 폭에 맞춰 넣는다
+document.querySelectorAll('[data-crop]').forEach((el) => {
+  const [name, x, y, w, h, W] = el.dataset.crop.split(' ');
+  const bw = W * 100 / w, bh = bw * 1600 / 2560;
+  const d = document.createElement('div');
+  d.className = 'crop';
+  Object.assign(d.style, {
+    width: W + 'px', height: Math.round(bh * h / 100) + 'px',
+    backgroundImage: `url(../../web/public/screens/hux/${name}.png)`,
+    backgroundSize: `${bw}px ${bh}px`, backgroundPosition: `-${bw * x / 100}px -${bh * y / 100}px`,
+  });
+  el.appendChild(d);
+});
+</script>
+</body>
+</html>
