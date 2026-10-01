@@ -10,12 +10,12 @@ test('표지 제목·소개가 명세 문구다', async ({ page }) => {
   await page.goto(URL);
   await expect(page.locator('[data-cover-title] h1')).toHaveText('엑셀로 따로 짜서 합친 뒤공지하던 근무표');
   await expect(page.locator('[data-summary]')).toHaveText([
-    '순번은 지난달 파일을 열어 마지막 근무자를 찾고, 그다음 사람부터 한 칸씩 세어 적었습니다.',
-    '잘못 센 칸이나 퇴사한 분의 이름은 공지가 나간 뒤에야 드러났습니다.',
+    '순번은 지난달 파일에서 마지막 근무자를 찾은 뒤, 그다음 사람부터 하나씩 세어 가며 적었습니다.',
+    '순번을 잘못 세거나 퇴사한 분의 이름이 남아 있어도, 공지가 나간 뒤에야 알 수 있었습니다.',
   ]);
   await expect(page.locator('[data-pin-note]')).toHaveText([
-    '1담당자 한 명의 파일이 늦으면, 합친 파일에서 그 담당의 세로줄이 통째로 비었습니다.',
-    '2최하은 님이 3월 3일과 6일, 한 주에 두 번 들어가 있습니다. 눈으로 찾기 전에는 알 수 없었습니다.',
+    '1담당자 한 명의 파일이 늦게 오면, 합친 파일에서 그 권역이 통째로 비었습니다.',
+    '2최하은 님이 3월 3일과 6일, 한 주에 두 번 배정되어 있습니다. 하나하나 눈으로 찾지 않으면 놓치기 쉬웠습니다.',
     '3문민준 님은 이미 퇴사한 분입니다. 지난달 파일을 복사해 쓰다 보니 이름이 그대로 남았습니다.',
   ]);
 });
@@ -42,7 +42,7 @@ test('폰: 표지 제목은 두 줄', async ({ page, isMobile }) => {
   expect(lines).toBe(2);
 });
 
-test('장 순서: 문제 · 짜는 순서 · 화면', async ({ page }) => {
+test('장 순서: 문제 · 편성 순서 · 화면', async ({ page }) => {
   await page.goto(URL);
   expect(await page.locator('[data-chapter]').evaluateAll((cs) => cs.map((c) => c.id))).toEqual(['problem', 'order', 'screens']);
 });
@@ -72,7 +72,7 @@ test('02 순서 비교: 두 줄 다섯 칸, 마지막 칸 같은 글자, 데스�
   await page.goto(URL);
   const rows = page.locator('#order [data-steps-row]');
   await expect(rows).toHaveCount(2);
-  await expect(rows.nth(0).locator('[data-step]')).toHaveText(['지난달 순번 찾기', '한 칸씩 세어 적기', '휴일·구역 맞추기', '세 파일 합치기', '결재·공지']);
+  await expect(rows.nth(0).locator('[data-step]')).toHaveText(['지난달 순번 찾기', '하나씩 세어 적기', '휴일·구역 맞추기', '세 파일 합치기', '결재·공지']);
   await expect(rows.nth(1).locator('[data-step]')).toHaveText(['자동 편성', '손으로 조정', '편성 확정', '점검 후 내려받기', '결재·공지']);
   test.skip(!!isMobile, '정렬 비교는 데스크톱');
   const d = await rows.evaluateAll((rs) => {
@@ -279,4 +279,27 @@ test('01 흐름: 글자가 선과 겹치지 않고, 갈래 이름표는 점에�
   });
   expect(r.hit).toEqual([]);
   expect(r.minGap).toBeGreaterThanOrEqual(8);
+});
+
+test('03 5번 핫스팟: 패널 줄과 왼쪽 표의 강민준 칸이 함께 밝게 강조된다', async ({ page }) => {
+  await page.goto(URL);
+  await note(page, 4).locator('[data-spot="0"]').focus();
+  const r = await note(page, 4).evaluate(async (n) => {
+    await new Promise((res) => setTimeout(res, 300));
+    const f = n.querySelector('[data-frame]')!.getBoundingClientRect();
+    const boxes = [...n.querySelectorAll<HTMLElement>('[data-spot-hl], [data-spot-hl-also]')]
+      .filter((e) => Number(getComputedStyle(e).opacity) > 0).map((e) => e.getBoundingClientRect());
+    return { n: boxes.length, inside: boxes.every((s) => s.left >= f.left - 1 && s.right <= f.right + 1 && s.top >= f.top - 1 && s.bottom <= f.bottom + 1),
+      // 두 상자는 서로 떨어져 있다(패널 줄은 오른쪽, 표 칸은 왼쪽)
+      apart: boxes.length === 2 && (boxes[0].left > boxes[1].right || boxes[1].left > boxes[0].right) };
+  });
+  expect(r.n).toBe(2);
+  expect(r.inside).toBe(true);
+  expect(r.apart).toBe(true);
+});
+
+test('문구: "칸" · "틀린" · "짜는 화면"을 쓰지 않는다(사용자 지적 2026-10-01)', async ({ page }) => {
+  await page.goto(URL);
+  const main = await page.evaluate(() => document.querySelector('main')!.innerText);
+  for (const w of ['칸', '틀린', '짜는 화면', '옆에 쌓입니다', '그대로 결재로 넘어갔습니다']) expect(main, w).not.toContain(w);
 });
