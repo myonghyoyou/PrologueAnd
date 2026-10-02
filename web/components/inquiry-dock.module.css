@@ -1,7 +1,7 @@
 /* 3C — 폰에서만. 남색 단색, 아래 홈 바 위. 서랍이 열려 있으면 숨는다 */
 .dock{display:none}
 @media (max-width:1023px){
-  .dock{display:flex;position:fixed;z-index:45;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));height:56px;
+  .dock{display:flex;position:fixed;z-index:45;left:max(12px, env(safe-area-inset-left));right:max(12px, env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom,0px));height:56px;
     align-items:center;justify-content:space-between;padding:0 16px;border:0;border-radius:10px;background:var(--navy-800);color:#fff;
     font:inherit;cursor:pointer;transform:translateY(160%);opacity:0;pointer-events:none;
     transition:transform .3s var(--ease-out),opacity .3s,left .38s var(--ease-out),right .38s var(--ease-out),bottom .38s var(--ease-out),

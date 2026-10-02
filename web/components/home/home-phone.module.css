@@ -10,8 +10,8 @@
 .hint[data-on]{opacity:1}
 .hint i{font-style:normal;font-size:18px;color:var(--navy-800);animation:bob 1.6s var(--ease-out) infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
-.list{position:relative;padding:20px 20px 64px 52px}
-.rail{position:absolute;left:27px;width:2px;background:var(--navy-800)}
+.list{position:relative;padding:20px max(20px, env(safe-area-inset-right)) 64px calc(52px + env(safe-area-inset-left))}
+.rail{position:absolute;left:calc(27px + env(safe-area-inset-left));width:2px;background:var(--navy-800)}
 .panel{position:relative;padding:44px 0 56px}
 /* 글만 흐렸다 또렷해진다 — 점은 늘 또렷해야 세로 선이 점을 뚫고 비치지 않는다 */
 .panel > :not(.dot){opacity:.25;transform:translateY(14px);transition:opacity .5s var(--ease-out),transform .5s var(--ease-out)}

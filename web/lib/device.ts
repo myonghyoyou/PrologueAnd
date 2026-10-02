@@ -8,6 +8,8 @@ export function isIOS(ua: string, platform: string, maxTouchPoints: number): boo
 
 /** Lenis 설정 — 데스크톱 그대로, 안드로이드 등 터치는 약하게(0.075), iOS 는 손가락 스크롤만 기본 */
 export function lenisOptions(env: { ios: boolean; touch: boolean }): LenisOptions {
-  if (!env.ios && env.touch) return { lerp: 0.075, smoothWheel: true, syncTouch: true, syncTouchLerp: 0.075 };
+  // 두 손가락 터치는 Lenis 가 막지 않게 넘긴다 — syncTouch 의 preventDefault 가 페이지 핀치 확대까지 막는다
+  if (!env.ios && env.touch) return { lerp: 0.075, smoothWheel: true, syncTouch: true, syncTouchLerp: 0.075,
+    virtualScroll: ({ event }) => !('touches' in event) || event.touches.length < 2 };
   return { lerp: 0.1, smoothWheel: true, syncTouch: false };
 }

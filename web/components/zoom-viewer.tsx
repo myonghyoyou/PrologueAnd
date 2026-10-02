@@ -6,8 +6,8 @@ import { useDragClose } from '@/lib/use-drag-close';
 import s from './zoom-viewer.module.css';
 
 type Pin = { n: string; x: number; y: number; text: string };
-type View = { src: string; alt: string; pins: Pin[] };
-const ZOOM = 2.6, MAX = 4;
+type View = { src: string; alt: string; pins: Pin[]; crop?: number[] };
+const ZOOM = 2.6, MAX = 10;
 
 /** 2A 캡처 확대 뷰어(폰) — 문서에 하나. [data-zoom] 를 누르면 원본으로 연다(명세 §3-2) */
 export function ZoomViewer() {
@@ -28,7 +28,8 @@ export function ZoomViewer() {
       if (!box || t.closest('a, button, [data-spot], [data-side-toggle]')) return;
       e.preventDefault();
       setScale(1);
-      setV({ src: box.dataset.zoom!, alt: box.dataset.zoomAlt ?? '', pins: box.dataset.zoomPins ? JSON.parse(box.dataset.zoomPins) : [] });
+      setV({ src: box.dataset.zoom!, alt: box.dataset.zoomAlt ?? '', pins: box.dataset.zoomPins ? JSON.parse(box.dataset.zoomPins) : [],
+             crop: box.dataset.zoomCrop ? box.dataset.zoomCrop.split(',').map(Number) : undefined });
       setTip(true);
       setTimeout(() => setTip(false), 1500);
     };
@@ -45,6 +46,20 @@ export function ZoomViewer() {
     document.addEventListener('keydown', onKey);
     return () => { l?.start(); document.documentElement.style.overflow = prev; document.removeEventListener('keydown', onKey); };
   }, [v, close]);
+
+  /** 자른 캡처는 자른 자리가 화면에 꽉 차게 확대해 그 가운데로 연다 — 원본 전체를 보이면 보려던 부분이 오히려 작아진다 */
+  const fitCrop = () => {
+    const st = stage.current, img = st?.querySelector('img');
+    if (!v?.crop || !st || !img || !img.naturalWidth) return;
+    const [x, y, w, h] = v.crop;
+    const ratio = img.naturalHeight / img.naturalWidth;
+    const to = Math.max(1, Math.min(MAX, 0.92 * 100 / w, (0.92 * st.clientHeight) / (st.clientWidth * ratio * h / 100)));
+    setScale(to);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      st.scrollLeft = img.offsetLeft + img.offsetWidth * (x + w / 2) / 100 - st.clientWidth / 2;
+      st.scrollTop = img.offsetTop + img.offsetHeight * (y + h / 2) / 100 - st.clientHeight / 2;
+    }));
+  };
 
   /** 확대 배율을 바꾸며 (cx,cy) 화면 점이 같은 그림 자리에 머물게 스크롤을 맞춘다 */
   const zoomAt = (to: number, cx: number, cy: number) => {
@@ -63,14 +78,16 @@ export function ZoomViewer() {
     }));
   };
 
-  // 두 번 누르기 · 두 손가락 벌리기
+  // 두 번 누르기 · 두 손가락 벌리기. 누르기는 손가락 하나로 10px 안에서 250ms 안에 뗀 것만 — 끌기·핀치·취소는 세지 않는다
   const pts = useRef(new Map<number, { x: number; y: number }>());
   const pinch = useRef<{ d: number; s: number } | null>(null);
+  const press = useRef<{ x: number; y: number; t: number; multi: boolean } | null>(null);
   const lastTap = useRef(0);
   const dist = () => { const [a, b] = [...pts.current.values()]; return Math.hypot(a.x - b.x, a.y - b.y); };
   const onDown = (e: PointerEvent) => {
     pts.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (pts.current.size === 2) pinch.current = { d: dist(), s: scale };
+    if (pts.current.size === 1) press.current = { x: e.clientX, y: e.clientY, t: performance.now(), multi: false };
+    if (pts.current.size === 2) { pinch.current = { d: dist(), s: scale }; if (press.current) press.current.multi = true; }
   };
   const onMove = (e: PointerEvent) => {
     if (!pts.current.has(e.pointerId)) return;
@@ -78,13 +95,19 @@ export function ZoomViewer() {
     if (pinch.current && pts.current.size === 2) setScale(Math.min(MAX, Math.max(1, pinch.current.s * dist() / pinch.current.d)));
   };
   const onUp = (e: PointerEvent) => {
-    const wasPinch = !!pinch.current;
     pts.current.delete(e.pointerId);
     if (pts.current.size < 2) pinch.current = null;
-    if (wasPinch) return;
+    if (pts.current.size > 0) return;
+    const p = press.current; press.current = null;
     const now = performance.now();
+    if (!p || p.multi || Math.hypot(e.clientX - p.x, e.clientY - p.y) > 10 || now - p.t > 250) { lastTap.current = 0; return; }
     if (now - lastTap.current < 300) { zoomAt(scale > 1 ? 1 : ZOOM, e.clientX, e.clientY); lastTap.current = 0; }
     else lastTap.current = now;
+  };
+  const onCancel = (e: PointerEvent) => {
+    pts.current.delete(e.pointerId);
+    if (pts.current.size < 2) pinch.current = null;
+    press.current = null; lastTap.current = 0;
   };
 
   // 닫혀 있으면 그리지 않는다 — 문의 서랍과 대화상자가 둘로 겹쳐 보이지 않게
@@ -95,8 +118,8 @@ export function ZoomViewer() {
         <span>두 번 눌러 확대</span>
         <button type="button" className={s.close} onClick={close} aria-label="닫기" data-zoom-close onPointerDown={(e) => e.stopPropagation()}>×</button>
       </div>
-      <div ref={stage} className={s.stage} data-zoom-stage onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
-        {v ? <img src={v.src} alt={v.alt} className={s.img} style={{ width: `${scale * 100}%` }} data-zoom-img draggable={false} /> : null}
+      <div ref={stage} className={s.stage} data-zoom-stage onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onCancel}>
+        {v ? <img src={v.src} alt={v.alt} className={s.img} onLoad={fitCrop} style={{ width: `${scale * 100}%` }} data-zoom-img draggable={false} /> : null}
       </div>
       {tip ? <p className={s.tip}>두 손가락으로 벌리거나, 두 번 누르세요</p> : null}
       {v?.pins.length ? (

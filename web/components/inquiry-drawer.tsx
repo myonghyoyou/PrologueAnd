@@ -68,6 +68,14 @@ export function InquiryDrawer() {
     return () => { document.removeEventListener('click', onClick); document.removeEventListener('inquiry:open', onOpen); };
   }, [openWith]);
 
+  // 문의 바에서 바로 연 뒤에는 미끄러짐을 되살린다 — 닫을 때는 다른 경로처럼 아래로 내려간다
+  useEffect(() => {
+    if (!open || !instant) return;
+    let r2 = 0;
+    const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setInstant(false)); });
+    return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
+  }, [open, instant]);
+
   // 다 닫히면(미끄러짐 0.35s 뒤) hidden, 다음 열기는 다시 미끄러진다
   useEffect(() => {
     if (open) return;

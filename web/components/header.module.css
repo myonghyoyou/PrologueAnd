@@ -31,7 +31,8 @@
 /* 폰: 단색(Safari 26 은 화면 위 끝 요소의 배경으로 툴바 색을 정한다 — 그라데이션·반투명 금지).
    사례 상세에서 장 진행 바가 붙으면(html[data-hdr-hide]) 위로 숨는다 */
 @media (max-width:1023px){
-  .hdr{background:var(--bone-50);transition:transform .25s var(--ease-out)}
+  .hdr{background:var(--bone-50);transition:transform .25s var(--ease-out);
+    padding-left:max(var(--gutter), env(safe-area-inset-left));padding-right:max(var(--gutter), env(safe-area-inset-right))}
   :global(html[data-hdr-hide]) .hdr{transform:translateY(-100%)}
 }
 @media (max-width:1023px) and (prefers-reduced-motion:reduce){ .hdr{transition:none} }
