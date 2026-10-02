@@ -25,3 +25,12 @@
   .arrow{left:50%;top:100%;width:1px;height:20px}
   .arrow::after{right:-3px;top:auto;bottom:0;border:3.5px solid transparent;border-top:5px solid currentColor;border-bottom:0}
 }
+/* 폰(640 이하)에서 두 줄이면 왼쪽·오른쪽 두 열로 나란히 — 같은 순번 칸이 같은 높이(subgrid), 화살표는 숨긴다 */
+@media (max-width:640px){
+  .fig[data-cols="2"]{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto repeat(var(--n),auto);column-gap:8px}
+  .fig[data-cols="2"] .row{display:grid;grid-row:1 / span var(--n1);grid-template-rows:subgrid;grid-template-columns:1fr;row-gap:6px;margin:0}
+  .fig[data-cols="2"] .steps{grid-row:2 / span var(--n);display:grid;grid-template-rows:subgrid;grid-template-columns:1fr;row-gap:6px}
+  .fig[data-cols="2"] .step{min-height:48px;font-size:14px}
+  .fig[data-cols="2"] .arrow{display:none}
+  .fig[data-cols="2"] .cap{grid-column:1 / -1;grid-row:var(--n2)}
+}

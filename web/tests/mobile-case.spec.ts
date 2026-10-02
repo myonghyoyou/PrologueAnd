@@ -160,3 +160,26 @@ test('데스크톱에서는 캡처를 눌러도 뷰어가 없고 「크게 보�
   await expect(page.locator('[data-zoom-viewer]')).toBeHidden();
   await ctx.close();
 });
+
+test.describe('표 · 순서 비교', () => {
+  test('표: 안내가 있고, 옆으로 넘겨도 첫 열은 제자리, 래퍼는 영역·Lenis 제외', async ({ page }) => {
+    await page.goto(URL);
+    const sc = page.locator('#problem [data-table-scroll]');
+    await expect(page.locator('#problem [data-table-hint]')).toHaveText('옆으로 넘겨 보기 →');
+    await expect(sc).toHaveAttribute('role', 'region');
+    expect(await sc.getAttribute('data-lenis-prevent')).not.toBeNull();
+    const x0 = await page.locator('#problem tbody th').first().evaluate((e) => e.getBoundingClientRect().left);
+    await sc.evaluate((e) => { e.scrollLeft = 200; });
+    await page.waitForTimeout(100);
+    expect(Math.abs((await page.locator('#problem tbody th').first().evaluate((e) => e.getBoundingClientRect().left)) - x0)).toBeLessThanOrEqual(1);
+  });
+
+  test('순서 비교: 두 줄이 왼쪽·오른쪽 두 열, 같은 순번 칸의 윗변이 같고 가로 스크롤 없음', async ({ page }) => {
+    await page.goto(URL);
+    await expect(page.locator('#order [data-steps]')).toHaveAttribute('data-cols', '2');
+    const r = await page.locator('#order [data-steps-row]').evaluateAll((rows) => rows.map((row) => [...row.querySelectorAll<HTMLElement>('[data-step]')].map((s) => s.getBoundingClientRect())));
+    expect(r[0][0].left).toBeLessThan(r[1][0].left);
+    r[0].forEach((b, i) => expect(Math.abs(b.top - r[1][i].top)).toBeLessThanOrEqual(1));
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+  });
+});

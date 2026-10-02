@@ -20,7 +20,8 @@ export function Table({ b }: { b: TableBlock }) {
   return (
     <div className={g.g}>
       <figure className={`${g.body} ${s.fig}`} data-table>
-        <div className={s.scroll}>
+        <p className={s.hint} data-table-hint aria-hidden="true">옆으로 넘겨 보기 →</p>
+        <div className={s.scroll} data-table-scroll role="region" tabIndex={0} aria-label={b.cols.join(' · ')} data-lenis-prevent>
           <table className={s.t}>
             <thead><tr>{b.cols.map((c) => <th key={c} scope="col">{c}</th>)}</tr></thead>
             <tbody>{b.rows.map((r, i) => row(r, String(i)))}</tbody>

@@ -7,7 +7,8 @@ export function Steps({ b }: { b: StepsBlock }) {
   const n = Math.max(...b.rows.map((r) => r.steps.length));
   return (
     <div className={g.g}>
-      <figure className={`${g.wide} ${s.fig}`} data-steps role="group" aria-label={b.alt}>
+      <figure className={`${g.wide} ${s.fig}`} data-steps data-cols={b.rows.length === 2 ? '2' : undefined} role="group" aria-label={b.alt}
+              style={{ ['--n' as string]: n, ['--n1' as string]: n + 1, ['--n2' as string]: n + 2 }}>
         {b.rows.map((r, i) => (
           <div key={i} className={s.row} data-steps-row data-last={i === b.rows.length - 1 ? '' : undefined}>
             <p className={s.label}>{r.label}</p>
