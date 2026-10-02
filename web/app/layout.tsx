@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Bodoni_Moda } from 'next/font/google';
 import localFont from 'next/font/local';
 import { LenisProvider } from '@/components/lenis-provider';
@@ -13,6 +13,9 @@ const sans = localFont({
 });
 
 const site = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+
+/** 아이폰 아래 홈 바·노치 영역까지 그린다 — 아래 고정 요소는 env(safe-area-inset-bottom) 로 비켜 선다 */
+export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover' };
 
 export const metadata: Metadata = {
   metadataBase: new URL(site),
