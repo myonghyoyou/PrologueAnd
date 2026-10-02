@@ -1,0 +1,39 @@
+/* 폰 홈(H1) — 데스크톱(≥1024)에서는 보이지 않는다. 선·점·세로 선은 navy-800, 판 글은 선 오른쪽 52px 부터 */
+.root{display:none}
+@media (max-width:1023px){ .root{display:block} }
+.intro{position:relative;height:100svh}
+.svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none;z-index:1}
+.line{fill:none;stroke:var(--navy-800);stroke-width:2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 2s cubic-bezier(.65,0,.35,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.hint{position:absolute;left:0;right:0;bottom:calc(46px + env(safe-area-inset-bottom,0px));margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;
+  font-size:14px;color:var(--bone-700);opacity:0;transition:opacity .5s;pointer-events:none}
+.hint[data-on]{opacity:1}
+.hint i{font-style:normal;font-size:18px;color:var(--navy-800);animation:bob 1.6s var(--ease-out) infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.list{position:relative;padding:20px 20px 64px 52px}
+.rail{position:absolute;left:27px;width:2px;background:var(--navy-800)}
+.panel{position:relative;padding:44px 0 56px}
+/* 글만 흐렸다 또렷해진다 — 점은 늘 또렷해야 세로 선이 점을 뚫고 비치지 않는다 */
+.panel > :not(.dot){opacity:.25;transform:translateY(14px);transition:opacity .5s var(--ease-out),transform .5s var(--ease-out)}
+.panel[data-in] > :not(.dot){opacity:1;transform:none}
+.dot{position:absolute;left:-28.5px;top:52px;width:7px;height:7px;border-radius:50%;background:var(--bone-50);border:1.5px solid var(--navy-800);box-sizing:border-box;z-index:1;transition:background .3s}
+.panel[data-in] .dot{background:var(--navy-800)}
+.h{margin:0 0 12px;font-size:32px;font-weight:700;letter-spacing:-.035em;line-height:1.15;word-break:keep-all}
+.h em{font-style:normal;color:var(--navy-800)}
+.p{margin:0;font-size:16px;line-height:1.65;color:var(--bone-700);word-break:keep-all}
+.cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;align-items:center}
+.btn{display:inline-flex;align-items:center;min-height:48px;padding:0 18px;border:1px solid var(--navy-800);border-radius:2px;background:var(--navy-800);color:#fff;font:600 15px var(--font-sans),sans-serif;cursor:pointer}
+.ghost{background:var(--bone-0);color:var(--bone-900);border-color:var(--bone-900)}
+.mail{font-size:14px;color:var(--bone-500)}
+.paths,.works{list-style:none;margin:18px 0 0;padding:0;border-top:1px solid var(--bone-200)}
+.paths li{padding:14px 0 12px;border-bottom:1px solid var(--bone-200)}
+.paths b{display:block;font-size:17px;margin-bottom:2px}
+.paths span{font-size:13px;color:var(--bone-500)}
+.works a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;min-height:52px;padding:14px 0 10px;border-bottom:1px solid var(--bone-200)}
+.works b{font-size:16px}
+.works span{flex:none;font-size:12px;color:var(--bone-500)}
+@media (prefers-reduced-motion:reduce){
+  .line{animation:none;stroke-dashoffset:0}
+  .hint i{animation:none}
+  .panel > :not(.dot){transition:none}
+}

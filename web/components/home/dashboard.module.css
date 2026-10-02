@@ -88,6 +88,7 @@
 
 /* ---- 폰·태블릿: 세로 스택. 엔진은 켜지지 않는다 ---- */
 @media (max-width:1023px){
+  .root{display:none}   /* 폰은 HomePhone(모바일 명세 §4) */
   .pmap,.path{display:none}
   .stage{position:static;overflow:visible;background:var(--bone-50);-webkit-user-select:text;user-select:text}
   .root:not([data-ready]) .world{opacity:1}
