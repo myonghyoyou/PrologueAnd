@@ -1,6 +1,8 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getLenis } from './lenis-provider';
+import { useBackClose } from '@/lib/use-back-close';
+import { useDragClose } from '@/lib/use-drag-close';
 import { NEED, PEOPLE, WHEN, BUDGET } from '@/lib/inquiry-schema';
 import { Select } from './select';
 import { getProject } from '@/content';
@@ -29,25 +31,58 @@ export function InquiryDrawer() {
   const drawer = useRef<HTMLElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   const openRef = useRef(false);
+  const [mounted, setMounted] = useState(false);   // 다 닫히면 hidden(모바일 명세 §7)
+  const [instant, setInstant] = useState(false);   // 문의 바에서 열면 미끄러짐 없이 그 자리에
+  const [phone, setPhone] = useState(false);
+  const drag = useDragClose(drawer, () => setOpen(false));
+  useBackClose(open, () => setOpen(false), phone);
 
   useEffect(() => { openRef.current = open; }, [open]);
 
-  // [data-open-drawer] 클릭으로 열기 — 열려 있던 자리(step)는 그대로 두고, done 이후엔 새로 시작 (form 이 다시 마운트되며 값이 비워진다)
+  // [data-open-drawer] 클릭 · inquiry:open 이벤트(폰 문의 바)로 열기 — 열려 있던 자리(step)는 그대로 두고, done 이후엔 새로 시작 (form 이 다시 마운트되며 값이 비워진다)
+  const openWith = useCallback((p: string, from: HTMLElement | null, inst: boolean) => {
+    opener.current = from;
+    setProject(p); setError('');
+    setStep((prev) => (prev === 'done' ? 'step1' : prev));
+    setPhone(window.matchMedia('(max-width:1023px)').matches);
+    setInstant(inst);
+    // 붙이기와 열기를 한 번에 — 숨김(display:none)에서 나타날 때의 미끄러짐은 CSS @starting-style 이 맡는다
+    setMounted(true);
+    setOpen(true);
+    openedAt.current = Date.now();
+  }, []);
+
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       const t = (e.target as HTMLElement).closest<HTMLElement>('[data-open-drawer]');
       if (!t) return;
       e.preventDefault();
-      opener.current = t;
-      setProject(t.dataset.project ?? '');
-      setError('');
-      setStep((prev) => (prev === 'done' ? 'step1' : prev));
-      setOpen(true);
-      openedAt.current = Date.now();
+      openWith(t.dataset.project ?? '', t, false);
+    };
+    const onOpen = (e: Event) => {
+      const d = (e as CustomEvent<{ project: string; instant?: boolean }>).detail;
+      openWith(d.project, document.querySelector<HTMLElement>('[data-dock]'), !!d.instant);
     };
     document.addEventListener('click', onClick);
-    return () => document.removeEventListener('click', onClick);
-  }, []);
+    document.addEventListener('inquiry:open', onOpen);
+    return () => { document.removeEventListener('click', onClick); document.removeEventListener('inquiry:open', onOpen); };
+  }, [openWith]);
+
+  // 다 닫히면(미끄러짐 0.35s 뒤) hidden, 다음 열기는 다시 미끄러진다
+  useEffect(() => {
+    if (open) return;
+    const t = setTimeout(() => { setMounted(false); setInstant(false); }, 360);
+    return () => clearTimeout(t);
+  }, [open]);
+
+  // 폰 키보드: 가려지는 높이만큼 시트를 올린다
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!open || !phone || !vv) return;
+    const f = () => document.documentElement.style.setProperty('--kb', `${Math.max(0, window.innerHeight - vv.height - vv.offsetTop)}px`);
+    f(); vv.addEventListener('resize', f); vv.addEventListener('scroll', f);
+    return () => { vv.removeEventListener('resize', f); vv.removeEventListener('scroll', f); document.documentElement.style.removeProperty('--kb'); };
+  }, [open, phone]);
 
   // Escape로 닫기 + 열려 있는 동안 Tab/Shift+Tab을 서랍 안에 가둔다
   useEffect(() => {
@@ -154,17 +189,20 @@ export function InquiryDrawer() {
 
   return (
     <>
-      <div className={open ? `${s.backdrop} ${s.backdropOn}` : s.backdrop} onClick={() => setOpen(false)} />
+      <div className={open ? `${s.backdrop} ${s.backdropOn}` : s.backdrop} hidden={!mounted} onClick={() => setOpen(false)} />
       <aside
         ref={drawer}
-        className={open ? `${s.drawer} ${s.drawerOn}` : s.drawer}
+        className={`${s.drawer} ${open ? s.drawerOn : ''} ${instant ? s.instant : ''}`}
+        hidden={!mounted}
         role="dialog"
         aria-modal="true"
         aria-labelledby={HEADING_ID}
         aria-hidden={open ? undefined : true}
         inert={!open}
         data-drawer
+        data-lenis-prevent
       >
+        <div className={s.grab} data-drawer-grab aria-hidden="true" {...drag}><i /></div>
         <div className={s.head}>
           <span id={HEADING_ID} className={s.brand}>Prologue<span className={s.amp}>&amp;</span>
             <span className={s.who}>{who}</span></span>

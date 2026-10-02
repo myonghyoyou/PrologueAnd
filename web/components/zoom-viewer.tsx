@@ -87,8 +87,10 @@ export function ZoomViewer() {
     else lastTap.current = now;
   };
 
+  // 닫혀 있으면 그리지 않는다 — 문의 서랍과 대화상자가 둘로 겹쳐 보이지 않게
+  if (!v) return null;
   return (
-    <div ref={root} className={s.root} hidden={!v} role="dialog" aria-modal="true" aria-label="캡처 크게 보기" data-zoom-viewer data-lenis-prevent>
+    <div ref={root} className={s.root} role="dialog" aria-modal="true" aria-label="캡처 크게 보기" data-zoom-viewer data-lenis-prevent>
       <div className={s.top} data-zoom-top {...drag}>
         <span>두 번 눌러 확대</span>
         <button type="button" className={s.close} onClick={close} aria-label="닫기" data-zoom-close onPointerDown={(e) => e.stopPropagation()}>×</button>

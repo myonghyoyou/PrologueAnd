@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import { InquiryDock } from '@/components/inquiry-dock';
 import { ProjectRow } from '@/components/project-row';
 import { VtReturn } from '@/components/vt-return';
 import { allProjects } from '@/content';
@@ -20,6 +21,7 @@ export default function ProjectsPage() {
         <div>{allProjects().map((p) => <ProjectRow key={p.slug} project={p} />)}</div>
         <Footer />
       </main>
+      <InquiryDock mode="list" />
     </>
   );
 }

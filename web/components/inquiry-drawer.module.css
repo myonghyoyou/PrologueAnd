@@ -3,6 +3,8 @@
 /* 항상 마운트되어 있고 open 상태로 opacity/transform만 토글한다 (시안 v3.css:189-191, v3.js:128·134) */
 .backdrop{position:fixed;inset:0;background:rgba(28,27,24,.45);opacity:0;pointer-events:none;transition:opacity .35s;z-index:50}
 .backdropOn{opacity:1;pointer-events:auto}
+/* 숨김(hidden)에서 열릴 때 처음 상태 — 붙이기와 열기가 같은 순간이라 전환의 시작점을 따로 준다 */
+@starting-style{ .backdropOn{opacity:0} }
 
 .drawer{
   position:fixed;top:0;right:0;bottom:0;
@@ -15,6 +17,7 @@
   transition:transform .35s var(--ease-out);
 }
 .drawerOn{transform:translateX(0)}
+@starting-style{ .drawerOn{transform:translateX(100%)} }
 
 .head{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--bone-200)}
 .brand{font-size:20px;font-family:var(--font-serif),Georgia,serif}
@@ -73,8 +76,20 @@
 .foot button:not(.send){background:none;border:1px solid var(--bone-300);color:var(--bone-700)}
 .foot button:not(.send):hover{background:var(--bone-100)}
 
+.drawer[hidden],.backdrop[hidden]{display:none}
+.grab{display:none}
+/* 폰: 아래 시트 — 화면 폭, 높이 90dvh(키보드가 오르면 그만큼 위로), 위 모서리 둥글게, 단색 */
 @media (max-width:1023px){
-  .drawer{width:100vw}
+  .drawer{top:auto;left:0;right:0;bottom:var(--kb,0px);width:100%;height:min(90dvh, calc(100dvh - var(--kb,0px) - 12px));
+    border-radius:14px 14px 0 0;box-shadow:none;transform:translateY(100%);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .drawerOn{transform:none}
+  @starting-style{ .drawerOn{transform:translateY(100%)} }
+  .instant{transition:none}
+  .grab{display:flex;height:28px;align-items:center;justify-content:center;touch-action:none;cursor:grab}
+  .grab i{width:40px;height:5px;border-radius:3px;background:var(--bone-400)}
+  .head{padding:4px 16px 12px}
+  .body{padding:20px 16px;overscroll-behavior:contain}
+  .fld input:not([type=radio]),.fld textarea{font-size:16px}
 }
 
 @media (prefers-reduced-motion:reduce){
