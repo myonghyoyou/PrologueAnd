@@ -29,8 +29,9 @@ export function SpotOverlay({ spots, active }: { spots: Spot[]; active: number }
     <>
       {spots.map((p, i) => (
         <b key={i} aria-hidden style={{ position: 'absolute', zIndex: 4, width: 18, height: 18, margin: '-9px 0 0 -9px',
-             // 뱃지는 영역 왼쪽 위 모서리에 걸친다. 영역이 그림 가장자리에 붙어도 틀(overflow:hidden) 밖으로 잘리지 않게 9px 안쪽에서 멈춘다
-             left: `max(9px, calc(6px + (100% - 12px) * ${p.x / 100}))`, top: `max(9px, calc(6px + (100% - 12px) * ${p.y / 100}))`,
+             // 뱃지는 영역 왼쪽 선 위, 윗변 바로 안쪽에 선다 — 윗변에 걸치면 바로 위 영역을 강조할 때 그 강조와 겹친다(2026-10-02).
+             // 영역이 그림 왼쪽 끝에 붙어도 틀(overflow:hidden) 밖으로 잘리지 않게 9px 안쪽에서 멈춘다
+             left: `max(9px, calc(6px + (100% - 12px) * ${p.x / 100}))`, top: `calc(15px + (100% - 12px) * ${p.y / 100})`,
              borderRadius: '50%', background: 'var(--navy-800)', color: 'var(--bone-50)', fontSize: 11,
              display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</b>
       ))}
