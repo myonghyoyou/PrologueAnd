@@ -1,0 +1,15 @@
+/* 아래 시트 — 단색(blur 금지), 아래 홈 바 여백, 안쪽 스크롤은 페이지로 번지지 않는다 */
+.root{position:fixed;inset:0;z-index:60}
+.root[hidden]{display:none}
+.dim{position:absolute;inset:0;background:rgba(28,27,24,.38);opacity:0;transition:opacity .25s}
+.dim.on{opacity:1}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:90dvh;display:flex;flex-direction:column;background:var(--bone-50);
+  border-radius:14px 14px 0 0;padding:0 16px env(safe-area-inset-bottom,0px);transform:translateY(100%);transition:transform .32s var(--ease-out)}
+.sheet.on{transform:none}
+.grab{height:28px;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab}
+.grab i{width:40px;height:5px;border-radius:3px;background:var(--bone-400)}
+.head{display:flex;align-items:center;justify-content:space-between;min-height:44px}
+.title{margin:0;font-size:18px;font-weight:600}
+.close{width:44px;height:44px;margin-right:-10px;border:0;background:none;font-size:22px;cursor:pointer;color:inherit}
+.body{overflow:auto;overscroll-behavior:contain;padding-bottom:16px}
+@media (prefers-reduced-motion:reduce){ .dim,.sheet{transition:none} }
