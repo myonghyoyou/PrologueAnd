@@ -74,7 +74,8 @@ function NoteStill({ b }: { b: NoteBlock }) {
         <div className={s.swap} data-swap data-side={side}>
           <div aria-hidden={side === 'before' ? true : undefined}>
             <Row figs={b.figs} sizes="(max-width:1023px) 100vw, 1230px"
-                 overlay={showSpots ? <SpotOverlay spots={spots} active={spot} /> : undefined} />
+                 overlay={showSpots ? <SpotOverlay spots={spots} active={spot} /> : undefined}
+                 zoomPins={spots.map((sp, k) => ({ n: String(k + 1), x: sp.x + sp.w / 2, y: sp.y + sp.h / 2, text: sp.cap }))} />
           </div>
           {b.beforeFig ? (
             <div className={s.before} data-before aria-hidden={side === 'before' ? undefined : true}>

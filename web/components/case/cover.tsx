@@ -38,7 +38,8 @@ export function Cover({ study, project }: { study: Study; project: Project }) {
           </figure>
         ) : isPinnedHero(c.hero) ? (
           <div className={s.pinned} data-hero-pinned style={{ maxWidth: heroW }}>
-            <Frame fig={c.hero.pinned} sizes="(max-width:1023px) 100vw, 1616px">
+            <Frame fig={c.hero.pinned} sizes="(max-width:1023px) 100vw, 1616px"
+                   zoomPins={c.hero.pins.map((p, i) => ({ n: String(i + 1), x: p.x, y: p.y, text: p.text }))}>
               {c.hero.pins.map((p, i) => (
                 // 틀 안(테두리 1 + 여백 6) 좌표 — 핫스팟과 같은 계산
                 <span key={i} className={s.pin} data-pin aria-hidden="true"

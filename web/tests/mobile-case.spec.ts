@@ -78,3 +78,85 @@ test('데스크톱에는 장 진행 바가 보이지 않는다', async ({ browse
   await expect(page.locator('[data-chapter-bar]')).toBeHidden();
   await ctx.close();
 });
+
+test.describe('2A 캡처 확대 뷰어', () => {
+  test('캡처마다 「⤢ 크게 보기」가 왼쪽 위에 있다', async ({ page }) => {
+    await page.goto(URL);
+    const tags = page.locator('[data-zoom-tag]');
+    expect(await tags.count()).toBeGreaterThan(5);
+    const r = await tags.first().evaluate((t) => { const b = t.getBoundingClientRect(), f = t.closest('[data-zoom]')!.getBoundingClientRect(); return { dx: b.left - f.left, dy: b.top - f.top }; });
+    expect(r.dx).toBeLessThan(20); expect(r.dy).toBeLessThan(20);
+  });
+
+  test('표지 캡처를 누르면 원본이 열리고 번호 단추 = 표지 번호 수, ×로 닫히면 hidden·스크롤 그대로', async ({ page }) => {
+    await page.goto(URL);
+    const pins = await page.locator('[data-pin]').count();
+    const before = await page.evaluate(() => scrollY);
+    await page.locator('[data-hero-pinned] [data-zoom]').click();
+    const v = page.locator('[data-zoom-viewer]');
+    await expect(v).toBeVisible();
+    await expect(page.locator('[data-zoom-img]')).toHaveAttribute('src', '/screens/shift/excel-cover.png');
+    await expect(page.locator('[data-zoom-pin]')).toHaveCount(pins);
+    expect(await v.getAttribute('data-lenis-prevent')).not.toBeNull();
+    await page.click('[data-zoom-close]');
+    await expect(v).toBeHidden();
+    expect(Math.abs((await page.evaluate(() => scrollY)) - before)).toBeLessThanOrEqual(2);
+  });
+
+  test('두 번 누르면 확대, 다시 두 번 누르면 원래 크기', async ({ page }) => {
+    await page.goto(URL);
+    await page.locator('[data-hero-pinned] [data-zoom]').click();
+    const w = () => page.locator('[data-zoom-img]').evaluate((i) => i.getBoundingClientRect().width);
+    const w0 = await w();
+    await page.locator('[data-zoom-img]').dblclick();
+    await page.waitForTimeout(350);
+    expect(await w()).toBeGreaterThan(w0 * 2);
+    await page.locator('[data-zoom-img]').dblclick();
+    await page.waitForTimeout(350);
+    expect(Math.abs((await w()) - w0)).toBeLessThanOrEqual(2);
+  });
+
+  test('번호 단추를 누르면 확대되고 그 자리가 화면 가운데 근처로 온다', async ({ page }) => {
+    await page.goto(URL);
+    await page.locator('[data-hero-pinned] [data-zoom]').click();
+    await page.locator('[data-zoom-pin]').first().click();
+    await page.waitForTimeout(800);
+    const r = await page.evaluate(() => {
+      const st = document.querySelector<HTMLElement>('[data-zoom-stage]')!, img = document.querySelector<HTMLElement>('[data-zoom-img]')!;
+      const p = JSON.parse(document.querySelector<HTMLElement>('[data-hero-pinned] [data-zoom]')!.dataset.zoomPins!)[0];
+      const ib = img.getBoundingClientRect(), sb = st.getBoundingClientRect();
+      return { x: ib.left + ib.width * p.x / 100 - (sb.left + sb.width / 2), w: ib.width, sw: sb.width };
+    });
+    expect(r.w).toBeGreaterThan(r.sw * 2);
+    expect(Math.abs(r.x)).toBeLessThan(60);
+  });
+
+  test('뒤로가기로 닫히고 주소 그대로, 위 줄을 끌어 내려도 닫힌다', async ({ page }) => {
+    await page.goto(URL);
+    await page.locator('[data-hero-pinned] [data-zoom]').click();
+    await page.goBack();
+    await expect(page.locator('[data-zoom-viewer]')).toBeHidden();
+    expect(page.url()).toMatch(/\/projects\/shift-board$/);
+    await page.locator('[data-hero-pinned] [data-zoom]').click();
+    const t = (await page.locator('[data-zoom-top]').boundingBox())!;
+    await page.mouse.move(t.x + 40, t.y + t.height / 2); await page.mouse.down();
+    await page.mouse.move(t.x + 40, t.y + t.height / 2 + 160, { steps: 8 }); await page.mouse.up();
+    await expect(page.locator('[data-zoom-viewer]')).toBeHidden();
+  });
+
+  test('핫스팟 목록 행이나 전환 단추를 눌러도 뷰어가 열리지 않는다', async ({ page }) => {
+    await page.goto(URL);
+    await page.locator('[data-side-toggle] button').first().click();
+    await expect(page.locator('[data-zoom-viewer]')).toBeHidden();
+  });
+});
+
+test('데스크톱에서는 캡처를 눌러도 뷰어가 없고 「크게 보기」도 보이지 않는다', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto('/projects/shift-board');
+  await expect(page.locator('[data-zoom-tag]').first()).toBeHidden();
+  await page.locator('[data-hero-pinned] [data-zoom]').click();
+  await expect(page.locator('[data-zoom-viewer]')).toBeHidden();
+  await ctx.close();
+});
