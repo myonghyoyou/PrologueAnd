@@ -131,6 +131,30 @@ test.describe('2A 캡처 확대 뷰어', () => {
     expect(Math.abs(r.x)).toBeLessThan(60);
   });
 
+  test('처음 안내는 그림 위에서 읽히게 어두운 바탕 · 한 줄', async ({ page }) => {
+    await page.goto(URL);
+    await page.locator('[data-hero-pinned] [data-zoom]').click();
+    const tip = page.locator('[data-zoom-viewer] p', { hasText: '두 손가락으로 벌리거나, 두 번 누르세요' });
+    await expect(tip).toBeVisible();
+    const r = await tip.evaluate((e) => ({ bg: getComputedStyle(e).backgroundColor, h: e.getBoundingClientRect().height }));
+    const [, , , a] = r.bg.match(/[\d.]+/g)!.map(Number);
+    expect(a).toBeGreaterThanOrEqual(0.7);
+    expect(r.h).toBeLessThan(40);
+  });
+
+  test('번호 단추는 서로 겹치지 않고, 글이 단추 안에서 말줄임된다', async ({ page }) => {
+    await page.goto(URL);
+    await page.locator('[data-hero-pinned] [data-zoom]').click();
+    const r = await page.locator('[data-zoom-pin]').evaluateAll((bs) => bs.map((b) => {
+      const o = b.getBoundingClientRect(), t = b.querySelector('span')!.getBoundingClientRect();
+      return { l: o.left, r: o.right, tr: t.right };
+    }));
+    for (let i = 0; i < r.length; i++) {
+      expect(r[i].tr).toBeLessThanOrEqual(r[i].r);
+      if (i) expect(r[i].l).toBeGreaterThanOrEqual(r[i - 1].r);
+    }
+  });
+
   test('뒤로가기로 닫히고 주소 그대로, 위 줄을 끌어 내려도 닫힌다', async ({ page }) => {
     await page.goto(URL);
     await page.locator('[data-hero-pinned] [data-zoom]').click();

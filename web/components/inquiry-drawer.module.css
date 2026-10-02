@@ -88,6 +88,7 @@
   .grab{display:flex;height:28px;align-items:center;justify-content:center;touch-action:none;cursor:grab}
   .grab i{width:40px;height:5px;border-radius:3px;background:var(--bone-400)}
   .head{padding:4px 16px 12px}
+  .close{width:44px;height:44px;font-size:20px}   /* 손가락으로 누르는 크기 */
   .body{padding:20px 16px;overscroll-behavior:contain}
   .fld input:not([type=radio]),.fld textarea{font-size:16px}
 }

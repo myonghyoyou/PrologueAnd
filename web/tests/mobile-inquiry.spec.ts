@@ -36,6 +36,15 @@ test.describe('폰 문의', () => {
     expect(await drawer.getAttribute('data-lenis-prevent')).not.toBeNull();
   });
 
+  test('시트의 닫기 단추는 44px', async ({ page }) => {
+    await page.goto('/projects');
+    await page.click('[data-dock]');
+    await expect(page.locator('[data-drawer]')).toBeVisible();
+    const b = (await page.locator('[data-drawer] button[aria-label="닫기"]').boundingBox())!;
+    expect(b.width).toBeGreaterThanOrEqual(44);
+    expect(b.height).toBeGreaterThanOrEqual(44);
+  });
+
   test('폰 입력칸 글자 16px 이상', async ({ page }) => {
     await page.goto('/projects');
     await page.click('[data-dock]');
