@@ -80,3 +80,8 @@ test('바닥글에 한글 이름도 보인다', async ({ page }) => {
   await page.goto('/projects');
   await expect(page.locator('[data-footer]')).toContainText('Prologue& (프롤로그엔)');
 });
+
+test('네이버 서치어드바이저 소유 확인 태그', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('meta[name="naver-site-verification"]')).toHaveAttribute('content', '6e881aee19f6745a7ae49b7038afd67475cf2bf5');
+});

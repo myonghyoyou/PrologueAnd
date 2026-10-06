@@ -30,6 +30,8 @@ export const metadata: Metadata = {
   openGraph: { type: 'website', locale: 'ko_KR', siteName: NAME, url: '/', title: `${NAME} (${NAME_KO})`, description: DESCRIPTION },
   twitter: { card: 'summary_large_image', title: `${NAME} (${NAME_KO})`, description: DESCRIPTION },
   robots: shouldIndex(process.env.VERCEL_ENV) ? undefined : { index: false, follow: false },
+  // 검색 등록 소유 확인 — 구글은 DNS(TXT)로 확인해 여기 없다
+  verification: { other: { 'naver-site-verification': '6e881aee19f6745a7ae49b7038afd67475cf2bf5' } },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
