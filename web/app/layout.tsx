@@ -5,6 +5,7 @@ import { LenisProvider } from '@/components/lenis-provider';
 import { InquiryDrawer } from '@/components/inquiry-drawer';
 import { RouteCommit } from '@/components/route-commit';
 import { ZoomViewer } from '@/components/zoom-viewer';
+import { SITE, NAME, NAME_KO, TAGLINE, shouldIndex } from '@/lib/site';
 import './globals.css';
 
 const serif = Bodoni_Moda({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-serif', display: 'swap' });
@@ -13,16 +14,22 @@ const sans = localFont({
   variable: '--font-sans', display: 'swap',
 });
 
-const site = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
 /** 아이폰 아래 홈 바·노치 영역까지 그린다 — 아래 고정 요소는 env(safe-area-inset-bottom) 로 비켜 선다 */
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover' };
 
+const DESCRIPTION = `${NAME_KO}(${NAME}) — ${TAGLINE} 업무 시스템의 화면 설계부터 개발까지 한 팀이 진행합니다.`;
+
+/** 검색·공유 미리보기 — 제목과 설명에 읽는 이름(프롤로그엔)을 함께 둔다. 미리보기 배포는 검색에서 뺀다 */
 export const metadata: Metadata = {
-  metadataBase: new URL(site),
-  title: { default: 'Prologue&', template: 'Prologue & %s' },
-  description: '복잡한 업무를 단순한 제품으로 바꿉니다.',
-  robots: site.includes('vercel.app') || site.includes('localhost') ? { index: false, follow: false } : undefined,
+  metadataBase: new URL(SITE),
+  title: { default: `${NAME} (${NAME_KO}) — ${TAGLINE}`, template: `%s · ${NAME}` },
+  description: DESCRIPTION,
+  applicationName: NAME,
+  alternates: { canonical: '/' },
+  openGraph: { type: 'website', locale: 'ko_KR', siteName: NAME, url: '/', title: `${NAME} (${NAME_KO})`, description: DESCRIPTION },
+  twitter: { card: 'summary_large_image', title: `${NAME} (${NAME_KO})`, description: DESCRIPTION },
+  robots: shouldIndex(process.env.VERCEL_ENV) ? undefined : { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

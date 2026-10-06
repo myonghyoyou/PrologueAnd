@@ -108,7 +108,7 @@ export function Dashboard({ published }: { published: number }) {
 
       <footer className={s.ft}>
         <nav><Link href="/projects">Projects</Link><a href={`mailto:${CONTACT_MAIL}`}>{CONTACT_MAIL}</a><button type="button" data-open-drawer>문의</button></nav>
-        <span>© 2026 Prologue&amp;</span>
+        <span>© 2026 Prologue&amp; (프롤로그엔)</span>
       </footer>
     </div>
   );

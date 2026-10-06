@@ -12,7 +12,13 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const p = getProject(slug);
-  return { title: p?.title ?? 'Projects', description: p?.tagline };
+  const title = p?.title ?? 'Projects';
+  // openGraph 는 위 단계의 것을 통째로 바꾸므로 사이트 이름·언어를 다시 적는다
+  return {
+    title, description: p?.tagline,
+    alternates: { canonical: `/projects/${slug}` },
+    openGraph: { type: 'article', locale: 'ko_KR', siteName: 'Prologue&', url: `/projects/${slug}`, title: `${title} · Prologue&`, description: p?.tagline },
+  };
 }
 
 export default async function CasePage({ params }: { params: Promise<{ slug: string }> }) {

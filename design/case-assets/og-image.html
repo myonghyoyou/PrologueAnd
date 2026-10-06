@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- 공유 미리보기 그림(1200×630) — 카톡·SNS·검색에 링크를 붙였을 때 보인다.
+     찍기: node design/case-assets/og-image.cjs → web/app/opengraph-image.png -->
+<html lang="ko"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500&display=swap">
+<style>
+@font-face{font-family:Pretendard;src:url(../../web/public/fonts/PretendardVariable.woff2) format('woff2');font-weight:45 920}
+html,body{margin:0}
+.og{width:1200px;height:630px;box-sizing:border-box;padding:84px 96px;background:#FAF9F6;color:#1C1B18;
+  font-family:Pretendard,sans-serif;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.og::after{content:"";position:absolute;left:96px;right:96px;bottom:110px;height:1px;background:#E8E5DE}
+.mark{width:72px;height:72px;border-radius:9px;display:block}
+.name{margin:52px 0 0;font-family:'Bodoni Moda',Georgia,serif;font-weight:400;font-size:132px;line-height:1;letter-spacing:-.01em}
+.name i{font-style:normal;color:#2B3160}
+.ko{margin:30px 0 0;font-size:34px;font-weight:600;letter-spacing:-.02em;color:#2B3160}
+.tag{margin:34px 0 0;font-size:34px;font-weight:600;letter-spacing:-.03em;color:#4A4741}
+.url{position:absolute;left:96px;bottom:52px;font-size:24px;font-weight:500;color:#8A857A;letter-spacing:.01em}
+</style></head>
+<body><div class="og" id="og">
+  <img class="mark" src="../../web/app/icon.png" alt="">
+  <p class="name">Prologue<i>&amp;</i></p>
+  <p class="ko">프롤로그엔</p>
+  <p class="tag">복잡한 업무를 단순한 제품으로 바꿉니다.</p>
+  <span class="url">www.prologueand.com</span>
+</div></body></html>

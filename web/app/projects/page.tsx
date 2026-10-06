@@ -7,7 +7,11 @@ import { VtReturn } from '@/components/vt-return';
 import { allProjects } from '@/content';
 import s from './projects.module.css';
 
-export const metadata: Metadata = { title: 'Projects' };
+export const metadata: Metadata = {
+  title: 'Projects',
+  alternates: { canonical: '/projects' },
+  openGraph: { type: 'website', locale: 'ko_KR', siteName: 'Prologue&', url: '/projects', title: 'Projects · Prologue&' },
+};
 
 export default function ProjectsPage() {
   return (
