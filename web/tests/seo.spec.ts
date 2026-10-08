@@ -85,3 +85,13 @@ test('네이버 서치어드바이저 소유 확인 태그', async ({ page }) =>
   await page.goto('/');
   await expect(page.locator('meta[name="naver-site-verification"]')).toHaveAttribute('content', '6e881aee19f6745a7ae49b7038afd67475cf2bf5');
 });
+
+test('연락 메일은 hello@prologueand.com — 바닥글 링크와 구조화 데이터', async ({ page }) => {
+  await page.goto('/projects');
+  await expect(page.locator('[data-footer] a[href^="mailto:"]')).toHaveAttribute('href', 'mailto:hello@prologueand.com');
+  await page.goto('/');
+  const json = await page.locator('script[type="application/ld+json"]').first().textContent();
+  const org = (JSON.parse(json!) as { '@graph': { '@type': string; email?: string }[] })['@graph'].find((n) => n['@type'] === 'Organization')!;
+  expect(org.email).toBe('hello@prologueand.com');
+  expect(await page.content()).not.toContain('myonghyoyou@gmail.com');
+});
