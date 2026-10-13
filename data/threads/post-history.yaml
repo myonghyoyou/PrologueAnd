@@ -1,0 +1,104 @@
+# Threads 게시 이력 — threads-post 스킬이 읽고 갱신한다.
+# 필드 설명: .claude/skills/threads-post/templates/content-history.md
+# 규칙
+#  - status: draft(초안) / approved(사용자 승인, 아직 안 올림) / published(사용자가 실제 게시를 확인) / deleted(게시 후 삭제) / cancelled
+#  - 사용자 확인 없이 published 로 바꾸지 않는다. 모르는 값은 null.
+#  - id 는 내부 관리용. 게시물에 노출하지 않는다.
+#  - published_at 은 실제로 올린 시각(KST, ISO 8601). planned_at 은 계획 시각.
+#  - first_sentence / ending_pattern 은 「문장 패턴 중복 검사」에 쓴다.
+
+posts:
+  - id: shift-board-01
+    date: null                # 대화 기록상 밤 9시 예약 게시. 날짜는 기록 없음
+    series: 업무 개선기         # 게시 당시 첫 줄 표기는 「업무개선기-1」
+    project: 교대 근무표 (shift-board)
+    status: published         # 사용자 확인: 계정에 올라가 있는 글
+    planned_at: null
+    published_at: null        # "9시로 예약" — 날짜 미확인
+    url: null
+    first_sentence: 퇴사한 사람이 근무표에 들어가도 아무도 몰랐다.
+    ending_pattern: 화면 안내("어떻게 바꿨는지는 화면 붙여둠!") + 질문("혹시 아직도 근무표 엑셀로 짜는 스친들 많음?")
+    attachments: null         # 실제 첨부한 그림 기록 없음
+    tag: null
+    views: null
+    likes: null
+    replies: null             # 답글이 달린 적 있음(사용자 전달), 수는 기록 없음
+    reposts: null
+    inquiries: null
+    notes: 반응 인용 "이게 이렇게 되는 거였어요?!"는 사용자가 전한 실제 말과 다름. 사용자 판단으로 삭제·재작성하지 않고 유지.
+
+  - id: problem-bank-01
+    date: null
+    series: 업무 개선기         # 당시 표기 「업무개선기-2」
+    project: 문제 은행 (problem-bank)
+    status: deleted           # 아침에 게시(태그 누락) → 이후 다시 올렸다가 삭제(사용자: 조회·좋아요 없음, 슬롭 티)
+    planned_at: null
+    published_at: null
+    url: null
+    first_sentence: 직원 약 200명이 매년 문제집을 새로 뽑았다.   # 처음 올린 판의 첫 줄. 다시 올린 판의 원고는 기록 없음
+    ending_pattern: 화면 안내 + 질문("사내 시험 있는 회사 스치니들은 공부 뭘로 해?")
+    attachments: null
+    tag: null
+    views: null
+    likes: null
+    replies: null
+    reposts: null
+    inquiries: null
+    notes: 처음 판과 다시 올린 판을 구분할 기록이 없어 한 건으로 둠.
+
+  - id: problem-bank-02
+    date: 2026-10-13
+    series: 업무 개선기
+    project: 문제 은행 (problem-bank)
+    status: approved          # Grilling 후 사용자가 네 곳을 고친 최종본. 게시 확인 전
+    planned_at: null          # 화 10:00 슬롯은 지남 → 오늘 중 댓글 대응 가능한 시각으로
+    published_at: null
+    url: null
+    first_sentence: 사내 사규 법규 시험 일자가 공지되면 한 달 정도는 문제집 들고 다니면서 공부함
+    ending_pattern: 질문("사내 시험 있는 스치니들은 출퇴근길에 뭘로 공부해?") + 화면 안내
+    attachments: [web/public/screens/pbank/paper-cover.png, web/public/screens/pbank/play-m.png, web/public/screens/pbank/play-wrong.png]   # 제안안. 실제 첨부는 게시 때 확인
+    tag: 업무자동화            # 제안안
+    views: null
+    likes: null
+    replies: null
+    reposts: null
+    inquiries: null
+    notes: 원고는 .claude/skills/threads-post/references/examples-archive.md. 상태 테스트 단계. 상세 페이지 문구 정정 배포 전까지 첫 답글 링크 없음.
+
+  - id: por-favor-harry-01
+    date: null
+    series: 업무 개선기
+    project: 업무 요청 (por-favor-harry)
+    status: draft
+    planned_at: null
+    published_at: null
+    url: null
+    first_sentence: 메신저로 "급해요" 한 줄만 오면 진짜 난감함
+    ending_pattern: 질문("메신저로 요청받는 스치니들은 ~?") + 화면 안내
+    attachments: null
+    tag: null
+    views: null
+    likes: null
+    replies: null
+    reposts: null
+    inquiries: null
+    notes: 고친 안은 examples-archive.md. 사용자 원래 글(“급해요.”로 시작)도 미게시.
+
+  - id: question-mockups-01
+    date: null
+    series: null              # 시리즈 아닌 질문 글
+    project: 홈페이지 시안 만드는 법 질문 + 메가커피 쿠폰
+    status: published         # 사용자: "글을 올려봤는데 반응이 거의 없어"
+    planned_at: null
+    published_at: null
+    url: null
+    first_sentence: 요즘 홈페이지 시안을 한 번에 8~10개씩 뽑고 있는데,
+    ending_pattern: "- " 목록 질문 4개 + 쿠폰 안내 + 마감 안내
+    attachments: null
+    tag: null
+    views: null
+    likes: null
+    replies: null             # "거의 없음" (사용자), 수 미확인
+    reposts: null
+    inquiries: null
+    notes: 마감일·쿠폰 지급 여부 기록 없음.
