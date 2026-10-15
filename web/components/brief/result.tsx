@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { buildBrief, impactItems, toPlainText, vendorQuestions } from '@/lib/brief/derive';
+import { briefSummary, buildBrief, impactItems, toPlainText, vendorQuestions } from '@/lib/brief/derive';
 import { COMPARE_ROWS, browserStorage, loadCompare, saveCompare, type Vendor } from '@/lib/brief/storage';
 import { isInAppBrowser } from '@/lib/brief/in-app';
 import type { Answers, StepId } from '@/lib/brief/types';
@@ -30,6 +30,9 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
     const text = toPlainText(a, today);
     try { if (!navigator.clipboard) throw new Error('no clipboard'); await navigator.clipboard.writeText(text); setCopied('복사했어요'); setBox(''); }
     catch { setBox(text); setCopied(''); }
+  };
+  const send = () => {
+    document.dispatchEvent(new CustomEvent('inquiry:open', { detail: { project: '', prefill: { need: a.mode === 'new' ? '새로 만들고 싶어요' : undefined, pain: briefSummary(a, today) } } }));
   };
   const reset = () => { if (window.confirm('입력한 답과 비교표를 모두 지울까요?')) onReset(); };
 
@@ -95,7 +98,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
       </div>
 
       <p className={`${s.small} ${s.noPrint}`} data-part="privacy" data-brief-privacy>입력한 내용은 이 기기에만 저장돼요. 연락처는 묻지 않아요.</p>
-      <p className={`${s.foot} ${s.noPrint}`} data-part="prologue" data-brief-prologue>이 요청서를 Prologue&amp;에도 보내 볼 수 있어요 · <button type="button" className={s.link} data-brief-send>보내기</button></p>
+      <p className={`${s.foot} ${s.noPrint}`} data-part="prologue" data-brief-prologue>이 요청서를 Prologue&amp;에도 보내 볼 수 있어요 · <button type="button" className={s.link} onClick={send} data-brief-send>보내기</button></p>
     </div>
   );
 }

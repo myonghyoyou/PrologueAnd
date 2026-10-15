@@ -8,8 +8,11 @@ import { Select } from './select';
 import { getProject } from '@/content';
 import s from './inquiry-drawer.module.css';
 import { CONTACT_MAIL } from '@/lib/contact';
+import { appendSummary } from '@/lib/brief/prefill';
 
 type Step = 'step1' | 'step2' | 'done';
+/** 요청서 도구의 「Prologue&에도 보내기」가 넘기는 내용 — need 는 NEED 중 하나 */
+type Prefill = { need?: string; pain: string };
 
 const HEADING_ID = 'inquiry-drawer-heading';
 const FOCUSABLE = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]';
@@ -40,16 +43,29 @@ export function InquiryDrawer() {
   useEffect(() => { openRef.current = open; }, [open]);
 
   // [data-open-drawer] 클릭 · inquiry:open 이벤트(폰 문의 바)로 열기 — 열려 있던 자리(step)는 그대로 두고, done 이후엔 새로 시작 (form 이 다시 마운트되며 값이 비워진다)
-  const openWith = useCallback((p: string, from: HTMLElement | null, inst: boolean) => {
+  const openWith = useCallback((p: string, from: HTMLElement | null, inst: boolean, prefill?: Prefill) => {
     opener.current = from;
     setProject(p); setError('');
-    setStep((prev) => (prev === 'done' ? 'step1' : prev));
+    // 미리 채울 내용이 있으면 1단계로 — 없으면 지금처럼 열려 있던 단계를 그대로 둔다
+    setStep((prev) => (prefill || prev === 'done' ? 'step1' : prev));
     setPhone(window.matchMedia('(max-width:1023px)').matches);
     setInstant(inst);
     // 붙이기와 열기를 한 번에 — 숨김(display:none)에서 나타날 때의 미끄러짐은 CSS @starting-style 이 맡는다
     setMounted(true);
     setOpen(true);
     openedAt.current = Date.now();
+    if (prefill) {
+      // 비제어 폼 — done 에서 새로 마운트될 수 있어 다음 그림 때 넣는다. 사용자가 쓴 글은 지우지 않고 덧붙인다(1,000자 안)
+      requestAnimationFrame(() => {
+        const f = form.current; if (!f) return;
+        const pain = f.elements.namedItem('pain') as HTMLTextAreaElement | null;
+        if (pain) pain.value = appendSummary(pain.value, prefill.pain);
+        if (prefill.need && !f.querySelector('input[name="need"]:checked')) {
+          const target = f.querySelector<HTMLInputElement>(`input[name="need"][value="${CSS.escape(prefill.need)}"]`);
+          if (target) target.checked = true;
+        }
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -60,8 +76,8 @@ export function InquiryDrawer() {
       openWith(t.dataset.project ?? '', t, false);
     };
     const onOpen = (e: Event) => {
-      const d = (e as CustomEvent<{ project: string; instant?: boolean }>).detail;
-      openWith(d.project, document.querySelector<HTMLElement>('[data-dock]'), !!d.instant);
+      const d = (e as CustomEvent<{ project?: string; instant?: boolean; prefill?: Prefill }>).detail ?? {};
+      openWith(d.project ?? '', document.querySelector<HTMLElement>('[data-dock]') ?? (document.activeElement as HTMLElement | null), !!d.instant, d.prefill);
     };
     document.addEventListener('click', onClick);
     document.addEventListener('inquiry:open', onOpen);
