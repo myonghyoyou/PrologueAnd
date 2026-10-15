@@ -26,6 +26,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
   const [box, setBox] = useState('');
   const [inApp, setInApp] = useState(false);
   const [canShare, setCanShare] = useState(false);
+  const [printFailed, setPrintFailed] = useState(false);
 
   const boxRef = useRef<HTMLTextAreaElement>(null);
   // 글상자가 처음 뜰 때 한 번만 골라 둔다 — 렌더마다 하면 비교표에 치는 글이 글상자로 끌려간다
@@ -42,6 +43,14 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
   // 휴대폰 공유 창 — 사장님이 업체와 주로 쓰는 카톡·문자로 바로 보낸다. 취소하면 아무 일 없음
   const share = async () => { try { await navigator.share({ title: b.title, text: toPlainText(a, today) }); } catch { /* 취소 */ } };
   const setCell = (i: number, r: CompareRow, v: string) => putCmp(cmp.map((x, j) => (j === i ? { ...x, cells: { ...x.cells, [r]: v } } : x)));
+  // 인쇄 창이 실제로 열리면 beforeprint 가 온다. 안 오면 막힌 앱(목록에 없는 앱 안 브라우저) — 안내하고 복사로 돌린다
+  const printDoc = () => {
+    let fired = false;
+    const on = () => { fired = true; };
+    window.addEventListener('beforeprint', on, { once: true });
+    window.print();
+    setTimeout(() => { window.removeEventListener('beforeprint', on); if (!fired) { setPrintFailed(true); void copy(); } }, 400);
+  };
   const send = () => {
     document.dispatchEvent(new CustomEvent('inquiry:open', { detail: { project: '', prefill: { need: a.mode === 'new' ? '새로 만들고 싶어요' : undefined, pain: briefSummary(a, today) } } }));
   };
@@ -98,12 +107,13 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
           <button type="button" className={`${s.btn} ${s.pri}`} onClick={copy} data-brief-copy>글자로 복사</button>
           <p className={s.small} data-brief-inapp>Safari나 Chrome으로 열면 PDF로 저장할 수 있어요.</p>
         </> : <>
-          <button type="button" className={`${s.btn} ${s.pri}`} onClick={() => window.print()} data-brief-print>PDF로 저장</button>
+          <button type="button" className={`${s.btn} ${s.pri}`} onClick={printDoc} data-brief-print>PDF로 저장</button>
           <button type="button" className={s.btn} onClick={copy} data-brief-copy>글자로 복사</button>
         </>}
         {canShare ? <button type="button" className={s.btn} onClick={share} data-brief-share>카톡·문자로 보내기</button> : null}
         <button type="button" className={s.btn} onClick={() => onEdit('mode')} data-brief-edit>답 고치기</button>
         <button type="button" className={s.btn} onClick={reset} data-brief-reset>모두 지우기</button>
+        {printFailed ? <p className={s.small} role="status" data-brief-print-failed>인쇄 창이 열리지 않았어요. Safari나 Chrome으로 열면 PDF로 저장할 수 있어요. 아래 글을 복사해서 보내셔도 돼요.</p> : null}
         <p className={s.small} aria-live="polite" data-brief-copied>{copied}</p>
         {box ? <div className={s.copybox}>
           <textarea readOnly value={box} rows={10} className={s.copyArea} data-brief-copybox ref={boxRef} />

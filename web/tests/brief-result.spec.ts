@@ -134,3 +134,30 @@ test.describe('최종 검토 보완 — 결과', () => {
     expect(v.split('[요청서 만들기]').length - 1).toBe(1);
   });
 });
+
+test.describe('앱 안 브라우저(기기 시험: 인쇄 막힘, 복사·저장 됨)', () => {
+  async function seedDone(page: Page) {
+    await page.goto('/tools/brief');
+    await expect(page.locator('[data-brief] h1')).toBeVisible();
+    await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'when', done: true })));
+    await page.reload();
+  }
+  test('쓰레드 앱: 인쇄 대신 복사가 주 단추, 다른 브라우저 안내', async ({ browser }) => {
+    const ctx = await browser.newContext({ userAgent: 'Mozilla/5.0 (iPhone) AppleWebKit Barcelona 289.0' });
+    const page = await ctx.newPage();
+    await seedDone(page);
+    await expect(page.locator('[data-brief-print]')).toHaveCount(0);
+    await expect(page.locator('[data-brief-inapp]')).toContainText('Safari나 Chrome');
+    await ctx.close();
+  });
+  test('목록에 없는 앱에서 인쇄 창이 안 뜨면 안내와 복사 글상자', async ({ page }) => {
+    await page.addInitScript(() => { window.print = () => {}; Object.defineProperty(navigator, 'clipboard', { get: () => undefined }); });
+    await seedDone(page);
+    await page.locator('[data-brief-print]').click();
+    await expect(page.locator('[data-brief-print-failed]')).toContainText('Safari나 Chrome');
+    await expect(page.locator('[data-brief-copybox]')).toBeVisible();
+  });
+  test('시험 페이지는 지워졌다', async ({ request }) => {
+    expect((await request.get('/tools/print-test')).status()).toBe(404);
+  });
+});

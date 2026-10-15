@@ -220,3 +220,7 @@ test.describe('보강 — 진행 묶음', () => {
     expect(phaseOf('when')).toBe(3);
   });
 });
+
+test('실제 쓰레드 앱(아이폰) 브라우저 문자열을 앱 안 브라우저로 본다 — 기기 시험 2026-10-15', () => {
+  expect(isInAppBrowser('Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/22H352 Barcelona 450.0.0.31.61 (iPhone13,1; iOS 18_7_8; ko_KR; ko; scale=3.00; 1125x2436; IABMV/1; 1082981707)')).toBe(true);
+});
