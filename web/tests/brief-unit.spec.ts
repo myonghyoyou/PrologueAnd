@@ -25,3 +25,75 @@ test.describe('단계', () => {
     expect(isAnswered({ ...a, goalMain: '예약하기' }, 'goal')).toBe(true);
   });
 });
+
+import { buildBrief, impactItems, vendorQuestions, unknownItems, toPlainText, briefSummary } from '../lib/brief/derive';
+import type { Answers } from '../lib/brief/types';
+
+const D = new Date('2026-10-15T09:00:00+09:00');
+const cafe = (): Answers => ({ ...emptyAnswers(), mode: 'new', kind: '가게(식당·카페 등)', name: '가람 로스터리',
+  goalMain: '찾아오기', goalMore: ['예약하기'], audience: ['처음 오는 손님', '단골'], pages: ['소개', '메뉴·서비스', '오시는 길', '소식', '문의'],
+  features: { '문의 남기기': 'must', '예약 받기': 'must', '직접 글 올리기(공지·소식)': 'later' }, booking: '네이버 예약 연결',
+  copy: '모르겠어요', photo: '찍어 주길 원함', design: '모르겠어요', ops: ['공지·소식'], revisions: '3번(보통)', care: '필요할 때만' });
+
+test.describe('결과 계산', () => {
+  test('요청서 제목·부제·단원', () => {
+    const b = buildBrief(cafe(), D);
+    expect(b.title).toBe('홈페이지 제작 요청서 · 가람 로스터리');
+    expect(b.subtitle).toBe('새로 만들기 · 2026년 10월 15일 작성');
+    const ids = b.sections.map((s) => s.id);
+    expect(ids).toEqual(['purpose', 'pages', 'features', 'links', 'content', 'brand', 'design', 'ops', 'own', 'scope', 'when', 'unknown']);
+    const f = b.sections.find((s) => s.id === 'features')!;
+    expect(f.rows.find((r) => r.label === '예약 받기')).toMatchObject({ tag: 'must', value: '네이버 예약 연결' });
+    expect(b.sections.find((s) => s.id === 'ops')!.rows.some((r) => r.value.includes('관리자 화면 필요'))).toBe(true);
+  });
+  test('이름이 없으면 「이름 미정」, 고치기면 renew 단원', () => {
+    const b = buildBrief({ ...cafe(), name: '', mode: 'renew', renewUrl: 'example.com', renewAmount: '많아요(100개 넘음)' }, D);
+    expect(b.title).toBe('홈페이지 제작 요청서 · 이름 미정');
+    expect(b.sections[1].id).toBe('renew');
+  });
+  test('견적 영향: 예약(네이버)·사진 촬영, 금액 없음', () => {
+    const it = impactItems(cafe(), D);
+    expect(it.map((i) => i.title)).toEqual(['예약 받기 (오픈 때 꼭)', '사진 촬영을 맡김']);
+    expect(it.every((i) => !/\d+\s*만\s*원/.test(i.reason))).toBe(true);
+  });
+  test('견적 영향: 직접 예약·우리만의 디자인·외국어 2개·급한 개업', () => {
+    const a: Answers = { ...cafe(), booking: '홈페이지 안에서 직접', design: '우리만의 디자인', features: { ...cafe().features, '외국어 페이지': 'later' },
+      langs: ['영어', '일본어'], openDate: '2026-11-01', openFixed: '개업·행사라 꼭' };
+    const t = impactItems(a, D).map((i) => i.title);
+    expect(t).toContain('우리만의 디자인');
+    expect(t).toContain('외국어 페이지 (2개 언어)');
+    expect(t).toContain('개업·행사 날짜에 맞춰야 함');
+  });
+  test('업체 질문: 항상 4개 + 조건', () => {
+    const q = vendorQuestions(cafe());
+    expect(q.slice(0, 4)).toEqual([
+      '도메인과 호스팅은 제 이름으로 사 주시나요?', '수정은 몇 번까지 포함인가요?',
+      '오픈 뒤 매달 드는 비용은 무엇이고 얼마인가요?', '오픈 뒤 고칠 게 생기면 어디로 연락하고, 보통 며칠 걸리나요?']);
+    expect(q).toContain('오픈할 때 소스와 디자인 파일을 넘겨 주시나요?');
+    expect(q).toContain('관리자 화면에서 제가 직접 고칠 수 있는 범위는 어디까지인가요?');
+    expect(q).toContain('네이버 예약은 어떻게 연결하시나요?');
+    expect(q).toContain('글 작성·사진 촬영 비용은 견적에 들어 있나요?');
+  });
+  test('업체 제안 받기 목록', () => {
+    expect(unknownItems(cafe())).toEqual(['소개 글', '디자인 방식']);
+  });
+  test('필수 둘만 답한 최소 요청서도 깨지지 않는다', () => {
+    const a: Answers = { ...emptyAnswers(), kind: '회사·사무실', goalMain: '문의 남기기' };
+    const b = buildBrief(a, D);
+    expect(b.sections.find((s) => s.id === 'unknown')!.rows.length).toBeGreaterThanOrEqual(5);
+    expect(toPlainText(a, D).length).toBeGreaterThan(50);
+  });
+  test('예산은 넣기를 켰을 때만', () => {
+    const off = { ...cafe(), budget: '100~300만 원' };
+    expect(toPlainText(off, D)).not.toContain('100~300만 원');
+    expect(buildBrief(off, D).sections.some((s) => s.id === 'budget')).toBe(false);
+    expect(toPlainText({ ...off, budgetInBrief: true }, D)).toContain('100~300만 원');
+  });
+  test('복사 글·요약: 길이 제한과 Prologue& 없음', () => {
+    const long = { ...cafe(), name: '가'.repeat(3000), renewPain: '나'.repeat(3000), dislikes: '다'.repeat(3000) };
+    expect(toPlainText(long, D).length).toBeLessThanOrEqual(2000);
+    expect(briefSummary(long, D).length).toBeLessThanOrEqual(1000);
+    expect(toPlainText(cafe(), D)).not.toContain('Prologue');
+    expect(briefSummary(cafe(), D).startsWith('[요청서 만들기]')).toBe(true);
+  });
+});
