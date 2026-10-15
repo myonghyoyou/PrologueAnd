@@ -177,7 +177,7 @@ import { join } from 'node:path';
 import { bannedWords } from './banned';
 
 test('문구: 금지 낱말·낫표 없음, 이유 문장에 금액 없음', () => {
-  const files = ['content/brief/questions.ts', 'components/brief/result.tsx', 'components/brief/brief-tool.tsx', 'components/brief/steps.tsx', 'lib/brief/derive.ts', 'app/tools/brief/page.tsx'];
+  const files = ['content/brief/questions.ts', 'components/brief/result.tsx', 'components/brief/brief-tool.tsx', 'components/brief/steps.tsx', 'components/brief/intro.tsx', 'components/brief/preview.tsx', 'content/brief/sample.ts', 'lib/brief/derive.ts', 'app/tools/brief/page.tsx'];
   // 화면·문서에 나가는 문구만 본다 — 코드 주석은 빼고
   const strip = (t: string) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
   const text = files.map((f) => strip(readFileSync(join(__dirname, '..', f), 'utf8'))).join('\n');
@@ -207,5 +207,16 @@ test.describe('최종 검토 보완', () => {
   test('두 번 보내면 옛 요약을 새 요약으로 바꾼다', () => {
     expect(appendSummary('제 글\n\n[요청서 만들기]\n옛 요약', '[요청서 만들기]\n새 요약')).toBe('제 글\n\n[요청서 만들기]\n새 요약');
     expect(appendSummary('[요청서 만들기]\n옛', '[요청서 만들기]\n새')).toBe('[요청서 만들기]\n새');
+  });
+});
+
+test.describe('보강 — 진행 묶음', () => {
+  test('네 묶음, 고치기 단계는 첫 묶음', async () => {
+    const { phaseOf, PHASES } = await import('../lib/brief/steps');
+    expect(PHASES.map((p) => p.name)).toEqual(['어떤 홈페이지', '필요한 것', '준비와 디자인', '약속']);
+    expect(phaseOf('renew')).toBe(0);
+    expect(phaseOf('pages')).toBe(1);
+    expect(phaseOf('ops')).toBe(2);
+    expect(phaseOf('when')).toBe(3);
   });
 });

@@ -1,0 +1,10 @@
+.single{max-width:640px;margin:0 auto}
+.two{max-width:640px;margin:0 auto}
+.aside{display:none}
+.nostore{font-size:13px;color:var(--warning);margin:0 auto 16px;max-width:640px}
+/* 넓은 화면: 질문 640 + 미리보기. 하단 단추 줄도 같은 너비로 맞춘다(step-shell .navin) */
+@media (min-width:1100px){
+  .two{max-width:none;display:grid;grid-template-columns:640px minmax(0,1fr);gap:48px;align-items:start;--brief-nav:1040px}
+  .aside{display:block;position:sticky;top:calc(var(--hdr) + 24px);max-height:calc(100vh - var(--hdr) - 140px);overflow:auto}
+}
+@media print{ .nostore{display:none} }

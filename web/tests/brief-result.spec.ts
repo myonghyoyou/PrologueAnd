@@ -5,6 +5,7 @@ async function finish(page: Page) {
   const pick = (n: string) => page.getByRole('radio', { name: n, exact: true }).check({ force: true });
   const next = () => page.locator('[data-brief-next]').click();
   await page.goto('/tools/brief');
+  await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
   await pick('새로 만들기'); await next();
   await pick('가게(식당·카페 등)'); await page.locator('[data-brief-name]').fill('가람 로스터리'); await next();
   await pick('찾아오기'); await next();
@@ -75,14 +76,13 @@ test.describe('결과', () => {
     await expect(page.locator('[data-brief-result]')).toBeVisible();
   });
 
-  test('모두 지우기: 확인 후 첫 질문, 저장 비움', async ({ page }) => {
+  test('모두 지우기: 확인 후 시작 화면, 저장 비움', async ({ page }) => {
     await finish(page);
     page.once('dialog', (d) => d.accept());
     await page.locator('[data-brief-reset]').click();
-    await expect(page.locator('h1')).toHaveText('새로 만드시나요, 지금 홈페이지를 고치시나요?');
-    expect(await page.evaluate(() => [localStorage.getItem('prologue.brief.v1'), localStorage.getItem('prologue.brief.compare.v1')])).toEqual([expect.any(String), null]);
-    // 첫 화면 상태가 다시 저장되므로 답 키는 빈 답으로 다시 생긴다 — 이전 답이 없는지 본다
-    expect(await page.evaluate(() => localStorage.getItem('prologue.brief.v1'))).not.toContain('가람');
+    await expect(page.locator('h1')).toHaveText('홈페이지 요청서 만들기');
+    // 시작 화면에서는 저장하지 않으므로 두 키 모두 비어 있다
+    expect(await page.evaluate(() => [localStorage.getItem('prologue.brief.v1'), localStorage.getItem('prologue.brief.compare.v1')])).toEqual([null, null]);
   });
 
   test('비교표는 새로고침해도 남고 요청서에는 없다', async ({ page }) => {

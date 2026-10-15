@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('요청서 페이지: 제목·대표 주소·머리글(브랜드+문의만)·바닥글 없음', async ({ page }) => {
   await page.goto('/tools/brief');
+  await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
   expect(await page.title()).toBe('홈페이지 요청서 만들기 · Prologue&');
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.prologueand.com/tools/brief');
   await expect(page.locator('header [data-brand]')).toBeVisible();
@@ -26,6 +27,7 @@ async function pick(page: Page, name: string) { await page.getByRole('radio', { 
 test.describe('질문 흐름', () => {
   test('필수(어떤 곳·주 목적)를 비우면 넘어가지 않고 한 줄 오류', async ({ page }) => {
     await page.goto('/tools/brief');
+    await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await pick(page, '새로 만들기'); await next(page);
     await expect(page.locator('h1')).toHaveText('어떤 곳의 홈페이지인가요?');
     await next(page);
@@ -35,16 +37,18 @@ test.describe('질문 흐름', () => {
 
   test('고치기면 지금 홈페이지 단계가 나오고, 새로 만들기면 안 나온다', async ({ page }) => {
     await page.goto('/tools/brief');
+    await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await pick(page, '지금 홈페이지 고치기'); await next(page);
     await expect(page.locator('h1')).toHaveText('지금 홈페이지에 대해 알려 주세요');
-    await expect(page.locator('[data-brief-progress]')).toContainText('2 / 15');
+    await expect(page.locator('[data-brief-progress]')).toContainText('어떤 홈페이지 · 4단계 중 1단계');
     await page.locator('[data-brief-prev]').click();
     await pick(page, '새로 만들기'); await next(page);
-    await expect(page.locator('[data-brief-progress]')).toContainText('2 / 14');
+    await expect(page.locator('[data-brief-progress]')).toContainText('어떤 홈페이지 · 4단계 중 1단계');
   });
 
   test('예약을 고르면 이어 질문, 「견적에 크게 영향」을 누르면 이유가 펼쳐진다', async ({ page }) => {
     await page.goto('/tools/brief');
+    await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await pick(page, '새로 만들기'); await next(page);
     await pick(page, '가게(식당·카페 등)'); await next(page);
     await pick(page, '예약하기'); await next(page);
@@ -58,6 +62,7 @@ test.describe('질문 흐름', () => {
 
   test('새로고침해도 단계와 답이 그대로, 이전으로 가도 답 유지', async ({ page }) => {
     await page.goto('/tools/brief');
+    await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await pick(page, '새로 만들기'); await next(page);
     await pick(page, '회사·사무실'); await page.locator('[data-brief-name]').fill('테스트 상사'); await next(page);
     await page.reload();
@@ -69,6 +74,7 @@ test.describe('질문 흐름', () => {
 
   test('긴 질문 아래까지 내린 뒤 다음을 누르면 새 질문 제목이 화면 위에 보인다', async ({ page }) => {
     await page.goto('/tools/brief');
+    await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await pick(page, '새로 만들기'); await next(page);
     await pick(page, '가게(식당·카페 등)'); await next(page);
     await pick(page, '예약하기'); await next(page); await next(page); await next(page);
@@ -86,6 +92,7 @@ test.describe('질문 흐름', () => {
     });
     const page = await ctx.newPage();
     await page.goto('/tools/brief');
+    await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await expect(page.locator('[data-brief-nostore]')).toContainText('새로고침하면 답이 사라져요');
     await pick(page, '새로 만들기'); await next(page);
     await expect(page.locator('h1')).toHaveText('어떤 곳의 홈페이지인가요?');
@@ -95,6 +102,7 @@ test.describe('질문 흐름', () => {
   test('폰: 가로 스크롤 없음, 하단 단추가 마지막 선택지를 가리지 않는다', async ({ page }, info) => {
     test.skip(info.project.name !== 'phone');
     await page.goto('/tools/brief');
+    await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
     await pick(page, '새로 만들기'); await next(page);
     const last = page.getByRole('radio', { name: '직접 입력', exact: true }).locator('xpath=..');
@@ -107,6 +115,7 @@ test.describe('질문 흐름', () => {
 test('기능 아래 이어 질문은 작은 선택지로 한 줄에 놓인다(넓은 화면)', async ({ page }, info) => {
   test.skip(info.project.name !== 'w1440');
   await page.goto('/tools/brief');
+  await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
   await pick(page, '새로 만들기'); await next(page);
   await pick(page, '가게(식당·카페 등)'); await next(page);
   await pick(page, '예약하기'); await next(page); await next(page); await next(page);

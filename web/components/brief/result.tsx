@@ -1,13 +1,17 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { briefSummary, buildBrief, impactItems, toPlainText, vendorQuestions } from '@/lib/brief/derive';
-import { COMPARE_ROWS, browserStorage, loadCompare, saveCompare, type Vendor } from '@/lib/brief/storage';
+import { COMPARE_ROWS, type CompareRow, browserStorage, loadCompare, saveCompare, type Vendor } from '@/lib/brief/storage';
 import { isInAppBrowser } from '@/lib/brief/in-app';
 import type { Answers, StepId } from '@/lib/brief/types';
 import s from './result.module.css';
 
 /** 앱 안 브라우저에서 인쇄가 되는지 — Task 1 기기 시험 결과로 정한다. 확인 전에는 막혀 있다고 본다 */
 export const PRINT_IN_APP: 'ok' | 'blocked' = 'blocked';
+
+/** 예·아니오로 답하는 칸 — 폰에서 글자를 치지 않고 눌러서 바꾼다(빈칸 → 예 → 아니오 → 빈칸) */
+const YN_ROWS: CompareRow[] = ['꼭 필요한 기능 포함', '도메인 내 이름', '소스·파일 받음'];
+const YN_NEXT: Record<string, string> = { '': '예', '예': '아니오', '아니오': '' };
 
 const EDIT_OF: Record<string, StepId> = { purpose: 'kind', renew: 'renew', pages: 'pages', features: 'features', links: 'links', content: 'content', brand: 'brand',
   design: 'design', ops: 'ops', own: 'own', scope: 'scope', when: 'when', budget: 'when' };
@@ -21,11 +25,12 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
   const [copied, setCopied] = useState('');
   const [box, setBox] = useState('');
   const [inApp, setInApp] = useState(false);
+  const [canShare, setCanShare] = useState(false);
 
   const boxRef = useRef<HTMLTextAreaElement>(null);
   // 글상자가 처음 뜰 때 한 번만 골라 둔다 — 렌더마다 하면 비교표에 치는 글이 글상자로 끌려간다
   useEffect(() => { if (box) { boxRef.current?.focus(); boxRef.current?.select(); } }, [box]);
-  useEffect(() => { setCmp(loadCompare(browserStorage())); setInApp(isInAppBrowser(navigator.userAgent)); }, []);
+  useEffect(() => { setCmp(loadCompare(browserStorage())); setInApp(isInAppBrowser(navigator.userAgent)); setCanShare(typeof navigator.share === 'function'); }, []);
   const putCmp = (v: Vendor[]) => { setCmp(v); saveCompare(browserStorage(), v); };
   const printBlocked = inApp && PRINT_IN_APP === 'blocked';
 
@@ -34,6 +39,9 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
     try { if (!navigator.clipboard) throw new Error('no clipboard'); await navigator.clipboard.writeText(text); setCopied('복사했어요'); setBox(''); }
     catch { setBox(text); setCopied(''); }
   };
+  // 휴대폰 공유 창 — 사장님이 업체와 주로 쓰는 카톡·문자로 바로 보낸다. 취소하면 아무 일 없음
+  const share = async () => { try { await navigator.share({ title: b.title, text: toPlainText(a, today) }); } catch { /* 취소 */ } };
+  const setCell = (i: number, r: CompareRow, v: string) => putCmp(cmp.map((x, j) => (j === i ? { ...x, cells: { ...x.cells, [r]: v } } : x)));
   const send = () => {
     document.dispatchEvent(new CustomEvent('inquiry:open', { detail: { project: '', prefill: { need: a.mode === 'new' ? '새로 만들고 싶어요' : undefined, pain: briefSummary(a, today) } } }));
   };
@@ -63,7 +71,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
       <section className={s.box} data-part="vendor" data-brief-vendor>
         <h2 className={s.boxT}>업체에 꼭 물어볼 질문</h2>
         <p className={s.printOnly} data-print-only>이 요청서로 견적을 주실 때 아래 질문에도 답해 주세요.</p>
-        <ul className={s.ul}>{vq.map((q) => <li key={q}>{q}</li>)}</ul>
+        <ul className={s.ul}>{vq.map((q) => <li key={q}>{q}<span className={s.answer} data-answer-line aria-hidden="true" /></li>)}</ul>
       </section>
 
       <section className={`${s.box} ${s.noPrint}`} data-part="compare" data-brief-compare>
@@ -74,8 +82,10 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
             <tbody>
               <tr><th scope="row">견적 금액</th>{cmp.map((v, i) => <td key={i}><input aria-label={`${v.name} 견적 금액`} className={s.cell} value={v.price} onChange={(e) => putCmp(cmp.map((x, j) => (j === i ? { ...x, price: e.target.value } : x)))} /></td>)}</tr>
               {COMPARE_ROWS.map((r) => (
-                <tr key={r}><th scope="row">{r}</th>{cmp.map((v, i) => <td key={i}><input aria-label={`${v.name} ${r}`} className={s.cell} value={v.cells[r]}
-                  onChange={(e) => putCmp(cmp.map((x, j) => (j === i ? { ...x, cells: { ...x.cells, [r]: e.target.value } } : x)))} /></td>)}</tr>
+                <tr key={r}><th scope="row">{r}</th>{cmp.map((v, i) => <td key={i}>{YN_ROWS.includes(r)
+                  ? <button type="button" className={`${s.yn} ${v.cells[r] === '예' ? s.yes : v.cells[r] === '아니오' ? s.no : ''}`} data-yn
+                      aria-label={`${v.name} ${r}: ${v.cells[r] || '미정'}`} onClick={() => setCell(i, r, YN_NEXT[v.cells[r]] ?? '예')}>{v.cells[r] || '—'}</button>
+                  : <input aria-label={`${v.name} ${r}`} className={s.cell} value={v.cells[r]} onChange={(e) => setCell(i, r, e.target.value)} />}</td>)}</tr>
               ))}
             </tbody>
           </table>
@@ -91,6 +101,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
           <button type="button" className={`${s.btn} ${s.pri}`} onClick={() => window.print()} data-brief-print>PDF로 저장</button>
           <button type="button" className={s.btn} onClick={copy} data-brief-copy>글자로 복사</button>
         </>}
+        {canShare ? <button type="button" className={s.btn} onClick={share} data-brief-share>카톡·문자로 보내기</button> : null}
         <button type="button" className={s.btn} onClick={() => onEdit('mode')} data-brief-edit>답 고치기</button>
         <button type="button" className={s.btn} onClick={reset} data-brief-reset>모두 지우기</button>
         <p className={s.small} aria-live="polite" data-brief-copied>{copied}</p>
@@ -100,7 +111,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
         </div> : null}
       </div>
 
-      <p className={`${s.small} ${s.noPrint}`} data-part="privacy" data-brief-privacy>입력한 내용은 이 기기에만 저장돼요. 연락처는 묻지 않아요.</p>
+      <p className={`${s.small} ${s.noPrint}`} data-part="privacy" data-brief-privacy>입력한 내용은 이 기기에만 저장돼요. 연락처는 묻지 않아요. 특정 업체를 추천하거나 연결하지 않아요.</p>
       <p className={`${s.foot} ${s.noPrint}`} data-part="prologue" data-brief-prologue>이 요청서를 Prologue&amp;에도 보내 볼 수 있어요 · <button type="button" className={s.link} onClick={send} data-brief-send>보내기</button></p>
     </div>
   );

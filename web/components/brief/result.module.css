@@ -29,10 +29,18 @@
 .foot{margin:16px 0 0;font-size:13px;color:var(--bone-500)}
 .link{border:0;background:none;padding:0;font:inherit;color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .printOnly{display:none}
+.answer{display:none}
+.sec,.ul li{break-inside:avoid}
+.yn{min-width:72px;min-height:36px;border:1px solid var(--bone-300);border-radius:3px;background:var(--bone-0);font:inherit;font-size:14px;font-weight:600;color:var(--bone-500);cursor:pointer}
+.yes{border-color:var(--success);color:var(--success)}
+.no{border-color:var(--error);color:var(--error)}
 @media (max-width:700px){ .doc{padding:28px 20px} .title{font-size:23px} .row{grid-template-columns:96px 1fr} .box{padding:20px} }
 @media print{
   .noPrint{display:none!important}
   .printOnly{display:block;margin:0 0 8px;font-size:13px}
+  .answer{display:block;margin:6px 0 10px;padding-bottom:14px;border-bottom:1px solid #999;font-size:12px;color:#555}
+  .answer::before{content:'답:'}
+  .answer::before{content:'답:'}
   .doc,.box{border:0;padding:0;background:none}
   .edit{display:none}
   .result{gap:16px;color:#000}

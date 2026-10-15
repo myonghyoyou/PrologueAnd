@@ -1,13 +1,18 @@
 .step{padding-bottom:24px}
 .top{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--bone-600);font-weight:500}
-.bar{flex:1;height:3px;background:var(--bone-200);border-radius:2px;overflow:hidden}
-.bar b{display:block;height:100%;background:var(--navy-900)}
+.bar{flex:1;display:flex;gap:4px}
+.bar i{flex:1;height:3px;border-radius:2px;background:var(--bone-200)}
+.bar i.segOn{background:var(--navy-900)}
+.pv{flex-shrink:0;border:1px solid var(--bone-300);background:var(--bone-0);border-radius:999px;font:inherit;font-size:12px;font-weight:600;padding:0 12px;min-height:32px;color:var(--bone-800);cursor:pointer}
+@media (min-width:1100px){ .pv{display:none} }
 .q{margin:32px 0 0;font-size:28px;font-weight:700;letter-spacing:-.025em;line-height:1.4;outline:none}
 .help{margin:10px 0 28px;color:var(--bone-600);font-size:15px}
 .dunno{display:inline-block;margin-top:4px;background:none;border:0;padding:8px 0;font:inherit;font-size:14px;color:var(--bone-600);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .error{margin:12px 0 0;font-size:14px;font-weight:600;color:var(--error)}
 .navbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(250,249,246,.96);border-top:1px solid var(--bone-200);padding:14px 0 calc(14px + env(safe-area-inset-bottom))}
-.navin{max-width:640px;margin:0 auto;display:flex;justify-content:space-between;gap:12px;padding:0 max(0px, env(safe-area-inset-left))}
+/* 넓은 화면에서 미리보기를 붙이면 본문이 왼쪽으로 가므로 --brief-nav 로 너비를 맞춘다 */
+.navin{max-width:var(--brief-nav,640px);margin:0 auto;padding:0 max(0px, env(safe-area-inset-left))}
+.navrow{max-width:640px;display:flex;justify-content:space-between;gap:12px}
 .btn{height:48px;padding:0 24px;border-radius:3px;font:inherit;font-size:15px;font-weight:600;border:1px solid var(--bone-300);background:var(--bone-0);color:var(--bone-900);cursor:pointer}
 .right{display:flex;gap:8px}
 .pri{background:var(--navy-900);border-color:var(--navy-900);color:var(--bone-0);min-width:140px}
