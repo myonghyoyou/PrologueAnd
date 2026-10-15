@@ -17,3 +17,89 @@ test('기존 머리글 형태는 그대로', async ({ page }) => {
   await page.goto('/projects');
   await expect(page.locator('header [data-nav-current]')).toHaveText('Projects');
 });
+
+import type { Page } from '@playwright/test';
+
+async function next(page: Page) { await page.locator('[data-brief-next]').click(); }
+async function pick(page: Page, name: string) { await page.getByRole('radio', { name, exact: true }).check({ force: true }); }
+
+test.describe('질문 흐름', () => {
+  test('필수(어떤 곳·주 목적)를 비우면 넘어가지 않고 한 줄 오류', async ({ page }) => {
+    await page.goto('/tools/brief');
+    await pick(page, '새로 만들기'); await next(page);
+    await expect(page.locator('h1')).toHaveText('어떤 곳의 홈페이지인가요?');
+    await next(page);
+    await expect(page.locator('[data-brief-error]')).toHaveText('하나만 골라 주세요');
+    await expect(page.locator('h1')).toHaveText('어떤 곳의 홈페이지인가요?');
+  });
+
+  test('고치기면 지금 홈페이지 단계가 나오고, 새로 만들기면 안 나온다', async ({ page }) => {
+    await page.goto('/tools/brief');
+    await pick(page, '지금 홈페이지 고치기'); await next(page);
+    await expect(page.locator('h1')).toHaveText('지금 홈페이지에 대해 알려 주세요');
+    await expect(page.locator('[data-brief-progress]')).toContainText('2 / 15');
+    await page.locator('[data-brief-prev]').click();
+    await pick(page, '새로 만들기'); await next(page);
+    await expect(page.locator('[data-brief-progress]')).toContainText('2 / 14');
+  });
+
+  test('예약을 고르면 이어 질문, 「견적에 크게 영향」을 누르면 이유가 펼쳐진다', async ({ page }) => {
+    await page.goto('/tools/brief');
+    await pick(page, '새로 만들기'); await next(page);
+    await pick(page, '가게(식당·카페 등)'); await next(page);
+    await pick(page, '예약하기'); await next(page);
+    await next(page); await next(page);                       // 누가 보나요, 페이지
+    await expect(page.locator('h1')).toHaveText('홈페이지에 어떤 기능이 필요하세요?');
+    await page.locator('[data-feature="예약 받기"] [data-seg="must"]').click();
+    await expect(page.getByText('예약은 어떻게 받으실 건가요?')).toBeVisible();
+    await page.locator('[data-feature="예약 받기"] [data-impact]').click();
+    await expect(page.locator('[data-feature="예약 받기"] [data-impact-why]')).toBeVisible();
+  });
+
+  test('새로고침해도 단계와 답이 그대로, 이전으로 가도 답 유지', async ({ page }) => {
+    await page.goto('/tools/brief');
+    await pick(page, '새로 만들기'); await next(page);
+    await pick(page, '회사·사무실'); await page.locator('[data-brief-name]').fill('테스트 상사'); await next(page);
+    await page.reload();
+    await expect(page.locator('h1')).toHaveText('손님이 홈페이지에서 딱 한 가지를 한다면 무엇이었으면 하세요?');
+    await page.locator('[data-brief-prev]').click();
+    await expect(page.getByRole('radio', { name: '회사·사무실', exact: true })).toBeChecked();
+    await expect(page.locator('[data-brief-name]')).toHaveValue('테스트 상사');
+  });
+
+  test('긴 질문 아래까지 내린 뒤 다음을 누르면 새 질문 제목이 화면 위에 보인다', async ({ page }) => {
+    await page.goto('/tools/brief');
+    await pick(page, '새로 만들기'); await next(page);
+    await pick(page, '가게(식당·카페 등)'); await next(page);
+    await pick(page, '예약하기'); await next(page); await next(page); await next(page);
+    await page.locator('[data-brief-next]').scrollIntoViewIfNeeded();
+    await next(page);
+    const top = await page.locator('h1').evaluate((h) => h.getBoundingClientRect().top);
+    expect(top).toBeGreaterThanOrEqual(0);
+    expect(top).toBeLessThan(260);
+  });
+
+  test('저장이 막힌 브라우저: 안내 한 줄, 흐름은 동작', async ({ browser }) => {
+    const ctx = await browser.newContext();
+    await ctx.addInitScript(() => {
+      Object.defineProperty(window, 'localStorage', { get() { throw new Error('SecurityError'); } });
+    });
+    const page = await ctx.newPage();
+    await page.goto('/tools/brief');
+    await expect(page.locator('[data-brief-nostore]')).toContainText('새로고침하면 답이 사라져요');
+    await pick(page, '새로 만들기'); await next(page);
+    await expect(page.locator('h1')).toHaveText('어떤 곳의 홈페이지인가요?');
+    await ctx.close();
+  });
+
+  test('폰: 가로 스크롤 없음, 하단 단추가 마지막 선택지를 가리지 않는다', async ({ page }, info) => {
+    test.skip(info.project.name !== 'phone');
+    await page.goto('/tools/brief');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+    await pick(page, '새로 만들기'); await next(page);
+    const last = page.getByRole('radio', { name: '직접 입력', exact: true }).locator('xpath=..');
+    await last.scrollIntoViewIfNeeded();
+    const lb = (await last.boundingBox())!, bar = (await page.locator('[data-brief-bar]').boundingBox())!;
+    expect(lb.y + lb.height).toBeLessThanOrEqual(bar.y + 1);
+  });
+});
