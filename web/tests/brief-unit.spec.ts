@@ -79,7 +79,7 @@ test.describe('결과 계산', () => {
     expect(q).toContain('글 작성·사진 촬영 비용은 견적에 들어 있나요?');
   });
   test('업체 제안 받기 목록', () => {
-    expect(unknownItems(cafe())).toEqual(['소개 글', '디자인 방식']);
+    expect(unknownItems(cafe())).toEqual(['이어져야 하는 것', '소개 글', '디자인 자료', '디자인 방식', '오픈 일정']);
   });
   test('필수 둘만 답한 최소 요청서도 깨지지 않는다', () => {
     const a: Answers = { ...emptyAnswers(), kind: '회사·사무실', goalMain: '문의 남기기' };
@@ -187,4 +187,25 @@ test('문구: 금지 낱말·낫표 없음, 이유 문장에 금액 없음', () 
   const q = readFileSync(join(__dirname, '..', 'content/brief/questions.ts'), 'utf8');
   const whyLines = q.split('\n').filter((l) => /Why|why:/.test(l));
   for (const l of whyLines) expect(l).not.toMatch(/\d+\s*만\s*원/);
+});
+
+test.describe('최종 검토 보완', () => {
+  test('건너뛴 항목도 업체 제안 받기에 모인다', () => {
+    const a: Answers = { ...emptyAnswers(), kind: '회사·사무실', goalMain: '문의 남기기' };
+    const u = unknownItems(a);
+    for (const l of ['이어져야 하는 것', '디자인 자료', '오픈 뒤 운영', '사진', '수정 횟수', '오픈 뒤 관리', '오픈 일정']) expect(u, l).toContain(l);
+  });
+  test('같은 v1 안에서 형이 틀린 값·없는 단계는 버린다', () => {
+    const s = new Mem();
+    s.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, features: null, goalMore: null }, step: 'kind', done: true }));
+    expect(loadSaved(s)).toBeNull();
+    s.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1 }, step: 'nope', done: false }));
+    expect(loadSaved(s)).toBeNull();
+    s.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, kind: '회사·사무실' }, step: 'goal', done: false }));
+    expect(loadSaved(s)?.answers.kind).toBe('회사·사무실');
+  });
+  test('두 번 보내면 옛 요약을 새 요약으로 바꾼다', () => {
+    expect(appendSummary('제 글\n\n[요청서 만들기]\n옛 요약', '[요청서 만들기]\n새 요약')).toBe('제 글\n\n[요청서 만들기]\n새 요약');
+    expect(appendSummary('[요청서 만들기]\n옛', '[요청서 만들기]\n새')).toBe('[요청서 만들기]\n새');
+  });
 });

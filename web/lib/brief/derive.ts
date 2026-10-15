@@ -29,14 +29,18 @@ export function unknownItems(a: Answers): string[] {
   if (a.audience.length === 0 || a.audience.includes(UNKNOWN)) out.push('주로 보는 사람');
   if (pagesAll(a).length === 0) out.push('페이지 구성');
   if (a.featuresUnknown || featureEntries(a).length === 0) out.push('필요한 기능');
-  if (a.copy === undefined || isUnknown(a.copy)) out.push('소개 글');
-  if (a.photo === undefined ? false : isUnknown(a.photo)) out.push('사진');
-  if (a.design === undefined || isUnknown(a.design)) out.push('디자인 방식');
+  if (a.links.length === 0) out.push('이어져야 하는 것');
+  if (isUnknown(a.copy)) out.push('소개 글');
+  if (isUnknown(a.photo)) out.push('사진');
+  if (a.brand.length === 0) out.push('디자인 자료');
+  if (isUnknown(a.design)) out.push('디자인 방식');
+  if (a.ops.length === 0) out.push('오픈 뒤 운영');
   (['domain', 'hosting', 'admin', 'source'] as const).forEach((k) => {
-    if (isUnknown(a.own[k])) out.push(Q.own.rows.find((r) => r.key === k)!.label);
+    if (isUnknown(a.own[k])) out.push(Q.own.rows.find((r) => r.key === k)!.label.replace(/s*(.*?)/g, ''));
   });
-  if (a.revisions === '업체 제안') out.push('수정 횟수');
-  if (!a.openDate && a.openUnknown) out.push('오픈 일정');
+  if (!a.revisions || a.revisions === '업체 제안') out.push('수정 횟수');
+  if (!a.care) out.push('오픈 뒤 관리');
+  if (!a.openDate) out.push('오픈 일정');
   return out;
 }
 

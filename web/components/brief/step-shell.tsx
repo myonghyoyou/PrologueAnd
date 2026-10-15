@@ -3,9 +3,9 @@ import { useEffect, useRef } from 'react';
 import { Q } from '@/content/brief/questions';
 import s from './step-shell.module.css';
 
-type P = { index: number; total: number; title: string; help?: string; error?: string; onPrev?: () => void; onNext: () => void; nextLabel: string; dunno?: { label: string; onClick: () => void }; children: React.ReactNode };
+type P = { index: number; total: number; title: string; help?: string; error?: string; onPrev?: () => void; onNext: () => void; onStepNext?: () => void; nextLabel: string; dunno?: { label: string; onClick: () => void }; children: React.ReactNode };
 
-export function StepShell({ index, total, title, help, error, onPrev, onNext, nextLabel, dunno, children }: P) {
+export function StepShell({ index, total, title, help, error, onPrev, onNext, onStepNext, nextLabel, dunno, children }: P) {
   const h = useRef<HTMLHeadingElement>(null);
   // 단계가 바뀌면 제목으로 포커스 — 화면 낭독기가 새 질문을 읽는다
   useEffect(() => { h.current?.focus({ preventScroll: true }); }, [title]);
@@ -23,7 +23,11 @@ export function StepShell({ index, total, title, help, error, onPrev, onNext, ne
       <div className={s.navbar} data-brief-bar>
         <div className={s.navin}>
           {onPrev ? <button type="button" className={s.btn} onClick={onPrev} data-brief-prev>이전</button> : <span />}
-          <button type="button" className={`${s.btn} ${s.pri}`} onClick={onNext} data-brief-next>{nextLabel}</button>
+          <span className={s.right}>
+            {/* 결과에서 단원 고치기로 들어왔을 때 — 그 뒤 질문도 이어서 고칠 수 있게 */}
+            {onStepNext ? <button type="button" className={s.btn} onClick={onStepNext} data-brief-step-next>다음 질문</button> : null}
+            <button type="button" className={`${s.btn} ${s.pri}`} onClick={onNext} data-brief-next>{nextLabel}</button>
+          </span>
         </div>
       </div>
     </section>

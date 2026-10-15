@@ -1,4 +1,5 @@
 import type { Answers, StepId } from './types';
+import { ALL } from './steps';
 
 export function emptyAnswers(): Answers {
   return {
@@ -24,12 +25,25 @@ export function storageOk(s: Storage | null): boolean {
   try { s.setItem('prologue.brief.probe', '1'); s.removeItem('prologue.brief.probe'); return true; } catch { return false; }
 }
 
+/** 같은 v1 안에서도 손으로 고쳤거나 형식이 어긋난 값은 버린다 — 그대로 그리면 화면 전체가 오류로 멈춘다 */
+function shapeOk(a: Answers): boolean {
+  const empty = emptyAnswers() as Record<string, unknown>;
+  const got = a as Record<string, unknown>;
+  for (const k of Object.keys(empty)) {
+    const e = empty[k], g = got[k];
+    if (Array.isArray(e) ? !Array.isArray(g) : typeof e !== typeof g || (typeof e === 'object' && g === null)) return false;
+  }
+  return Object.values(a.own).every((x) => typeof x === 'string') && a.refs.every((r) => r && typeof r.url === 'string' && Array.isArray(r.likes));
+}
+
 export function loadSaved(s: Storage | null): Saved | null {
   try {
     const raw = s?.getItem(KEY); if (!raw) return null;
     const v = JSON.parse(raw) as Saved;
-    if (!v || v.answers?.v !== 1 || typeof v.step !== 'string') return null;
-    return { answers: { ...emptyAnswers(), ...v.answers, own: { ...emptyAnswers().own, ...v.answers.own } }, step: v.step, done: !!v.done };
+    if (!v || v.answers?.v !== 1 || !ALL.includes(v.step)) return null;
+    const answers = { ...emptyAnswers(), ...v.answers, own: { ...emptyAnswers().own, ...v.answers.own } };
+    if (!shapeOk(answers)) return null;
+    return { answers, step: v.step, done: !!v.done };
   } catch { return null; }
 }
 

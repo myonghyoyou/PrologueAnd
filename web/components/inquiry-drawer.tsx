@@ -8,7 +8,7 @@ import { Select } from './select';
 import { getProject } from '@/content';
 import s from './inquiry-drawer.module.css';
 import { CONTACT_MAIL } from '@/lib/contact';
-import { appendSummary } from '@/lib/brief/prefill';
+import { SUMMARY_MARK, appendSummary } from '@/lib/brief/prefill';
 
 type Step = 'step1' | 'step2' | 'done';
 /** 요청서 도구의 「Prologue&에도 보내기」가 넘기는 내용 — need 는 NEED 중 하나 */
@@ -59,7 +59,9 @@ export function InquiryDrawer() {
       requestAnimationFrame(() => {
         const f = form.current; if (!f) return;
         const pain = f.elements.namedItem('pain') as HTMLTextAreaElement | null;
+        const again = !!pain?.value.includes(SUMMARY_MARK);   // 전에 보낸 요약을 바꾸는 중이면 그때 골라 둔 need 도 다시 맞춘다
         if (pain) pain.value = appendSummary(pain.value, prefill.pain);
+        if (again) f.querySelectorAll<HTMLInputElement>('input[name="need"]').forEach((r) => { r.checked = false; });
         if (prefill.need && !f.querySelector('input[name="need"]:checked')) {
           const target = f.querySelector<HTMLInputElement>(`input[name="need"][value="${CSS.escape(prefill.need)}"]`);
           if (target) target.checked = true;

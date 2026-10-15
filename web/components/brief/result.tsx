@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { briefSummary, buildBrief, impactItems, toPlainText, vendorQuestions } from '@/lib/brief/derive';
 import { COMPARE_ROWS, browserStorage, loadCompare, saveCompare, type Vendor } from '@/lib/brief/storage';
 import { isInAppBrowser } from '@/lib/brief/in-app';
@@ -22,6 +22,9 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
   const [box, setBox] = useState('');
   const [inApp, setInApp] = useState(false);
 
+  const boxRef = useRef<HTMLTextAreaElement>(null);
+  // 글상자가 처음 뜰 때 한 번만 골라 둔다 — 렌더마다 하면 비교표에 치는 글이 글상자로 끌려간다
+  useEffect(() => { if (box) { boxRef.current?.focus(); boxRef.current?.select(); } }, [box]);
   useEffect(() => { setCmp(loadCompare(browserStorage())); setInApp(isInAppBrowser(navigator.userAgent)); }, []);
   const putCmp = (v: Vendor[]) => { setCmp(v); saveCompare(browserStorage(), v); };
   const printBlocked = inApp && PRINT_IN_APP === 'blocked';
@@ -92,7 +95,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
         <button type="button" className={s.btn} onClick={reset} data-brief-reset>모두 지우기</button>
         <p className={s.small} aria-live="polite" data-brief-copied>{copied}</p>
         {box ? <div className={s.copybox}>
-          <textarea readOnly value={box} rows={10} className={s.copyArea} data-brief-copybox ref={(t) => { t?.focus(); t?.select(); }} />
+          <textarea readOnly value={box} rows={10} className={s.copyArea} data-brief-copybox ref={boxRef} />
           <p className={s.small} data-brief-copybox-help>길게 눌러 복사해 주세요</p>
         </div> : null}
       </div>

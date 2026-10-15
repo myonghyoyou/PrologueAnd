@@ -49,6 +49,7 @@ export function StepView({ id, a, set }: P & { id: StepId }) {
               <Seg value={a.features[f]} onChange={(v) => { const n = { ...a.features }; if (v) n[f] = v; else delete n[f]; set({ features: n, featuresUnknown: false }); }} />
             </div>
             {Q.features.why[f] ? <Impact why={Q.features.why[f]!} /> : null}
+            {f === '외국어 페이지' && !a.features[f] && a.audience.includes('외국인') ? <p className={s.help} data-suggest>외국인 손님이 본다고 하셨어요. 필요하면 골라 주세요.</p> : null}
             {a.features[f] && f === '예약 받기' ? <div style={{ marginTop: 12 }}><Single compact label={Q.features.booking.label} opts={Q.features.booking.opts} value={a.booking} onChange={(v) => set({ booking: v })} /></div> : null}
             {a.features[f] && f === '상품 결제' ? <div style={{ marginTop: 12 }}>
               <Single compact label={Q.features.shopCount.label} opts={Q.features.shopCount.opts} value={a.shopCount} onChange={(v) => set({ shopCount: v })} />

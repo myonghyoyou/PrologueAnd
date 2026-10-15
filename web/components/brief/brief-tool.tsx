@@ -4,10 +4,15 @@ import { getLenis } from '@/components/lenis-provider';
 import { Q } from '@/content/brief/questions';
 import { REQUIRED, isAnswered, visibleSteps } from '@/lib/brief/steps';
 import { browserStorage, clearBrief, emptyAnswers, loadSaved, saveSaved, storageOk } from '@/lib/brief/storage';
-import type { Answers, StepId } from '@/lib/brief/types';
+import { UNKNOWN, type Answers, type StepId } from '@/lib/brief/types';
 import { StepShell } from './step-shell';
 import { STEP_HELP, STEP_TITLE, StepView } from './steps';
 import { Result } from './result';
+
+/** 모르겠어요를 누르면 그 단계에서 골라 둔 답을 지운다 — 남아 있으면 요청서에 고른 답처럼 나간다 */
+const DUNNO_CLEAR: Partial<Record<StepId, Partial<Answers>>> = {
+  pages: { pages: [], pagesExtra: '' }, design: { design: UNKNOWN }, brand: { brand: [] }, links: { links: [] }, ops: { ops: [] },
+};
 
 const top = () => { const l = getLenis(); if (l) l.scrollTo(0, { immediate: true }); else window.scrollTo(0, 0); };
 
@@ -46,8 +51,8 @@ export function BriefTool() {
 
   const dunno = step === 'features'
     ? { label: Q.features.unknown, onClick: () => { set({ features: {}, featuresUnknown: true }); next(); } }
-    : step === 'design' || step === 'pages' || step === 'brand' || step === 'links' || step === 'ops'
-      ? { label: Q.dunno, onClick: () => next() } : undefined;
+    : DUNNO_CLEAR[step]
+      ? { label: Q.dunno, onClick: () => { set(DUNNO_CLEAR[step]!); next(); } } : undefined;
 
   if (!ready) return <div data-brief aria-busy="true" />;
   return (
@@ -56,7 +61,7 @@ export function BriefTool() {
       {done
         ? <Result a={a} onEdit={edit} onReset={reset} />
         : <StepShell index={idx} total={steps.length} title={STEP_TITLE[step]} help={STEP_HELP[step]} error={error}
-            onPrev={prev} onNext={next} nextLabel={back ? '결과로 돌아가기' : idx === steps.length - 1 ? '요청서 만들기' : '다음'} dunno={dunno}>
+            onPrev={prev} onNext={next} onStepNext={back && idx < steps.length - 1 ? () => go(steps[idx + 1]) : undefined} nextLabel={back ? '결과로 돌아가기' : idx === steps.length - 1 ? '요청서 만들기' : '다음'} dunno={dunno}>
             <StepView id={step} a={a} set={set} />
           </StepShell>}
     </div>

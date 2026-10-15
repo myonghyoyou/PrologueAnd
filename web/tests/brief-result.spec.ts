@@ -99,3 +99,38 @@ test.describe('결과', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   });
 });
+
+test.describe('최종 검토 보완 — 결과', () => {
+  async function seedDone(page: Page) {
+    await page.goto('/tools/brief');
+    await expect(page.locator('[data-brief] h1')).toBeVisible();
+    await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'when', done: true })));
+    await page.reload();
+  }
+  test('인쇄 쪽 여백 0 — 브라우저가 머리글·바닥글(제목·주소)을 찍지 않게', async ({ page }) => {
+    await seedDone(page);
+    const m = await page.evaluate(() => { for (const sh of Array.from(document.styleSheets)) { try { for (const r of Array.from(sh.cssRules)) { const inner = r instanceof CSSMediaRule ? Array.from(r.cssRules) : [r]; for (const x of inner) if (x instanceof CSSPageRule) return x.style.margin; } } catch { /* 다른 출처 */ } } return null; });
+    expect(m).toBe('0px');
+  });
+  test('복사 글상자가 뜬 뒤에도 비교표에 글을 칠 수 있다', async ({ page }) => {
+    await page.addInitScript(() => { Object.defineProperty(navigator, 'clipboard', { get: () => undefined }); });
+    await seedDone(page);
+    await page.locator('[data-brief-copy]').click();
+    await expect(page.locator('[data-brief-copybox]')).toBeVisible();
+    const cell = page.locator('[data-brief-compare] input').nth(3);
+    await cell.click();
+    await page.keyboard.type('180만');
+    await expect(cell).toHaveValue('180만');
+  });
+  test('두 번 보내도 서랍에 요약은 하나', async ({ page }) => {
+    await seedDone(page);
+    await page.locator('[data-brief-send]').click();
+    await expect(page.locator('textarea[name="pain"]')).toHaveValue(/\[요청서 만들기\]/);
+    await page.locator('[data-drawer] button[aria-label="닫기"]').click();
+    await page.locator('[data-brief-send]').click();
+    await expect(page.locator('textarea[name="pain"]')).toBeVisible();
+    await page.waitForTimeout(300);   // 서랍은 다음 그림 때 칸을 채운다 — 채운 뒤에 읽는다
+    const v = await page.locator('textarea[name="pain"]').inputValue();
+    expect(v.split('[요청서 만들기]').length - 1).toBe(1);
+  });
+});

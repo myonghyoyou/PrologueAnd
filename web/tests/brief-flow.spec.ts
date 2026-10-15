@@ -115,3 +115,28 @@ test('기능 아래 이어 질문은 작은 선택지로 한 줄에 놓인다(�
   expect(tops).toHaveLength(3);
   expect(new Set(tops).size).toBe(1);
 });
+
+test.describe('최종 검토 보완 — 질문', () => {
+  async function seed(page: Page, answers: object, step: string, done = false) {
+    await page.goto('/tools/brief');
+    await expect(page.locator('[data-brief] h1')).toBeVisible();
+    await page.evaluate(([an, st, dn]) => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, ...(an as object) }, step: st, done: dn })), [answers, step, done] as const);
+    await page.reload();
+  }
+  test('모르겠어요를 누르면 그 단계에서 고른 답이 지워진다', async ({ page }) => {
+    await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', design: '우리만의 디자인' }, 'design');
+    await page.getByRole('button', { name: '모르겠어요', exact: true }).click();
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('prologue.brief.v1')!).answers.design);
+    expect(saved).toBe('모르겠어요');
+  });
+  test('외국인이 본다고 하면 외국어 페이지를 제안한다', async ({ page }) => {
+    await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', audience: ['외국인'] }, 'features');
+    await expect(page.locator('[data-feature="외국어 페이지"] [data-suggest]')).toBeVisible();
+  });
+  test('단원 고치기 중에도 다음 질문으로 갈 수 있다', async ({ page }) => {
+    await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, 'when', true);
+    await page.locator('[data-edit="kind"]').click();
+    await page.locator('[data-brief-step-next]').click();
+    await expect(page.locator('h1')).toHaveText('손님이 홈페이지에서 딱 한 가지를 한다면 무엇이었으면 하세요?');
+  });
+});
