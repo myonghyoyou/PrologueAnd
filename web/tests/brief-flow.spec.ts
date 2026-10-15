@@ -103,3 +103,15 @@ test.describe('질문 흐름', () => {
     expect(lb.y + lb.height).toBeLessThanOrEqual(bar.y + 1);
   });
 });
+
+test('기능 아래 이어 질문은 작은 선택지로 한 줄에 놓인다(넓은 화면)', async ({ page }, info) => {
+  test.skip(info.project.name !== 'w1440');
+  await page.goto('/tools/brief');
+  await pick(page, '새로 만들기'); await next(page);
+  await pick(page, '가게(식당·카페 등)'); await next(page);
+  await pick(page, '예약하기'); await next(page); await next(page); await next(page);
+  await page.locator('[data-feature="예약 받기"] [data-seg="must"]').click();
+  const tops = await page.locator('[data-feature="예약 받기"] input[type="radio"]').evaluateAll((els) => els.map((e) => Math.round(e.parentElement!.getBoundingClientRect().top)));
+  expect(tops).toHaveLength(3);
+  expect(new Set(tops).size).toBe(1);
+});

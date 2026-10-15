@@ -71,7 +71,7 @@ export function buildBrief(a: Answers, today: Date): { title: string; subtitle: 
   sections.push({ id: 'ops', title: '오픈 뒤 운영', rows: needsAdmin(a)
     ? [{ label: '직접 고칠 것', value: `${list(a.ops)} — 관리자 화면 필요` }]
     : a.ops.length ? [{ label: '직접 고칠 것', value: '없음(다 맡김)' }] : [] });
-  sections.push({ id: 'own', title: '명의와 소유권', rows: Q.own.rows.filter((r) => !isUnknown(a.own[r.key])).map((r) => ({ label: r.label.replace(/ \(.*\)$/, ''), value: a.own[r.key] })) });
+  sections.push({ id: 'own', title: '명의와 소유권', rows: Q.own.rows.filter((r) => !isUnknown(a.own[r.key])).map((r) => ({ label: r.label.replace(/\s*\(.*?\)/g, ''), value: a.own[r.key] })) });
   sections.push({ id: 'scope', title: '범위와 비용', rows: [
     ...(a.revisions && a.revisions !== '업체 제안' ? [{ label: '수정 횟수', value: a.revisions.replace('(보통)', '') }] : []),
     ...(a.care ? [{ label: '오픈 뒤 관리', value: a.care }] : []),

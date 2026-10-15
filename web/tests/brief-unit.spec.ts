@@ -46,6 +46,10 @@ test.describe('결과 계산', () => {
     expect(f.rows.find((r) => r.label === '예약 받기')).toMatchObject({ tag: 'must', value: '네이버 예약 연결' });
     expect(b.sections.find((s) => s.id === 'ops')!.rows.some((r) => r.value.includes('관리자 화면 필요'))).toBe(true);
   });
+  test('명의 단원 이름에 괄호 설명이 들어가지 않는다', () => {
+    const own = buildBrief(cafe(), D).sections.find((s) => s.id === 'own')!;
+    expect(own.rows.map((r) => r.label)).toEqual(['도메인', '호스팅 계정', '관리자 계정', '소스·디자인 파일']);
+  });
   test('이름이 없으면 「이름 미정」, 고치기면 renew 단원', () => {
     const b = buildBrief({ ...cafe(), name: '', mode: 'renew', renewUrl: 'example.com', renewAmount: '많아요(100개 넘음)' }, D);
     expect(b.title).toBe('홈페이지 제작 요청서 · 이름 미정');
@@ -166,4 +170,21 @@ test('앱 안 브라우저 감지', () => {
   expect(isInAppBrowser('Mozilla/5.0 (iPhone) Instagram 320.0')).toBe(true);
   expect(isInAppBrowser('Mozilla/5.0 (Linux; Android) KAKAOTALK 10')).toBe(true);
   expect(isInAppBrowser('Mozilla/5.0 (iPhone) Version/17.0 Mobile Safari/604.1')).toBe(false);
+});
+
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { bannedWords } from './banned';
+
+test('문구: 금지 낱말·낫표 없음, 이유 문장에 금액 없음', () => {
+  const files = ['content/brief/questions.ts', 'components/brief/result.tsx', 'components/brief/brief-tool.tsx', 'components/brief/steps.tsx', 'lib/brief/derive.ts', 'app/tools/brief/page.tsx'];
+  // 화면·문서에 나가는 문구만 본다 — 코드 주석은 빼고
+  const strip = (t: string) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
+  const text = files.map((f) => strip(readFileSync(join(__dirname, '..', f), 'utf8'))).join('\n');
+  expect(text).not.toMatch(/[「」]/);
+  const words = bannedWords();
+  if (words) for (const w of words) expect(text, w).not.toContain(w);
+  const q = readFileSync(join(__dirname, '..', 'content/brief/questions.ts'), 'utf8');
+  const whyLines = q.split('\n').filter((l) => /Why|why:/.test(l));
+  for (const l of whyLines) expect(l).not.toMatch(/\d+\s*만\s*원/);
 });

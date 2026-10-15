@@ -5,14 +5,15 @@ import s from './fields.module.css';
 
 type Opt = readonly string[];
 
-export function Single({ label, opts, value, onChange, name }: { label?: string; opts: Opt; value?: string; onChange: (v: string) => void; name?: string }) {
+/** compact: 기능 아래 이어 질문처럼 덜 중요한 선택 — 큰 카드 대신 한 줄 알약 */
+export function Single({ label, opts, value, onChange, name, compact }: { label?: string; opts: Opt; value?: string; onChange: (v: string) => void; name?: string; compact?: boolean }) {
   const id = useId();
   return (
     <fieldset className={s.set}>
       {label ? <legend className={s.legend}>{label}</legend> : null}
-      <div className={s.cards}>
+      <div className={compact ? s.chips : s.cards}>
         {opts.map((o) => (
-          <label key={o} className={value === o ? `${s.card} ${s.on}` : s.card}>
+          <label key={o} className={`${compact ? s.chip : s.card}${value === o ? ` ${s.on}` : ''}`}>
             <input type="radio" name={name ?? id} value={o} checked={value === o} onChange={() => onChange(o)} className={s.native} />
             <span>{o}</span>
           </label>

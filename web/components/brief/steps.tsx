@@ -49,11 +49,11 @@ export function StepView({ id, a, set }: P & { id: StepId }) {
               <Seg value={a.features[f]} onChange={(v) => { const n = { ...a.features }; if (v) n[f] = v; else delete n[f]; set({ features: n, featuresUnknown: false }); }} />
             </div>
             {Q.features.why[f] ? <Impact why={Q.features.why[f]!} /> : null}
-            {a.features[f] && f === '예약 받기' ? <div style={{ marginTop: 12 }}><Single label={Q.features.booking.label} opts={Q.features.booking.opts} value={a.booking} onChange={(v) => set({ booking: v })} /></div> : null}
+            {a.features[f] && f === '예약 받기' ? <div style={{ marginTop: 12 }}><Single compact label={Q.features.booking.label} opts={Q.features.booking.opts} value={a.booking} onChange={(v) => set({ booking: v })} /></div> : null}
             {a.features[f] && f === '상품 결제' ? <div style={{ marginTop: 12 }}>
-              <Single label={Q.features.shopCount.label} opts={Q.features.shopCount.opts} value={a.shopCount} onChange={(v) => set({ shopCount: v })} />
-              <Single label={Q.features.shopHow.label} opts={Q.features.shopHow.opts} value={a.shopHow} onChange={(v) => set({ shopHow: v })} /></div> : null}
-            {a.features[f] && f === '회원' ? <div style={{ marginTop: 12 }}><Single label={Q.features.member.label} opts={Q.features.member.opts} value={a.member} onChange={(v) => set({ member: v })} /></div> : null}
+              <Single compact label={Q.features.shopCount.label} opts={Q.features.shopCount.opts} value={a.shopCount} onChange={(v) => set({ shopCount: v })} />
+              <Single compact label={Q.features.shopHow.label} opts={Q.features.shopHow.opts} value={a.shopHow} onChange={(v) => set({ shopHow: v })} /></div> : null}
+            {a.features[f] && f === '회원' ? <div style={{ marginTop: 12 }}><Single compact label={Q.features.member.label} opts={Q.features.member.opts} value={a.member} onChange={(v) => set({ member: v })} /></div> : null}
             {a.features[f] && f === '외국어 페이지' ? <div style={{ marginTop: 12 }}>
               <Multi label={Q.features.langs.label} opts={Q.features.langs.opts} values={a.langs} onChange={(v) => set({ langs: v })} />
               <TextIn label={Q.features.langs.other} value={a.langOther} onChange={(v) => set({ langOther: v })} /></div> : null}
