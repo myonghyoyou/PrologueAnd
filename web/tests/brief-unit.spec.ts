@@ -97,3 +97,73 @@ test.describe('결과 계산', () => {
     expect(briefSummary(cafe(), D).startsWith('[요청서 만들기]')).toBe(true);
   });
 });
+
+import { loadSaved, saveSaved, clearBrief, storageOk, emptyCompare, loadCompare, saveCompare } from '../lib/brief/storage';
+import { appendSummary } from '../lib/brief/prefill';
+import { isInAppBrowser } from '../lib/brief/in-app';
+
+class Mem implements Storage {
+  [k: string]: any;   // Storage 인터페이스의 색인 서명 — 없으면 tsc 가 implements 를 거부한다
+  m = new Map<string, string>(); get length() { return this.m.size; }
+  clear() { this.m.clear(); } getItem(k: string) { return this.m.get(k) ?? null; } key(i: number) { return [...this.m.keys()][i] ?? null; }
+  removeItem(k: string) { this.m.delete(k); } setItem(k: string, v: string) { this.m.set(k, v); }
+}
+class Broken extends Mem { setItem(): void { throw new Error('QuotaExceeded'); } getItem(): string | null { throw new Error('SecurityError'); } }
+
+test.describe('저장', () => {
+  test('저장했다가 다시 읽는다', () => {
+    const s = new Mem();
+    expect(saveSaved(s, { answers: cafe(), step: 'pages', done: false })).toBe(true);
+    expect(loadSaved(s)).toEqual({ answers: cafe(), step: 'pages', done: false });
+  });
+  test('깨진 값·다른 버전은 무시한다', () => {
+    const s = new Mem();
+    s.setItem('prologue.brief.v1', '{깨짐');
+    expect(loadSaved(s)).toBeNull();
+    s.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 2 }, step: 'kind', done: false }));
+    expect(loadSaved(s)).toBeNull();
+  });
+  test('저장이 막히면 false·null, 예외를 던지지 않는다', () => {
+    const b = new Broken();
+    expect(storageOk(b)).toBe(false);
+    expect(saveSaved(b, { answers: cafe(), step: 'kind', done: false })).toBe(false);
+    expect(loadSaved(b)).toBeNull();
+    expect(() => clearBrief(b)).not.toThrow();
+    expect(storageOk(null)).toBe(false);
+  });
+  test('모두 지우기는 두 키 모두', () => {
+    const s = new Mem();
+    saveSaved(s, { answers: cafe(), step: 'kind', done: true });
+    saveCompare(s, emptyCompare());
+    clearBrief(s);
+    expect(s.length).toBe(0);
+  });
+  test('비교표 3곳, 다시 읽기', () => {
+    const s = new Mem(); const v = emptyCompare();
+    expect(v).toHaveLength(3);
+    v[0].price = '180만 원'; saveCompare(s, v);
+    expect(loadCompare(s)[0].price).toBe('180만 원');
+  });
+});
+
+test.describe('서랍 요약 합치기', () => {
+  test('빈 칸이면 요약 그대로', () => { expect(appendSummary('', '요약')).toBe('요약'); });
+  test('이미 글이 있으면 한 줄 띄워 덧붙임', () => { expect(appendSummary('제 글', '요약')).toBe('제 글\n\n요약'); });
+  test('합쳐서 1,000자를 넘지 않고, 기존 글은 그대로', () => {
+    const r = appendSummary('가'.repeat(800), '나'.repeat(500));
+    expect(r.length).toBeLessThanOrEqual(1000);
+    expect(r.startsWith('가'.repeat(800))).toBe(true);
+    expect(r.endsWith('…')).toBe(true);
+  });
+  test('남은 길이가 100자 미만이면 덧붙이지 않음', () => {
+    const base = '가'.repeat(950);
+    expect(appendSummary(base, '나'.repeat(500))).toBe(base);
+  });
+});
+
+test('앱 안 브라우저 감지', () => {
+  expect(isInAppBrowser('Mozilla/5.0 (iPhone) AppleWebKit Barcelona 289.0')).toBe(true);
+  expect(isInAppBrowser('Mozilla/5.0 (iPhone) Instagram 320.0')).toBe(true);
+  expect(isInAppBrowser('Mozilla/5.0 (Linux; Android) KAKAOTALK 10')).toBe(true);
+  expect(isInAppBrowser('Mozilla/5.0 (iPhone) Version/17.0 Mobile Safari/604.1')).toBe(false);
+});
