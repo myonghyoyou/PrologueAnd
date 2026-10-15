@@ -95,3 +95,8 @@ test('연락 메일은 hello@prologueand.com — 바닥글 링크와 구조화 �
   expect(org.email).toBe('hello@prologueand.com');
   expect(await page.content()).not.toContain('myonghyoyou@gmail.com');
 });
+
+test('사이트맵에 요청서 만들기가 있다', async ({ request }) => {
+  const t = await (await request.get('/sitemap.xml')).text();
+  expect(t).toContain('<loc>https://www.prologueand.com/tools/brief</loc>');
+});

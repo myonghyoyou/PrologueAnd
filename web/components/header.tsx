@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ViewTransitionLink } from './view-transition-link';
 import s from './header.module.css';
 
-type Props = { variant: 'home' | 'list' | 'case'; title?: string; project?: string };
+type Props = { variant: 'home' | 'list' | 'case' | 'tool'; title?: string; project?: string };
 
 export function Header({ variant, title, project }: Props) {
   return (

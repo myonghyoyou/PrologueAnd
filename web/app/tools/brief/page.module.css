@@ -1,0 +1,6 @@
+.main{max-width:640px;margin:0 auto;padding:calc(var(--hdr) + 40px) 0 160px}
+@media (max-width:700px){ .main{padding:calc(var(--hdr) + 24px) 16px 150px} }
+@media print{
+  :global(header),:global([role="dialog"]),:global([data-zoom-viewer]){display:none!important}
+  .main{padding:0;max-width:none}
+}
