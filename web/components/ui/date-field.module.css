@@ -1,0 +1,48 @@
+/* 날짜 고르기 — react-datepicker 기본 모양을 사이트 기준으로 덮는다(docs/14 §3.3: 모서리 2px, 1px 괘선, 네이비) */
+.field{display:block;margin:0 0 20px}
+.field :global(.react-datepicker-wrapper){display:block;width:100%}
+.label{display:block;margin:0 0 6px;font-size:13px;font-weight:500;color:var(--bone-700)}
+.help{display:block;margin-top:6px;font-size:13px;color:var(--bone-500)}
+
+.trigger{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;padding:0 14px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);font:inherit;font-size:16px;color:var(--bone-900);text-align:left;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.trigger:hover{border-color:var(--bone-500)}
+.trigger:focus-visible{outline:none;border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
+.empty{color:var(--bone-500)}
+/* 달력 모양 표시 — 선으로만 그린 네모 + 윗줄 */
+.icon{position:relative;flex:none;width:16px;height:15px;border:1.5px solid var(--bone-600);border-radius:2px}
+.icon::before{content:'';position:absolute;left:-1.5px;right:-1.5px;top:3px;border-top:1.5px solid var(--bone-600)}
+
+/* 펼침 — 서랍·아코디언과 같은 열기 움직임(docs/14 §3.6), 줄이기 설정이면 즉시 */
+.popper{z-index:40}
+.popper :global(.react-datepicker){animation:calIn .2s var(--ease-out)}
+@keyframes calIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){ .popper :global(.react-datepicker){animation:none} }
+
+.cal:global(.react-datepicker){font-family:inherit;font-size:14px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);box-shadow:var(--shadow);padding:14px 14px 10px;color:var(--bone-900)}
+.cal :global(.react-datepicker__month-container){float:none}
+.cal :global(.react-datepicker__header){background:none;border:0;border-bottom:1px solid var(--bone-200);border-radius:0;padding:0 0 8px}
+.cal :global(.react-datepicker__day-names){margin:10px 0 0;display:flex}
+.cal :global(.react-datepicker__day-name){flex:1;width:40px;margin:0;font-size:12px;font-weight:500;color:var(--bone-500);line-height:24px}
+.cal :global(.react-datepicker__day-name:first-child){color:var(--error)}
+.cal :global(.react-datepicker__month){margin:6px 0 0}
+.cal :global(.react-datepicker__week){display:flex}
+.cal :global(.react-datepicker__day){flex:1;width:40px;height:40px;margin:1px 0;border-radius:2px;line-height:40px;font-size:14px;color:var(--bone-900);font-variant-numeric:tabular-nums;transition:background .12s,color .12s}
+.cal :global(.react-datepicker__day:hover){background:var(--bone-100);border-radius:2px}
+.cal :global(.react-datepicker__day--today){font-weight:600;box-shadow:inset 0 -2px 0 var(--navy-300)}
+.cal :global(.react-datepicker__day--weekend:first-child){color:var(--error)}
+.cal :global(.react-datepicker__day--outside-month){color:var(--bone-400)}
+.cal :global(.react-datepicker__day--disabled),.cal :global(.react-datepicker__day--disabled:hover){color:var(--bone-300);background:none;cursor:default;text-decoration:line-through;text-decoration-color:var(--bone-300)}
+.cal :global(.react-datepicker__day--keyboard-selected){background:var(--navy-50);color:var(--navy-900);border-radius:2px}
+.cal :global(.react-datepicker__day--selected),.cal :global(.react-datepicker__day--selected:hover){background:var(--navy-900);color:var(--bone-0);font-weight:600;border-radius:2px;box-shadow:none}
+.cal :global(.react-datepicker__day:focus-visible){outline:2px solid var(--signal);outline-offset:-2px}
+
+.head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.title{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.nav{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--bone-200);border-radius:2px;background:none;cursor:pointer}
+.nav:hover:not(:disabled){border-color:var(--bone-500);background:var(--bone-100)}
+.nav:disabled{opacity:.35;cursor:default}
+.nav:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.prev,.next{width:8px;height:8px;border:solid var(--bone-900);border-width:0 0 1.5px 1.5px}
+.prev{transform:translateX(2px) rotate(45deg)}
+.next{transform:translateX(-2px) rotate(-135deg)}
+

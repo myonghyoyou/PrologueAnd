@@ -22,3 +22,6 @@ html.lenis{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 .lenis.lenis-stopped{overflow:hidden}
 @media (max-width:1023px){ :root{--gutter:16px} }
+
+/* 날짜 고르기(components/ui/date-field) — 폰에서 가운데 띄울 때의 바탕. CSS 모듈은 바깥 portal 을 고를 수 없어 여기에 */
+.react-datepicker__portal{background:rgba(28,27,24,.45)}

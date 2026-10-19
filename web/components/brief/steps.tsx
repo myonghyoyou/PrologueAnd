@@ -3,6 +3,7 @@ import { Q } from '@/content/brief/questions';
 import { UNKNOWN, type Answers, type Feature, type Goal, type StepId } from '@/lib/brief/types';
 import { Check, Follow, Impact, Multi, Seg, Single, TextIn } from './fields';
 import s from './fields.module.css';
+import { DateField } from '@/components/ui/date-field';
 
 type P = { a: Answers; set: (p: Partial<Answers>) => void };
 
@@ -117,7 +118,7 @@ export function StepView({ id, a, set }: P & { id: StepId }) {
       <Check label={Q.scope.monthly} checked={a.monthlyCost} onChange={(v) => set({ monthlyCost: v })} />
     </>);
     case 'when': return (<>
-      <TextIn label={Q.when.date} value={a.openDate} onChange={(v) => set({ openDate: v, openUnknown: false })} type="date" />
+      <DateField label={Q.when.date} value={a.openDate} onChange={(v) => set({ openDate: v, openUnknown: false })} />
       <Check label={Q.when.dateUnknown} checked={a.openUnknown} onChange={(v) => set({ openUnknown: v, openDate: v ? '' : a.openDate })} />
       {a.openDate ? <Single label={Q.when.fixed.label} opts={Q.when.fixed.opts} value={a.openFixed} onChange={(v) => set({ openFixed: v })} /> : null}
       <Single label={Q.when.budget.label} opts={Q.when.budget.opts} value={a.budget} onChange={(v) => set({ budget: v })} />
