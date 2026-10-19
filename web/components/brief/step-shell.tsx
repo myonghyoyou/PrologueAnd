@@ -16,7 +16,7 @@ export function StepShell({ phase, onPreview, title, help, error, onPrev, onNext
       <div className={s.top} data-brief-progress aria-live="polite">
         {/* 분기로 단계 수가 바뀌므로 숫자 대신 네 묶음(명세 §11) */}
         <Num n={phase + 1} className={s.n} /><span className={`${ui.num} ${s.of}`} aria-hidden="true">/ {String(PHASES.length).padStart(2, '0')}</span>
-        <span className={s.ph}>{PHASES[phase].name}<span className={s.sr}> · {PHASES.length}단계 중 {phase + 1}단계</span></span>
+        <span className={s.ph} data-brief-phase>{PHASES[phase].name}<span className={s.sr}> · {PHASES.length}단계 중 {phase + 1}단계</span></span>
         {onPreview ? <button type="button" className={`${ui.txt} ${s.pv}`} onClick={onPreview} data-brief-preview-open>요청서 미리보기</button> : null}
         <span className={s.bar} aria-hidden="true"><b style={{ width: `${((phase + 1) / PHASES.length) * 100}%` }} /></span>
       </div>

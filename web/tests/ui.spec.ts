@@ -109,3 +109,12 @@ test.describe('문의 서랍', () => {
     expect(shapes).toEqual([]);
   });
 });
+
+test('진행 표시의 묶음 이름과 「요청서 미리보기」는 15px 이상', async ({ page }, info) => {
+  test.skip(info.project.name !== 'phone');
+  await page.goto('/tools/brief');
+  await page.locator('[data-brief-start]').click();
+  const size = (sel: string) => page.locator(sel).evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
+  expect(await size('[data-brief-phase]')).toBeGreaterThanOrEqual(15);
+  expect(await size('[data-brief-preview-open]')).toBeGreaterThanOrEqual(15);
+});

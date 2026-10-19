@@ -3,9 +3,9 @@
 .top{position:relative;display:flex;align-items:baseline;gap:10px;padding-bottom:14px}
 .n{font-size:30px;line-height:1;color:var(--navy-900)}
 .of{font-size:15px;color:var(--bone-500)}
-.ph{font-size:13px;font-weight:500;color:var(--bone-600);margin-left:4px}
+.ph{font-size:15px;font-weight:600;color:var(--bone-800);margin-left:6px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.pv{margin-left:auto;min-height:32px;font-size:13px}
+.pv{margin-left:auto;min-height:36px;font-size:15px}
 @media (min-width:1100px){ .pv{display:none} }
 .bar{position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--bone-200)}
 .bar b{position:absolute;left:0;top:-.5px;height:2px;background:var(--navy-900)}
