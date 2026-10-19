@@ -46,7 +46,7 @@ test.describe('요청서 질문 화면', () => {
     const st = await tag.evaluate((e) => { const c = getComputedStyle(e); return [c.backgroundColor, c.borderTopColor, c.borderTopLeftRadius]; });
     expect(st[0]).not.toBe(NAVY);
     expect(parseFloat(st[2])).toBeLessThanOrEqual(2);
-    expect(await tag.evaluate((e) => getComputedStyle(e, '::before').content)).toContain('✓');
+    await expect(tag.locator('[data-mark]')).toHaveCount(1);   // 색만으로 구분하지 않는다 — 표시가 함께 바뀐다
   });
 
   test('기능: 배지 대신 캡션, 이어지는 질문은 왼쪽 세로선, 둥근 것 없음', async ({ page }) => {
@@ -128,4 +128,14 @@ test('도움말 없는 질문도 제목과 선택지 사이가 띄워져 있다'
   const h2 = (await page.locator('h1').boundingBox())!;
   const help = (await page.locator('h1 + p').boundingBox())!;
   expect(help.y - (h2.y + h2.height)).toBeLessThanOrEqual(14);
+});
+
+test('칸을 골라도 너비와 줄 수가 그대로다', async ({ page }) => {
+  await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, 'links');
+  const tags = page.locator('[data-tag]');
+  const before = await tags.evaluateAll((els) => els.map((e) => [Math.round(e.getBoundingClientRect().width), Math.round(e.getBoundingClientRect().top)]));
+  for (let i = 0; i < 5; i++) await tags.nth(i).click();
+  await page.waitForTimeout(250);
+  const after = await tags.evaluateAll((els) => els.map((e) => [Math.round(e.getBoundingClientRect().width), Math.round(e.getBoundingClientRect().top)]));
+  expect(after).toEqual(before);
 });

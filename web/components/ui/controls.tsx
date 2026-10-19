@@ -15,11 +15,13 @@ export function ChoiceRow({ children, ...input }: Input & { children: ReactNode 
   );
 }
 
-/** 각진 외곽선 칸 */
+/** 각진 외곽선 칸 — 앞의 작은 표시(여러 개는 네모, 하나는 원)를 늘 두고 고르면 채운다.
+ *  고를 때 글자를 더하거나 굵게 하지 않아 칸 너비가 바뀌지 않는다(줄이 밀리지 않게) */
 export function Tag({ children, ...input }: Input & { children: ReactNode }) {
   return (
     <label className={ui.tag} data-tag>
       <input className={ui.native} {...input} />
+      <span className={input.type === 'radio' ? ui.tdot : ui.tbox} data-mark aria-hidden="true" />
       <span>{children}</span>
     </label>
   );
