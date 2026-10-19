@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-/** 질문을 다 거쳐 결과까지 — 예약(네이버)·사진 촬영을 고른 카페 */
+/** 질문을 다 거쳐 결과까지 — 예약(네이버)·소개 글 작성을 맡긴 카페 */
 async function finish(page: Page) {
   const pick = (n: string) => page.getByRole('radio', { name: n, exact: true }).check({ force: true });
   const next = () => page.locator('[data-brief-next]').click();
@@ -12,7 +12,7 @@ async function finish(page: Page) {
   await next(); await next();
   await page.locator('[data-feature="예약 받기"] [data-seg="must"]').click(); await pick('네이버 예약 연결'); await next();
   await next();
-  await pick('찍어 주길 원함'); await next();
+  await pick('써 주길 원함'); await next();
   for (let i = 0; i < 6; i++) await next();
   await expect(page.locator('[data-brief-result]')).toBeVisible();
 }

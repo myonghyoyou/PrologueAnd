@@ -34,7 +34,7 @@ const D = new Date('2026-10-15T09:00:00+09:00');
 const cafe = (): Answers => ({ ...emptyAnswers(), mode: 'new', kind: '가게(식당·카페 등)', name: '가람 로스터리',
   goalMain: '찾아오기', goalMore: ['예약하기'], audience: ['처음 오는 고객', '단골'], pages: ['소개', '메뉴·서비스', '오시는 길', '소식', '문의'],
   features: { '문의 남기기': 'must', '예약 받기': 'must', '직접 글 올리기(공지·소식)': 'later' }, booking: '네이버 예약 연결',
-  copy: '모르겠어요', photo: '찍어 주길 원함', design: '모르겠어요', ops: ['공지·소식'], revisions: '3번(보통)', care: '필요할 때만' });
+  copy: '써 주길 원함', photo: '모르겠어요', design: '모르겠어요', ops: ['공지·소식'], revisions: '3번(보통)', care: '필요할 때만' });
 
 test.describe('결과 계산', () => {
   test('요청서 제목·부제·단원', () => {
@@ -56,9 +56,9 @@ test.describe('결과 계산', () => {
     expect(b.title).toBe('홈페이지 제작 요청서 · 이름 미정');
     expect(b.sections[1].id).toBe('renew');
   });
-  test('견적 영향: 예약(네이버)·사진 촬영, 금액 없음', () => {
+  test('견적 영향: 예약(네이버)·소개 글 작성, 금액 없음', () => {
     const it = impactItems(cafe(), D);
-    expect(it.map((i) => i.title)).toEqual(['예약 받기 (오픈 때 꼭)', '사진 촬영을 맡김']);
+    expect(it.map((i) => i.title)).toEqual(['예약 받기 (오픈 때 꼭)', '소개 글 작성을 맡김']);
     expect(it.every((i) => !/\d+\s*만\s*원/.test(i.reason))).toBe(true);
   });
   test('견적 영향: 직접 예약·우리만의 디자인·외국어 2개·급한 개업', () => {
@@ -77,10 +77,10 @@ test.describe('결과 계산', () => {
     expect(q).toContain('오픈할 때 소스와 디자인 파일을 넘겨 주시나요?');
     expect(q).toContain('관리자 화면에서 제가 직접 고칠 수 있는 범위는 어디까지인가요?');
     expect(q).toContain('네이버 예약은 어떻게 연결하시나요?');
-    expect(q).toContain('글 작성·사진 촬영 비용은 견적에 들어 있나요?');
+    expect(q).toContain('글 작성 비용은 견적에 들어 있나요?');
   });
   test('업체 제안 받기 목록', () => {
-    expect(unknownItems(cafe())).toEqual(['이어져야 하는 것', '소개 글', '디자인 자료', '디자인 방식', '오픈 일정']);
+    expect(unknownItems(cafe())).toEqual(['이어져야 하는 것', '사진', '디자인 자료', '디자인 방식', '오픈 일정']);
   });
   test('필수 둘만 답한 최소 요청서도 깨지지 않는다', () => {
     const a: Answers = { ...emptyAnswers(), kind: '회사·사무실', goalMain: '문의 남기기' };
@@ -278,7 +278,7 @@ test('일정 문구', () => {
 test('복사 글: 업체 제안 목록은 항목 이름만(「: 업체 제안 받기」 반복 없음)', () => {
   const t = toPlainText(cafe(), D);
   const sec = t.split('■ 업체 제안을 받고 싶은 것')[1].split('■')[0];
-  expect(sec).toContain('- 소개 글\n');
+  expect(sec).toContain('- 사진\n');
   expect(sec).not.toContain('업체 제안 받기');
 });
 
@@ -289,4 +289,9 @@ test('업체 제안 항목마다 고칠 질문이 이어져 있다', () => {
   expect(map).toMatchObject({ '옮길 글·사진 양': 'renew', '주로 보는 사람': 'audience', '페이지 구성': 'pages', '필요한 기능': 'features', '이어져야 하는 것': 'links',
     '소개 글': 'content', '사진': 'content', '디자인 자료': 'brand', '디자인 방식': 'design', '오픈 뒤 운영': 'ops', '도메인': 'own', '수정 횟수': 'scope', '오픈 뒤 관리': 'scope', '오픈 일정': 'when' });
   expect(rows.every((r) => r.edit)).toBe(true);
+});
+
+test('사진은 「있어요 / 모르겠어요」만 — 촬영을 맡길 수 있을지는 사장님이 알 수 없다', () => {
+  expect([...Q.content.photo.opts]).toEqual(['있어요', '모르겠어요']);
+  expect(Q.content.why).toBe('글 작성은 보통 제작비와 따로 계산돼요.');
 });

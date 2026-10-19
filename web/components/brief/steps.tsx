@@ -71,7 +71,7 @@ export function StepView({ id, a, set }: P & { id: StepId }) {
     case 'content': return (<>
       <Single label={Q.content.copy.label} opts={Q.content.copy.opts} value={a.copy} onChange={(v) => set({ copy: v })} />
       <Single label={Q.content.photo.label} opts={Q.content.photo.opts} value={a.photo} onChange={(v) => set({ photo: v })} />
-      {a.copy === '써 주길 원함' || a.photo === '찍어 주길 원함' ? <Impact why={Q.content.why} /> : null}
+      {a.copy === '써 주길 원함' ? <Impact why={Q.content.why} /> : null}
       {a.copy === '직접 준비' || a.photo === '있어요' ? <TextIn label={Q.content.by} value={a.contentBy} onChange={(v) => set({ contentBy: v })} type="date" /> : null}
     </>);
     case 'brand': return (<>
