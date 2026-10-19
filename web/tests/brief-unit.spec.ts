@@ -63,7 +63,7 @@ test.describe('결과 계산', () => {
   });
   test('견적 영향: 직접 예약·우리만의 디자인·외국어 2개·급한 개업', () => {
     const a: Answers = { ...cafe(), booking: '홈페이지 안에서 직접', design: '새 디자인을 맞춤으로 만들어 주세요', features: { ...cafe().features, '외국어 페이지': 'later' },
-      langs: ['영어', '일본어'], openDate: '2026-11-01', openFixed: '개업·행사라 꼭' };
+      langs: ['영어', '일본어'], openDate: '2026-11-01', openFixed: '해당 날짜에 꼭 오픈해주세요' };
     const t = impactItems(a, D).map((i) => i.title);
     expect(t).toContain('맞춤 디자인');
     expect(t).toContain('외국어 페이지 (2개 언어)');
@@ -267,4 +267,10 @@ test('견적 영향 표시 문구는 「견적가에 크게 영향」', () => {
 
 test('운영 질문 문구', () => {
   expect(Q.ops.title).toBe('홈페이지 오픈 뒤 직접 생성하거나 수정하고 싶은 게 있을까요?');
+});
+
+test('일정 문구', () => {
+  expect(Q.when.fixed.label).toBe('선택한 날짜에 꼭 오픈되어야 하나요?');
+  expect([...Q.when.fixed.opts]).toEqual(['해당 날짜에 꼭 오픈해주세요', '희망일이에요']);
+  expect(Q.when.budgetHelp).toBe('생각하는 예산을 넣으면 견적가가 거기에 맞춰 올라오기도 해요.');
 });

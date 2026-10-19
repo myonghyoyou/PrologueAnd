@@ -27,7 +27,7 @@ test('누르면 한국어 달력이 펼쳐지고, 고른 날은 한국어로 보
   const nx = new Date(now.getFullYear(), now.getMonth() + 1, 15);
   await expect(field).toContainText(`${nx.getFullYear()}년 ${nx.getMonth() + 1}월 15일`);
   await expect.poll(() => saved(page)).toBe(`${nx.getFullYear()}-${String(nx.getMonth() + 1).padStart(2, '0')}-15`);
-  await expect(page.getByText('그 날짜는 꼭 지켜야 하나요?')).toBeVisible();
+  await expect(page.getByText('선택한 날짜에 꼭 오픈되어야 하나요?')).toBeVisible();
 });
 
 test('지난 날짜·지난 달은 고를 수 없고, Esc 로 닫힌다', async ({ page }) => {
