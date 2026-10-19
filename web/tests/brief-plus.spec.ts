@@ -58,7 +58,7 @@ test.describe('카톡·문자로 보내기', () => {
     await seedDone(page);
     await page.locator('[data-brief-share]').click();
     const d = await page.evaluate(() => (window as unknown as { __shared: { text: string } }).__shared);
-    expect(d.text).toContain('■ 무엇을 위한 홈페이지인가요');
+    expect(d.text).toContain('1. 목적');
     expect(d.text).not.toContain('Prologue');
   });
   test('공유 기능이 없으면 단추가 없다', async ({ page }) => {
@@ -98,7 +98,7 @@ test.describe('답하는 동안 요청서 미리보기', () => {
     await pick(page, '새로 만들기'); await next(page);
     await pick(page, '회사·사무실'); await page.locator('[data-brief-name]').fill('테스트 상사');
     await expect(pv).toContainText('홈페이지 제작 요청서 · 테스트 상사');
-    await expect(pv.locator('[data-current]')).toContainText('무엇을 위한 홈페이지인가요');
+    await expect(pv.locator('[data-current]')).toContainText('목적');
     // 아직 묻지 않은 질문까지 「업체 제안 받기」로 보이면 안 된다 — 그 단원은 결과에서만
     await expect(pv).not.toContainText('업체 제안을 받고 싶은 것');
     const q = (await page.locator('h1').boundingBox())!, p = (await pv.boundingBox())!;

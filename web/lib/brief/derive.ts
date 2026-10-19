@@ -28,10 +28,10 @@ export function unknownList(a: Answers): { label: string; step: StepId }[] {
   const out: { label: string; step: StepId }[] = [];
   const add = (label: string, step: StepId) => out.push({ label, step });
   if (a.mode === 'renew' && isUnknown(a.renewAmount)) add('옮길 글·사진 양', 'renew');
-  if (a.audience.length === 0 || a.audience.includes(UNKNOWN)) add('주로 보는 사람', 'audience');
-  if (pagesAll(a).length === 0) add('페이지 구성', 'pages');
+  if (a.audience.length === 0 || a.audience.includes(UNKNOWN)) add('주 방문자', 'audience');
+  if (pagesAll(a).length === 0) add('화면 구성', 'pages');
   if (a.featuresUnknown || (featureEntries(a).length === 0 && !a.featuresExtra.trim())) add('필요한 기능', 'features');
-  if (a.links.length === 0) add('이어져야 하는 것', 'links');
+  if (a.links.length === 0) add('연결할 서비스', 'links');
   if (isUnknown(a.copy)) add('소개 글', 'content');
   if (isUnknown(a.photo) || a.photo === '없어요') add('사진', 'content');   // 사진이 없으면 준비 방법을 업체에 맡긴다
   if (a.brand.length === 0) add('디자인 자료', 'brand');
@@ -50,55 +50,81 @@ export function unknownItems(a: Answers): string[] {
   return unknownList(a).map((x) => x.label);
 }
 
+/* 업체에게 보내는 문서 말투 — 선택지 단추의 글자(해요체·부탁·반말)를 그대로 옮기지 않고 명사형으로 바꾼다 */
+const GOAL: Record<string, string> = { '전화하기': '전화 문의', '문의 남기기': '문의 남기기', '예약하기': '예약', '찾아오기': '매장 방문', '상품 사기': '상품 구매', '소식 보기': '소식 보기' };
+const AMOUNT: Record<string, string> = { '적어요(10개 이하)': '적음(10개 이하)', '보통': '보통(10~100개)', '많아요(100개 넘음)': '많음(100개 넘음)' };
+const COPY: Record<string, string> = { '직접 준비': '직접 준비', '써 주길 원함': '작성 요청' };
+const PHOTO: Record<string, string> = { '있어요': '있음', '없어요': '없음' };
+const DESIGN: Record<string, string> = { '템플릿이어도 괜찮아요': '템플릿 사용 가능', '새 디자인을 맞춤으로 만들어 주세요': '맞춤 디자인 희망', '이미 정해진 디자인이 있어요': '정해진 디자인 있음(그대로 적용)' };
+const OWN: Record<string, string> = { '내 이름으로': '제 명의', '업체에 맡김': '업체에 맡김', '대표 계정은 내가': '대표 계정은 제가 보유', '오픈 때 받기': '오픈 때 인도', '안 받아도 됨': '인도 필요 없음' };
+const CARE: Record<string, string> = { '매달 맡기기': '매달 관리 맡김', '필요할 때만': '필요할 때만 요청', '직접 할게요': '직접 관리' };
+const DECIDER: Record<string, string> = { '나 혼자': '대표 혼자', '여럿이 같이': '여러 명이 함께' };
+const BRAND: Record<string, string> = { '없어요': '없음' };
+const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
+/** 「2026-11-10」 → 「2026년 11월 10일(화)」 */
+const dayKo = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return iso;
+  return `${y}년 ${m}월 ${d}일(${DAYS[new Date(y, m - 1, d).getDay()]})`;
+};
+const pick = (map: Record<string, string>, v: string) => map[v] ?? v;
+
 export function buildBrief(a: Answers, today: Date): { title: string; subtitle: string; sections: Section[] } {
   const name = clip(a.name.trim(), 60) || '이름 미정';
   const sections: Section[] = [];
-  sections.push({ id: 'purpose', title: '무엇을 위한 홈페이지인가요', rows: [
-    { label: '어떤 곳', value: clip(kindText(a), 80) },
-    { label: '고객이 할 일', value: [a.goalMain ?? '', ...(a.goalMore.length ? [`그 밖에 ${list(a.goalMore)}`] : [])].filter(Boolean).join(' · ') },
-    ...(a.audience.length && !a.audience.includes(UNKNOWN) ? [{ label: '주로 보는 사람', value: list(a.audience) }] : []),
+  sections.push({ id: 'purpose', title: '목적', rows: [
+    { label: '업종', value: clip(kindText(a), 80) },
+    ...(a.goalMain ? [{ label: '가장 중요한 고객 행동', value: pick(GOAL, a.goalMain) }] : []),
+    ...(a.goalMore.length ? [{ label: '그 밖의 고객 행동', value: list(a.goalMore.map((g) => pick(GOAL, g))) }] : []),
+    ...(a.audience.length && !a.audience.includes(UNKNOWN) ? [{ label: '주 방문자', value: list(a.audience) }] : []),
   ] });
-  if (a.mode === 'renew') sections.push({ id: 'renew', title: '지금 홈페이지', rows: [
+  if (a.mode === 'renew') sections.push({ id: 'renew', title: '기존 홈페이지', rows: [
     ...(a.renewUrl.trim() ? [{ label: '주소', value: clip(a.renewUrl.trim(), 120) }] : []),
     ...(a.renewPain.trim() ? [{ label: '불편한 점', value: clip(a.renewPain.trim(), 300) }] : []),
-    ...(a.renewAmount && !isUnknown(a.renewAmount) ? [{ label: '옮길 글·사진', value: a.renewAmount }] : []),
+    ...(a.renewAmount && !isUnknown(a.renewAmount) ? [{ label: '옮길 글·사진 양', value: pick(AMOUNT, a.renewAmount) }] : []),
   ] });
   const pages = pagesAll(a);
-  sections.push({ id: 'pages', title: '페이지', rows: pages.length ? [{ label: `메뉴 ${pages.length}개`, value: clip(pages.join(' · '), 300) }] : [] });
+  // 항목 안에도 「·」가 있어(메뉴·서비스) 항목 사이는 「 / 」로 나눈다
+  sections.push({ id: 'pages', title: '화면 구성', rows: pages.length ? [{ label: `화면 ${pages.length}개`, value: clip(pages.join(' / '), 300) }] : [] });
   sections.push({ id: 'features', title: '기능', rows: [
     ...featureEntries(a).map(([f, t]) => ({ label: f, value: featureDetail(a, f), tag: t })),
     ...(a.featuresExtra.trim() ? [{ label: '그 밖에', value: clip(a.featuresExtra.trim(), 300) }] : []),
   ] });
-  sections.push({ id: 'links', title: '이어져야 하는 것', rows: a.links.length ? [{ label: '연결', value: list(a.links) }] : [] });
+  sections.push({ id: 'links', title: '연결할 서비스', rows: a.links.length ? [{ label: '이용 중', value: a.links.includes('없어요') ? '없음' : list(a.links) }] : [] });
   sections.push({ id: 'content', title: '글과 사진', rows: [
-    ...(a.copy && !isUnknown(a.copy) ? [{ label: '소개 글', value: a.copy }] : []),
-    ...(a.photo && !isUnknown(a.photo) ? [{ label: '사진', value: a.photo }] : []),
-    ...(a.contentBy ? [{ label: '자료 줄 수 있는 날', value: a.contentBy }] : []),
+    ...(a.copy && !isUnknown(a.copy) ? [{ label: '소개 글', value: pick(COPY, a.copy) }] : []),
+    ...(a.photo && !isUnknown(a.photo) ? [{ label: '사진', value: pick(PHOTO, a.photo) }] : []),
+    ...(a.contentBy ? [{ label: '자료 전달 가능일', value: dayKo(a.contentBy) }] : []),
   ] });
-  sections.push({ id: 'brand', title: '디자인 자료', rows: a.brand.length ? [{ label: '있는 것', value: list(a.brand) }] : [] });
-  sections.push({ id: 'design', title: '디자인과 참고 사이트', rows: [
-    ...(a.design && !isUnknown(a.design) ? [{ label: '방식', value: a.design }] : []),
-    ...a.refs.filter((r) => r.url.trim()).map((r, i) => ({ label: `참고 ${i + 1}`, value: clip([r.url.trim(), r.likes.length ? `좋은 점: ${list(r.likes)}` : '', r.memo.trim()].filter(Boolean).join(' — '), 300) })),
+  sections.push({ id: 'brand', title: '디자인 자료', rows: a.brand.length ? [{ label: '보유 자료', value: list(a.brand.map((x) => pick(BRAND, x))) }] : [] });
+  sections.push({ id: 'design', title: '디자인', rows: [
+    ...(a.design && !isUnknown(a.design) ? [{ label: '방식', value: pick(DESIGN, a.design) }] : []),
+    ...a.refs.filter((r) => r.url.trim()).flatMap((r, i) => [
+      { label: `참고 사이트 ${i + 1}`, value: clip(r.url.trim(), 200) },
+      ...(r.likes.length ? [{ label: `참고 ${i + 1} 좋은 점`, value: list(r.likes) }] : []),
+      ...(r.memo.trim() ? [{ label: `참고 ${i + 1} 메모`, value: clip(r.memo.trim(), 200) }] : []),
+    ]),
     ...(a.dislikes.trim() ? [{ label: '피하고 싶은 것', value: clip(a.dislikes.trim(), 300) }] : []),
   ] });
   sections.push({ id: 'ops', title: '오픈 뒤 운영', rows: needsAdmin(a)
-    ? [{ label: '직접 고칠 것', value: `${list(a.ops)} — 관리자 화면 필요` }]
-    : a.ops.length ? [{ label: '직접 고칠 것', value: '없음(다 맡김)' }] : [] });
-  sections.push({ id: 'own', title: '명의와 소유권', rows: Q.own.rows.filter((r) => !isUnknown(a.own[r.key])).map((r) => ({ label: r.label.replace(/\s*\(.*?\)/g, ''), value: a.own[r.key] })) });
-  sections.push({ id: 'scope', title: '범위와 비용', rows: [
+    ? [{ label: '직접 올리거나 고칠 것', value: list(a.ops) }, { label: '관리자 화면', value: '필요' }]
+    : a.ops.length ? [{ label: '직접 올리거나 고칠 것', value: '없음(모두 맡김)' }] : [] });
+  // 건너뛰어도 명의는 적는다(기본값이 「제 명의」) — 꼭 지켜야 하는 항목
+  sections.push({ id: 'own', title: '명의', rows: Q.own.rows.filter((r) => !isUnknown(a.own[r.key])).map((r) => ({ label: r.label.replace(/\s*\(.*?\)/g, ''), value: pick(OWN, a.own[r.key]) })) });
+  // 매달 비용은 요청서 줄 대신 업체 질문으로만 묻는다(같은 말이 두 번 나오지 않게)
+  sections.push({ id: 'scope', title: '범위', rows: [
     ...(a.revisions && a.revisions !== '업체 제안' ? [{ label: '수정 횟수', value: a.revisions.replace('(보통)', '') }] : []),
-    ...(a.care ? [{ label: '오픈 뒤 관리', value: a.care }] : []),
-    ...(a.monthlyCost ? [{ label: '매달 비용', value: '매달 나가는 비용을 모두 알려 주세요' }] : []),
+    ...(a.care ? [{ label: '오픈 뒤 관리', value: pick(CARE, a.care) }] : []),
   ] });
   sections.push({ id: 'when', title: '일정과 결정', rows: [
-    ...(a.openDate ? [{ label: '오픈 희망일', value: `${a.openDate}${a.openFixed ? ` (${a.openFixed})` : ''}` }] : []),
-    ...(a.decider ? [{ label: '최종 결정', value: a.decider }] : []),
+    ...(a.openDate ? [{ label: '오픈 희망일', value: `${dayKo(a.openDate)}${a.openFixed === Q.when.fixed.must ? ', 이 날짜에 꼭 오픈 필요' : a.openFixed ? ', 희망일' : ''}` }] : []),
+    ...(a.decider ? [{ label: '최종 결정', value: pick(DECIDER, a.decider) }] : []),
   ] });
   if (a.budgetInBrief && a.budget && !isUnknown(a.budget)) sections.push({ id: 'budget', title: '예산', rows: [{ label: '생각하는 예산', value: a.budget }] });
   sections.push({ id: 'unknown', title: '업체 제안을 받고 싶은 것', rows: unknownList(a).map((x) => ({ label: x.label, value: '', tag: 'ask' as const, edit: x.step })) });
   return {
     title: `홈페이지 제작 요청서 · ${name}`,
-    subtitle: `${a.mode === 'renew' ? '지금 홈페이지 고치기' : '새로 만들기'} · ${dateKo(today)} 작성`,
+    subtitle: `${a.mode === 'renew' ? '기존 홈페이지 개편' : '새로 제작'} · ${dateKo(today)} 작성`,
     sections,
   };
 }
@@ -124,7 +150,7 @@ export function impactItems(a: Answers, today: Date): { title: string; reason: s
 }
 
 export function vendorQuestions(a: Answers): string[] {
-  const q = ['도메인과 호스팅은 제 이름으로 사 주시나요?', '수정은 몇 번까지 포함인가요?', '오픈 뒤 매달 드는 비용은 무엇이고 얼마인가요?', '오픈 뒤 고칠 게 생기면 어디로 연락하고, 보통 며칠 걸리나요?'];
+  const q = ['도메인과 호스팅은 제 이름으로 사 주시나요?', '수정은 몇 번까지 포함인가요?', ...(a.monthlyCost ? ['오픈 뒤 매달 드는 비용은 무엇이고 얼마인가요?'] : []), '오픈 뒤 고칠 게 생기면 어디로 연락하고, 보통 며칠 걸리나요?'];
   if (a.own.source === '오픈 때 받기') q.push('오픈할 때 소스와 디자인 파일을 넘겨 주시나요?');
   if (needsAdmin(a)) q.push('관리자 화면에서 제가 직접 고칠 수 있는 범위는 어디까지인가요?');
   if (a.features['예약 받기']) q.push(a.booking === '네이버 예약 연결' ? '네이버 예약은 어떻게 연결하시나요?' : '예약은 어떤 방식으로 만드시나요?');
@@ -140,15 +166,17 @@ export function vendorQuestions(a: Answers): string[] {
 export function toPlainText(a: Answers, today: Date): string {
   const b = buildBrief(a, today);
   const lines = [b.title, b.subtitle, ''];
+  let n = 0;
   for (const s of b.sections) {
     if (!s.rows.length) continue;
-    lines.push(`■ ${s.title}`);
-    // 업체 제안 목록은 단원 제목이 이미 말하므로 항목 이름만
-    for (const r of s.rows) lines.push(`- ${r.label}${r.tag === 'must' ? ' [오픈 때 꼭]' : r.tag === 'later' ? ' [나중에]' : ''}${r.value && r.tag !== 'ask' ? `: ${r.value}` : ''}`);
+    lines.push(`${++n}. ${s.title}`);
+    // 업체 제안 목록은 단원 제목이 이미 말하므로 이름만 한 줄로
+    if (s.id === 'unknown') lines.push(s.rows.map((r) => r.label).join(', '));
+    else for (const r of s.rows) lines.push(`- ${r.label}${r.tag === 'must' ? ' [오픈 때 필수]' : r.tag === 'later' ? ' [나중에]' : ''}${r.value ? `: ${r.value}` : ''}`);
     lines.push('');
   }
-  lines.push('■ 견적 주실 때 함께 답해 주세요');
-  vendorQuestions(a).forEach((q, i) => lines.push(`${i + 1}. ${q}`));
+  lines.push('견적 주실 때 아래 질문에도 답해 주세요.');
+  vendorQuestions(a).forEach((q, i) => lines.push(`Q${i + 1}. ${q}`));   // 단원 번호(1. 2. …)와 헷갈리지 않게
   return clip(lines.join('\n'), 2000);
 }
 
@@ -156,13 +184,14 @@ export function briefSummary(a: Answers, today: Date): string {
   const musts = featureEntries(a).filter(([, t]) => t === 'must').map(([f]) => f);
   const parts = [
     '[요청서 만들기]',
-    a.mode === 'renew' ? '지금 홈페이지 고치기' : '새로 만들기',
-    `어떤 곳: ${clip(kindText(a), 60)}${a.name.trim() ? ` (${clip(a.name.trim(), 40)})` : ''}`,
-    a.goalMain ? `고객이 할 일: ${a.goalMain}` : '',
+    a.mode === 'renew' ? '기존 홈페이지 개편' : '새로 제작',
+    `업종: ${clip(kindText(a), 60)}`,
+    a.name.trim() ? `이름: ${clip(a.name.trim(), 40)}` : '',
+    a.goalMain ? `가장 중요한 고객 행동: ${pick(GOAL, a.goalMain)}` : '',
     musts.length ? `꼭 필요한 기능: ${list(musts)}` : '',
     a.featuresExtra.trim() ? `그 밖에 필요한 기능: ${clip(a.featuresExtra.trim(), 200)}` : '',
-    pagesAll(a).length ? `페이지 ${pagesAll(a).length}개` : '',
-    a.openDate ? `오픈 희망일: ${a.openDate}` : '',
+    pagesAll(a).length ? `화면 ${pagesAll(a).length}개` : '',
+    a.openDate ? `오픈 희망일: ${dayKo(a.openDate)}` : '',
     `작성일: ${dateKo(today)}`,
   ].filter(Boolean);
   return clip(parts.join('\n'), 1000);

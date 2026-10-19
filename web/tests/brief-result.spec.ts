@@ -44,7 +44,7 @@ test.describe('결과', () => {
     await page.locator('[data-brief-copy]').click();
     await expect(page.locator('[data-brief-copied]')).toHaveText('복사했어요');
     const t = await page.evaluate(() => navigator.clipboard.readText());
-    expect(t).toContain('■ 기능');
+    expect(t).toMatch(/\d+\. 기능\r?\n/);   // Windows 클립보드는 줄바꿈을 \r\n 으로 바꾼다
     expect(t).not.toContain('Prologue');
   });
 

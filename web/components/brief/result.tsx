@@ -72,7 +72,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
                 ? (<div key={i} className={`${s.row} ${s.askRow}`} data-ask-row><dt>{r.label}</dt>
                     <dd>{r.edit ? <button type="button" className={s.edit} onClick={() => onEdit(r.edit!)} aria-label={`${r.label} 고치기`}>고치기</button> : null}</dd></div>)
                 : (<div key={i} className={s.row}><dt>{r.label}</dt><dd>
-                {r.tag === 'must' ? <span className={s.tag}>오픈 때 꼭</span> : r.tag === 'later' ? <span className={`${s.tag} ${s.later}`}>나중에</span> : null}
+                {r.tag === 'must' ? <span className={s.tag}>오픈 때 필수</span> : r.tag === 'later' ? <span className={`${s.tag} ${s.later}`}>나중에</span> : null}
                 <span>{r.value}</span></dd></div>))}</dl>
             </div>
           </section>

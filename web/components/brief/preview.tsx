@@ -26,7 +26,7 @@ export function BriefPreview({ a, current, limit }: { a: Answers; current?: Step
           <p className={s.secT}>{x.title}</p>
           {x.rows.length ? (
             <dl className={s.dl}>{x.rows.map((r, i) => (
-              <div key={i} className={s.row}><dt>{r.label}</dt><dd className={r.tag === 'ask' ? s.ask : ''}>{r.tag === 'must' ? '[오픈 때 꼭] ' : r.tag === 'later' ? '[나중에] ' : ''}{r.value}</dd></div>
+              <div key={i} className={s.row}><dt>{r.label}</dt><dd className={r.tag === 'ask' ? s.ask : ''}>{r.tag === 'must' ? '[오픈 때 필수] ' : r.tag === 'later' ? '[나중에] ' : ''}{r.value}</dd></div>
             ))}</dl>
           ) : <p className={s.empty}>답하면 여기에 채워져요</p>}
         </section>
