@@ -28,7 +28,8 @@
 
 .body{flex:1;overflow:auto;padding:28px 32px}
 
-.num{display:block;font-size:13px;font-weight:500;color:var(--bone-500);margin-bottom:6px}
+.num{display:block;font-size:14px;color:var(--bone-500);margin-bottom:4px}
+.numN{font-size:22px;color:var(--navy-900)}   /* 단계 번호 — 디돈 숫자(공통 Num) */
 .h2{font-size:21px;font-weight:600;letter-spacing:-.02em;margin:0 0 20px}
 
 .off{display:none}
@@ -36,7 +37,7 @@
 
 .fld{display:block;border:0;margin:0 0 16px;padding:0;font-size:13px;font-weight:500;color:var(--bone-700)}
 .fld b{color:var(--error);font-weight:600;margin-left:2px}
-.fld legend{padding:0;margin:0 0 6px;font-size:13px;font-weight:500;color:var(--bone-700)}
+.fld legend{padding:0;margin:0 0 10px;font-size:13px;font-weight:500;color:var(--bone-700)}
 .fld input:not([type=radio]),.fld textarea{
   display:block;width:100%;margin-top:6px;
   font-family:inherit;font-size:15px;font-weight:400;color:var(--bone-900);
@@ -46,15 +47,9 @@
 .fld input:focus,.fld textarea:focus{border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-soft)}
 .fld textarea{min-height:92px;resize:vertical}
 
-/* 무엇이 필요하세요 — 한 줄에 하나, 고르면 navy 로 채운다 */
-.need{display:flex;flex-direction:column;gap:6px;margin-top:2px}
-.need label{margin:0;display:block}
-.need input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
-.need span{display:block;padding:11px 14px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);font-size:14px;font-weight:400;color:var(--bone-900);
-  cursor:pointer;transition:border-color .15s,background .15s,color .15s}
-.need span:hover{border-color:var(--bone-500)}
-.need input:checked+span{border-color:var(--navy-800);background:var(--navy-800);color:#fff}
-.need input:focus-visible+span{box-shadow:0 0 0 3px var(--signal-soft);border-color:var(--signal)}
+/* 무엇이 필요하세요 — 공통 고르기 줄(components/ui): 괘선 + 원 표시, 고르면 점과 글자만 네이비. 서랍 글자 크기에 맞춰 15px */
+.need{margin-top:2px}
+.need label{padding:13px 0;font-size:15px;font-weight:400;color:var(--bone-900)}
 
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 
@@ -70,11 +65,13 @@
 .error a{text-decoration:underline}
 
 .foot{display:flex;gap:10px;align-items:center;padding:20px 0 0;border-top:1px solid var(--bone-200)}   /* 본문(.body) 안이라 좌우 여백 없이 — 이전·보내기가 위쪽 선의 양 끝에 붙는다 */
-.foot button{padding:0 20px;height:44px;border-radius:2px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
-.send{margin-left:auto;background:var(--navy-800);color:#fff;border:1px solid var(--navy-800)}
+/* 보내기·다음은 공통 주 버튼 색(navy-900), 이전은 글자 버튼 — 사이트 공통 부품과 같은 위계 */
+.foot button{padding:0 20px;height:44px;border-radius:2px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.send{margin-left:auto;background:var(--navy-900);color:#fff;border:1px solid var(--navy-900)}
+.send:hover{background:var(--navy-700);border-color:var(--navy-700)}
 .send:disabled{opacity:.6;cursor:default}
-.foot button:not(.send){background:none;border:1px solid var(--bone-300);color:var(--bone-700)}
-.foot button:not(.send):hover{background:var(--bone-100)}
+.foot button:not(.send){padding:0 2px;background:none;border:0;color:var(--bone-700);font-weight:500;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--bone-400)}
+.foot button:not(.send):hover{color:var(--bone-900);text-decoration-color:currentColor}
 
 .drawer[hidden],.backdrop[hidden]{display:none}
 .grab{display:none}

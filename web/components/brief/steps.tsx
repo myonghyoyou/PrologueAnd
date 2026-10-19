@@ -1,7 +1,7 @@
 'use client';
 import { Q } from '@/content/brief/questions';
 import { UNKNOWN, type Answers, type Feature, type Goal, type StepId } from '@/lib/brief/types';
-import { Impact, Multi, Seg, Single, TextIn } from './fields';
+import { Check, Follow, Impact, Multi, Seg, Single, TextIn } from './fields';
 import s from './fields.module.css';
 
 type P = { a: Answers; set: (p: Partial<Answers>) => void };
@@ -41,23 +41,23 @@ export function StepView({ id, a, set }: P & { id: StepId }) {
       {a.pages.length + a.pagesExtra.split(',').filter((x) => x.trim()).length > 10 ? <Impact why={Q.pages.manyWhy} /> : null}
     </>);
     case 'features': return (
-      <div className={s.cards}>
+      <div className={s.blocks}>
         {Q.features.opts.map((f: Feature) => (
-          <div key={f} className={a.features[f] ? `${s.card} ${s.on}` : s.card} data-feature={f} style={{ display: 'block' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-              <span style={{ fontWeight: 600 }}>{f}</span>
+          <div key={f} className={a.features[f] ? `${s.feat} ${s.featOn}` : s.feat} data-feature={f}>
+            <div className={s.featTop}>
+              <span className={s.featName}>{f}</span>
               <Seg value={a.features[f]} onChange={(v) => { const n = { ...a.features }; if (v) n[f] = v; else delete n[f]; set({ features: n, featuresUnknown: false }); }} />
             </div>
             {Q.features.why[f] ? <Impact why={Q.features.why[f]!} /> : null}
-            {f === '외국어 페이지' && !a.features[f] && a.audience.includes('외국인') ? <p className={s.help} data-suggest>외국인 손님이 본다고 하셨어요. 필요하면 골라 주세요.</p> : null}
-            {a.features[f] && f === '예약 받기' ? <div style={{ marginTop: 12 }}><Single compact label={Q.features.booking.label} opts={Q.features.booking.opts} value={a.booking} onChange={(v) => set({ booking: v })} /></div> : null}
-            {a.features[f] && f === '상품 결제' ? <div style={{ marginTop: 12 }}>
+            {f === '외국어 페이지' && !a.features[f] && a.audience.includes('외국인') ? <p className={s.suggest} data-suggest>외국인 손님이 본다고 하셨어요. 필요하면 골라 주세요.</p> : null}
+            {a.features[f] && f === '예약 받기' ? <Follow><Single compact label={Q.features.booking.label} opts={Q.features.booking.opts} value={a.booking} onChange={(v) => set({ booking: v })} /></Follow> : null}
+            {a.features[f] && f === '상품 결제' ? <Follow>
               <Single compact label={Q.features.shopCount.label} opts={Q.features.shopCount.opts} value={a.shopCount} onChange={(v) => set({ shopCount: v })} />
-              <Single compact label={Q.features.shopHow.label} opts={Q.features.shopHow.opts} value={a.shopHow} onChange={(v) => set({ shopHow: v })} /></div> : null}
-            {a.features[f] && f === '회원' ? <div style={{ marginTop: 12 }}><Single compact label={Q.features.member.label} opts={Q.features.member.opts} value={a.member} onChange={(v) => set({ member: v })} /></div> : null}
-            {a.features[f] && f === '외국어 페이지' ? <div style={{ marginTop: 12 }}>
+              <Single compact label={Q.features.shopHow.label} opts={Q.features.shopHow.opts} value={a.shopHow} onChange={(v) => set({ shopHow: v })} /></Follow> : null}
+            {a.features[f] && f === '회원' ? <Follow><Single compact label={Q.features.member.label} opts={Q.features.member.opts} value={a.member} onChange={(v) => set({ member: v })} /></Follow> : null}
+            {a.features[f] && f === '외국어 페이지' ? <Follow>
               <Multi label={Q.features.langs.label} opts={Q.features.langs.opts} values={a.langs} onChange={(v) => set({ langs: v })} />
-              <TextIn label={Q.features.langs.other} value={a.langOther} onChange={(v) => set({ langOther: v })} /></div> : null}
+              <TextIn label={Q.features.langs.other} value={a.langOther} onChange={(v) => set({ langOther: v })} /></Follow> : null}
           </div>
         ))}
       </div>
@@ -79,51 +79,49 @@ export function StepView({ id, a, set }: P & { id: StepId }) {
     case 'design': return (<>
       <Single opts={Q.design.opts} value={a.design} onChange={(v) => set({ design: v })} />
       {a.design === '우리만의 디자인' ? <Impact why={Q.design.customWhy} /> : null}
-      <p className={s.legend} style={{ marginTop: 24 }}>{Q.design.refsLabel}</p>
-      {[0, 1, 2].map((i) => {
-        const r = a.refs[i] ?? { url: '', likes: [], memo: '' };
-        const put = (p: Partial<typeof r>) => { const refs = [...a.refs]; while (refs.length <= i) refs.push({ url: '', likes: [], memo: '' }); refs[i] = { ...r, ...p }; set({ refs }); };
-        if (i > 0 && !a.refs[i - 1]?.url.trim()) return null;
-        return (
-          <div key={i} className={s.card} style={{ display: 'block', marginBottom: 10 }} data-ref={i}>
-            <TextIn label={`참고 ${i + 1} 주소`} value={r.url} onChange={(v) => put({ url: v })} type="url" />
-            {r.url.trim() ? <>
-              <Multi label="이 사이트의 좋은 점" opts={Q.design.likes} values={r.likes} onChange={(v) => put({ likes: v })} />
-              <TextIn label={Q.design.memo} value={r.memo} onChange={(v) => put({ memo: v })} />
-            </> : null}
-          </div>
-        );
-      })}
+      <p className={s.legend} style={{ marginTop: 8 }}>{Q.design.refsLabel}</p>
+      <div className={s.blocks}>
+        {[0, 1, 2].map((i) => {
+          const r = a.refs[i] ?? { url: '', likes: [], memo: '' };
+          const put = (p: Partial<typeof r>) => { const refs = [...a.refs]; while (refs.length <= i) refs.push({ url: '', likes: [], memo: '' }); refs[i] = { ...r, ...p }; set({ refs }); };
+          if (i > 0 && !a.refs[i - 1]?.url.trim()) return null;
+          return (
+            <div key={i} className={s.block} data-ref={i}>
+              <TextIn label={`참고 ${i + 1} 주소`} value={r.url} onChange={(v) => put({ url: v })} type="url" />
+              {r.url.trim() ? <Follow>
+                <Multi label="이 사이트의 좋은 점" opts={Q.design.likes} values={r.likes} onChange={(v) => put({ likes: v })} />
+                <TextIn label={Q.design.memo} value={r.memo} onChange={(v) => put({ memo: v })} />
+              </Follow> : null}
+            </div>
+          );
+        })}
+      </div>
       <TextIn label={Q.design.dislikes} value={a.dislikes} onChange={(v) => set({ dislikes: v })} multiline />
     </>);
     case 'ops': return <Multi opts={Q.ops.opts} exclusive="없어요(다 맡길게요)" values={a.ops} onChange={(v) => set({ ops: v })} />;
-    case 'own': return (<>
-      {Q.own.rows.map((r) => (
-        <div key={r.key} className={s.card} style={{ display: 'block', marginBottom: 12 }} data-own={r.key}>
-          <p style={{ margin: 0, fontWeight: 600 }}>{r.label}</p>
-          <p className={s.help} style={{ margin: '4px 0 10px' }}>{r.why}</p>
-          <Multi opts={r.opts} values={[a.own[r.key]]} onChange={(v) => set({ own: { ...a.own, [r.key]: v.at(-1) ?? a.own[r.key] } })} />
-        </div>
-      ))}
-    </>);
+    case 'own': return (
+      <div className={s.blocks}>
+        {Q.own.rows.map((r) => (
+          <div key={r.key} className={s.block} data-own={r.key}>
+            <p className={s.blockT}>{r.label}</p>
+            <p className={s.blockWhy}>{r.why}</p>
+            <Single compact opts={r.opts} value={a.own[r.key]} onChange={(v) => set({ own: { ...a.own, [r.key]: v } })} />
+          </div>
+        ))}
+      </div>
+    );
     case 'scope': return (<>
       <Single label={Q.scope.revisions.label} opts={Q.scope.revisions.opts} value={a.revisions} onChange={(v) => set({ revisions: v })} />
       <Single label={Q.scope.care.label} opts={Q.scope.care.opts} value={a.care} onChange={(v) => set({ care: v })} />
-      <label className={s.chip} style={{ marginTop: 8 }}>
-        <input type="checkbox" className={s.native} checked={a.monthlyCost} onChange={(e) => set({ monthlyCost: e.target.checked })} />
-        <span>{a.monthlyCost ? '✓ ' : ''}{Q.scope.monthly}</span>
-      </label>
+      <Check label={Q.scope.monthly} checked={a.monthlyCost} onChange={(v) => set({ monthlyCost: v })} />
     </>);
     case 'when': return (<>
       <TextIn label={Q.when.date} value={a.openDate} onChange={(v) => set({ openDate: v, openUnknown: false })} type="date" />
-      <Multi opts={[Q.when.dateUnknown]} values={a.openUnknown ? [Q.when.dateUnknown] : []} onChange={(v) => set({ openUnknown: v.length > 0, openDate: v.length ? '' : a.openDate })} />
+      <Check label={Q.when.dateUnknown} checked={a.openUnknown} onChange={(v) => set({ openUnknown: v, openDate: v ? '' : a.openDate })} />
       {a.openDate ? <Single label={Q.when.fixed.label} opts={Q.when.fixed.opts} value={a.openFixed} onChange={(v) => set({ openFixed: v })} /> : null}
       <Single label={Q.when.budget.label} opts={Q.when.budget.opts} value={a.budget} onChange={(v) => set({ budget: v })} />
-      <label className={s.chip}>
-        <input type="checkbox" className={s.native} checked={a.budgetInBrief} onChange={(e) => set({ budgetInBrief: e.target.checked })} data-brief-budget-in />
-        <span>{a.budgetInBrief ? '✓ ' : ''}{Q.when.budgetIn}</span>
-      </label>
-      <p className={s.help}>{Q.when.budgetHelp}</p>
+      <Check label={Q.when.budgetIn} checked={a.budgetInBrief} onChange={(v) => set({ budgetInBrief: v })} data="data-brief-budget-in" />
+      <p className={s.checkHelp}>{Q.when.budgetHelp}</p>
       <Single label={Q.when.decider.label} opts={Q.when.decider.opts} value={a.decider} onChange={(v) => set({ decider: v })} />
     </>);
   }

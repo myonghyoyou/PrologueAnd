@@ -2,6 +2,7 @@
 import { SAMPLE } from '@/content/brief/sample';
 import { BriefPreview } from './preview';
 import s from './intro.module.css';
+import { ui } from '@/components/ui/controls';
 
 /** 시작 화면 — 부담 없이 시작하게: 걸리는 시간, 연락처를 묻지 않음, 저장 위치, 중립, 결과 견본(명세 §11) */
 export function Intro({ onStart }: { onStart: () => void }) {
@@ -15,7 +16,7 @@ export function Intro({ onStart }: { onStart: () => void }) {
         <li>답은 이 기기에만 저장</li>
       </ul>
       <p className={s.neutral}>특정 업체를 추천하거나 연결하지 않아요.</p>
-      <button type="button" className={s.start} onClick={onStart} data-brief-start>시작하기</button>
+      <button type="button" className={`${ui.btn} ${ui.pri} ${s.start}`} onClick={onStart} data-brief-start>시작하기</button>
       <figure className={s.sample} data-brief-sample>
         <figcaption className={s.cap}>이런 요청서가 만들어져요 · 가상의 가게 견본</figcaption>
         <BriefPreview a={SAMPLE} limit={3} />

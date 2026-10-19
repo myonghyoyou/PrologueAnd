@@ -1,28 +1,28 @@
 'use client';
 import { useId, useState } from 'react';
 import { Q } from '@/content/brief/questions';
+import { ChoiceRow, Tag, ui } from '@/components/ui/controls';
 import s from './fields.module.css';
 
 type Opt = readonly string[];
 
-/** compact: 기능 아래 이어 질문처럼 덜 중요한 선택 — 큰 카드 대신 한 줄 알약 */
+/** 하나 고르기 — 기본은 괘선 줄, compact(기능 아래 이어 질문·명의처럼 덜 중요한 선택)는 각진 칸 한 줄 */
 export function Single({ label, opts, value, onChange, name, compact }: { label?: string; opts: Opt; value?: string; onChange: (v: string) => void; name?: string; compact?: boolean }) {
   const id = useId();
+  const Item = compact ? Tag : ChoiceRow;
   return (
     <fieldset className={s.set}>
       {label ? <legend className={s.legend}>{label}</legend> : null}
-      <div className={compact ? s.chips : s.cards}>
+      <div className={compact ? `${ui.tags} ${ui.small}` : ui.rows}>
         {opts.map((o) => (
-          <label key={o} className={`${compact ? s.chip : s.card}${value === o ? ` ${s.on}` : ''}`}>
-            <input type="radio" name={name ?? id} value={o} checked={value === o} onChange={() => onChange(o)} className={s.native} />
-            <span>{o}</span>
-          </label>
+          <Item key={o} type="radio" name={name ?? id} value={o} checked={value === o} onChange={() => onChange(o)}>{o}</Item>
         ))}
       </div>
     </fieldset>
   );
 }
 
+/** 여러 개 고르기 — 각진 칸. exclusive(「없어요」처럼 다른 답과 같이 고를 수 없는 것)를 고르면 나머지를 지운다 */
 export function Multi({ label, opts, values, onChange, exclusive }: { label?: string; opts: Opt; values: string[]; onChange: (v: string[]) => void; exclusive?: string }) {
   const toggle = (o: string) => {
     if (o === exclusive) return onChange(values.includes(o) ? [] : [o]);
@@ -31,16 +31,24 @@ export function Multi({ label, opts, values, onChange, exclusive }: { label?: st
   };
   return (
     <fieldset className={s.set}>
-      {label ? <legend className={s.legend}>{label}</legend> : null}
-      <div className={s.chips}>
-        {opts.map((o) => (
-          <label key={o} className={values.includes(o) ? `${s.chip} ${s.on}` : s.chip}>
-            <input type="checkbox" checked={values.includes(o)} onChange={() => toggle(o)} className={s.native} />
-            <span>{o}</span>
-          </label>
-        ))}
+      {label ? <legend className={s.legend}>{label} <span className={ui.cap}>· 여러 개 골라도 돼요</span></legend> : null}
+      <div className={ui.tags}>
+        {opts.map((o) => <Tag key={o} type="checkbox" checked={values.includes(o)} onChange={() => toggle(o)}>{o}</Tag>)}
       </div>
     </fieldset>
+  );
+}
+
+/** 켜고 끄는 한 가지 — 체크 네모 줄 */
+export function Check({ label, checked, onChange, data }: { label: string; checked: boolean; onChange: (v: boolean) => void; data?: string }) {
+  return (
+    <div className={`${ui.rows} ${s.check}`}>
+      <label className={ui.choice} data-choice>
+        <input type="checkbox" className={ui.native} checked={checked} onChange={(e) => onChange(e.target.checked)} {...(data ? { [data]: '' } : {})} />
+        <span className={ui.box} data-mark aria-hidden="true" />
+        <span className={ui.lb}>{label}</span>
+      </label>
+    </div>
   );
 }
 
@@ -55,7 +63,7 @@ export function TextIn({ label, value, onChange, help, multiline, data, type = '
   );
 }
 
-/** 「견적에 크게 영향」 — 누르면 이유가 펼쳐진다(마우스 올림 말풍선은 폰에서 안 되니 쓰지 않는다) */
+/** 「견적에 크게 영향」 — 배지 대신 문장형 캡션. 누르면 이유가 펼쳐진다(마우스 올림 말풍선은 폰에서 안 되니 쓰지 않는다) */
 export function Impact({ why }: { why: string }) {
   const [open, setOpen] = useState(false);
   return (
@@ -75,4 +83,9 @@ export function Seg({ value, onChange }: { value?: 'must' | 'later'; onChange: (
       ))}
     </div>
   );
+}
+
+/** 고른 답에 딸린 질문 — 왼쪽 네이비 세로선(GOV.UK 조건부 질문) */
+export function Follow({ children }: { children: React.ReactNode }) {
+  return <div className={s.follow} data-follow>{children}</div>;
 }

@@ -1,20 +1,23 @@
 .step{padding-bottom:24px}
-.top{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--bone-600);font-weight:500}
-.bar{flex:1;display:flex;gap:4px}
-.bar i{flex:1;height:3px;border-radius:2px;background:var(--bone-200)}
-.bar i.segOn{background:var(--navy-900)}
-.pv{flex-shrink:0;border:1px solid var(--bone-300);background:var(--bone-0);border-radius:999px;font:inherit;font-size:12px;font-weight:600;padding:0 12px;min-height:32px;color:var(--bone-800);cursor:pointer}
+/* 진행 — 디돈 숫자 「01 / 04」 + 묶음 이름, 아래 1px 괘선 위에 네이비 진행선 */
+.top{position:relative;display:flex;align-items:baseline;gap:10px;padding-bottom:14px}
+.n{font-size:30px;line-height:1;color:var(--navy-900)}
+.of{font-size:15px;color:var(--bone-500)}
+.ph{font-size:13px;font-weight:500;color:var(--bone-600);margin-left:4px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.pv{margin-left:auto;min-height:32px;font-size:13px}
 @media (min-width:1100px){ .pv{display:none} }
-.q{margin:32px 0 0;font-size:28px;font-weight:700;letter-spacing:-.025em;line-height:1.4;outline:none}
+.bar{position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--bone-200)}
+.bar b{position:absolute;left:0;top:-.5px;height:2px;background:var(--navy-900)}
+.q{margin:36px 0 0;font-size:28px;font-weight:700;letter-spacing:-.025em;line-height:1.4;outline:none}
 .help{margin:10px 0 28px;color:var(--bone-600);font-size:15px}
-.dunno{display:inline-block;margin-top:4px;background:none;border:0;padding:8px 0;font:inherit;font-size:14px;color:var(--bone-600);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.dunno{margin-top:12px;font-size:14px}
 .error{margin:12px 0 0;font-size:14px;font-weight:600;color:var(--error)}
 .navbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(250,249,246,.96);border-top:1px solid var(--bone-200);padding:14px 0 calc(14px + env(safe-area-inset-bottom))}
 /* 넓은 화면에서 미리보기를 붙이면 본문이 왼쪽으로 가므로 --brief-nav 로 너비를 맞춘다 */
 .navin{max-width:var(--brief-nav,640px);margin:0 auto;padding:0 max(0px, env(safe-area-inset-left))}
-.navrow{max-width:640px;display:flex;justify-content:space-between;gap:12px}
-.btn{height:48px;padding:0 24px;border-radius:3px;font:inherit;font-size:15px;font-weight:600;border:1px solid var(--bone-300);background:var(--bone-0);color:var(--bone-900);cursor:pointer}
-.right{display:flex;gap:8px}
-.pri{background:var(--navy-900);border-color:var(--navy-900);color:var(--bone-0);min-width:140px}
+.navrow{max-width:640px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.right{display:flex;gap:10px;align-items:center}
+.next{min-width:140px}
 @media (max-width:700px){ .q{font-size:23px} .navin{padding:0 16px} }
 @media print{ .navbar{display:none} }

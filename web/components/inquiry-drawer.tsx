@@ -9,6 +9,7 @@ import { getProject } from '@/content';
 import s from './inquiry-drawer.module.css';
 import { CONTACT_MAIL } from '@/lib/contact';
 import { SUMMARY_MARK, appendSummary } from '@/lib/brief/prefill';
+import { ChoiceRow, Num, ui } from './ui/controls';
 
 type Step = 'step1' | 'step2' | 'done';
 /** 요청서 도구의 「Prologue&에도 보내기」가 넘기는 내용 — need 는 NEED 중 하나 */
@@ -246,10 +247,10 @@ export function InquiryDrawer() {
         ) : (
           <form ref={form} className={s.body} data-lenis-prevent onSubmit={submit} noValidate>
             <div className={step1 ? s.on : s.off}>
-              <span className={s.num}>1 / 2</span><div className={s.h2}>어떤 일인가요</div>
+              <span className={s.num}><Num n={1} className={s.numN} /><span className={ui.num}> / 02</span></span><div className={s.h2}>어떤 일인가요</div>
               <fieldset className={s.fld}><legend>무엇이 필요하세요?</legend>
-                <div className={s.need}>{NEED.map((o) => (
-                  <label key={o}><input type="radio" name="need" value={o} /><span>{o}</span></label>
+                <div className={`${ui.rows} ${s.need}`}>{NEED.map((o) => (
+                  <ChoiceRow key={o} type="radio" name="need" value={o}>{o}</ChoiceRow>
                 ))}</div>
               </fieldset>
               <label className={s.fld}>지금 상황 <b>*</b><textarea name="pain" rows={4} placeholder="한두 줄이면 됩니다. 예) 병동마다 비품 요청을 카톡이랑 엑셀로 받고 있어요" /></label>
@@ -257,7 +258,7 @@ export function InquiryDrawer() {
             </div>
 
             <div className={step1 ? s.off : s.on}>
-              <span className={s.num}>2 / 2</span><div className={s.h2}>바라는 것과 연락처</div>
+              <span className={s.num}><Num n={2} className={s.numN} /><span className={ui.num}> / 02</span></span><div className={s.h2}>바라는 것과 연락처</div>
               <label className={s.fld}>이렇게 됐으면 (선택)<textarea name="goal" rows={3} placeholder="예) 요청이 한 곳으로 모이고, 진행 상황을 서로 물어보지 않아도 되게" /></label>
               <div className={s.grid2}>
                 <Select name="when" label="언제까지" options={WHEN} />

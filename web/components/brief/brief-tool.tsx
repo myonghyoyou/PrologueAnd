@@ -62,9 +62,9 @@ export function BriefTool() {
     : DUNNO_CLEAR[step]
       ? { label: Q.dunno, onClick: () => { set(DUNNO_CLEAR[step]!); next(); } } : undefined;
 
-  if (!ready) return <div data-brief aria-busy="true" />;
+  if (!ready) return <div className={s.root} data-brief aria-busy="true" />;
   return (
-    <div data-brief>
+    <div className={s.root} data-brief>
       {noStore ? <p className={s.nostore} data-brief-nostore>이 브라우저에서는 저장이 안 돼서 새로고침하면 답이 사라져요.</p> : null}
       {!started
         ? <div className={s.single}><Intro onStart={start} /></div>

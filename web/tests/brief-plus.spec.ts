@@ -46,8 +46,7 @@ test('진행 표시는 묶음 이름과 네 칸 — 고치기를 골라도 바�
   await expect(pr).toContainText('어떤 홈페이지 · 4단계 중 1단계');
   await pick(page, '지금 홈페이지 고치기'); await next(page);
   await expect(pr).toContainText('어떤 홈페이지 · 4단계 중 1단계');
-  await expect(pr).not.toContainText('/');
-  await expect(pr.locator('[data-seg]')).toHaveCount(4);
+  await expect(pr.locator('[data-numeral]')).toHaveText('01');
 });
 
 test.describe('카톡·문자로 보내기', () => {

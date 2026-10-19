@@ -1,0 +1,42 @@
+/* 사이트 공통 부품 — 구조적 편집물(docs/14 §3.3): 모서리 2px, 카드·채움 없음, 네이비는 획.
+   원형은 선택 표시(라디오 점)뿐. 고름은 :has(input:checked) 로 그린다 — 비제어 폼(문의 서랍)에서도 같은 모양 */
+
+/* 버튼 — 주(네이비 채움, 화면에 하나) · 보조(먹색 외곽선) · 글자(밑줄) */
+.btn{height:48px;padding:0 24px;border-radius:2px;font:inherit;font-size:15px;font-weight:600;letter-spacing:-.01em;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.pri{background:var(--navy-900);border:1px solid var(--navy-900);color:var(--bone-0)}
+.pri:hover{background:var(--navy-700);border-color:var(--navy-700)}
+.pri:disabled{opacity:.6;cursor:default}
+.sec{background:none;border:1px solid var(--bone-900);color:var(--bone-900)}
+.sec:hover{background:var(--bone-100)}
+.txt{background:none;border:0;padding:0 2px;min-height:44px;font:inherit;font-size:15px;font-weight:500;color:var(--bone-700);cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--bone-400)}
+.txt:hover{color:var(--bone-900);text-decoration-color:currentColor}
+.btn:focus-visible,.txt:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+/* 디돈 숫자 — 단계·단원 번호. 기본 숫자 모양이 낮은 숫자(올드스타일)라 고른 높이로 */
+.num{font-family:var(--font-serif),Georgia,serif;font-weight:400;font-variant-numeric:lining-nums tabular-nums;font-feature-settings:'lnum' 1,'tnum' 1}
+
+/* 하나·여러 개 고르기(줄) — 1px 괘선, 왼쪽 표시. 글자 축은 바깥 제목과 같고, 올림 바탕만 옆으로 넓힌다 */
+.rows{border-top:1px solid var(--bone-200)}
+.choice{position:relative;display:flex;gap:14px;align-items:flex-start;padding:15px 0;border-bottom:1px solid var(--bone-200);cursor:pointer;font-size:16px;line-height:1.5}
+.choice:hover{background:var(--bone-100);box-shadow:-12px 0 0 var(--bone-100),12px 0 0 var(--bone-100)}
+.native{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.dot,.box{flex:none;position:relative;width:18px;height:18px;margin-top:2px;border:1.5px solid var(--bone-500);background:var(--bone-0)}
+.dot{border-radius:50%}
+.box{border-radius:2px}
+.choice:has(.native:checked) .dot,.choice:has(.native:checked) .box{border-color:var(--navy-900)}
+.choice:has(.native:checked) .dot::after{content:'';position:absolute;inset:3.5px;border-radius:50%;background:var(--navy-900)}
+.choice:has(.native:checked) .box::after{content:'';position:absolute;left:4.5px;top:1px;width:5px;height:10px;border:solid var(--navy-900);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.choice:has(.native:checked) .lb{color:var(--navy-900);font-weight:500}
+.choice:has(.native:focus-visible) .dot,.choice:has(.native:focus-visible) .box{outline:2px solid var(--signal);outline-offset:2px}
+
+/* 여러 개 고르기(칸) — 각진 1px 외곽선. 고르면 선·글자만 네이비 + 앞에 ✓(색만으로 구분하지 않는다) */
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{position:relative;display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);font-size:15px;color:var(--bone-700);cursor:pointer;transition:border-color .15s,color .15s}
+.tag:hover{border-color:var(--bone-500)}
+.tag:has(.native:checked){border-color:var(--navy-900);color:var(--navy-900);font-weight:500}
+.tag:has(.native:checked)::before{content:'✓';margin-right:6px;font-size:13px}
+.tag:has(.native:focus-visible){outline:2px solid var(--signal);outline-offset:2px}
+.small .tag{min-height:36px;padding:0 12px;font-size:14px}
+
+/* 문장형 캡션 — 라벨·안내 */
+.cap{font-size:13px;font-weight:500;letter-spacing:.01em;line-height:1.5;color:var(--bone-500)}

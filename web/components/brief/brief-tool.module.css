@@ -1,3 +1,5 @@
+/* 한글은 낱말 단위로 줄을 바꾼다 — 「베 / 이커리」처럼 끊기지 않게 */
+.root{word-break:keep-all;overflow-wrap:anywhere}
 .single{max-width:640px;margin:0 auto}
 .two{max-width:640px;margin:0 auto}
 .aside{display:none}
