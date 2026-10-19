@@ -22,7 +22,7 @@ test.describe('결과', () => {
     await finish(page);
     await expect(page.locator('[data-brief-doc] h1')).toHaveText('홈페이지 제작 요청서 · 가람 로스터리');
     await expect(page.locator('[data-brief-impact] li')).toHaveCount(2);
-    await expect(page.locator('[data-brief-vendor] li').first()).toHaveText('도메인과 호스팅은 제 이름으로 사 주시나요?');
+    await expect(page.locator('[data-brief-vendor] li').first()).toHaveText('수정은 몇 번까지 포함인가요?');
     await expect(page.locator('[data-brief-compare] tbody tr')).toHaveCount(7);
     await expect(page.locator('[data-brief-privacy]')).toContainText('이 기기에만 저장돼요');
     const order = await page.locator('[data-brief-result] > [data-part]').evaluateAll((els) => els.map((e) => e.getAttribute('data-part')));

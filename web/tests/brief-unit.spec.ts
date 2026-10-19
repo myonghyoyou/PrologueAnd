@@ -69,12 +69,11 @@ test.describe('결과 계산', () => {
     expect(t).toContain('외국어 페이지 (2개 언어)');
     expect(t).toContain('개업·행사 날짜에 맞춰야 함');
   });
-  test('업체 질문: 항상 4개 + 조건', () => {
+  test('업체 질문: 항상 3개 + 조건 — 명의 단원과 겹치는 질문은 묻지 않는다', () => {
     const q = vendorQuestions(cafe());
-    expect(q.slice(0, 4)).toEqual([
-      '도메인과 호스팅은 제 이름으로 사 주시나요?', '수정은 몇 번까지 포함인가요?',
-      '오픈 뒤 매달 드는 비용은 무엇이고 얼마인가요?', '오픈 뒤 고칠 게 생기면 어디로 연락하고, 보통 며칠 걸리나요?']);
-    expect(q).toContain('오픈할 때 소스와 디자인 파일을 넘겨 주시나요?');
+    expect(q.slice(0, 3)).toEqual([
+      '수정은 몇 번까지 포함인가요?', '오픈 뒤 매달 드는 비용은 무엇이고 얼마인가요?', '오픈 뒤 고칠 게 생기면 어디로 연락하고, 보통 며칠 걸리나요?']);
+    expect(q.join('\n')).not.toMatch(/도메인과 호스팅|소스와 디자인 파일/);
     expect(q).toContain('관리자 화면에서 제가 직접 고칠 수 있는 범위는 어디까지인가요?');
     expect(q).toContain('네이버 예약은 어떻게 연결하시나요?');
     expect(q).toContain('글 작성 비용은 견적에 들어 있나요?');
@@ -342,7 +341,7 @@ test.describe('복사 글 다듬기 — 업체에게 보내는 문서 말투', (
 
 test('복사 글: 단원 번호와 질문 번호가 헷갈리지 않고, 줄 이름이 단원 제목을 되풀이하지 않는다', () => {
   const t = toPlainText({ ...cafe(), links: ['인스타그램'] }, D);
-  expect(t).toContain('Q1. 도메인과 호스팅은 제 이름으로 사 주시나요?');
+  expect(t).toContain('Q1. 수정은 몇 번까지 포함인가요?');
   expect(t).toContain('- 이용 중: 인스타그램');
   expect(t).not.toContain('- 서비스:');
 });

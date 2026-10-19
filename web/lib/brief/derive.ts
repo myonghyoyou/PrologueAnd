@@ -150,8 +150,8 @@ export function impactItems(a: Answers, today: Date): { title: string; reason: s
 }
 
 export function vendorQuestions(a: Answers): string[] {
-  const q = ['도메인과 호스팅은 제 이름으로 사 주시나요?', '수정은 몇 번까지 포함인가요?', ...(a.monthlyCost ? ['오픈 뒤 매달 드는 비용은 무엇이고 얼마인가요?'] : []), '오픈 뒤 고칠 게 생기면 어디로 연락하고, 보통 며칠 걸리나요?'];
-  if (a.own.source === '오픈 때 받기') q.push('오픈할 때 소스와 디자인 파일을 넘겨 주시나요?');
+  // 명의(도메인·호스팅·소스)는 요청서 「명의」 단원에 적으므로 다시 묻지 않는다
+  const q = ['수정은 몇 번까지 포함인가요?', ...(a.monthlyCost ? ['오픈 뒤 매달 드는 비용은 무엇이고 얼마인가요?'] : []), '오픈 뒤 고칠 게 생기면 어디로 연락하고, 보통 며칠 걸리나요?'];
   if (needsAdmin(a)) q.push('관리자 화면에서 제가 직접 고칠 수 있는 범위는 어디까지인가요?');
   if (a.features['예약 받기']) q.push(a.booking === '네이버 예약 연결' ? '네이버 예약은 어떻게 연결하시나요?' : '예약은 어떤 방식으로 만드시나요?');
   if (a.features['상품 결제']) q.push('결제 수수료와 결제 서비스 가입은 누가 하나요?');
