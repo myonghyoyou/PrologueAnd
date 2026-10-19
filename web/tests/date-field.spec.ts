@@ -63,3 +63,18 @@ test('달력: 모서리 2px 이하, 화면 밖으로 넘치지 않는다', async
   expect(b.x).toBeGreaterThanOrEqual(0);
   expect(b.x + b.width).toBeLessThanOrEqual(vw);
 });
+
+test('넓은 화면: 입력칸과 달력의 양 끝이 맞는다, 폰: 입력칸은 꽉 찬다', async ({ page }, info) => {
+  await seedWhen(page);
+  const btn = page.locator('[data-date-field] button');
+  await btn.click();
+  await expect(cal(page)).toBeVisible();
+  const f = (await btn.boundingBox())!, c = (await cal(page).boundingBox())!;
+  if (info.project.name === 'phone') {
+    const h1 = (await page.locator('h1').boundingBox())!;
+    expect(Math.abs(f.width - h1.width)).toBeLessThanOrEqual(2);
+  } else {
+    expect(Math.abs(f.x - c.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(f.x + f.width - (c.x + c.width))).toBeLessThanOrEqual(1);
+  }
+});

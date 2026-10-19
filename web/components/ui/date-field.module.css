@@ -1,6 +1,9 @@
 /* 날짜 고르기 — react-datepicker 기본 모양을 사이트 기준으로 덮는다(docs/14 §3.3: 모서리 2px, 1px 괘선, 네이비) */
 .field{display:block;margin:0 0 20px}
-.field :global(.react-datepicker-wrapper){display:block;width:100%}
+/* 달력과 입력칸은 같은 너비(--cal-w) — 넓은 화면에서 양 끝이 맞는다. 날짜는 짧아 긴 칸이 필요 없다. 폰은 칸을 꽉 채우고 달력은 가운데 띄운다 */
+.field{--cal-w:320px}
+.field :global(.react-datepicker-wrapper){display:block;width:var(--cal-w)}
+@media (max-width:700px){ .field :global(.react-datepicker-wrapper){width:100%} }
 .label{display:block;margin:0 0 6px;font-size:13px;font-weight:500;color:var(--bone-700)}
 .help{display:block;margin-top:6px;font-size:13px;color:var(--bone-500)}
 
@@ -18,8 +21,8 @@
 @keyframes calIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){ .popper :global(.react-datepicker){animation:none} }
 
-.cal:global(.react-datepicker){font-family:inherit;font-size:14px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);box-shadow:var(--shadow);padding:14px 14px 10px;color:var(--bone-900)}
-.cal :global(.react-datepicker__month-container){float:none}
+.cal:global(.react-datepicker){box-sizing:border-box;width:var(--cal-w,320px);font-family:inherit;font-size:14px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);box-shadow:var(--shadow);padding:14px 14px 10px;color:var(--bone-900)}
+.cal :global(.react-datepicker__month-container){float:none;width:100%}
 .cal :global(.react-datepicker__header){background:none;border:0;border-bottom:1px solid var(--bone-200);border-radius:0;padding:0 0 8px}
 .cal :global(.react-datepicker__day-names){margin:10px 0 0;display:flex}
 .cal :global(.react-datepicker__day-name){flex:1;width:40px;margin:0;font-size:12px;font-weight:500;color:var(--bone-500);line-height:24px}
