@@ -1,10 +1,10 @@
 import { Q } from '@/content/brief/questions';
-import { UNKNOWN, type Answers, type Feature } from './types';
+import { UNKNOWN, type Answers, type Feature, type StepId } from './types';
 
-export type Row = { label: string; value: string; tag?: 'must' | 'later' | 'ask' };
+/** edit: 그 줄을 고칠 질문(업체 제안 항목) */
+export type Row = { label: string; value: string; tag?: 'must' | 'later' | 'ask'; edit?: StepId };
 export type Section = { id: string; title: string; rows: Row[] };
 
-const ASK = '업체 제안 받기';
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 const list = (xs: string[]) => xs.filter(Boolean).join(', ');
 const dateKo = (d: Date) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
@@ -23,25 +23,31 @@ function featureDetail(a: Answers, f: Feature): string {
   return '';
 }
 
-export function unknownItems(a: Answers): string[] {
-  const out: string[] = [];
-  if (a.mode === 'renew' && isUnknown(a.renewAmount)) out.push('옮길 글·사진 양');
-  if (a.audience.length === 0 || a.audience.includes(UNKNOWN)) out.push('주로 보는 사람');
-  if (pagesAll(a).length === 0) out.push('페이지 구성');
-  if (a.featuresUnknown || (featureEntries(a).length === 0 && !a.featuresExtra.trim())) out.push('필요한 기능');
-  if (a.links.length === 0) out.push('이어져야 하는 것');
-  if (isUnknown(a.copy)) out.push('소개 글');
-  if (isUnknown(a.photo)) out.push('사진');
-  if (a.brand.length === 0) out.push('디자인 자료');
-  if (isUnknown(a.design)) out.push('디자인 방식');
-  if (a.ops.length === 0) out.push('오픈 뒤 운영');
+/** 업체 제안으로 넘길 항목과 그 항목을 고칠 질문 — 결과에서 항목마다 「고치기」로 바로 간다 */
+export function unknownList(a: Answers): { label: string; step: StepId }[] {
+  const out: { label: string; step: StepId }[] = [];
+  const add = (label: string, step: StepId) => out.push({ label, step });
+  if (a.mode === 'renew' && isUnknown(a.renewAmount)) add('옮길 글·사진 양', 'renew');
+  if (a.audience.length === 0 || a.audience.includes(UNKNOWN)) add('주로 보는 사람', 'audience');
+  if (pagesAll(a).length === 0) add('페이지 구성', 'pages');
+  if (a.featuresUnknown || (featureEntries(a).length === 0 && !a.featuresExtra.trim())) add('필요한 기능', 'features');
+  if (a.links.length === 0) add('이어져야 하는 것', 'links');
+  if (isUnknown(a.copy)) add('소개 글', 'content');
+  if (isUnknown(a.photo)) add('사진', 'content');
+  if (a.brand.length === 0) add('디자인 자료', 'brand');
+  if (isUnknown(a.design)) add('디자인 방식', 'design');
+  if (a.ops.length === 0) add('오픈 뒤 운영', 'ops');
   (['domain', 'hosting', 'admin', 'source'] as const).forEach((k) => {
-    if (isUnknown(a.own[k])) out.push(Q.own.rows.find((r) => r.key === k)!.label.replace(/s*(.*?)/g, ''));
+    if (isUnknown(a.own[k])) add(Q.own.rows.find((r) => r.key === k)!.label.replace(/\s*\(.*?\)/g, ''), 'own');
   });
-  if (!a.revisions || a.revisions === '업체 제안') out.push('수정 횟수');
-  if (!a.care) out.push('오픈 뒤 관리');
-  if (!a.openDate) out.push('오픈 일정');
+  if (!a.revisions || a.revisions === '업체 제안') add('수정 횟수', 'scope');
+  if (!a.care) add('오픈 뒤 관리', 'scope');
+  if (!a.openDate) add('오픈 일정', 'when');
   return out;
+}
+
+export function unknownItems(a: Answers): string[] {
+  return unknownList(a).map((x) => x.label);
 }
 
 export function buildBrief(a: Answers, today: Date): { title: string; subtitle: string; sections: Section[] } {
@@ -89,7 +95,7 @@ export function buildBrief(a: Answers, today: Date): { title: string; subtitle: 
     ...(a.decider ? [{ label: '최종 결정', value: a.decider }] : []),
   ] });
   if (a.budgetInBrief && a.budget && !isUnknown(a.budget)) sections.push({ id: 'budget', title: '예산', rows: [{ label: '생각하는 예산', value: a.budget }] });
-  sections.push({ id: 'unknown', title: '업체 제안을 받고 싶은 것', rows: unknownItems(a).map((l) => ({ label: l, value: ASK, tag: 'ask' as const })) });
+  sections.push({ id: 'unknown', title: '업체 제안을 받고 싶은 것', rows: unknownList(a).map((x) => ({ label: x.label, value: '', tag: 'ask' as const, edit: x.step })) });
   return {
     title: `홈페이지 제작 요청서 · ${name}`,
     subtitle: `${a.mode === 'renew' ? '지금 홈페이지 고치기' : '새로 만들기'} · ${dateKo(today)} 작성`,

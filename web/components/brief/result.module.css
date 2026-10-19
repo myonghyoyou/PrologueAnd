@@ -13,7 +13,10 @@
 .row dt{color:var(--bone-600)}.row dd{margin:0;overflow-wrap:anywhere}
 .tag{display:inline-block;margin-right:8px;padding:0 6px;border:1px solid var(--navy-900);border-radius:2px;font-size:12px;font-weight:600;line-height:20px;color:var(--navy-900)}
 .later{border-color:var(--bone-300);color:var(--bone-500)}
-.ask{color:var(--signal);font-weight:500}
+/* 업체 제안 항목 — 이름(본문 색) + 오른쪽 고치기 */
+.askRow{grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:4px 0}
+.askRow dt{color:var(--bone-900)}
+.askRow dd{text-align:right}
 
 /* 두 번째 층(bone-100) — 바탕만 양옆으로 넓고 글자는 문서 격자에 맞춘다 */
 .layer{display:grid;grid-template-columns:56px minmax(0,1fr);margin:40px -24px 0;padding:28px 24px 30px;background:var(--bone-100)}

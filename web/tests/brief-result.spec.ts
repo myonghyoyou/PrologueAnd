@@ -161,3 +161,18 @@ test.describe('앱 안 브라우저(기기 시험: 인쇄 막힘, 복사·저장
     expect((await request.get('/tools/print-test')).status()).toBe(404);
   });
 });
+
+test('업체 제안 항목의 「고치기」로 그 질문에 갔다가 결과로 돌아온다', async ({ page }) => {
+  await page.goto('/tools/brief');
+  await expect(page.locator('[data-brief] h1')).toBeVisible();
+  await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'when', done: true })));
+  await page.reload();
+  await expect(page.locator('[data-brief-doc]')).not.toContainText('업체 제안 받기');   // 단원 제목이 말하므로 줄마다 붙이지 않는다
+  const row = page.locator('[data-brief-doc] [data-ask-row]', { hasText: '디자인 방식' });
+  await row.getByRole('button', { name: '디자인 방식 고치기' }).click();
+  await expect(page.locator('h1')).toHaveText('디자인은 어떻게 할까요?');
+  await page.locator('[data-choice]', { hasText: '템플릿이어도 괜찮아요' }).click();   // 사람처럼 줄을 누른다
+  await page.locator('[data-brief-next]').click();
+  await expect(page.locator('[data-brief-result]')).toBeVisible();
+  await expect(page.locator('[data-brief-doc] [data-ask-row]', { hasText: '디자인 방식' })).toHaveCount(0);
+});

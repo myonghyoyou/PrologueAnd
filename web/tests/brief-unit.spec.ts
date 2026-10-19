@@ -281,3 +281,12 @@ test('복사 글: 업체 제안 목록은 항목 이름만(「: 업체 제안 �
   expect(sec).toContain('- 소개 글\n');
   expect(sec).not.toContain('업체 제안 받기');
 });
+
+test('업체 제안 항목마다 고칠 질문이 이어져 있다', () => {
+  const a: Answers = { ...emptyAnswers(), mode: 'renew', kind: '회사·사무실', goalMain: '문의 남기기', own: { domain: '모르겠어요', hosting: '내 이름으로', admin: '대표 계정은 내가', source: '오픈 때 받기' } };
+  const rows = buildBrief(a, D).sections.find((s) => s.id === 'unknown')!.rows;
+  const map = Object.fromEntries(rows.map((r) => [r.label, r.edit]));
+  expect(map).toMatchObject({ '옮길 글·사진 양': 'renew', '주로 보는 사람': 'audience', '페이지 구성': 'pages', '필요한 기능': 'features', '이어져야 하는 것': 'links',
+    '소개 글': 'content', '사진': 'content', '디자인 자료': 'brand', '디자인 방식': 'design', '오픈 뒤 운영': 'ops', '도메인': 'own', '수정 횟수': 'scope', '오픈 뒤 관리': 'scope', '오픈 일정': 'when' });
+  expect(rows.every((r) => r.edit)).toBe(true);
+});

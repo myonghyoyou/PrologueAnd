@@ -67,9 +67,13 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
             <Num n={n + 1} className={s.secN} />
             <div className={s.secBody}>
               <h2 className={s.secT}><span>{x.title}</span>{EDIT_OF[x.id] ? <button type="button" className={s.edit} onClick={() => onEdit(EDIT_OF[x.id])} data-edit={EDIT_OF[x.id]}>고치기</button> : null}</h2>
-              <dl className={s.dl}>{x.rows.map((r, i) => (<div key={i} className={s.row}><dt>{r.label}</dt><dd>
+              <dl className={s.dl}>{x.rows.map((r, i) => r.tag === 'ask'
+                // 업체 제안 항목 — 단원 제목이 이미 말하므로 이름만, 그 질문으로 가는 고치기
+                ? (<div key={i} className={`${s.row} ${s.askRow}`} data-ask-row><dt>{r.label}</dt>
+                    <dd>{r.edit ? <button type="button" className={s.edit} onClick={() => onEdit(r.edit!)} aria-label={`${r.label} 고치기`}>고치기</button> : null}</dd></div>)
+                : (<div key={i} className={s.row}><dt>{r.label}</dt><dd>
                 {r.tag === 'must' ? <span className={s.tag}>오픈 때 꼭</span> : r.tag === 'later' ? <span className={`${s.tag} ${s.later}`}>나중에</span> : null}
-                <span className={r.tag === 'ask' ? s.ask : ''}>{r.value}</span></dd></div>))}</dl>
+                <span>{r.value}</span></dd></div>))}</dl>
             </div>
           </section>
         ))}
