@@ -28,6 +28,7 @@ test.describe('단계', () => {
 
 import { buildBrief, impactItems, vendorQuestions, unknownItems, toPlainText, briefSummary } from '../lib/brief/derive';
 import type { Answers } from '../lib/brief/types';
+import { Q } from '../content/brief/questions';
 
 const D = new Date('2026-10-15T09:00:00+09:00');
 const cafe = (): Answers => ({ ...emptyAnswers(), mode: 'new', kind: '가게(식당·카페 등)', name: '가람 로스터리',
@@ -61,10 +62,10 @@ test.describe('결과 계산', () => {
     expect(it.every((i) => !/\d+\s*만\s*원/.test(i.reason))).toBe(true);
   });
   test('견적 영향: 직접 예약·우리만의 디자인·외국어 2개·급한 개업', () => {
-    const a: Answers = { ...cafe(), booking: '홈페이지 안에서 직접', design: '우리만의 디자인', features: { ...cafe().features, '외국어 페이지': 'later' },
+    const a: Answers = { ...cafe(), booking: '홈페이지 안에서 직접', design: '새 디자인을 맞춤으로 만들어 주세요', features: { ...cafe().features, '외국어 페이지': 'later' },
       langs: ['영어', '일본어'], openDate: '2026-11-01', openFixed: '개업·행사라 꼭' };
     const t = impactItems(a, D).map((i) => i.title);
-    expect(t).toContain('우리만의 디자인');
+    expect(t).toContain('맞춤 디자인');
     expect(t).toContain('외국어 페이지 (2개 언어)');
     expect(t).toContain('개업·행사 날짜에 맞춰야 함');
   });
@@ -245,5 +246,17 @@ test.describe('그 밖에 필요한 기능', () => {
   test('아주 길게 적어도 300자에서 자른다', () => {
     const v = buildBrief({ ...cafe(), featuresExtra: '가'.repeat(2000) }, D).sections.find((s) => s.id === 'features')!.rows.at(-1)!.value;
     expect(v.length).toBeLessThanOrEqual(300);
+  });
+});
+
+test.describe('디자인 방식 선택지', () => {
+  test('넷으로 나뉜다: 템플릿 / 맞춤 / 이미 있음 / 모르겠어요', () => {
+    expect([...Q.design.opts]).toEqual(['템플릿이어도 괜찮아요', '새 디자인을 맞춤으로 만들어 주세요', '이미 정해진 디자인이 있어요', '모르겠어요']);
+  });
+  test('이미 정해진 디자인이 있으면 맞춤 견적 영향은 없고, 그대로 따라 주는지 업체에 묻는다', () => {
+    const a: Answers = { ...cafe(), design: '이미 정해진 디자인이 있어요' };
+    expect(impactItems(a, D).map((i) => i.title)).not.toContain('맞춤 디자인');
+    expect(vendorQuestions(a)).toContain('정해 둔 디자인(색·글꼴·화면 규칙)을 그대로 따라 만들어 주시나요?');
+    expect(unknownItems(a)).not.toContain('디자인 방식');
   });
 });

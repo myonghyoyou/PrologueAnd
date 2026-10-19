@@ -79,7 +79,7 @@ export function StepView({ id, a, set }: P & { id: StepId }) {
     </>);
     case 'design': return (<>
       <Single opts={Q.design.opts} value={a.design} onChange={(v) => set({ design: v })} />
-      {a.design === '우리만의 디자인' ? <Impact why={Q.design.customWhy} /> : null}
+      {a.design === Q.design.custom ? <Impact why={Q.design.customWhy} /> : null}
       <p className={s.legend} style={{ marginTop: 8 }}>{Q.design.refsLabel}</p>
       <div className={s.blocks}>
         {[0, 1, 2].map((i) => {

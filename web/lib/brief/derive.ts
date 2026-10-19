@@ -110,7 +110,7 @@ export function impactItems(a: Answers, today: Date): { title: string; reason: s
   if (a.copy === '써 주길 원함') out.push({ title: '소개 글 작성을 맡김', reason: Q.content.why });
   if (a.photo === '찍어 주길 원함') out.push({ title: '사진 촬영을 맡김', reason: Q.content.why });
   if (a.brand.includes('없어요')) out.push({ title: '로고가 없음', reason: Q.brand.noneWhy });
-  if (a.design === '우리만의 디자인') out.push({ title: '우리만의 디자인', reason: Q.design.customWhy });
+  if (a.design === Q.design.custom) out.push({ title: '맞춤 디자인', reason: Q.design.customWhy });
   if (a.openFixed === '개업·행사라 꼭' && a.openDate) {
     const days = (new Date(`${a.openDate}T00:00:00+09:00`).getTime() - today.getTime()) / 86_400_000;
     if (days <= 30) out.push({ title: '개업·행사 날짜에 맞춰야 함', reason: Q.when.rushWhy });
@@ -125,6 +125,7 @@ export function vendorQuestions(a: Answers): string[] {
   if (a.features['예약 받기']) q.push(a.booking === '네이버 예약 연결' ? '네이버 예약은 어떻게 연결하시나요?' : '예약은 어떤 방식으로 만드시나요?');
   if (a.features['상품 결제']) q.push('결제 수수료와 결제 서비스 가입은 누가 하나요?');
   if (a.features['외국어 페이지']) q.push('외국어 글 번역도 포함인가요?');
+  if (a.design === Q.design.existing) q.push('정해 둔 디자인(색·글꼴·화면 규칙)을 그대로 따라 만들어 주시나요?');
   if (a.copy === '써 주길 원함' || a.photo === '찍어 주길 원함') q.push('글 작성·사진 촬영 비용은 견적에 들어 있나요?');
   if (a.mode === 'renew' && a.renewAmount && /^(보통|많아요)/.test(a.renewAmount)) q.push('지금 홈페이지의 글과 사진을 옮기는 것도 포함인가요?');
   if (a.openFixed === '개업·행사라 꼭') q.push('이 날짜까지 오픈이 가능한가요? 늦어지면 어떻게 하나요?');

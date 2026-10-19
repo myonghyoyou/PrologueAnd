@@ -133,7 +133,7 @@ test.describe('최종 검토 보완 — 질문', () => {
     await page.reload();
   }
   test('모르겠어요를 누르면 그 단계에서 고른 답이 지워진다', async ({ page }) => {
-    await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', design: '우리만의 디자인' }, 'design');
+    await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', design: '새 디자인을 맞춤으로 만들어 주세요' }, 'design');
     await page.getByRole('button', { name: '모르겠어요', exact: true }).click();
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('prologue.brief.v1')!).answers.design);
     expect(saved).toBe('모르겠어요');
