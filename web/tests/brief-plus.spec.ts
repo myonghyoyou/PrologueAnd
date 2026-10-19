@@ -115,3 +115,12 @@ test.describe('답하는 동안 요청서 미리보기', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   });
 });
+
+test('메뉴 칸 질문은 「화면」으로 묻는다', async ({ page }) => {
+  await page.goto('/tools/brief');
+  await expect(page.locator('[data-brief] h1')).toBeVisible();
+  await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'pages', done: false })));
+  await page.reload();
+  await expect(page.locator('h1')).toHaveText('어떤 화면이 필요하세요?');
+  await expect(page.getByText('그 밖에 필요한 화면 (쉼표로 나눠 적어 주세요)')).toBeVisible();
+});
