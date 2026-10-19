@@ -29,7 +29,7 @@ test.describe('시작 화면', () => {
     await pick(page, '새로 만들기'); await next(page);
     await page.reload();
     await expect(page.locator('[data-brief-intro]')).toHaveCount(0);
-    await expect(page.locator('h1')).toHaveText('어떤 곳의 홈페이지인가요?');
+    await expect(page.locator('h1')).toHaveText('어떤 일을 하는 곳인가요?');
   });
   test('모두 지우면 시작 화면으로', async ({ page }) => {
     await seedDone(page);

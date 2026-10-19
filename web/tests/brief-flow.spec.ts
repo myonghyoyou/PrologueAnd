@@ -29,10 +29,10 @@ test.describe('질문 흐름', () => {
     await page.goto('/tools/brief');
     await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await pick(page, '새로 만들기'); await next(page);
-    await expect(page.locator('h1')).toHaveText('어떤 곳의 홈페이지인가요?');
+    await expect(page.locator('h1')).toHaveText('어떤 일을 하는 곳인가요?');
     await next(page);
     await expect(page.locator('[data-brief-error]')).toHaveText('하나만 골라 주세요');
-    await expect(page.locator('h1')).toHaveText('어떤 곳의 홈페이지인가요?');
+    await expect(page.locator('h1')).toHaveText('어떤 일을 하는 곳인가요?');
   });
 
   test('고치기면 지금 홈페이지 단계가 나오고, 새로 만들기면 안 나온다', async ({ page }) => {
@@ -95,7 +95,7 @@ test.describe('질문 흐름', () => {
     await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await expect(page.locator('[data-brief-nostore]')).toContainText('새로고침하면 답이 사라져요');
     await pick(page, '새로 만들기'); await next(page);
-    await expect(page.locator('h1')).toHaveText('어떤 곳의 홈페이지인가요?');
+    await expect(page.locator('h1')).toHaveText('어떤 일을 하는 곳인가요?');
     await ctx.close();
   });
 
