@@ -291,7 +291,13 @@ test('업체 제안 항목마다 고칠 질문이 이어져 있다', () => {
   expect(rows.every((r) => r.edit)).toBe(true);
 });
 
-test('사진은 「있어요 / 모르겠어요」만 — 촬영을 맡길 수 있을지는 사장님이 알 수 없다', () => {
-  expect([...Q.content.photo.opts]).toEqual(['있어요', '모르겠어요']);
+test('사진은 「있어요 / 없어요 / 모르겠어요」 — 촬영을 맡길 수 있을지는 사장님이 알 수 없다', () => {
+  expect([...Q.content.photo.opts]).toEqual(['있어요', '없어요', '모르겠어요']);
   expect(Q.content.why).toBe('글 작성은 보통 제작비와 따로 계산돼요.');
+});
+
+test('사진이 없으면 요청서에 「없어요」로 적고 업체 제안으로도 넘긴다', () => {
+  const a: Answers = { ...cafe(), photo: '없어요' };
+  expect(buildBrief(a, D).sections.find((x) => x.id === 'content')!.rows).toContainEqual({ label: '사진', value: '없어요' });
+  expect(unknownItems(a)).toContain('사진');
 });

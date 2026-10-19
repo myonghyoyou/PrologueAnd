@@ -33,7 +33,7 @@ export function unknownList(a: Answers): { label: string; step: StepId }[] {
   if (a.featuresUnknown || (featureEntries(a).length === 0 && !a.featuresExtra.trim())) add('필요한 기능', 'features');
   if (a.links.length === 0) add('이어져야 하는 것', 'links');
   if (isUnknown(a.copy)) add('소개 글', 'content');
-  if (isUnknown(a.photo)) add('사진', 'content');
+  if (isUnknown(a.photo) || a.photo === '없어요') add('사진', 'content');   // 사진이 없으면 준비 방법을 업체에 맡긴다
   if (a.brand.length === 0) add('디자인 자료', 'brand');
   if (isUnknown(a.design)) add('디자인 방식', 'design');
   if (a.ops.length === 0) add('오픈 뒤 운영', 'ops');
