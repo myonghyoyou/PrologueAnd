@@ -66,7 +66,7 @@ test.describe('질문 흐름', () => {
     await pick(page, '새로 만들기'); await next(page);
     await pick(page, '회사·사무실'); await page.locator('[data-brief-name]').fill('테스트 상사'); await next(page);
     await page.reload();
-    await expect(page.locator('h1')).toHaveText('손님이 홈페이지에서 딱 한 가지를 한다면 무엇이었으면 하세요?');
+    await expect(page.locator('h1')).toHaveText('고객이 홈페이지에서 꼭 해야만 하는 한 가지는 무엇인가요?');
     await page.locator('[data-brief-prev]').click();
     await expect(page.getByRole('radio', { name: '회사·사무실', exact: true })).toBeChecked();
     await expect(page.locator('[data-brief-name]')).toHaveValue('테스트 상사');
@@ -146,6 +146,6 @@ test.describe('최종 검토 보완 — 질문', () => {
     await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, 'when', true);
     await page.locator('[data-edit="kind"]').click();
     await page.locator('[data-brief-step-next]').click();
-    await expect(page.locator('h1')).toHaveText('손님이 홈페이지에서 딱 한 가지를 한다면 무엇이었으면 하세요?');
+    await expect(page.locator('h1')).toHaveText('고객이 홈페이지에서 꼭 해야만 하는 한 가지는 무엇인가요?');
   });
 });
