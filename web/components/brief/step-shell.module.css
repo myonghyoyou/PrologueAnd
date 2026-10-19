@@ -9,8 +9,9 @@
 @media (min-width:1100px){ .pv{display:none} }
 .bar{position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--bone-200)}
 .bar b{position:absolute;left:0;top:-.5px;height:2px;background:var(--navy-900)}
-.q{margin:36px 0 0;font-size:28px;font-weight:700;letter-spacing:-.025em;line-height:1.4;outline:none}
-.help{margin:10px 0 28px;color:var(--bone-600);font-size:15px}
+.q{margin:36px 0 28px;font-size:28px;font-weight:700;letter-spacing:-.025em;line-height:1.4;outline:none}
+/* 제목 아래는 늘 28px — 도움말이 있으면 제목 쪽으로 붙여 둘 사이는 10px */
+.help{margin:-18px 0 28px;color:var(--bone-600);font-size:15px}
 .dunno{margin-top:12px;font-size:14px}
 .error{margin:12px 0 0;font-size:14px;font-weight:600;color:var(--error)}
 .navbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(250,249,246,.96);border-top:1px solid var(--bone-200);padding:14px 0 calc(14px + env(safe-area-inset-bottom))}

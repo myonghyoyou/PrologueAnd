@@ -118,3 +118,14 @@ test('진행 표시의 묶음 이름과 「요청서 미리보기」는 15px 이
   expect(await size('[data-brief-phase]')).toBeGreaterThanOrEqual(15);
   expect(await size('[data-brief-preview-open]')).toBeGreaterThanOrEqual(15);
 });
+
+test('도움말 없는 질문도 제목과 선택지 사이가 띄워져 있다', async ({ page }) => {
+  await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, 'links');
+  const h = (await page.locator('h1').boundingBox())!;
+  const t = (await page.locator('[data-tag]').first().boundingBox())!;
+  expect(t.y - (h.y + h.height)).toBeGreaterThanOrEqual(24);
+  await seed(page, { mode: 'new' }, 'kind');   // 도움말 있는 질문: 제목-도움말은 가깝게
+  const h2 = (await page.locator('h1').boundingBox())!;
+  const help = (await page.locator('h1 + p').boundingBox())!;
+  expect(help.y - (h2.y + h2.height)).toBeLessThanOrEqual(14);
+});
