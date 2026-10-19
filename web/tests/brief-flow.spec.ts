@@ -46,7 +46,7 @@ test.describe('질문 흐름', () => {
     await expect(page.locator('[data-brief-progress]')).toContainText('어떤 홈페이지 · 4단계 중 1단계');
   });
 
-  test('예약을 고르면 이어 질문, 「견적에 크게 영향」을 누르면 이유가 펼쳐진다', async ({ page }) => {
+  test('예약을 고르면 이어 질문, 「견적가에 크게 영향」을 누르면 이유가 펼쳐진다', async ({ page }) => {
     await page.goto('/tools/brief');
     await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await pick(page, '새로 만들기'); await next(page);

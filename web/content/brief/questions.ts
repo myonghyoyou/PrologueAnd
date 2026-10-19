@@ -110,7 +110,7 @@ export const Q = {
     decider: { label: '최종 결정은 누가 하나요?', opts: ['나 혼자', '여럿이 같이'] },
     rushWhy: '급하게 맞춰야 하면 비용이 붙을 수 있어요.',
   },
-  impactBadge: '견적에 크게 영향',
+  impactBadge: '견적가에 크게 영향',
   dunno: '모르겠어요',
   required: '하나만 골라 주세요',
 } as const;

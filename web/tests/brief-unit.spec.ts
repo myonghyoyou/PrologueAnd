@@ -260,3 +260,7 @@ test.describe('디자인 방식 선택지', () => {
     expect(unknownItems(a)).not.toContain('디자인 방식');
   });
 });
+
+test('견적 영향 표시 문구는 「견적가에 크게 영향」', () => {
+  expect(Q.impactBadge).toBe('견적가에 크게 영향');
+});

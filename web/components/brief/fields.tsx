@@ -63,7 +63,7 @@ export function TextIn({ label, value, onChange, help, multiline, data, type = '
   );
 }
 
-/** 「견적에 크게 영향」 — 배지 대신 문장형 캡션. 누르면 이유가 펼쳐진다(마우스 올림 말풍선은 폰에서 안 되니 쓰지 않는다) */
+/** 「견적가에 크게 영향」 — 배지 대신 문장형 캡션. 누르면 이유가 펼쳐진다(마우스 올림 말풍선은 폰에서 안 되니 쓰지 않는다) */
 export function Impact({ why }: { why: string }) {
   const [open, setOpen] = useState(false);
   return (
