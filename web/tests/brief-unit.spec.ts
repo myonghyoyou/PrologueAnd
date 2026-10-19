@@ -274,3 +274,10 @@ test('일정 문구', () => {
   expect([...Q.when.fixed.opts]).toEqual(['해당 날짜에 꼭 오픈해주세요', '희망일이에요']);
   expect(Q.when.budgetHelp).toBe('생각하는 예산을 넣으면 견적가가 거기에 맞춰 올라오기도 해요.');
 });
+
+test('복사 글: 업체 제안 목록은 항목 이름만(「: 업체 제안 받기」 반복 없음)', () => {
+  const t = toPlainText(cafe(), D);
+  const sec = t.split('■ 업체 제안을 받고 싶은 것')[1].split('■')[0];
+  expect(sec).toContain('- 소개 글\n');
+  expect(sec).not.toContain('업체 제안 받기');
+});

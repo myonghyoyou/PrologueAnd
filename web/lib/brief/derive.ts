@@ -138,7 +138,8 @@ export function toPlainText(a: Answers, today: Date): string {
   for (const s of b.sections) {
     if (!s.rows.length) continue;
     lines.push(`■ ${s.title}`);
-    for (const r of s.rows) lines.push(`- ${r.label}${r.tag === 'must' ? ' [오픈 때 꼭]' : r.tag === 'later' ? ' [나중에]' : ''}${r.value ? `: ${r.value}` : ''}`);
+    // 업체 제안 목록은 단원 제목이 이미 말하므로 항목 이름만
+    for (const r of s.rows) lines.push(`- ${r.label}${r.tag === 'must' ? ' [오픈 때 꼭]' : r.tag === 'later' ? ' [나중에]' : ''}${r.value && r.tag !== 'ask' ? `: ${r.value}` : ''}`);
     lines.push('');
   }
   lines.push('■ 견적 주실 때 함께 답해 주세요');
