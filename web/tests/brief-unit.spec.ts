@@ -264,3 +264,7 @@ test.describe('디자인 방식 선택지', () => {
 test('견적 영향 표시 문구는 「견적가에 크게 영향」', () => {
   expect(Q.impactBadge).toBe('견적가에 크게 영향');
 });
+
+test('운영 질문 문구', () => {
+  expect(Q.ops.title).toBe('홈페이지 오픈 뒤 직접 생성하거나 수정하고 싶은 게 있을까요?');
+});
