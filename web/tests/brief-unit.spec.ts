@@ -31,7 +31,7 @@ import type { Answers } from '../lib/brief/types';
 
 const D = new Date('2026-10-15T09:00:00+09:00');
 const cafe = (): Answers => ({ ...emptyAnswers(), mode: 'new', kind: '가게(식당·카페 등)', name: '가람 로스터리',
-  goalMain: '찾아오기', goalMore: ['예약하기'], audience: ['처음 오는 손님', '단골'], pages: ['소개', '메뉴·서비스', '오시는 길', '소식', '문의'],
+  goalMain: '찾아오기', goalMore: ['예약하기'], audience: ['처음 오는 고객', '단골'], pages: ['소개', '메뉴·서비스', '오시는 길', '소식', '문의'],
   features: { '문의 남기기': 'must', '예약 받기': 'must', '직접 글 올리기(공지·소식)': 'later' }, booking: '네이버 예약 연결',
   copy: '모르겠어요', photo: '찍어 주길 원함', design: '모르겠어요', ops: ['공지·소식'], revisions: '3번(보통)', care: '필요할 때만' });
 
@@ -223,4 +223,9 @@ test.describe('보강 — 진행 묶음', () => {
 
 test('실제 쓰레드 앱(아이폰) 브라우저 문자열을 앱 안 브라우저로 본다 — 기기 시험 2026-10-15', () => {
   expect(isInAppBrowser('Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/22H352 Barcelona 450.0.0.31.61 (iPhone13,1; iOS 18_7_8; ko_KR; ko; scale=3.00; 1125x2436; IABMV/1; 1082981707)')).toBe(true);
+});
+
+test('호칭은 「고객」으로 통일 — 「손님」을 쓰지 않는다', () => {
+  const files = ['content/brief/questions.ts', 'content/brief/sample.ts', 'lib/brief/derive.ts', 'components/brief/steps.tsx', 'components/brief/result.tsx', 'components/brief/intro.tsx'];
+  for (const f of files) expect(readFileSync(join(__dirname, '..', f), 'utf8'), f).not.toContain('손님');
 });

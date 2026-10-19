@@ -49,7 +49,7 @@ export function buildBrief(a: Answers, today: Date): { title: string; subtitle: 
   const sections: Section[] = [];
   sections.push({ id: 'purpose', title: '무엇을 위한 홈페이지인가요', rows: [
     { label: '어떤 곳', value: clip(kindText(a), 80) },
-    { label: '손님이 할 일', value: [a.goalMain ?? '', ...(a.goalMore.length ? [`그 밖에 ${list(a.goalMore)}`] : [])].filter(Boolean).join(' · ') },
+    { label: '고객이 할 일', value: [a.goalMain ?? '', ...(a.goalMore.length ? [`그 밖에 ${list(a.goalMore)}`] : [])].filter(Boolean).join(' · ') },
     ...(a.audience.length && !a.audience.includes(UNKNOWN) ? [{ label: '주로 보는 사람', value: list(a.audience) }] : []),
   ] });
   if (a.mode === 'renew') sections.push({ id: 'renew', title: '지금 홈페이지', rows: [
@@ -148,7 +148,7 @@ export function briefSummary(a: Answers, today: Date): string {
     '[요청서 만들기]',
     a.mode === 'renew' ? '지금 홈페이지 고치기' : '새로 만들기',
     `어떤 곳: ${clip(kindText(a), 60)}${a.name.trim() ? ` (${clip(a.name.trim(), 40)})` : ''}`,
-    a.goalMain ? `손님이 할 일: ${a.goalMain}` : '',
+    a.goalMain ? `고객이 할 일: ${a.goalMain}` : '',
     musts.length ? `꼭 필요한 기능: ${list(musts)}` : '',
     pagesAll(a).length ? `페이지 ${pagesAll(a).length}개` : '',
     a.openDate ? `오픈 희망일: ${a.openDate}` : '',
