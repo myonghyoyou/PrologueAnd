@@ -28,7 +28,7 @@ export function unknownItems(a: Answers): string[] {
   if (a.mode === 'renew' && isUnknown(a.renewAmount)) out.push('옮길 글·사진 양');
   if (a.audience.length === 0 || a.audience.includes(UNKNOWN)) out.push('주로 보는 사람');
   if (pagesAll(a).length === 0) out.push('페이지 구성');
-  if (a.featuresUnknown || featureEntries(a).length === 0) out.push('필요한 기능');
+  if (a.featuresUnknown || (featureEntries(a).length === 0 && !a.featuresExtra.trim())) out.push('필요한 기능');
   if (a.links.length === 0) out.push('이어져야 하는 것');
   if (isUnknown(a.copy)) out.push('소개 글');
   if (isUnknown(a.photo)) out.push('사진');
@@ -59,7 +59,10 @@ export function buildBrief(a: Answers, today: Date): { title: string; subtitle: 
   ] });
   const pages = pagesAll(a);
   sections.push({ id: 'pages', title: '페이지', rows: pages.length ? [{ label: `메뉴 ${pages.length}개`, value: clip(pages.join(' · '), 300) }] : [] });
-  sections.push({ id: 'features', title: '기능', rows: featureEntries(a).map(([f, t]) => ({ label: f, value: featureDetail(a, f), tag: t })) });
+  sections.push({ id: 'features', title: '기능', rows: [
+    ...featureEntries(a).map(([f, t]) => ({ label: f, value: featureDetail(a, f), tag: t })),
+    ...(a.featuresExtra.trim() ? [{ label: '그 밖에', value: clip(a.featuresExtra.trim(), 300) }] : []),
+  ] });
   sections.push({ id: 'links', title: '이어져야 하는 것', rows: a.links.length ? [{ label: '연결', value: list(a.links) }] : [] });
   sections.push({ id: 'content', title: '글과 사진', rows: [
     ...(a.copy && !isUnknown(a.copy) ? [{ label: '소개 글', value: a.copy }] : []),
@@ -150,6 +153,7 @@ export function briefSummary(a: Answers, today: Date): string {
     `어떤 곳: ${clip(kindText(a), 60)}${a.name.trim() ? ` (${clip(a.name.trim(), 40)})` : ''}`,
     a.goalMain ? `고객이 할 일: ${a.goalMain}` : '',
     musts.length ? `꼭 필요한 기능: ${list(musts)}` : '',
+    a.featuresExtra.trim() ? `그 밖에 필요한 기능: ${clip(a.featuresExtra.trim(), 200)}` : '',
     pagesAll(a).length ? `페이지 ${pagesAll(a).length}개` : '',
     a.openDate ? `오픈 희망일: ${a.openDate}` : '',
     `작성일: ${dateKo(today)}`,

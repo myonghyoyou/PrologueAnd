@@ -60,6 +60,7 @@ export function StepView({ id, a, set }: P & { id: StepId }) {
               <TextIn label={Q.features.langs.other} value={a.langOther} onChange={(v) => set({ langOther: v })} /></Follow> : null}
           </div>
         ))}
+        <div className={s.extra}><TextIn label={Q.features.extra} help={Q.features.extraHelp} value={a.featuresExtra} onChange={(v) => set({ featuresExtra: v, featuresUnknown: false })} /></div>
       </div>
     );
     case 'links': return (<>

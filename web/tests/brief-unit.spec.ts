@@ -229,3 +229,21 @@ test('호칭은 「고객」으로 통일 — 「손님」을 쓰지 않는다',
   const files = ['content/brief/questions.ts', 'content/brief/sample.ts', 'lib/brief/derive.ts', 'components/brief/steps.tsx', 'components/brief/result.tsx', 'components/brief/intro.tsx'];
   for (const f of files) expect(readFileSync(join(__dirname, '..', f), 'utf8'), f).not.toContain('손님');
 });
+
+test.describe('그 밖에 필요한 기능', () => {
+  test('요청서 기능 단원에 「그 밖에」 줄로 들어가고 요약에도 들어간다', () => {
+    const a: Answers = { ...cafe(), featuresExtra: '쿠폰 발급, 대기 번호 안내' };
+    const f = buildBrief(a, D).sections.find((s) => s.id === 'features')!;
+    expect(f.rows.at(-1)).toEqual({ label: '그 밖에', value: '쿠폰 발급, 대기 번호 안내' });
+    expect(briefSummary(a, D)).toContain('그 밖에 필요한 기능: 쿠폰 발급, 대기 번호 안내');
+  });
+  test('목록에서 안 골라도 적어 두면 「필요한 기능」을 업체 제안으로 넘기지 않는다', () => {
+    const a: Answers = { ...emptyAnswers(), kind: '회사·사무실', goalMain: '문의 남기기', featuresExtra: '사내 공지' };
+    expect(unknownItems(a)).not.toContain('필요한 기능');
+    expect(unknownItems({ ...a, featuresExtra: '' })).toContain('필요한 기능');
+  });
+  test('아주 길게 적어도 300자에서 자른다', () => {
+    const v = buildBrief({ ...cafe(), featuresExtra: '가'.repeat(2000) }, D).sections.find((s) => s.id === 'features')!.rows.at(-1)!.value;
+    expect(v.length).toBeLessThanOrEqual(300);
+  });
+});

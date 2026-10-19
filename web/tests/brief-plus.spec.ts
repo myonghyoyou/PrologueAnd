@@ -124,3 +124,16 @@ test('메뉴 칸 질문은 「화면」으로 묻는다', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText('어떤 화면이 필요하세요?');
   await expect(page.getByText('그 밖에 필요한 화면 (쉼표로 나눠 적어 주세요)')).toBeVisible();
 });
+
+test('기능 질문: 목록 밖의 기능을 적을 수 있고, 모르겠어요를 누르면 지워진다', async ({ page }) => {
+  await page.goto('/tools/brief');
+  await expect(page.locator('[data-brief] h1')).toBeVisible();
+  await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'features', done: false })));
+  await page.reload();
+  const extra = page.getByLabel('그 밖에 필요한 기능');
+  await extra.fill('쿠폰 발급');
+  const saved = () => page.evaluate(() => JSON.parse(localStorage.getItem('prologue.brief.v1')!).answers.featuresExtra);
+  await expect.poll(saved).toBe('쿠폰 발급');
+  await page.getByRole('button', { name: '어떤 기능이 필요한지 모르겠어요' }).click();
+  await expect.poll(saved).toBe('');
+});

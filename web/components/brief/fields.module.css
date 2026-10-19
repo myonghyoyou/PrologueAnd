@@ -46,3 +46,4 @@ textarea.input{min-height:96px;resize:vertical}
 .blocks{border-top:1px solid var(--bone-200)}
 .block .text{margin-bottom:12px}
 .checkHelp{display:block;margin:-8px 0 24px;font-size:13px;color:var(--bone-500)}
+.extra{padding-top:24px}

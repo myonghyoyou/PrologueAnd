@@ -58,7 +58,7 @@ export function BriefTool() {
   const start = () => { setStarted(true); setStep('mode'); top(); };
 
   const dunno = step === 'features'
-    ? { label: Q.features.unknown, onClick: () => { set({ features: {}, featuresUnknown: true }); next(); } }
+    ? { label: Q.features.unknown, onClick: () => { set({ features: {}, featuresExtra: '', featuresUnknown: true }); next(); } }
     : DUNNO_CLEAR[step]
       ? { label: Q.dunno, onClick: () => { set(DUNNO_CLEAR[step]!); next(); } } : undefined;
 

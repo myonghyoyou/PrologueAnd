@@ -17,7 +17,7 @@ export type Answers = {
   goalMain?: Goal; goalMore: Goal[];
   audience: string[];
   pages: string[]; pagesExtra: string;
-  features: Partial<Record<Feature, 'must' | 'later'>>; featuresUnknown: boolean;
+  features: Partial<Record<Feature, 'must' | 'later'>>; featuresExtra: string; featuresUnknown: boolean;
   booking?: string; shopCount?: string; shopHow?: string; member?: string; langs: string[]; langOther: string;
   links: string[];
   copy?: string; photo?: string; contentBy: string;
