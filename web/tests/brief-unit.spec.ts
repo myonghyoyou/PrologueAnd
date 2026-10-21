@@ -58,7 +58,7 @@ test.describe('결과 계산', () => {
   });
   test('견적 영향: 예약(네이버)·소개 글 작성, 금액 없음', () => {
     const it = impactItems(cafe(), D);
-    expect(it.map((i) => i.title)).toEqual(['예약 받기 (오픈 때 필수)', '소개 글 작성을 맡김']);
+    expect(it.map((i) => i.title)).toEqual(['예약 받기 (오픈 때 필수)', '소개 글 작성 요청']);
     expect(it.map((i) => [i.section, i.label])).toEqual([['features', '예약 받기'], ['content', '소개 글']]);
     expect(it.every((i) => !/\d+\s*만\s*원/.test(i.reason))).toBe(true);
   });
@@ -68,7 +68,7 @@ test.describe('결과 계산', () => {
     const t = impactItems(a, D).map((i) => i.title);
     expect(t).toContain('맞춤 디자인');
     expect(t).toContain('외국어 페이지 (2개 언어)');
-    expect(t).toContain('선택한 날짜에 꼭 오픈해야 함');
+    expect(t).toContain('정해진 날짜에 꼭 오픈');
   });
   test('업체 질문: 항상 3개 + 조건 — 명의 단원과 겹치는 질문은 묻지 않는다', () => {
     const q = vendorQuestions(cafe());
@@ -292,7 +292,7 @@ test('업체 제안 항목마다 고칠 질문이 이어져 있다', () => {
 
 test('사진은 「있어요 / 없어요 / 모르겠어요」 — 촬영을 맡길 수 있을지는 사장님이 알 수 없다', () => {
   expect([...Q.content.photo.opts]).toEqual(['있어요', '없어요', '모르겠어요']);
-  expect(Q.content.why).toBe('글 작성은 보통 제작비와 따로 계산돼요.');
+  expect(Q.content.why).toBe('글 작성은 제작비와 따로 견적을 받는 경우가 많아요.');
 });
 
 test('사진이 없으면 요청서에 「없음」으로 적고 업체 제안으로도 넘긴다', () => {
@@ -357,4 +357,25 @@ test('인쇄 비율: 보통 분량은 그대로, 많을수록 줄이되 0.6배 �
   const z = printZoom(many);
   expect(z).toBeLessThan(1);
   expect(z).toBeGreaterThanOrEqual(0.6);
+});
+
+test('견적가 영향 설명: 무엇이 오르는지 분명히, 흐린 말 없이(사용자 승인 2026-10-21)', () => {
+  const all = [Q.renew.amountWhy, Q.pages.manyWhy, ...Object.values(Q.features.why), Q.links.manyWhy, Q.content.why, Q.brand.noneWhy, Q.design.customWhy, Q.when.rushWhy].join('\n');
+  for (const bad of ['가벼워져요', '가벼운 편', '시간이 따로 들어요', '작업이 따로 들어요', '페이지마다', '보통 템플릿']) expect(all, bad).not.toContain(bad);
+  expect(Q.renew.amountWhy).toBe('기존 홈페이지의 글과 사진을 하나씩 옮겨야 해서 견적가가 올라가요.');
+  expect(Q.pages.manyWhy).toBe('화면마다 구성이 다르면 만들 화면이 그만큼 늘어 견적가가 올라가요.');
+  expect(Q.features.why['예약 받기']).toBe('홈페이지 안에서 예약을 받으려면 날짜·시간 고르기와 겹침 막기 기능을 새로 만들어야 해요. 네이버 예약을 연결하면 견적가를 크게 줄일 수 있어요.');
+  expect(Q.features.why['상품 결제']).toBe('홈페이지 안에서 결제를 받으려면 결제 서비스 연결과 주문 관리 화면을 새로 만들어야 해요. 스마트스토어로 연결하면 견적가를 줄일 수 있어요.');
+  expect(Q.features.why['회원']).toBe('로그인을 만들면 가입·비밀번호 찾기·개인정보 보관까지 함께 만들어야 해서 견적가가 올라가요.');
+  expect(Q.features.why['외국어 페이지']).toBe('언어가 하나 늘 때마다 같은 화면과 글을 한 벌씩 더 만들어야 해서 견적가가 올라가요.');
+  expect(Q.links.manyWhy).toBe('서비스마다 따로 연결하는 작업이 있어 견적가가 올라가요.');
+  expect(Q.brand.noneWhy).toBe('로고를 새로 만들면 디자인 비용이 따로 들어요.');
+  expect(Q.design.customWhy).toBe('맞춤 디자인은 템플릿을 쓸 때의 2~4배 정도예요.');
+  expect(Q.when.rushWhy).toBe('일정을 앞당겨 맞춰야 하면 추가 비용이 붙을 수 있어요.');
+  const titles = (a: Answers) => impactItems(a, D).map((i) => i.title);
+  expect(titles({ ...cafe(), mode: 'renew', renewAmount: '많아요(100개 넘음)' })).toContain('옮길 글·사진 많음');
+  expect(titles({ ...cafe(), links: ['네이버 플레이스·예약', '카카오 채널', '인스타그램', '스마트스토어'] })).toContain('연결할 서비스 4곳');
+  expect(titles({ ...cafe(), brand: ['없어요'] })).toContain('로고 없음');
+  const naver = impactItems({ ...cafe(), booking: '네이버 예약 연결' }, D).find((i) => i.label === '예약 받기')!;
+  expect(naver.reason).toBe('네이버 예약을 연결해서 견적가 부담이 적은 편이에요. 홈페이지 안에서 직접 받으면 견적가가 크게 올라가요.');
 });
