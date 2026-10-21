@@ -137,3 +137,25 @@ test('기능 질문: 목록 밖의 기능을 적을 수 있고, 모르겠어요�
   await page.getByRole('button', { name: '어떤 기능이 필요한지 모르겠어요' }).click();
   await expect.poll(saved).toBe('');
 });
+
+test.describe('시작 화면 견본 — 잘린 종이(C안)', () => {
+  test('흰 종이에 견본 도장, 단원 세 개만, 아래는 잘리고 이어지는 내용 안내', async ({ page }) => {
+    await page.goto('/tools/brief');
+    const sample = page.locator('[data-brief-sample]');
+    await expect(sample.locator('[data-stamp]')).toHaveText('견본');
+    const paper = sample.locator('[data-paper]');
+    const bg = await paper.evaluate((e) => getComputedStyle(e).backgroundColor);
+    const pageBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    expect(bg).toBe('rgb(255, 255, 255)');
+    expect(bg).not.toBe(pageBg);
+    await expect(paper.locator('[data-numeral]')).toHaveText(['01', '02', '03']);
+    await expect(sample.locator('[data-cut]')).toBeVisible();
+    await expect(sample).toContainText('이하 생략');
+    await expect(sample).not.toContainText(/\d쪽/);
+  });
+  test('폰: 견본 종이가 화면 밖으로 넘치지 않는다', async ({ page }, info) => {
+    test.skip(info.project.name !== 'phone');
+    await page.goto('/tools/brief');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+  });
+});

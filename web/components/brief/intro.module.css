@@ -6,6 +6,25 @@
 .promise li+li::before{content:'·';margin:0 10px;color:var(--bone-400)}
 .neutral{margin:14px 0 0;font-size:14px;color:var(--bone-600)}
 .start{margin-top:28px;min-width:180px}
-.sample{margin:48px 0 0;padding-top:20px;border-top:1px solid var(--bone-200)}
-.cap{margin:0 0 10px;font-size:13px;color:var(--bone-500)}
-@media (max-width:700px){ .h{font-size:30px;line-height:1.25} .start{width:100%} }
+/* 견본 — 본문과 다른 흰 종이(C안): 견본 도장, 앞 단원 세 개, 아래는 톱니로 잘라 「더 있다」 */
+.sample{margin:56px 0 0}
+.cap{margin:0 0 14px;font-size:14px;font-weight:500;color:var(--bone-700)}
+.paper{background:var(--bone-0);border:1px solid var(--bone-400);border-bottom:0;border-radius:2px 2px 0 0;padding:30px 32px 14px;font-size:13px}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:12px;margin-bottom:4px;border-bottom:1px solid var(--navy-900)}
+.pt{margin:0;font-size:17px;font-weight:600;letter-spacing:-.02em;line-height:1.4}
+.pm{margin:2px 0 0;font-size:12px;color:var(--bone-500)}
+.stamp{flex:none;padding:1px 7px;border:1px solid var(--navy-900);border-radius:2px;font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--navy-900)}
+.sec{display:grid;grid-template-columns:30px minmax(0,1fr);padding:12px 0;border-bottom:1px solid var(--bone-100)}
+.sec:last-child{border-bottom:0}
+.sn{font-size:17px;line-height:1.1;color:var(--navy-900)}
+.st{margin:0 0 4px;font-size:13px;font-weight:600}
+.dl{margin:0}
+.row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;line-height:1.65;color:var(--bone-700)}
+.row dt{color:var(--bone-500)}.row dd{margin:0;overflow-wrap:anywhere}
+.tag{display:inline-block;margin-right:6px;padding:0 5px;border:1px solid var(--navy-900);border-radius:2px;font-size:11px;font-weight:600;line-height:17px;color:var(--navy-900)}
+.later{border-color:var(--bone-300);color:var(--bone-500)}
+/* 잘린 단면 — 종이 아래를 톱니로. 그라데이션으로 흐리게 하지 않는다 */
+.cut{height:28px;border:1px solid var(--bone-400);border-top:0;background:var(--bone-0);
+  clip-path:polygon(0 0,100% 0,100% 40%,96% 70%,92% 40%,88% 70%,84% 40%,80% 70%,76% 40%,72% 70%,68% 40%,64% 70%,60% 40%,56% 70%,52% 40%,48% 70%,44% 40%,40% 70%,36% 40%,32% 70%,28% 40%,24% 70%,20% 40%,16% 70%,12% 40%,8% 70%,4% 40%,0 70%)}
+.rest{margin:10px 0 0;font-size:13px;color:var(--bone-500)}
+@media (max-width:700px){ .h{font-size:30px;line-height:1.25} .start{width:100%} .paper{padding:22px 18px 12px} .row{grid-template-columns:86px minmax(0,1fr)} }
