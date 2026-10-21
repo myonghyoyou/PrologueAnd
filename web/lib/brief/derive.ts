@@ -196,3 +196,17 @@ export function briefSummary(a: Answers, today: Date): string {
   ].filter(Boolean);
   return clip(parts.join('\n'), 1000);
 }
+
+/** PDF 한 쪽 맞춤 — 요청서 분량(줄 수 어림)이 A4 한 쪽(두 칼럼)을 넘으면 인쇄할 때만 그 비율만큼 줄인다.
+ *  84 는 실측 기준(보통 분량 78 은 그대로 한 쪽, 거의 모든 칸 + 긴 글 120 은 0.8배 이하에서 한 쪽). 읽을 수 있게 0.6배 아래로는 줄이지 않는다 */
+export function printZoom(a: Answers): number {
+  const b = buildBrief(a, new Date());
+  let load = vendorQuestions(a).length * 1.6;
+  for (const s of b.sections) {
+    if (!s.rows.length) continue;
+    load += 2;
+    if (s.id === 'unknown') { load += 1; continue; }
+    for (const r of s.rows) load += Math.max(1, Math.ceil(r.value.length / 26));
+  }
+  return Math.max(0.6, Math.min(1, 84 / load));
+}

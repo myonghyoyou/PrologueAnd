@@ -9,4 +9,4 @@
   .two{max-width:none;display:grid;grid-template-columns:640px minmax(0,1fr);gap:48px;align-items:start;--brief-nav:1040px}
   .aside{display:block;position:sticky;top:calc(var(--hdr) + 24px);max-height:calc(100vh - var(--hdr) - 140px);overflow:auto}
 }
-@media print{ .nostore{display:none} }
+@media print{ .nostore{display:none} .single{max-width:none} }

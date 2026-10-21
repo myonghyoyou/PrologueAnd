@@ -4,5 +4,6 @@
   /* 쪽 여백 0 — 브라우저가 쪽 머리글·바닥글(문서 제목·주소)을 찍지 않는다. 여백은 본문 안쪽으로 */
   @page{size:A4;margin:0}
   :global(header),:global([role="dialog"]),:global([data-zoom-viewer]){display:none!important}
-  .main{padding:16mm 16mm;max-width:none}
+  .main{padding:10mm 14mm 8mm;max-width:none}
+  :global(html),:global(body){background:#fff!important}
 }

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { briefSummary, buildBrief, impactItems, toPlainText, vendorQuestions } from '@/lib/brief/derive';
+import { briefSummary, buildBrief, printZoom, impactItems, toPlainText, vendorQuestions } from '@/lib/brief/derive';
 import { COMPARE_ROWS, type CompareRow, browserStorage, loadCompare, saveCompare, type Vendor } from '@/lib/brief/storage';
 import { isInAppBrowser } from '@/lib/brief/in-app';
 import type { Answers, StepId } from '@/lib/brief/types';
@@ -58,7 +58,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
   const reset = () => { if (window.confirm('입력한 답과 비교표를 모두 지울까요?')) onReset(); };
 
   return (
-    <div className={s.result} data-brief-result>
+    <div className={s.result} data-brief-result style={{ '--print-zoom': printZoom(a) } as React.CSSProperties}>
       <article className={s.doc} data-part="doc" data-brief-doc>
         <h1 className={s.title}>{b.title}</h1>
         <p className={s.meta}>{b.subtitle}</p>

@@ -69,12 +69,29 @@
   .exp>.txtBtn{width:auto;justify-self:start}
   .exp>.small,.exp>.copybox{grid-column:1/-1}
 }
+/* PDF — A4 한 쪽에 들어오게: 두 칼럼, 문서 크기 글자, 촘촘한 간격(사용자 요청 2026-10-21).
+   업체 제안 항목은 쉼표로 이은 한 줄, 업체 질문도 두 칼럼에 답 적을 줄 */
 @media print{
   .noPrint{display:none!important}
-  .printOnly{display:block;margin:0 0 8px;font-size:13px}
-  .answer{display:block;margin:6px 0 10px;padding-bottom:14px;border-bottom:1px solid #999;font-size:12px;color:#555}
-  .answer::before{content:'답:'}
-  .layer{margin:24px 0 0;padding:0;background:none}
+  .result{color:#000;font-size:9.5pt;zoom:var(--print-zoom,1)}   /* 분량이 많으면 한 쪽에 맞게 줄인다(printZoom) */
+  .title{font-size:16pt;line-height:1.25;column-span:all}
+  .meta{margin:1mm 0 4mm;font-size:8.5pt;column-span:all}
+  .doc{column-count:2;column-gap:8mm}
+  .sec{grid-template-columns:8mm minmax(0,1fr);padding:1.6mm 0 2mm;border-top:.3mm solid #ccc}
+  .secN{font-size:12pt}
+  .secT{margin:0 0 1mm;font-size:10pt}
   .edit{display:none}
-  .result{color:#000}
+  .row{grid-template-columns:27mm minmax(0,1fr);gap:2mm;padding:.5mm 0;border-bottom:0;font-size:8.8pt;line-height:1.45}
+  .tag{font-size:7pt;line-height:3.6mm;padding:0 1mm;margin-right:1.5mm}
+  .askRow{display:inline;padding:0}
+  .askRow dt{display:inline;color:#000}
+  .askRow dd{display:none}
+  .askRow:not(:last-child) dt::after{content:', '}
+  .layer{display:block;margin:4mm 0 0;padding:0;background:none;border-top:.3mm solid #000}
+  .layerT{margin:2mm 0 1mm;font-size:10pt}
+  .printOnly{display:block;margin:0 0 1.5mm;font-size:8.5pt}
+  .list{column-count:2;column-gap:8mm}
+  .list li{grid-template-columns:7mm minmax(0,1fr);padding:1mm 0 0;border-top:0;font-size:8.8pt;line-height:1.4}
+  .answer{display:block;margin:.6mm 0 1mm;padding-bottom:3mm;border-bottom:.3mm solid #999;font-size:7pt;color:#555}
+  .answer::before{content:'답:'}
 }

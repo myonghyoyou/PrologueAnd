@@ -345,3 +345,15 @@ test('복사 글: 단원 번호와 질문 번호가 헷갈리지 않고, 줄 이
   expect(t).toContain('- 이용 중: 인스타그램');
   expect(t).not.toContain('- 서비스:');
 });
+
+test('인쇄 비율: 보통 분량은 그대로, 많을수록 줄이되 0.6배 아래로는 줄이지 않는다', async () => {
+  const { printZoom } = await import('../lib/brief/derive');
+  expect(printZoom(cafe())).toBe(1);
+  const many: Answers = { ...cafe(), renewPain: '가'.repeat(300), dislikes: '나'.repeat(300), mode: 'renew', pages: Array.from({ length: 10 }, (_, i) => `화면${i}`),
+    refs: [1, 2, 3].map((i) => ({ url: `https://e${i}.org`, likes: ['배치'], memo: '메모' })), goalMore: ['전화하기', '문의 남기기', '소식 보기'],
+    features: { '문의 남기기': 'must', '예약 받기': 'must', '상품 결제': 'must', '회원': 'later', '외국어 페이지': 'later', '직접 글 올리기(공지·소식)': 'must', '카카오 채널 연결': 'must' },
+    links: ['네이버 플레이스·예약', '카카오 채널', '인스타그램', '스마트스토어'], featuresExtra: '다'.repeat(200) };
+  const z = printZoom(many);
+  expect(z).toBeLessThan(1);
+  expect(z).toBeGreaterThanOrEqual(0.6);
+});
