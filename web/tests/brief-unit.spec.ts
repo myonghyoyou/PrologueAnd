@@ -58,7 +58,8 @@ test.describe('결과 계산', () => {
   });
   test('견적 영향: 예약(네이버)·소개 글 작성, 금액 없음', () => {
     const it = impactItems(cafe(), D);
-    expect(it.map((i) => i.title)).toEqual(['예약 받기 (오픈 때 꼭)', '소개 글 작성을 맡김']);
+    expect(it.map((i) => i.title)).toEqual(['예약 받기 (오픈 때 필수)', '소개 글 작성을 맡김']);
+    expect(it.map((i) => [i.section, i.label])).toEqual([['features', '예약 받기'], ['content', '소개 글']]);
     expect(it.every((i) => !/\d+\s*만\s*원/.test(i.reason))).toBe(true);
   });
   test('견적 영향: 직접 예약·우리만의 디자인·외국어 2개·급한 개업', () => {
@@ -67,7 +68,7 @@ test.describe('결과 계산', () => {
     const t = impactItems(a, D).map((i) => i.title);
     expect(t).toContain('맞춤 디자인');
     expect(t).toContain('외국어 페이지 (2개 언어)');
-    expect(t).toContain('개업·행사 날짜에 맞춰야 함');
+    expect(t).toContain('선택한 날짜에 꼭 오픈해야 함');
   });
   test('업체 질문: 항상 3개 + 조건 — 명의 단원과 겹치는 질문은 묻지 않는다', () => {
     const q = vendorQuestions(cafe());

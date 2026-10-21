@@ -26,7 +26,7 @@ test.describe('결과', () => {
     await expect(page.locator('[data-brief-compare] tbody tr')).toHaveCount(7);
     await expect(page.locator('[data-brief-privacy]')).toContainText('이 기기에만 저장돼요');
     const order = await page.locator('[data-brief-result] > [data-part]').evaluateAll((els) => els.map((e) => e.getAttribute('data-part')));
-    expect(order).toEqual(['doc', 'impact', 'vendor', 'compare', 'export', 'privacy', 'prologue']);
+    expect(order).toEqual(['impact', 'doc', 'vendor', 'compare', 'export', 'privacy', 'prologue']);   // 견적가 영향을 먼저 본다
   });
 
   test('처음부터 결과까지 서버로 나가는 요청이 없다', async ({ page }) => {

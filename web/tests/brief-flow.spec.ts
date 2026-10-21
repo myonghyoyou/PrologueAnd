@@ -56,7 +56,7 @@ test.describe('질문 흐름', () => {
     await expect(page.locator('h1')).toHaveText('홈페이지에 어떤 기능이 필요하세요?');
     await page.locator('[data-feature="예약 받기"] [data-seg="must"]').click();
     await expect(page.getByText('예약은 어떻게 받으실 건가요?')).toBeVisible();
-    await page.locator('[data-feature="예약 받기"] [data-impact]').click();
+    // 누르지 않아도 이유가 펼쳐져 있다 — 읽지 않고 넘어가 나중에 견적가에 놀라지 않게
     await expect(page.locator('[data-feature="예약 받기"] [data-impact-why]')).toBeVisible();
   });
 

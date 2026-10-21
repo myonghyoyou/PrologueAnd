@@ -10,12 +10,10 @@ textarea.input{min-height:96px;resize:vertical}
 .check{margin:0 0 16px}
 
 /* 견적 영향 — 배지 아닌 캡션 글자(경고색) + 펼침 화살 */
-.impact{margin-top:4px}
-.badge{border:0;background:none;padding:2px 0;min-height:28px;font:inherit;font-size:13px;font-weight:500;color:var(--warning);cursor:pointer}
-.badge::after{content:'›';display:inline-block;margin-left:4px;transition:transform .15s}
-.badge[aria-expanded="true"]::after{transform:rotate(90deg)}
-.badge:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
-.why{margin:6px 0 0;padding-left:14px;border-left:2px solid var(--bone-300);max-width:34rem;font-size:14px;line-height:1.65;color:var(--bone-700)}
+/* 견적가 영향 — 경고색 캡션 + 그 아래 이유(늘 펼침). 왼쪽 경고색 선으로 묶는다 */
+.impact{margin-top:8px;padding:2px 0 2px 12px;border-left:2px solid var(--warning)}
+.badge{margin:0;font-size:13px;font-weight:600;color:var(--warning)}
+.why{margin:2px 0 0;max-width:34rem;font-size:14px;line-height:1.65;color:var(--bone-700)}
 
 /* 꼭/나중 — 고른 칸만 네이비 테두리 */
 .seg{display:flex;flex-shrink:0;border:1px solid var(--bone-300);border-radius:2px}

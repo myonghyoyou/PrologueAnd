@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { briefSummary, buildBrief, printZoom, impactItems, toPlainText, vendorQuestions } from '@/lib/brief/derive';
+import { briefSummary, buildBrief, impactKeys, printZoom, impactItems, toPlainText, vendorQuestions } from '@/lib/brief/derive';
 import { COMPARE_ROWS, type CompareRow, browserStorage, loadCompare, saveCompare, type Vendor } from '@/lib/brief/storage';
 import { isInAppBrowser } from '@/lib/brief/in-app';
 import type { Answers, StepId } from '@/lib/brief/types';
@@ -22,6 +22,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
   const b = useMemo(() => buildBrief(a, today), [a, today]);
   const impact = useMemo(() => impactItems(a, today), [a, today]);
   const vq = useMemo(() => vendorQuestions(a), [a]);
+  const marks = useMemo(() => impactKeys(a, today), [a, today]);
   const [cmp, setCmp] = useState<Vendor[]>([]);
   const [copied, setCopied] = useState('');
   const [box, setBox] = useState('');
@@ -59,6 +60,12 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
 
   return (
     <div className={s.result} data-brief-result style={{ '--print-zoom': printZoom(a) } as React.CSSProperties}>
+      <section className={`${s.layer} ${s.impactLayer} ${s.noPrint}`} data-part="impact" data-brief-impact>
+        <h2 className={s.layerT}>견적가를 크게 움직이는 항목</h2>
+        {impact.length ? <ul className={s.list}>{impact.map((i) => <li key={i.title}><span><b>{i.title}</b><small>{i.reason}</small></span></li>)}</ul>
+          : <p className={s.layerNote}>크게 움직이는 항목이 없어요.</p>}
+      </section>
+
       <article className={s.doc} data-part="doc" data-brief-doc>
         <h1 className={s.title}>{b.title}</h1>
         <p className={s.meta}>{b.subtitle}</p>
@@ -71,19 +78,13 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
                 // 업체 제안 항목 — 단원 제목이 이미 말하므로 이름만, 그 질문으로 가는 고치기
                 ? (<div key={i} className={`${s.row} ${s.askRow}`} data-ask-row><dt>{r.label}</dt>
                     <dd>{r.edit ? <button type="button" className={s.edit} onClick={() => onEdit(r.edit!)} aria-label={`${r.label} 고치기`}>고치기</button> : null}</dd></div>)
-                : (<div key={i} className={s.row}><dt>{r.label}</dt><dd>
+                : (<div key={i} className={marks.has(`${x.id}|${r.label}`) ? `${s.row} ${s.impactRow}` : s.row} {...(marks.has(`${x.id}|${r.label}`) ? { 'data-impact-row': '' } : {})}><dt>{r.label}</dt><dd>
                 {r.tag === 'must' ? <span className={s.tag}>오픈 때 필수</span> : r.tag === 'later' ? <span className={`${s.tag} ${s.later}`}>나중에</span> : null}
-                <span>{r.value}</span></dd></div>))}</dl>
+                <span>{r.value}</span>{marks.has(`${x.id}|${r.label}`) ? <span className={s.impactMark} data-impact-mark>견적가 영향</span> : null}</dd></div>))}</dl>
             </div>
           </section>
         ))}
       </article>
-
-      <section className={`${s.layer} ${s.noPrint}`} data-part="impact" data-brief-impact>
-        <h2 className={s.layerT}>견적을 크게 움직이는 항목</h2>
-        {impact.length ? <ul className={s.list}>{impact.map((i) => <li key={i.title}><span><b>{i.title}</b><small>{i.reason}</small></span></li>)}</ul>
-          : <p className={s.layerNote}>크게 움직이는 항목이 없어요.</p>}
-      </section>
 
       <section className={s.layer} data-part="vendor" data-brief-vendor>
         <h2 className={s.layerT}>업체에 꼭 물어볼 질문</h2>

@@ -11,3 +11,5 @@
 .row dt{color:var(--bone-500)}.row dd{margin:0;overflow-wrap:anywhere}
 .ask{color:var(--signal);font-weight:500}
 .empty{margin:0;color:var(--bone-500)}
+/* 견적가 영향 줄 — 결과와 같은 표시 */
+.impact{margin:0 -6px;padding:0 6px;background:var(--warning-soft);box-shadow:inset 2px 0 0 var(--warning)}

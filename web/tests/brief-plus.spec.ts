@@ -159,3 +159,38 @@ test.describe('시작 화면 견본 — 잘린 종이(C안)', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
   });
 });
+
+test.describe('견적가 영향 — 늘 보이고, 해당 줄에 표시', () => {
+  const A = { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', features: { '예약 받기': 'must', '문의 남기기': 'must' }, booking: '홈페이지 안에서 직접', copy: '써 주길 원함', design: '새 디자인을 맞춤으로 만들어 주세요' };
+  async function seed(page: Page, step: string, done: boolean) {
+    await page.goto('/tools/brief');
+    await expect(page.locator('[data-brief] h1')).toBeVisible();
+    await page.evaluate(([a, st, dn]) => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: a, step: st, done: dn })), [A, step, done] as const);
+    await page.reload();
+  }
+  test('결과: 견적가 영향이 요청서 위에 있고, 해당 줄에만 표시가 붙는다', async ({ page }) => {
+    await seed(page, 'when', true);
+    await expect(page.locator('[data-brief-impact] h2')).toHaveText('견적가를 크게 움직이는 항목');
+    const marked = await page.locator('[data-brief-doc] [data-impact-row] dt').allTextContents();
+    expect(marked.sort()).toEqual(['방식', '소개 글', '예약 받기'].sort());
+    await expect(page.locator('[data-brief-doc] [data-impact-row]').first().locator('[data-impact-mark]')).toHaveText('견적가 영향');
+    await page.emulateMedia({ media: 'print' });
+    await expect(page.locator('[data-impact-mark]').first()).toBeHidden();   // 업체에게 가는 PDF 에는 넣지 않는다
+  });
+  test('질문하는 동안 미리보기에도 견적가 영향 줄이 표시된다', async ({ page }, info) => {
+    test.skip(info.project.name !== 'w1440');
+    await seed(page, 'features', false);
+    await expect(page.locator('[data-brief-preview] [data-impact-row]', { hasText: '예약 받기' })).toBeVisible();
+    await expect(page.locator('[data-brief-preview] [data-impact-row]', { hasText: '문의 남기기' })).toHaveCount(0);
+  });
+});
+
+test('결과: 견적가 영향 상자와 요청서 제목 사이가 띄워져 있다', async ({ page }) => {
+  await page.goto('/tools/brief');
+  await expect(page.locator('[data-brief] h1')).toBeVisible();
+  await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', copy: '써 주길 원함' }, step: 'when', done: true })));
+  await page.reload();
+  const box = (await page.locator('[data-brief-impact]').boundingBox())!;
+  const title = (await page.locator('[data-brief-doc] h1').boundingBox())!;
+  expect(title.y - (box.y + box.height)).toBeGreaterThanOrEqual(28);
+});

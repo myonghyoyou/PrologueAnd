@@ -129,22 +129,24 @@ export function buildBrief(a: Answers, today: Date): { title: string; subtitle: 
   };
 }
 
-export function impactItems(a: Answers, today: Date): { title: string; reason: string }[] {
-  const out: { title: string; reason: string }[] = [];
-  const t = (f: Feature) => (a.features[f] === 'must' ? '오픈 때 꼭' : '나중에');
-  if (a.mode === 'renew' && a.renewAmount?.startsWith('많아요')) out.push({ title: '옮길 글·사진이 많음', reason: Q.renew.amountWhy });
-  if (pagesAll(a).length > 10) out.push({ title: `페이지 ${pagesAll(a).length}개`, reason: Q.pages.manyWhy });
-  if (a.features['예약 받기']) out.push({ title: `예약 받기 (${t('예약 받기')})`, reason: a.booking === '네이버 예약 연결' ? '네이버 예약을 연결해서 가벼운 편이에요. 홈페이지 안에서 직접 받으면 크게 올라가요.' : Q.features.why['예약 받기']! });
-  if (a.features['상품 결제']) out.push({ title: `상품 결제 (${t('상품 결제')})`, reason: Q.features.why['상품 결제']! });
-  if (a.features['회원'] && a.member !== '관리자만') out.push({ title: `회원 (${t('회원')})`, reason: Q.features.why['회원']! });
-  if (a.features['외국어 페이지']) out.push({ title: `외국어 페이지 (${Math.max(langCount(a), 1)}개 언어)`, reason: Q.features.why['외국어 페이지']! });
-  if (a.links.filter((l) => l !== '없어요').length > 3) out.push({ title: `연결 ${a.links.length}곳`, reason: Q.links.manyWhy });
-  if (a.copy === '써 주길 원함') out.push({ title: '소개 글 작성을 맡김', reason: Q.content.why });
-  if (a.brand.includes('없어요')) out.push({ title: '로고가 없음', reason: Q.brand.noneWhy });
-  if (a.design === Q.design.custom) out.push({ title: '맞춤 디자인', reason: Q.design.customWhy });
+/** 견적가를 크게 움직이는 항목 — section·label 은 요청서에서 그 항목이 적힌 줄(결과·미리보기에서 그 줄을 표시한다) */
+export type Impact = { title: string; reason: string; section: string; label: string };
+export function impactItems(a: Answers, today: Date): Impact[] {
+  const out: Impact[] = [];
+  const t = (f: Feature) => (a.features[f] === 'must' ? '오픈 때 필수' : '나중에');
+  if (a.mode === 'renew' && a.renewAmount?.startsWith('많아요')) out.push({ title: '옮길 글·사진이 많음', reason: Q.renew.amountWhy, section: 'renew', label: '옮길 글·사진 양' });
+  if (pagesAll(a).length > 10) out.push({ title: `화면 ${pagesAll(a).length}개`, reason: Q.pages.manyWhy, section: 'pages', label: `화면 ${pagesAll(a).length}개` });
+  if (a.features['예약 받기']) out.push({ title: `예약 받기 (${t('예약 받기')})`, reason: a.booking === '네이버 예약 연결' ? '네이버 예약을 연결해서 가벼운 편이에요. 홈페이지 안에서 직접 받으면 크게 올라가요.' : Q.features.why['예약 받기']!, section: 'features', label: '예약 받기' });
+  if (a.features['상품 결제']) out.push({ title: `상품 결제 (${t('상품 결제')})`, reason: Q.features.why['상품 결제']!, section: 'features', label: '상품 결제' });
+  if (a.features['회원'] && a.member !== '관리자만') out.push({ title: `회원 (${t('회원')})`, reason: Q.features.why['회원']!, section: 'features', label: '회원' });
+  if (a.features['외국어 페이지']) out.push({ title: `외국어 페이지 (${Math.max(langCount(a), 1)}개 언어)`, reason: Q.features.why['외국어 페이지']!, section: 'features', label: '외국어 페이지' });
+  if (a.links.filter((l) => l !== '없어요').length > 3) out.push({ title: `연결 ${a.links.length}곳`, reason: Q.links.manyWhy, section: 'links', label: '이용 중' });
+  if (a.copy === '써 주길 원함') out.push({ title: '소개 글 작성을 맡김', reason: Q.content.why, section: 'content', label: '소개 글' });
+  if (a.brand.includes('없어요')) out.push({ title: '로고가 없음', reason: Q.brand.noneWhy, section: 'brand', label: '보유 자료' });
+  if (a.design === Q.design.custom) out.push({ title: '맞춤 디자인', reason: Q.design.customWhy, section: 'design', label: '방식' });
   if (a.openFixed === Q.when.fixed.must && a.openDate) {
     const days = (new Date(`${a.openDate}T00:00:00+09:00`).getTime() - today.getTime()) / 86_400_000;
-    if (days <= 30) out.push({ title: '개업·행사 날짜에 맞춰야 함', reason: Q.when.rushWhy });
+    if (days <= 30) out.push({ title: '선택한 날짜에 꼭 오픈해야 함', reason: Q.when.rushWhy, section: 'when', label: '오픈 희망일' });
   }
   return out;
 }
@@ -209,4 +211,9 @@ export function printZoom(a: Answers): number {
     for (const r of s.rows) load += Math.max(1, Math.ceil(r.value.length / 26));
   }
   return Math.max(0.6, Math.min(1, 84 / load));
+}
+
+/** 요청서에서 견적가 영향 줄을 찾는 열쇠 — 「단원|줄 이름」 */
+export function impactKeys(a: Answers, today: Date): Set<string> {
+  return new Set(impactItems(a, today).map((i) => `${i.section}|${i.label}`));
 }

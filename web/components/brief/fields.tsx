@@ -1,5 +1,5 @@
 'use client';
-import { useId, useState } from 'react';
+import { useId } from 'react';
 import { Q } from '@/content/brief/questions';
 import { ChoiceRow, Tag, ui } from '@/components/ui/controls';
 import s from './fields.module.css';
@@ -63,13 +63,12 @@ export function TextIn({ label, value, onChange, help, multiline, data, type = '
   );
 }
 
-/** 「견적가에 크게 영향」 — 배지 대신 문장형 캡션. 누르면 이유가 펼쳐진다(마우스 올림 말풍선은 폰에서 안 되니 쓰지 않는다) */
+/** 「견적가에 크게 영향」 — 이유를 늘 펼쳐 둔다. 읽지 않고 넘어가 나중에 「왜 이렇게 비싸졌나」 하지 않게(사용자 피드백 2026-10-21) */
 export function Impact({ why }: { why: string }) {
-  const [open, setOpen] = useState(false);
   return (
-    <div className={s.impact}>
-      <button type="button" className={s.badge} aria-expanded={open} onClick={() => setOpen((o) => !o)} data-impact>{Q.impactBadge}</button>
-      {open ? <p className={s.why} data-impact-why>{why}</p> : null}
+    <div className={s.impact} data-impact>
+      <p className={s.badge}>{Q.impactBadge}</p>
+      <p className={s.why} data-impact-why>{why}</p>
     </div>
   );
 }
