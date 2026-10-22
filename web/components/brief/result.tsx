@@ -62,6 +62,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
     <div className={s.result} data-brief-result style={{ '--print-zoom': printZoom(a) } as React.CSSProperties}>
       <section className={`${s.layer} ${s.impactLayer} ${s.noPrint}`} data-part="impact" data-brief-impact>
         <h2 className={s.layerT}>견적가를 크게 움직이는 항목</h2>
+        {impact.length ? <p className={s.legend} data-impact-legend><i className={s.swatch} aria-hidden="true" />요청서에서 이렇게 칠한 줄이 이 항목들이에요</p> : null}
         {impact.length ? <ul className={s.list}>{impact.map((i) => <li key={i.title}><span><b>{i.title}</b><small>{i.reason}</small></span></li>)}</ul>
           : <p className={s.layerNote}>크게 움직이는 항목이 없어요.</p>}
       </section>
@@ -80,7 +81,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
                     <dd>{r.edit ? <button type="button" className={s.edit} onClick={() => onEdit(r.edit!)} aria-label={`${r.label} 고치기`}>고치기</button> : null}</dd></div>)
                 : (<div key={i} className={marks.has(`${x.id}|${r.label}`) ? `${s.row} ${s.impactRow}` : s.row} {...(marks.has(`${x.id}|${r.label}`) ? { 'data-impact-row': '' } : {})}><dt>{r.label}</dt><dd>
                 {r.tag === 'must' ? <span className={s.tag}>오픈 때 필수</span> : r.tag === 'later' ? <span className={`${s.tag} ${s.later}`}>나중에</span> : null}
-                <span>{r.value}</span>{marks.has(`${x.id}|${r.label}`) ? <span className={s.impactMark} data-impact-mark>견적가 영향</span> : null}</dd></div>))}</dl>
+                <span>{r.value}</span></dd></div>))}</dl>
             </div>
           </section>
         ))}

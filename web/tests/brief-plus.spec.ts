@@ -173,9 +173,18 @@ test.describe('견적가 영향 — 늘 보이고, 해당 줄에 표시', () => 
     await expect(page.locator('[data-brief-impact] h2')).toHaveText('견적가를 크게 움직이는 항목');
     const marked = await page.locator('[data-brief-doc] [data-impact-row] dt').allTextContents();
     expect(marked.sort()).toEqual(['방식', '소개 글', '예약 받기'].sort());
-    await expect(page.locator('[data-brief-doc] [data-impact-row]').first().locator('[data-impact-mark]')).toHaveText('견적가 영향');
+    // 줄마다 글자 표시는 붙이지 않는다(정신없다는 피드백) — 칠한 줄의 뜻은 맨 위 상자 범례에서 한 번
+    await expect(page.locator('[data-brief-doc] [data-impact-mark]')).toHaveCount(0);
+    await expect(page.locator('[data-brief-impact] [data-impact-legend]')).toContainText('요청서에서 이렇게 칠한 줄');
+    // 왼쪽 선과 글자 사이를 띄운다 — 글자는 다른 줄과 같은 선
+    const row = page.locator('[data-brief-doc] [data-impact-row]').first();
+    const gap = await row.evaluate((e) => e.querySelector('dt')!.getBoundingClientRect().left - e.getBoundingClientRect().left);
+    expect(gap).toBeGreaterThanOrEqual(12);
+    const plain = await page.locator('[data-brief-doc] .row, [data-brief-doc] dl > div:not([data-impact-row])').first().locator('dt').boundingBox();
+    const markedBox = await row.locator('dt').boundingBox();
+    expect(Math.abs(plain!.x - markedBox!.x)).toBeLessThanOrEqual(1);
     await page.emulateMedia({ media: 'print' });
-    await expect(page.locator('[data-impact-mark]').first()).toBeHidden();   // 업체에게 가는 PDF 에는 넣지 않는다
+    expect(await row.evaluate((e) => getComputedStyle(e).backgroundColor)).toBe('rgba(0, 0, 0, 0)');   // 업체에게 가는 PDF 에는 칠하지 않는다
   });
   test('질문하는 동안 미리보기에도 견적가 영향 줄이 표시된다', async ({ page }, info) => {
     test.skip(info.project.name !== 'w1440');

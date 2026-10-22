@@ -21,9 +21,11 @@
 /* 견적가 영향 — 결과 맨 위, 경고색 윗선으로 먼저 눈에 들어오게 */
 .layer.impactLayer{margin:0 -24px 40px;border-top:2px solid var(--warning)}
 .impactLayer .layerT{color:var(--bone-900)}
-/* 요청서 안의 견적가 영향 줄 — 왼쪽 경고색 선 + 작은 표시(화면에서만, 업체에게 가는 PDF 에는 없음) */
-.impactRow{box-shadow:-10px 0 0 -8px var(--warning);background:var(--warning-soft)}
-.impactMark{display:inline-block;margin-left:8px;padding:0 5px;border:1px solid var(--warning);border-radius:2px;font-size:11px;font-weight:600;line-height:17px;color:var(--warning);vertical-align:1px}
+/* 요청서 안의 견적가 영향 줄 — 옅은 바탕 + 왼쪽 선. 바탕과 선을 글자 바깥으로 14px 내밀어
+   글자는 다른 줄과 같은 선에 두고 선과는 띄운다. 줄마다 글자 표시는 붙이지 않는다(정신없다는 피드백) — 뜻은 위 상자 범례에서 한 번 */
+.impactRow{margin-left:-14px;padding-left:14px;background:var(--warning-soft);box-shadow:inset 2px 0 0 var(--warning)}
+.legend{grid-column:2;display:flex;align-items:center;gap:8px;margin:-6px 0 12px;font-size:13px;color:var(--bone-600)}
+.swatch{flex:none;width:22px;height:12px;background:var(--warning-soft);box-shadow:inset 2px 0 0 var(--warning);outline:1px solid var(--warning-line)}
 
 /* 두 번째 층(bone-100) — 바탕만 양옆으로 넓고 글자는 문서 격자에 맞춘다 */
 .layer{display:grid;grid-template-columns:56px minmax(0,1fr);margin:40px -24px 0;padding:28px 24px 30px;background:var(--bone-100)}
@@ -81,8 +83,7 @@
    업체 제안 항목은 쉼표로 이은 한 줄, 업체 질문도 두 칼럼에 답 적을 줄 */
 @media print{
   .noPrint{display:none!important}
-  .impactMark{display:none}
-  .impactRow{box-shadow:none;background:none}
+  .impactRow{box-shadow:none;background:none;margin-left:0;padding-left:0}
   .result{color:#000;font-size:9.5pt;zoom:var(--print-zoom,1)}   /* 분량이 많으면 한 쪽에 맞게 줄인다(printZoom) */
   .title{font-size:16pt;line-height:1.25;column-span:all}
   .meta{margin:1mm 0 4mm;font-size:8.5pt;column-span:all}
