@@ -244,6 +244,8 @@ Next.js App Router에서는 모션이 필요한 컴포넌트만 `"use client"`�
 
 v2로 미루는 것: Problems 호버 SVG 루프, Featured Work 카드 호버 상태 진행, View Transitions 페이지 전환. 5종이 자리 잡은 뒤 하나씩 추가 여부를 판단한다.
 
+- 2026-09-29 — 병원 상세의 여백 주석 "후 · 전" 전환 단추를 더했다(사이트 전체 인터랙션 상한 5종에 하나 추가). 다른 편에는 쓰지 않는다.
+
 ### 8.3 Lenis 적용 규칙
 - 설정: `lerp: 0.1` (또는 `duration: 1.2`, easing 기본), `wheelMultiplier: 1`, `syncTouch: false`(iOS·Android는 네이티브 스크롤 유지)
 - `prefers-reduced-motion: reduce`면 Lenis를 초기화하지 않는다
