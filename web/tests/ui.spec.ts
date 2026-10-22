@@ -49,11 +49,16 @@ test.describe('요청서 질문 화면', () => {
     await expect(tag.locator('[data-mark]')).toHaveCount(1);   // 색만으로 구분하지 않는다 — 표시가 함께 바뀐다
   });
 
-  test('기능: 배지 대신 캡션, 이어지는 질문은 왼쪽 세로선, 둥근 것 없음', async ({ page }) => {
+  test('기능: 견적가 영향은 안내 상자(A안), 이어지는 질문은 왼쪽 세로선, 둥근 것 없음', async ({ page }) => {
     await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, 'features');
     await page.locator('[data-feature="예약 받기"] [data-seg="must"]').click();
     const imp = page.locator('[data-feature="예약 받기"] [data-impact]');
-    expect(await imp.evaluate((e) => getComputedStyle(e).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
+    // 누르는 것이 아니라 알림 — 옅은 경고색 바탕 칸에 표시와 이유가 함께
+    const st = await imp.evaluate((e) => { const c = getComputedStyle(e); return [c.backgroundColor, c.borderTopColor, c.borderTopWidth, c.cursor]; });
+    expect(st).toEqual(['rgb(251, 246, 236)', 'rgb(233, 211, 166)', '1px', 'auto']);
+    await expect(imp.locator('[data-impact-label]')).toHaveText('견적가에 크게 영향');
+    await expect(imp.locator('[data-impact-why]')).toContainText('네이버 예약을 연결하면');
+    expect(await imp.locator('button, a').count()).toBe(0);
     const follow = page.locator('[data-feature="예약 받기"] [data-follow]');
     expect(await follow.evaluate((e) => getComputedStyle(e).borderLeftColor)).toBe(NAVY);
     expect(await roundOnes(page.locator('[data-brief]'))).toEqual([]);

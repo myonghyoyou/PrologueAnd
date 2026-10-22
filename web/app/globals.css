@@ -4,7 +4,7 @@
   --navy-500:#6675AC;--navy-400:#8A96C2;--navy-300:#AEB7D6;--navy-200:#CCD3E8;--navy-100:#E4E8F4;--navy-50:#F1F3F9;
   --bone-0:#FFFFFF;--bone-50:#FAF9F6;--bone-100:#F3F1EC;--bone-200:#E8E5DE;--bone-300:#D6D2C8;
   --bone-400:#B3AEA3;--bone-500:#8A857A;--bone-600:#66625A;--bone-700:#4A4741;--bone-800:#2E2C28;--bone-900:#1C1B18;
-  --signal:#3B6FE0;--signal-soft:#DCEBFB;--success:#2E7D5B;--warning:#B7791F;--warning-soft:#FBF6EC;--error:#C0392B;
+  --signal:#3B6FE0;--signal-soft:#DCEBFB;--success:#2E7D5B;--warning:#B7791F;--warning-soft:#FBF6EC;--warning-line:#E9D3A6;--error:#C0392B;
   --ease-out:cubic-bezier(.2,.8,.2,1);
   --shadow:0 24px 48px -24px rgba(28,27,24,.35);
   --grid:clamp(1272px, 80vw, 1760px);

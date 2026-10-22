@@ -63,12 +63,12 @@ export function TextIn({ label, value, onChange, help, multiline, data, type = '
   );
 }
 
-/** 「견적가에 크게 영향」 — 이유를 늘 펼쳐 둔다. 읽지 않고 넘어가 나중에 「왜 이렇게 비싸졌나」 하지 않게(사용자 피드백 2026-10-21) */
+/** 「견적가에 크게 영향」 — 이유를 늘 펼쳐 둔다. 읽지 않고 넘어가 나중에 「왜 이렇게 비싸졌나」 하지 않게(사용자 피드백 2026-10-21).
+ *  누르는 것이 아니라 알림으로 읽히게 옅은 경고색 바탕 칸(A안, 2026-10-22) */
 export function Impact({ why }: { why: string }) {
   return (
     <div className={s.impact} data-impact>
-      <p className={s.badge}>{Q.impactBadge}</p>
-      <p className={s.why} data-impact-why>{why}</p>
+      <p className={s.why}><b className={s.badge} data-impact-label>{Q.impactBadge}</b><span data-impact-why>{why}</span></p>
     </div>
   );
 }
