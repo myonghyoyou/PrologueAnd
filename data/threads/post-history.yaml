@@ -50,9 +50,9 @@ posts:
     date: 2026-10-13
     series: 업무 개선기
     project: 문제 은행 (problem-bank)
-    status: approved          # Grilling 후 사용자가 네 곳을 고친 최종본. 게시 확인 전
-    planned_at: null          # 화 10:00 슬롯은 지남 → 오늘 중 댓글 대응 가능한 시각으로
-    published_at: null
+    status: published         # 사용자 확인 2026-10-14
+    planned_at: 2026-10-13T21:02+09:00   # 사용자 예정 시각 (화 10:00 슬롯은 지나 당일 저녁으로)
+    published_at: 2026-10-13T21:02+09:00   # 사용자가 정한 예정 시각에 게시했다고 확인(분 단위 실제 시각은 미확인)
     url: null
     first_sentence: 사내 사규 법규 시험 일자가 공지되면 한 달 정도는 문제집 들고 다니면서 공부함
     ending_pattern: 질문("사내 시험 있는 스치니들은 출퇴근길에 뭘로 공부해?") + 화면 안내
@@ -88,7 +88,7 @@ posts:
     date: null
     series: null              # 시리즈 아닌 질문 글
     project: 홈페이지 시안 만드는 법 질문 + 메가커피 쿠폰
-    status: published         # 사용자: "글을 올려봤는데 반응이 거의 없어"
+    status: deleted           # 게시 후 삭제 — 사용자 확인 2026-10-15(반응 거의 없었음)
     planned_at: null
     published_at: null
     url: null
@@ -102,3 +102,60 @@ posts:
     reposts: null
     inquiries: null
     notes: 마감일·쿠폰 지급 여부 기록 없음.
+
+  - id: roastery-homepage-01
+    date: 2026-10-14
+    series: 홈페이지 제작기
+    project: 로스터리 카페 홈페이지 (실제 고객, 제작 중)
+    status: published         # 사용자 확인 2026-10-14
+    planned_at: 2026-10-14T12:00+09:00
+    published_at: null        # 2026-10-14 오전 게시(검색에서 7시간 전으로 보임), 정확한 시각 미확인
+    url: https://www.threads.com/@prologue_and/post/DedKJwCAizn
+    first_sentence: 로스터리 카페 홈페이지 만들고 있는데 사장님이 기능적인 면에서 프랜들리 하지 않아도 되니까 패션 브랜드 홈페이지처럼 브랜드 이미지 강렬하게 심어줄 애니메이션 넣어 달라고 하심
+    ending_pattern: 사장님 반응 + 화면 안내(질문 없음)
+    attachments: null         # 준비한 영상 data/images/threads/roastery-scroll.mp4 — 실제 첨부 여부 미확인
+    tag: 홈페이지 제작 팁
+    views: null
+    likes: null
+    replies: null
+    reposts: null
+    inquiries: null
+    notes: 공개 허락 — 작업 화면·영상, 사장님 피드백(O) / 브랜드명, 사이트 주소(X). 사실 출처 2026-10-14 사용자 Grilling 답(의뢰 문구 원문, 시안 10개→3개→현재 안, 배경 그레인·판 넘김·5초 영상, "너무 마음에 든다").
+
+  - id: outsourcing-mockups-01
+    date: 2026-10-15
+    series: 홈페이지 외주 이야기
+    project: 시안 여러 개 보여 주기 (지인 가게 로스터리 카페 작업 경험)
+    status: draft
+    planned_at: 2026-10-15T09:00+09:00
+    published_at: null
+    url: null
+    first_sentence: 홈페이지 맡길 때 시안을 처음에 몇 개 받는지 한번 물어봐   # 2026-10-15 다시 씀(읽는 사람 쪽에서 시작)
+    ending_pattern: 단서("지인 가게라 실제 의뢰랑은 다를 수 있지만") + 질문("홈페이지 맡겨 본 사람들은 처음에 시안 몇 개 받아 봤어?") — 부름말 없음
+    attachments: null
+    tag: null
+    views: null
+    likes: null
+    replies: null
+    reposts: null
+    inquiries: null
+    notes: 사용자 확인 2026-10-15 — 지인 가게 작업이라 반응이 실제 고객과 다를 수 있음, 여러 개를 보여 주는 이유는 "고르면서 방향이 정해짐". 로스터리 시안 10개→3개→현재 안은 2026-10-14 Grilling 답. 이전 게시물(로스터리 제작기)과 같은 프로젝트 — 이번 글은 의뢰자 관점(시안 받는 방식)으로 겹치지 않게 함.
+
+  - id: pinned-intro-01
+    date: 2026-10-15
+    series: null              # 고정 자기소개 글
+    project: 계정 고정 자기소개 + 프로필 소개 개편
+    status: published         # 사용자 확인 2026-10-15 (게시 후 프로필 고정)
+    planned_at: null
+    published_at: null        # 2026-10-15 게시, 정확한 시각 미확인
+    url: null
+    first_sentence: Prologue&(프롤로그엔) 대표로 있는 7년 차 개발자야
+    ending_pattern: 도움 제안("회사 일이나 홈페이지 때문에 골치 아픈 거 있으면 편하게 말 걸어 줘 / 어떻게 풀면 좋을지부터 같이 고민해 볼게") + 첫 답글에 작업 사례·문의 경로
+    attachments: null
+    tag: null                 # 권한 안: 업무자동화 — 실제로 단 태그 미확인
+    views: null
+    likes: null
+    replies: null
+    reposts: null
+    inquiries: null
+    notes: 하는 일 세 가지(엑셀·종이 업무 화면 전환, 파워빌더 같은 오래된 사내 프로그램 전환, 브랜드 홈페이지 — 디자이너 협업)와 사례(근무표·사내 시험 문제집·업무 요청)를 담음. 프로필 소개도 같은 날 "Prologue&(프롤로그엔) 대표 · 7년 차 개발자" 안으로 바꿈(사용자 확인). 사용자 표현 — "고쳐 왔어", "어느 현장을 가나", "재밌고 뿌듯해서".
