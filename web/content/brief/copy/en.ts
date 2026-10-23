@@ -20,7 +20,7 @@ export const en: BriefCopy = {
   q: {
     mode: { title: 'Are you building a new website or redoing the one you have?', opts: { new: 'Build a new website', renew: 'Redo my current website' } },
     renew: {
-      title: 'Tell us about your current website',
+      title: 'About your current website',
       url: 'Current website address (optional)',
       pain: 'What bothers you most about it? (optional)',
       amountLabel: 'How much text and how many photos need to move over?',
@@ -216,7 +216,7 @@ export const en: BriefCopy = {
   },
   vendor: {
     revisions: 'How many rounds of changes are included?',
-    monthly: 'What will I pay every month after launch, and how much?',
+    monthly: 'Which costs will I pay each month after launch, and how much is each?',
     contact: 'If something needs fixing after launch, who do I contact, and how long does it usually take?',
     admin: 'What will I be able to change myself in the admin page?',
     bookingService: 'How would you connect the booking app?',
