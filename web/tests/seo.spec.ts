@@ -100,3 +100,9 @@ test('사이트맵에 요청서 만들기가 있다', async ({ request }) => {
   const t = await (await request.get('/sitemap.xml')).text();
   expect(t).toContain('<loc>https://www.prologueand.com/tools/brief</loc>');
 });
+
+test('사이트맵에 권한 점검 두 언어가 있다', async ({ request }) => {
+  const t = await (await request.get('/sitemap.xml')).text();
+  expect(t).toContain('<loc>https://www.prologueand.com/tools/ownership</loc>');
+  expect(t).toContain('<loc>https://www.prologueand.com/en/tools/ownership</loc>');
+});

@@ -195,3 +195,68 @@ test.describe('권한 점검 흐름(한국어)', () => {
     expect(lb.y + lb.height).toBeLessThanOrEqual(bar.y + 1);
   });
 });
+
+test.describe('영어판', () => {
+  test('흐름이 끝까지 되고 한글이 한 글자도 없다', async ({ page }) => {
+    await routeLookups(page, DEFAULT);
+    await start(page, 'prologueand.com', '/en/tools/ownership');
+    await expect(page.locator('[data-own-lookup]')).toBeVisible();
+    expect(await page.locator('body').innerText()).not.toMatch(/[가-힣]/);
+    await page.locator('[data-own-next]').click();
+    await expect(page.locator('[data-own-q="registrarLogin"] h1')).toHaveText('Can you log in to Name.com yourself?');
+    expect(await page.locator('body').innerText()).not.toMatch(/[가-힣]/);
+    await page.locator('[data-own-q] [data-choice]').nth(1).click();
+    await page.locator('[data-own-next]').click();
+    await answerAllFirst(page);
+    expect(await page.locator('body').innerText()).not.toMatch(/[가-힣]/);
+    await expect(page.locator('[data-own-message]')).toContainText('registrar account for prologueand.com');
+  });
+  test('도구 상자 lang="en", hreflang 두 방향, 머리글에 문의 단추 없음, 공유 미리보기 영어', async ({ page }) => {
+    await page.goto('/en/tools/ownership');
+    await expect(page.locator('[lang="en"] [data-own]')).toHaveCount(1);
+    await expect(page.locator('link[rel="alternate"][hreflang="ko"]')).toHaveAttribute('href', /\/tools\/ownership$/);
+    await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href', /\/en\/tools\/ownership$/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.prologueand.com/en/tools/ownership');
+    await expect(page.locator('header [data-open-drawer]')).toHaveCount(0);
+    for (const sel of ['meta[property="og:title"]', 'meta[name="twitter:title"]', 'meta[name="twitter:description"]', 'meta[name="description"]']) {
+      expect(await page.locator(sel).getAttribute('content'), sel).not.toMatch(/[가-힣]/);
+    }
+    await page.goto('/tools/ownership');
+    await expect(page.locator('header [data-open-drawer]')).toHaveCount(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.prologueand.com/tools/ownership');
+  });
+  test('한국어에서 답한 뒤 영어판을 열면 같은 답이 영어로', async ({ page }) => {
+    await routeLookups(page, DEFAULT);
+    await start(page, 'prologueand.com');
+    await page.locator('[data-own-next]').click();
+    await page.locator('[data-own-q] [data-choice]').nth(1).click();
+    await page.locator('[data-own-next]').click();
+    await page.goto('/en/tools/ownership');
+    await page.locator('[data-own-prev]').click();
+    await expect(page.locator('[data-own-q="registrarLogin"] input').nth(1)).toBeChecked();
+    await expect(page.locator('[data-own-q="registrarLogin"] [data-choice]').nth(1)).toContainText('No, my web company handles it');
+  });
+  test('영어판에는 요청서 연결 줄이 없다', async ({ page }) => {
+    await routeLookups(page, DEFAULT);
+    await start(page, 'prologueand.com', '/en/tools/ownership');
+    await page.locator('[data-own-next]').click();
+    await answerAllFirst(page);
+    await expect(page.locator('[data-own-to-brief]')).toHaveCount(0);
+  });
+  test('지원 안 되는 국가 도메인은 질문만으로', async ({ page }) => {
+    const rdap: string[] = [];
+    page.on('request', (r) => { if (r.url().includes('rdap')) rdap.push(r.url()); });
+    await routeLookups(page, DEFAULT);
+    await start(page, 'tienda.es', '/en/tools/ownership');
+    await expect(page.locator('[data-own-lookup]')).toContainText("This kind of address can't be checked automatically");
+    expect(rdap).toEqual([]);
+    await page.locator('[data-own-next]').click();
+    await expect(page.locator('[data-own-q="registrarLogin"] h1')).toHaveText('Can you log in to the company where you bought your domain (your registrar)?');
+  });
+  test('언어 바꾸기 링크', async ({ page }) => {
+    await page.goto('/tools/ownership');
+    await expect(page.locator('[data-own-lang]')).toHaveAttribute('href', '/en/tools/ownership');
+    await page.goto('/en/tools/ownership');
+    await expect(page.locator('[data-own-lang]')).toHaveAttribute('href', '/tools/ownership');
+  });
+});

@@ -1,0 +1,9 @@
+.main{max-width:1040px;margin:0 auto;padding:calc(var(--hdr) + 40px) 0 160px}
+@media (max-width:700px){ .main{padding:calc(var(--hdr) + 24px) 16px 150px} }
+@media print{
+  /* 쪽 여백 0 — 브라우저가 쪽 머리글·바닥글(문서 제목·주소)을 찍지 않는다. 여백은 본문 안쪽으로 */
+  @page{size:A4;margin:0}
+  :global(header),:global([role="dialog"]),:global([data-zoom-viewer]){display:none!important}
+  .main{padding:10mm 14mm 8mm;max-width:none}
+  :global(html),:global(body){background:#fff!important}
+}

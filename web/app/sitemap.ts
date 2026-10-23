@@ -8,6 +8,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: SITE, changeFrequency: 'monthly', priority: 1 },
     { url: `${SITE}/projects`, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE}/tools/brief`, changeFrequency: 'monthly', priority: 0.6 },
+    ...(['/tools/ownership', '/en/tools/ownership'] as const).map((p) => ({
+      url: `${SITE}${p}`, changeFrequency: 'monthly' as const, priority: 0.6,
+      alternates: { languages: { ko: `${SITE}/tools/ownership`, en: `${SITE}/en/tools/ownership` } },
+    })),
     ...publishedProjects().map((p) => ({ url: `${SITE}/projects/${p.slug}`, changeFrequency: 'monthly' as const, priority: 0.7 })),
   ];
 }
