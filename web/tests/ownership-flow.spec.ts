@@ -59,7 +59,7 @@ test.describe('권한 점검 흐름(한국어)', () => {
     await page.locator('[data-own-next]').click();
     await expect(page.locator('[data-own-q="registrarLogin"] h1')).toContainText('Name.com');
     await answerAllFirst(page);
-    await expect(page.locator('[data-own-headline]')).toHaveText('업체와 연락이 끊겨도 직접 운영할 수 있어요');
+    await expect(page.locator('[data-own-headline]')).toHaveText('답하신 대로라면, 업체와 연락이 끊겨도 직접 운영할 수 있어요');
     await expect(page.locator('[data-own-item][data-state="risk"]')).toHaveCount(0);
   });
 
@@ -234,7 +234,7 @@ test.describe('영어판', () => {
     await page.goto('/en/tools/ownership');
     await page.locator('[data-own-prev]').click();
     await expect(page.locator('[data-own-q="registrarLogin"] input').nth(1)).toBeChecked();
-    await expect(page.locator('[data-own-q="registrarLogin"] [data-choice]').nth(1)).toContainText('No, my web company handles it');
+    await expect(page.locator('[data-own-q="registrarLogin"] [data-choice]').nth(1)).toContainText('No, my web developer handles it');
   });
   test('영어판에는 요청서 연결 줄이 없다', async ({ page }) => {
     await routeLookups(page, DEFAULT);

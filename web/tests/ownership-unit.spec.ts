@@ -343,9 +343,9 @@ test.describe('최종 검토 수정', () => {
   });
   test('영어 판정 한 줄은 하나일 때 단수', async () => {
     const { headlineText } = await import('../lib/ownership/verdict');
-    expect(headlineText({ kind: 'risk', n: 1 }, en)).toBe("There's 1 thing you can't do without your web company right now");
-    expect(headlineText({ kind: 'check', n: 1 }, en)).toBe('1 thing to check before you could run your site on your own');
-    expect(headlineText({ kind: 'risk', n: 2 }, en)).toBe("There are 2 things you can't do without your web company right now");
+    expect(headlineText({ kind: 'risk', n: 1 }, en)).toBe("There's 1 thing you can't do without your web developer right now");
+    expect(headlineText({ kind: 'check', n: 1 }, en)).toBe('1 thing still needs checking');
+    expect(headlineText({ kind: 'risk', n: 2 }, en)).toBe("There are 2 things you can't do without your web developer right now");
     expect(headlineText({ kind: 'risk', n: 1 }, ko)).toBe('지금은 업체 없이 할 수 없는 일이 1가지 있어요');
   });
   test('DNS가 SERVFAIL이면 메일 없음이 아니라 다음 서버로', async () => {
