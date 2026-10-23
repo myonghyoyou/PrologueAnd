@@ -1,3 +1,6 @@
+import type { Opt, CompareRowId } from '../../content/brief/rules';
+export type { Locale } from '../../content/brief/copy/types';
+
 export const UNKNOWN = '모르겠어요';
 
 export type StepId =
@@ -30,3 +33,23 @@ export type Answers = {
   budget?: string; budgetInBrief: boolean;
   decider?: string;
 };
+
+/** v2 — 선택지를 언어와 상관없는 id 로 저장한다. Task 4 가 v1 을 지울 때 FeatureId/GoalId/RefV2 를 Feature/Goal/Ref 로, AnswersV2 를 Answers 로 바꾼다 */
+export type FeatureId = Opt<'features'>; export type GoalId = Opt<'goal'>;
+export type RefV2 = { url: string; likes: Opt<'likes'>[]; memo: string };
+export type AnswersV2 = {
+  v: 2; mode?: 'new' | 'renew';
+  renewUrl: string; renewPain: string; renewAmount?: Opt<'renewAmount'>;
+  kind?: Opt<'kind'>; kindOther: string; name: string;
+  goalMain?: GoalId; goalMore: GoalId[]; audience: Opt<'audience'>[];
+  pages: Opt<'pages'>[]; pagesExtra: string;
+  features: Partial<Record<FeatureId, 'must' | 'later'>>; featuresExtra: string; featuresUnknown: boolean;
+  booking?: Opt<'booking'>; shopCount?: Opt<'shopCount'>; shopHow?: Opt<'shopHow'>; member?: Opt<'member'>; langs: string[]; langOther: string;
+  links: Opt<'links'>[]; copy?: Opt<'copy'>; photo?: Opt<'photo'>; contentBy: string; brand: Opt<'brand'>[];
+  design?: Opt<'design'>; refs: RefV2[]; dislikes: string; ops: Opt<'ops'>[];
+  own: { domain: Opt<'ownDomain'>; hosting: Opt<'ownHosting'>; admin: Opt<'ownAdmin'>; source: Opt<'ownSource'> };
+  revisions?: Opt<'revisions'>; care?: Opt<'care'>; monthlyCost: boolean;
+  openDate: string; openUnknown: boolean; openFixed?: Opt<'openFixed'>;
+  budget?: Opt<'budget'>; budgetText: string; budgetInBrief: boolean; decider?: Opt<'decider'>;
+};
+export type CompareV2 = { name: string; price: string; cells: Record<CompareRowId, string> }[];
