@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { fromKo, seedBrief } from './brief-ko';
 
 /** PDF 저장 — 답을 많이 해도 A4 한 쪽에 들어와야 한다(사용자 요청 2026-10-21) */
 const RICH = { v: 1, mode: 'renew', renewUrl: 'example.com', renewPain: '모바일에서 글자가 너무 작고 예약 버튼을 찾기 어려워요', renewAmount: '보통',
@@ -24,10 +25,7 @@ const MID = { ...MAX, renewPain: '모바일에서 글자가 작아요', dislikes
 for (const [name, answers] of [['많이 답한 요청서', RICH], ['필수 둘만 답한 요청서', MIN], ['거의 모든 칸 + 긴 글', MAX], ['칸을 많이 채운 요청서', MID]] as const) {
   test(`PDF 한 쪽 — ${name}`, async ({ page }, info) => {
     test.skip(info.project.name !== 'w1440');   // PDF 는 화면 크기와 무관 — 한 번만
-    await page.goto('/tools/brief');
-    await expect(page.locator('[data-brief] h1')).toBeVisible();
-    await page.evaluate((a) => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: a, step: 'when', done: true })), answers);
-    await page.reload();
+    await seedBrief(page, fromKo(answers), 'when', true);
     await expect(page.locator('[data-brief-doc]')).toBeVisible();
     await page.emulateMedia({ media: 'print' });
     const pdf = await page.pdf({ format: 'A4', printBackground: true, preferCSSPageSize: true });

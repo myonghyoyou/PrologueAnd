@@ -194,6 +194,7 @@ export const ko: BriefCopy = {
     vendorLead: '견적 주실 때 아래 질문에도 답해 주세요.',
     qPrefix: (n) => `Q${n}.`,
     formatDay: dayKo,
+    formatToday: dateKo,
   },
   impact: {
     renewMany: '옮길 글·사진 많음',

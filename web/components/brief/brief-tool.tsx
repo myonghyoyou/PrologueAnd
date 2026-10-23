@@ -1,12 +1,12 @@
 'use client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getLenis } from '@/components/lenis-provider';
-import { Q } from '@/content/brief/questions';
 import { REQUIRED, isAnswered, phaseOf, visibleSteps } from '@/lib/brief/steps';
 import { browserStorage, clearBrief, emptyAnswers, loadSaved, saveSaved, storageOk } from '@/lib/brief/storage';
-import { UNKNOWN, type Answers, type StepId } from '@/lib/brief/types';
+import { UNKNOWN, type Answers, type Locale, type StepId } from '@/lib/brief/types';
+import { BriefCopyProvider, useCopy } from './copy-context';
 import { StepShell } from './step-shell';
-import { STEP_HELP, STEP_TITLE, StepView } from './steps';
+import { StepView, stepHelp, stepTitle } from './steps';
 import { Result } from './result';
 import { Intro } from './intro';
 import { BriefPreview } from './preview';
@@ -20,7 +20,13 @@ const DUNNO_CLEAR: Partial<Record<StepId, Partial<Answers>>> = {
 
 const top = () => { const l = getLenis(); if (l) l.scrollTo(0, { immediate: true }); else window.scrollTo(0, 0); };
 
-export function BriefTool() {
+/** 요청서 도구 — 화면 언어(locale)의 문구로 감싼다. 답은 두 언어가 같은 저장 키를 쓴다 */
+export function BriefTool({ locale }: { locale: Locale }) {
+  return <BriefCopyProvider locale={locale}><Tool /></BriefCopyProvider>;
+}
+
+function Tool() {
+  const c = useCopy();
   const [a, setA] = useState<Answers>(emptyAnswers);
   const [step, setStep] = useState<StepId>('mode');
   const [done, setDone] = useState(false);
@@ -47,7 +53,7 @@ export function BriefTool() {
 
   const go = (s: StepId) => { setStep(s); setError(''); top(); };
   const next = () => {
-    if (REQUIRED.includes(step) && !isAnswered(a, step)) { setError(Q.required); return; }
+    if (REQUIRED.includes(step) && !isAnswered(a, step)) { setError(c.ui.required); return; }
     if (back || idx === steps.length - 1) { setDone(true); setBack(false); top(); return; }
     go(steps[idx + 1]);
   };
@@ -58,25 +64,25 @@ export function BriefTool() {
   const start = () => { setStarted(true); setStep('mode'); top(); };
 
   const dunno = step === 'features'
-    ? { label: Q.features.unknown, onClick: () => { set({ features: {}, featuresExtra: '', featuresUnknown: true }); next(); } }
+    ? { label: c.q.features.unknown, onClick: () => { set({ features: {}, featuresExtra: '', featuresUnknown: true }); next(); } }
     : DUNNO_CLEAR[step]
-      ? { label: Q.dunno, onClick: () => { set(DUNNO_CLEAR[step]!); next(); } } : undefined;
+      ? { label: c.ui.dunno, onClick: () => { set(DUNNO_CLEAR[step]!); next(); } } : undefined;
 
   if (!ready) return <div className={s.root} data-brief aria-busy="true" />;
   return (
     <div className={s.root} data-brief>
-      {noStore ? <p className={s.nostore} data-brief-nostore>이 브라우저에서는 저장이 안 돼서 새로고침하면 답이 사라져요.</p> : null}
+      {noStore ? <p className={s.nostore} data-brief-nostore>{c.ui.noStore}</p> : null}
       {!started
         ? <div className={s.single}><Intro onStart={start} /></div>
         : done
         ? <div className={s.single}><Result a={a} onEdit={edit} onReset={reset} /></div>
-        : <div className={s.two}><div className={s.main}><StepShell phase={phaseOf(step)} onPreview={() => setSheet(true)} title={STEP_TITLE[step]} help={STEP_HELP[step]} error={error}
-            onPrev={prev} onNext={next} onStepNext={back && idx < steps.length - 1 ? () => go(steps[idx + 1]) : undefined} nextLabel={back ? '결과로 돌아가기' : idx === steps.length - 1 ? '요청서 만들기' : '다음'} dunno={dunno}>
+        : <div className={s.two}><div className={s.main}><StepShell phase={phaseOf(step)} onPreview={() => setSheet(true)} title={stepTitle(step, c)} help={stepHelp(step, c)} error={error}
+            onPrev={prev} onNext={next} onStepNext={back && idx < steps.length - 1 ? () => go(steps[idx + 1]) : undefined} nextLabel={back ? c.ui.toResult : idx === steps.length - 1 ? c.ui.makeBrief : c.ui.next} dunno={dunno}>
             <StepView id={step} a={a} set={set} />
           </StepShell></div>
           {/* 넓은 화면: 답이 요청서가 되어 가는 모습을 옆에 둔다(명세 §11 2차) */}
-          <aside className={s.aside} data-brief-preview data-lenis-prevent aria-label="요청서 미리보기"><BriefPreview a={a} current={step} /></aside>
-          <BottomSheet open={sheet} onClose={() => setSheet(false)} title="요청서 미리보기" label="요청서 미리보기"><BriefPreview a={a} current={step} /></BottomSheet>
+          <aside className={s.aside} data-brief-preview data-lenis-prevent aria-label={c.ui.preview}><BriefPreview a={a} current={step} /></aside>
+          <BottomSheet open={sheet} onClose={() => setSheet(false)} title={c.ui.preview} label={c.ui.preview}><BriefPreview a={a} current={step} /></BottomSheet>
         </div>}
     </div>
   );

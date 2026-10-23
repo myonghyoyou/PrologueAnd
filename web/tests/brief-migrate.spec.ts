@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { migrateV1, migrateCompareV1, emptyAnswersV2, V1_MAP } from '../lib/brief/migrate-v1';
+import { migrateV1, migrateCompareV1, V1_MAP } from '../lib/brief/migrate-v1';
+import { emptyAnswers } from '../lib/brief/storage';
 import { copyFor } from '../content/brief/copy';
 
 /** 2026-10-23 배포본이 저장하던 v1 답 — 표의 모든 칸을 쓴다 */
@@ -33,7 +34,7 @@ test('v1 → v2: 고치기·직접 입력·여러 개·기능 키', () => {
 test('v1 → v2: 표에 없는 글자는 빠지고 나머지는 남는다', () => {
   const v2 = migrateV1({ v: 1, kind: '이상한 값', pages: ['소개', '없는 화면'], goalMain: '전화하기' })!;
   expect(v2.kind).toBeUndefined(); expect(v2.pages).toEqual(['about']); expect(v2.goalMain).toBe('call');
-  expect(v2.own).toEqual(emptyAnswersV2().own);
+  expect(v2.own).toEqual(emptyAnswers().own);
 });
 test('v1 → v2: own 에서 표에 없는 글자는 기본값, 모르겠어요는 unknown', () => {
   const v2 = migrateV1({ v: 1, own: { domain: '이상한 값', hosting: '모르겠어요' } })!;

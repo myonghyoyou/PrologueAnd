@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { fromKo, seedBrief } from './brief-ko';
 
 test('요청서 페이지: 제목·대표 주소·머리글(브랜드+문의만)·바닥글 없음', async ({ page }) => {
   await page.goto('/tools/brief');
@@ -20,6 +21,7 @@ test('기존 머리글 형태는 그대로', async ({ page }) => {
 });
 
 import type { Page } from '@playwright/test';
+import type { StepId } from '../lib/brief/types';
 
 async function next(page: Page) { await page.locator('[data-brief-next]').click(); }
 async function pick(page: Page, name: string) { await page.getByRole('radio', { name, exact: true }).check({ force: true }); }
@@ -54,10 +56,10 @@ test.describe('질문 흐름', () => {
     await pick(page, '예약하기'); await next(page);
     await next(page); await next(page);                       // 누가 보나요, 페이지
     await expect(page.locator('h1')).toHaveText('홈페이지에 어떤 기능이 필요하세요?');
-    await page.locator('[data-feature="예약 받기"] [data-seg="must"]').click();
+    await page.locator('[data-feature="booking"] [data-seg="must"]').click();
     await expect(page.getByText('예약은 어떻게 받으실 건가요?')).toBeVisible();
     // 누르지 않아도 이유가 펼쳐져 있다 — 읽지 않고 넘어가 나중에 견적가에 놀라지 않게
-    await expect(page.locator('[data-feature="예약 받기"] [data-impact-why]')).toBeVisible();
+    await expect(page.locator('[data-feature="booking"] [data-impact-why]')).toBeVisible();
   });
 
   test('새로고침해도 단계와 답이 그대로, 이전으로 가도 답 유지', async ({ page }) => {
@@ -119,28 +121,23 @@ test('기능 아래 이어 질문은 작은 선택지로 한 줄에 놓인다(�
   await pick(page, '새로 만들기'); await next(page);
   await pick(page, '가게(식당·카페 등)'); await next(page);
   await pick(page, '예약하기'); await next(page); await next(page); await next(page);
-  await page.locator('[data-feature="예약 받기"] [data-seg="must"]').click();
-  const tops = await page.locator('[data-feature="예약 받기"] input[type="radio"]').evaluateAll((els) => els.map((e) => Math.round(e.parentElement!.getBoundingClientRect().top)));
+  await page.locator('[data-feature="booking"] [data-seg="must"]').click();
+  const tops = await page.locator('[data-feature="booking"] input[type="radio"]').evaluateAll((els) => els.map((e) => Math.round(e.parentElement!.getBoundingClientRect().top)));
   expect(tops).toHaveLength(3);
   expect(new Set(tops).size).toBe(1);
 });
 
 test.describe('최종 검토 보완 — 질문', () => {
-  async function seed(page: Page, answers: object, step: string, done = false) {
-    await page.goto('/tools/brief');
-    await expect(page.locator('[data-brief] h1')).toBeVisible();
-    await page.evaluate(([an, st, dn]) => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, ...(an as object) }, step: st, done: dn })), [answers, step, done] as const);
-    await page.reload();
-  }
+  const seed = (page: Page, answers: Record<string, unknown>, step: StepId, done = false) => seedBrief(page, fromKo(answers), step, done);
   test('모르겠어요를 누르면 그 단계에서 고른 답이 지워진다', async ({ page }) => {
     await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', design: '새 디자인을 맞춤으로 만들어 주세요' }, 'design');
     await page.getByRole('button', { name: '모르겠어요', exact: true }).click();
-    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('prologue.brief.v1')!).answers.design);
-    expect(saved).toBe('모르겠어요');
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('prologue.brief.v2')!).answers.design);
+    expect(saved).toBe('unknown');   // 모르겠어요의 id
   });
   test('외국인이 본다고 하면 외국어 페이지를 제안한다', async ({ page }) => {
     await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', audience: ['외국인'] }, 'features');
-    await expect(page.locator('[data-feature="외국어 페이지"] [data-suggest]')).toBeVisible();
+    await expect(page.locator('[data-feature="multilang"] [data-suggest]')).toBeVisible();
   });
   test('단원 고치기 중에도 다음 질문으로 갈 수 있다', async ({ page }) => {
     await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, 'when', true);

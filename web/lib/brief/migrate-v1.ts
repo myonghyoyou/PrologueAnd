@@ -1,5 +1,6 @@
 import { OPTS, YN_ROWS, OWN_DEFAULT, type OptKey, type CompareRowId } from '../../content/brief/rules';
-import type { AnswersV2, CompareV2, FeatureId, GoalId } from './types';
+import type { Answers, CompareV2, Feature, Goal } from './types';
+import { emptyAnswers } from './storage';
 
 /**
  * v1(한국어 글자로 저장한 답) → v2(id) 옮기기.
@@ -41,14 +42,6 @@ export const V1_MAP = {
 const DUNNO_V1 = '모르겠어요';
 const DEFAULT_VENDORS_V1 = ['A 업체', 'B 업체', 'C 업체'];
 
-export function emptyAnswersV2(): AnswersV2 {
-  return {
-    v: 2, renewUrl: '', renewPain: '', kindOther: '', name: '', goalMore: [], audience: [], pages: [], pagesExtra: '',
-    features: {}, featuresExtra: '', featuresUnknown: false, langs: [], langOther: '', links: [], contentBy: '', brand: [], refs: [], dislikes: '',
-    ops: [], own: { ...OWN_DEFAULT }, monthlyCost: true, openDate: '', openUnknown: false, budgetText: '', budgetInBrief: false,
-  };
-}
-
 type MapKey = keyof typeof V1_MAP;
 const isStr = (x: unknown): x is string => typeof x === 'string';
 /** 표에 없는 글자는 undefined. 「모르겠어요」는 그 질문에 unknown 이 있을 때만 unknown */
@@ -63,7 +56,7 @@ const many = <T extends string>(map: MapKey, v: unknown, optKey?: OptKey): T[] =
 
 /** 옛 저장본과 같은 모양 검사 — 배열이어야 할 칸이 배열인지 등. 틀리면 null */
 function shapeOk(a: Record<string, unknown>): boolean {
-  const empty = emptyAnswersV2() as Record<string, unknown>;
+  const empty = emptyAnswers() as Record<string, unknown>;
   for (const k of Object.keys(empty)) {
     if (k === 'v' || k === 'budgetText') continue;   // budgetText 는 v1 에 없던 칸
     const e = empty[k], g = a[k];
@@ -73,18 +66,18 @@ function shapeOk(a: Record<string, unknown>): boolean {
   return Object.values(own).every(isStr) && (a.refs as unknown[]).every((r) => !!r && typeof r === 'object' && isStr((r as { url: unknown }).url) && Array.isArray((r as { likes: unknown }).likes));
 }
 
-export function migrateV1(raw: unknown): AnswersV2 | null {
+export function migrateV1(raw: unknown): Answers | null {
   if (!raw || typeof raw !== 'object' || (raw as { v?: unknown }).v !== 1) return null;
-  const base = emptyAnswersV2();
+  const base = emptyAnswers();
   const r = raw as Record<string, unknown>;
   const m: Record<string, unknown> = { ...base, ...r, own: { ...base.own, ...(r.own && typeof r.own === 'object' ? (r.own as object) : {}) } };
   if (!shapeOk(m)) return null;
   const own = m.own as Record<string, unknown>;
   // own 은 기본값이 미리 골라져 있으므로, 표에 없는 글자는 그 줄의 기본값. 「모르겠어요」만 unknown
-  const ownOne = <K extends keyof AnswersV2['own']>(k: K, map: MapKey, optKey: OptKey): AnswersV2['own'][K] => (one(map, own[k], optKey) ?? OWN_DEFAULT[k]) as AnswersV2['own'][K];
-  const features: AnswersV2['features'] = {};
+  const ownOne = <K extends keyof Answers['own']>(k: K, map: MapKey, optKey: OptKey): Answers['own'][K] => (one(map, own[k], optKey) ?? OWN_DEFAULT[k]) as Answers['own'][K];
+  const features: Answers['features'] = {};
   for (const [k, val] of Object.entries(m.features as Record<string, unknown>)) {
-    const id = one<FeatureId>('features', k);
+    const id = one<Feature>('features', k);
     if (id && (val === 'must' || val === 'later')) features[id] = val;
   }
   return {
@@ -92,7 +85,7 @@ export function migrateV1(raw: unknown): AnswersV2 | null {
     mode: m.mode === 'new' || m.mode === 'renew' ? m.mode : undefined,
     renewUrl: m.renewUrl as string, renewPain: m.renewPain as string, renewAmount: one('renewAmount', m.renewAmount, 'renewAmount'),
     kind: one('kind', m.kind, 'kind'), kindOther: m.kindOther as string, name: m.name as string,
-    goalMain: one<GoalId>('goal', m.goalMain, 'goal'), goalMore: many<GoalId>('goal', m.goalMore, 'goal'),
+    goalMain: one<Goal>('goal', m.goalMain, 'goal'), goalMore: many<Goal>('goal', m.goalMore, 'goal'),
     audience: many('audience', m.audience, 'audience'),
     pages: many('pages', m.pages, 'pages'), pagesExtra: m.pagesExtra as string,
     features, featuresExtra: m.featuresExtra as string, featuresUnknown: m.featuresUnknown as boolean,

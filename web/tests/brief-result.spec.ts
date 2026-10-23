@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { fromKo, seedBrief } from './brief-ko';
 
 /** 질문을 다 거쳐 결과까지 — 예약(네이버)·소개 글 작성을 맡긴 카페 */
 async function finish(page: Page) {
@@ -10,7 +11,7 @@ async function finish(page: Page) {
   await pick('가게(식당·카페 등)'); await page.locator('[data-brief-name]').fill('가람 로스터리'); await next();
   await pick('찾아오기'); await next();
   await next(); await next();
-  await page.locator('[data-feature="예약 받기"] [data-seg="must"]').click(); await pick('네이버 예약 연결'); await next();
+  await page.locator('[data-feature="booking"] [data-seg="must"]').click(); await pick('네이버 예약 연결'); await next();
   await next();
   await pick('써 주길 원함'); await next();
   for (let i = 0; i < 6; i++) await next();
@@ -81,8 +82,8 @@ test.describe('결과', () => {
     page.once('dialog', (d) => d.accept());
     await page.locator('[data-brief-reset]').click();
     await expect(page.locator('h1')).toHaveText('홈페이지 요청서 만들기');
-    // 시작 화면에서는 저장하지 않으므로 두 키 모두 비어 있다
-    expect(await page.evaluate(() => [localStorage.getItem('prologue.brief.v1'), localStorage.getItem('prologue.brief.compare.v1')])).toEqual([null, null]);
+    // 시작 화면에서는 저장하지 않으므로 v1·v2 네 키 모두 비어 있다
+    expect(await page.evaluate(() => ['prologue.brief.v1', 'prologue.brief.compare.v1', 'prologue.brief.v2', 'prologue.brief.compare.v2'].map((k) => localStorage.getItem(k)))).toEqual([null, null, null, null]);
   });
 
   test('비교표는 새로고침해도 남고 요청서에는 없다', async ({ page }) => {
@@ -102,10 +103,7 @@ test.describe('결과', () => {
 
 test.describe('최종 검토 보완 — 결과', () => {
   async function seedDone(page: Page) {
-    await page.goto('/tools/brief');
-    await expect(page.locator('[data-brief] h1')).toBeVisible();
-    await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'when', done: true })));
-    await page.reload();
+    await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }), 'when', true);
   }
   test('인쇄 쪽 여백 0 — 브라우저가 머리글·바닥글(제목·주소)을 찍지 않게', async ({ page }) => {
     await seedDone(page);
@@ -137,10 +135,7 @@ test.describe('최종 검토 보완 — 결과', () => {
 
 test.describe('앱 안 브라우저(기기 시험: 인쇄 막힘, 복사·저장 됨)', () => {
   async function seedDone(page: Page) {
-    await page.goto('/tools/brief');
-    await expect(page.locator('[data-brief] h1')).toBeVisible();
-    await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'when', done: true })));
-    await page.reload();
+    await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }), 'when', true);
   }
   test('쓰레드 앱: 인쇄 대신 복사가 주 단추, 다른 브라우저 안내', async ({ browser }) => {
     const ctx = await browser.newContext({ userAgent: 'Mozilla/5.0 (iPhone) AppleWebKit Barcelona 289.0' });
@@ -163,10 +158,7 @@ test.describe('앱 안 브라우저(기기 시험: 인쇄 막힘, 복사·저장
 });
 
 test('업체 제안 항목의 「고치기」로 그 질문에 갔다가 결과로 돌아온다', async ({ page }) => {
-  await page.goto('/tools/brief');
-  await expect(page.locator('[data-brief] h1')).toBeVisible();
-  await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'when', done: true })));
-  await page.reload();
+  await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }), 'when', true);
   await expect(page.locator('[data-brief-doc]')).not.toContainText('업체 제안 받기');   // 단원 제목이 말하므로 줄마다 붙이지 않는다
   const row = page.locator('[data-brief-doc] [data-ask-row]', { hasText: '디자인 방식' });
   await row.getByRole('button', { name: '디자인 방식 고치기' }).click();

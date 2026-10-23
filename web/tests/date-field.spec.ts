@@ -1,16 +1,14 @@
 import { test, expect, type Page } from '@playwright/test';
+import { fromKo, seedBrief } from './brief-ko';
 
 /** 오픈 희망일 — react-datepicker 달력(공통 부품 components/ui/date-field) */
 
 async function seedWhen(page: Page) {
-  await page.goto('/tools/brief');
-  await expect(page.locator('[data-brief] h1')).toBeVisible();
-  await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'when', done: false })));
-  await page.reload();
+  await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }), 'when');
   await expect(page.locator('h1')).toHaveText('일정과 예산, 결정하실 분을 알려 주세요');
 }
 const cal = (page: Page) => page.locator('.react-datepicker');
-const saved = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem('prologue.brief.v1')!).answers.openDate as string);
+const saved = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem('prologue.brief.v2')!).answers.openDate as string);
 
 test('누르면 한국어 달력이 펼쳐지고, 고른 날은 한국어로 보이며 날짜 형식으로 저장된다', async ({ page }) => {
   await seedWhen(page);

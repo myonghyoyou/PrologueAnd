@@ -1,52 +1,26 @@
 import type { Opt, CompareRowId } from '../../content/brief/rules';
 export type { Locale } from '../../content/brief/copy/types';
-
-export const UNKNOWN = '모르겠어요';
+export { UNKNOWN } from '../../content/brief/rules';
 
 export type StepId =
   | 'mode' | 'renew' | 'kind' | 'goal' | 'audience' | 'pages' | 'features' | 'links'
   | 'content' | 'brand' | 'design' | 'ops' | 'own' | 'scope' | 'when';
 
-export type Feature = '문의 남기기' | '예약 받기' | '상품 결제' | '회원' | '외국어 페이지' | '직접 글 올리기(공지·소식)' | '카카오 채널 연결';
-export type Goal = '전화하기' | '문의 남기기' | '예약하기' | '찾아오기' | '상품 사기' | '소식 보기';
-export type Ref = { url: string; likes: string[]; memo: string };
+export type Feature = Opt<'features'>; export type Goal = Opt<'goal'>;
+export type Ref = { url: string; likes: Opt<'likes'>[]; memo: string };
 
-/** 사장님 답. 선택 안 함은 undefined 또는 빈 배열·빈 문자열. 「모르겠어요」는 UNKNOWN 문자열 */
+/** 사장님 답(v2) — 선택지는 언어와 상관없는 id(content/brief/rules.ts)로 저장한다. 선택 안 함은 undefined 또는 빈 배열·빈 문자열, 모르겠어요는 'unknown'.
+ *  langs 는 언어 코드(목록 밖 코드도 그대로 둔다). budget 은 한국어판 구간, budgetText 는 영어판 글칸 */
 export type Answers = {
-  v: 1;
-  mode?: 'new' | 'renew';
-  renewUrl: string; renewPain: string; renewAmount?: string;
-  kind?: string; kindOther: string; name: string;
-  goalMain?: Goal; goalMore: Goal[];
-  audience: string[];
-  pages: string[]; pagesExtra: string;
-  features: Partial<Record<Feature, 'must' | 'later'>>; featuresExtra: string; featuresUnknown: boolean;
-  booking?: string; shopCount?: string; shopHow?: string; member?: string; langs: string[]; langOther: string;
-  links: string[];
-  copy?: string; photo?: string; contentBy: string;
-  brand: string[];
-  design?: string; refs: Ref[]; dislikes: string;
-  ops: string[];
-  own: { domain: string; hosting: string; admin: string; source: string };
-  revisions?: string; care?: string; monthlyCost: boolean;
-  openDate: string; openUnknown: boolean; openFixed?: string;
-  budget?: string; budgetInBrief: boolean;
-  decider?: string;
-};
-
-/** v2 — 선택지를 언어와 상관없는 id 로 저장한다. Task 4 가 v1 을 지울 때 FeatureId/GoalId/RefV2 를 Feature/Goal/Ref 로, AnswersV2 를 Answers 로 바꾼다 */
-export type FeatureId = Opt<'features'>; export type GoalId = Opt<'goal'>;
-export type RefV2 = { url: string; likes: Opt<'likes'>[]; memo: string };
-export type AnswersV2 = {
   v: 2; mode?: 'new' | 'renew';
   renewUrl: string; renewPain: string; renewAmount?: Opt<'renewAmount'>;
   kind?: Opt<'kind'>; kindOther: string; name: string;
-  goalMain?: GoalId; goalMore: GoalId[]; audience: Opt<'audience'>[];
+  goalMain?: Goal; goalMore: Goal[]; audience: Opt<'audience'>[];
   pages: Opt<'pages'>[]; pagesExtra: string;
-  features: Partial<Record<FeatureId, 'must' | 'later'>>; featuresExtra: string; featuresUnknown: boolean;
+  features: Partial<Record<Feature, 'must' | 'later'>>; featuresExtra: string; featuresUnknown: boolean;
   booking?: Opt<'booking'>; shopCount?: Opt<'shopCount'>; shopHow?: Opt<'shopHow'>; member?: Opt<'member'>; langs: string[]; langOther: string;
   links: Opt<'links'>[]; copy?: Opt<'copy'>; photo?: Opt<'photo'>; contentBy: string; brand: Opt<'brand'>[];
-  design?: Opt<'design'>; refs: RefV2[]; dislikes: string; ops: Opt<'ops'>[];
+  design?: Opt<'design'>; refs: Ref[]; dislikes: string; ops: Opt<'ops'>[];
   own: { domain: Opt<'ownDomain'>; hosting: Opt<'ownHosting'>; admin: Opt<'ownAdmin'>; source: Opt<'ownSource'> };
   revisions?: Opt<'revisions'>; care?: Opt<'care'>; monthlyCost: boolean;
   openDate: string; openUnknown: boolean; openFixed?: Opt<'openFixed'>;

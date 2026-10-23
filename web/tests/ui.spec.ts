@@ -1,4 +1,6 @@
 import { test, expect, type Page, type Locator } from '@playwright/test';
+import type { StepId } from '../lib/brief/types';
+import { fromKo, seedBrief } from './brief-ko';
 
 /** 공통 부품(components/ui) — 사이트 디자인 기준(docs/14 §3.3): 모서리 2px, 카드·채움 없음, 네이비는 획 */
 
@@ -14,12 +16,8 @@ async function roundOnes(area: Locator) {
 }
 const NAVY = 'rgb(31, 36, 71)';
 
-async function seed(page: Page, answers: object, step: string, done = false) {
-  await page.goto('/tools/brief');
-  await expect(page.locator('[data-brief] h1')).toBeVisible();
-  await page.evaluate(([an, st, dn]) => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, ...(an as object) }, step: st, done: dn })), [answers, step, done] as const);
-  await page.reload();
-}
+/** 한국어 글자로 적은 답을 id 로 옮겨 v2 키에 넣고 그 단계부터 */
+const seed = (page: Page, answers: Record<string, unknown>, step: StepId, done = false) => seedBrief(page, fromKo(answers), step, done);
 
 test.describe('요청서 질문 화면', () => {
   test('하나 고르기: 괘선 줄, 글자가 질문 제목과 같은 왼쪽 선, 고르면 바탕은 그대로', async ({ page }) => {
@@ -51,15 +49,15 @@ test.describe('요청서 질문 화면', () => {
 
   test('기능: 견적가 영향은 안내 상자(A안), 이어지는 질문은 왼쪽 세로선, 둥근 것 없음', async ({ page }) => {
     await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, 'features');
-    await page.locator('[data-feature="예약 받기"] [data-seg="must"]').click();
-    const imp = page.locator('[data-feature="예약 받기"] [data-impact]');
+    await page.locator('[data-feature="booking"] [data-seg="must"]').click();
+    const imp = page.locator('[data-feature="booking"] [data-impact]');
     // 누르는 것이 아니라 알림 — 옅은 경고색 바탕 칸에 표시와 이유가 함께
     const st = await imp.evaluate((e) => { const c = getComputedStyle(e); return [c.backgroundColor, c.borderTopColor, c.borderTopWidth, c.cursor]; });
     expect(st).toEqual(['rgb(251, 246, 236)', 'rgb(233, 211, 166)', '1px', 'auto']);
     await expect(imp.locator('[data-impact-label]')).toHaveText('견적가에 크게 영향');
     await expect(imp.locator('[data-impact-why]')).toContainText('네이버 예약을 연결하면');
     expect(await imp.locator('button, a').count()).toBe(0);
-    const follow = page.locator('[data-feature="예약 받기"] [data-follow]');
+    const follow = page.locator('[data-feature="booking"] [data-follow]');
     expect(await follow.evaluate((e) => getComputedStyle(e).borderLeftColor)).toBe(NAVY);
     expect(await roundOnes(page.locator('[data-brief]'))).toEqual([]);
   });

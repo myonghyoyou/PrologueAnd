@@ -49,6 +49,8 @@
 .table tbody th{position:sticky;left:0;background:var(--bone-100);font-weight:500;color:var(--bone-700);z-index:1}
 .cell{width:100%;min-width:96px;border:0;border-bottom:1px solid var(--bone-300);background:transparent;font:inherit;font-variant-numeric:tabular-nums;padding:4px 0;color:inherit}
 .cell:focus{outline:none;border-bottom-color:var(--navy-900)}
+/* 업체 이름은 빈 값으로 저장하고 「A 업체」를 자리 글자로 보인다 — 전처럼 값과 같은 색으로(이름 칸은 머리 칸이라 비어 보이면 표가 빈 듯하다) */
+.vendorName::placeholder{color:inherit;opacity:1}
 .yn{min-width:72px;min-height:36px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);font:inherit;font-size:14px;font-weight:600;color:var(--bone-500);cursor:pointer}
 .yes{border-color:var(--success);color:var(--success)}
 .no{border-color:var(--error);color:var(--error)}

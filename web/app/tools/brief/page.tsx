@@ -16,7 +16,7 @@ export default function BriefPage() {
   return (
     <>
       <Header variant="tool" />
-      <main className={s.main} data-brief-page><BriefTool /></main>
+      <main className={s.main} data-brief-page><BriefTool locale="ko" /></main>
     </>
   );
 }

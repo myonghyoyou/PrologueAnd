@@ -1,14 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
+import type { StepId } from '../lib/brief/types';
+import { fromKo, seedBrief } from './brief-ko';
 
 /** 레퍼런스 조사 뒤 보강(명세 §11) */
 const pick = (page: Page, n: string) => page.getByRole('radio', { name: n, exact: true }).check({ force: true });
 const next = (page: Page) => page.locator('[data-brief-next]').click();
 
-async function seedDone(page: Page, extra: object = {}) {
-  await page.goto('/tools/brief');
-  await expect(page.locator('[data-brief] h1')).toBeVisible();
-  await page.evaluate((x) => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', ...x }, step: 'when', done: true })), extra);
-  await page.reload();
+async function seedDone(page: Page, extra: Record<string, unknown> = {}) {
+  await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', ...extra }), 'when', true);
   await expect(page.locator('[data-brief-result]')).toBeVisible();
 }
 
@@ -117,22 +116,16 @@ test.describe('답하는 동안 요청서 미리보기', () => {
 });
 
 test('메뉴 칸 질문은 「화면」으로 묻는다', async ({ page }) => {
-  await page.goto('/tools/brief');
-  await expect(page.locator('[data-brief] h1')).toBeVisible();
-  await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'pages', done: false })));
-  await page.reload();
+  await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }), 'pages');
   await expect(page.locator('h1')).toHaveText('어떤 화면이 필요하세요?');
   await expect(page.getByText('그 밖에 필요한 화면 (쉼표로 나눠 적어 주세요)')).toBeVisible();
 });
 
 test('기능 질문: 목록 밖의 기능을 적을 수 있고, 모르겠어요를 누르면 지워진다', async ({ page }) => {
-  await page.goto('/tools/brief');
-  await expect(page.locator('[data-brief] h1')).toBeVisible();
-  await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'features', done: false })));
-  await page.reload();
+  await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }), 'features');
   const extra = page.getByLabel('그 밖에 필요한 기능');
   await extra.fill('쿠폰 발급');
-  const saved = () => page.evaluate(() => JSON.parse(localStorage.getItem('prologue.brief.v1')!).answers.featuresExtra);
+  const saved = () => page.evaluate(() => JSON.parse(localStorage.getItem('prologue.brief.v2')!).answers.featuresExtra);
   await expect.poll(saved).toBe('쿠폰 발급');
   await page.getByRole('button', { name: '어떤 기능이 필요한지 모르겠어요' }).click();
   await expect.poll(saved).toBe('');
@@ -162,12 +155,7 @@ test.describe('시작 화면 견본 — 잘린 종이(C안)', () => {
 
 test.describe('견적가 영향 — 늘 보이고, 해당 줄에 표시', () => {
   const A = { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', features: { '예약 받기': 'must', '문의 남기기': 'must' }, booking: '홈페이지 안에서 직접', copy: '써 주길 원함', design: '새 디자인을 맞춤으로 만들어 주세요' };
-  async function seed(page: Page, step: string, done: boolean) {
-    await page.goto('/tools/brief');
-    await expect(page.locator('[data-brief] h1')).toBeVisible();
-    await page.evaluate(([a, st, dn]) => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: a, step: st, done: dn })), [A, step, done] as const);
-    await page.reload();
-  }
+  const seed = (page: Page, step: StepId, done: boolean) => seedBrief(page, fromKo(A), step, done);
   test('결과: 견적가 영향이 요청서 위에 있고, 해당 줄에만 표시가 붙는다', async ({ page }) => {
     await seed(page, 'when', true);
     await expect(page.locator('[data-brief-impact] h2')).toHaveText('견적가를 크게 움직이는 항목');
@@ -195,10 +183,7 @@ test.describe('견적가 영향 — 늘 보이고, 해당 줄에 표시', () => 
 });
 
 test('결과: 견적가 영향 상자와 요청서 제목 사이가 띄워져 있다', async ({ page }) => {
-  await page.goto('/tools/brief');
-  await expect(page.locator('[data-brief] h1')).toBeVisible();
-  await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', copy: '써 주길 원함' }, step: 'when', done: true })));
-  await page.reload();
+  await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', copy: '써 주길 원함' }), 'when', true);
   const box = (await page.locator('[data-brief-impact]').boundingBox())!;
   const title = (await page.locator('[data-brief-doc] h1').boundingBox())!;
   expect(title.y - (box.y + box.height)).toBeGreaterThanOrEqual(28);

@@ -63,7 +63,8 @@ export type BriefCopy = {
     sampleName: string; switchTo: { href: string; label: string; lang: Locale } };
   doc: { title: (name: string) => string; untitled: string; subtitle: (mode: 'new' | 'renew', today: Date) => string;
     sections: Record<SectionId, string>; rows: DocRows; values: DocValues; tags: { must: string; later: string };
-    unknown: Record<UnknownKey, string>; vendorLead: string; qPrefix: (n: number) => string; formatDay: (iso: string) => string };
+    unknown: Record<UnknownKey, string>; vendorLead: string; qPrefix: (n: number) => string; formatDay: (iso: string) => string;
+    /** 작성일 — 요일 없이 */ formatToday: (d: Date) => string };
   impact: { renewMany: string; pages: (n: number) => string; feature: (name: string, must: boolean) => string; multilang: (n: number) => string;
     links: (n: number) => string; copyWrite: string; noLogo: string; custom: string; rush: string; bookingService: string };
   vendor: { revisions: string; monthly: string; contact: string; admin: string; bookingService: string; bookingOther: string; payment: string;

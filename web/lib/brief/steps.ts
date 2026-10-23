@@ -10,17 +10,17 @@ export function visibleSteps(a: Answers): StepId[] {
 }
 
 export function isAnswered(a: Answers, id: StepId): boolean {
-  if (id === 'kind') return !!a.kind && (a.kind !== '직접 입력' || a.kindOther.trim().length > 0);
+  if (id === 'kind') return !!a.kind && (a.kind !== 'other' || a.kindOther.trim().length > 0);
   if (id === 'goal') return !!a.goalMain;
   return true;
 }
 
-/** 진행 표시 묶음 — 분기로 단계 수가 바뀌어도 묶음 수는 그대로(명세 §11) */
-export const PHASES: { name: string; steps: StepId[] }[] = [
-  { name: '어떤 홈페이지', steps: ['mode', 'renew', 'kind', 'goal', 'audience'] },
-  { name: '필요한 것', steps: ['pages', 'features', 'links'] },
-  { name: '준비와 디자인', steps: ['content', 'brand', 'design', 'ops'] },
-  { name: '약속', steps: ['own', 'scope', 'when'] },
+/** 진행 표시 묶음 — 분기로 단계 수가 바뀌어도 묶음 수는 그대로(명세 §11). 묶음 이름은 문구 파일(ui.phases)에서 같은 순서로 */
+export const PHASES: { steps: StepId[] }[] = [
+  { steps: ['mode', 'renew', 'kind', 'goal', 'audience'] },
+  { steps: ['pages', 'features', 'links'] },
+  { steps: ['content', 'brand', 'design', 'ops'] },
+  { steps: ['own', 'scope', 'when'] },
 ];
 
 export function phaseOf(id: StepId): number {

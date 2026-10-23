@@ -1,13 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { fromKo, seedBrief } from './brief-ko';
 
 test.describe('Prologue&에도 보내기', () => {
   test('보내기 → 서랍이 열리고 1단계·요약·새로 만들기 선택, 서버 요청 없음', async ({ page }) => {
     const sent: string[] = [];
     page.on('request', (r) => { if (r.url().includes('/api/')) sent.push(r.url()); });
-    await page.goto('/tools/brief');
-    await expect(page.locator('[data-brief] h1')).toBeVisible();   // 첫 저장(빈 답)이 끝난 뒤에 시드를 넣는다
-    await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'when', done: true })));
-    await page.reload();
+    await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }), 'when', true);
     await page.locator('[data-brief-send]').click();
     const pain = page.locator('textarea[name="pain"]');
     await expect(pain).toBeVisible();
@@ -17,10 +15,7 @@ test.describe('Prologue&에도 보내기', () => {
   });
 
   test('서랍 2단계에서 닫은 뒤 보내기로 열면 1단계, 이미 쓴 글은 지우지 않고 덧붙임', async ({ page }) => {
-    await page.goto('/tools/brief');
-    await expect(page.locator('[data-brief] h1')).toBeVisible();   // 첫 저장(빈 답)이 끝난 뒤에 시드를 넣는다
-    await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'when', done: true })));
-    await page.reload();
+    await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }), 'when', true);
     await page.locator('header [data-open-drawer]').click();
     await page.locator('textarea[name="pain"]').fill('제가 먼저 쓴 글');
     await page.getByRole('button', { name: '다음' }).click();
@@ -32,10 +27,7 @@ test.describe('Prologue&에도 보내기', () => {
   });
 
   test('이미 900자를 쓴 뒤 보내기 → 합계 1,000자 이하, 기존 글 그대로', async ({ page }) => {
-    await page.goto('/tools/brief');
-    await expect(page.locator('[data-brief] h1')).toBeVisible();   // 첫 저장(빈 답)이 끝난 뒤에 시드를 넣는다
-    await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', name: '가'.repeat(60) }, step: 'when', done: true })));
-    await page.reload();
+    await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기', name: '가'.repeat(60) }), 'when', true);
     await page.locator('header [data-open-drawer]').click();
     await page.locator('textarea[name="pain"]').fill('나'.repeat(900));
     await page.locator('[data-drawer] button[aria-label="닫기"]').click();
@@ -43,6 +35,21 @@ test.describe('Prologue&에도 보내기', () => {
     const v = await page.locator('textarea[name="pain"]').inputValue();
     expect(v.length).toBeLessThanOrEqual(1000);
     expect(v.startsWith('나'.repeat(900))).toBe(true);
+  });
+
+  test('두 번 보내도 지금 상황에 요약은 하나, 새로 만들기 답이면 새로 만들고 싶어요가 다시 골라진다', async ({ page }) => {
+    await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }), 'when', true);
+    const pain = page.locator('textarea[name="pain"]');
+    const need = page.getByRole('radio', { name: '새로 만들고 싶어요' });
+    await page.locator('[data-brief-send]').click();
+    await expect(pain).toHaveValue(/\[요청서 만들기\]/);
+    await expect(need).toBeChecked();
+    await page.locator('[data-drawer] button[aria-label="닫기"]').click();
+    await page.locator('[data-brief-send]').click();
+    await expect(pain).toBeVisible();
+    await page.waitForTimeout(300);   // 서랍은 다음 그림 때 칸을 채운다 — 채운 뒤에 읽는다
+    expect((await pain.inputValue()).split('[요청서 만들기]').length - 1).toBe(1);
+    await expect(need).toBeChecked();
   });
 
   test('미리 채움이 없는 기존 열기는 그대로(이전 단계 유지)', async ({ page }) => {
