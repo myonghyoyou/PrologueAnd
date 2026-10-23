@@ -68,7 +68,7 @@ export type BriefCopy = {
     links: (n: number) => string; copyWrite: string; noLogo: string; custom: string; rush: string; bookingService: string };
   vendor: { revisions: string; monthly: string; contact: string; admin: string; bookingService: string; bookingOther: string; payment: string;
     translate: string; existingDesign: string; copyCost: string; migrate: string; deadline: string };
-  summary: { head: string; mode: { new: string; renew: string }; kind: string; name: string; goal: string; must: string; extra: string; pages: (n: number) => string; open: string; written: string };
+  summary: { mode: { new: string; renew: string }; kind: string; name: string; goal: string; must: string; extra: string; pages: (n: number) => string; open: string; written: string };
   result: { impactTitle: string; impactLegend: string; impactNone: string; edit: string; editAria: (label: string) => string; vendorTitle: string; vendorPrintLead: string;
     compareTitle: string; comparePrice: string; compareRows: Record<CompareRowId, string>; vendorName: (i: number) => string; nameAria: (i: number) => string;
     cellAria: (vendor: string, row: string, value: string) => string;

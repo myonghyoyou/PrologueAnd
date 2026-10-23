@@ -222,7 +222,6 @@ export const ko: BriefCopy = {
     deadline: '이 날짜까지 오픈이 가능한가요? 늦어지면 어떻게 하나요?',
   },
   summary: {
-    head: '[요청서 만들기]',
     mode: { new: '새로 제작', renew: '기존 홈페이지 개편' },
     kind: '업종', name: '이름', goal: '가장 중요한 고객 행동', must: '꼭 필요한 기능', extra: '그 밖에 필요한 기능',
     pages: (n) => `화면 ${n}개`,
