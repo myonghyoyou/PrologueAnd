@@ -319,3 +319,15 @@ test.describe('내보내기', () => {
     expect(await page.locator('[data-own-sheet]').innerText()).not.toMatch(/[가-힣]/);
   });
 });
+
+test('요청서 결과: 권한 점검 연결 줄은 화면에 있고 인쇄에는 없다', async ({ page }) => {
+  await page.goto('/tools/brief');
+  await expect(page.locator('[data-brief] h1')).toBeVisible();
+  await page.evaluate(() => localStorage.setItem('prologue.brief.v1', JSON.stringify({ answers: { v: 1, mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, step: 'when', done: true })));
+  await page.reload();
+  const link = page.locator('[data-part="prologue"] [data-brief-to-ownership]');
+  await expect(link).toBeVisible();
+  await expect(link).toHaveAttribute('href', '/tools/ownership');
+  await page.emulateMedia({ media: 'print' });
+  await expect(link).toBeHidden();
+});

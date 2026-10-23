@@ -132,7 +132,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
       </div>
 
       <p className={`${s.small} ${s.noPrint}`} data-part="privacy" data-brief-privacy>입력한 내용은 이 기기에만 저장돼요. 연락처는 묻지 않아요. 특정 업체를 추천하거나 연결하지 않아요.</p>
-      <p className={`${s.foot} ${s.noPrint}`} data-part="prologue" data-brief-prologue>이 요청서를 Prologue&amp;에도 보내 볼 수 있어요 · <button type="button" className={s.link} onClick={send} data-brief-send>보내기</button></p>
+      <p className={`${s.foot} ${s.noPrint}`} data-part="prologue" data-brief-prologue>이 요청서를 Prologue&amp;에도 보내 볼 수 있어요 · <button type="button" className={s.link} onClick={send} data-brief-send>보내기</button><br /><a className={s.link} href="/tools/ownership" data-brief-to-ownership>이미 홈페이지가 있다면 → 내 홈페이지 권한 점검</a></p>
     </div>
   );
 }
