@@ -107,3 +107,44 @@ test.describe('조회', () => {
     expect(l.mx).toEqual({ status: 'failed', reason: 'network' });
   });
 });
+
+/* ── 업체 패턴 ── */
+import { PROVIDERS, matchRegistrar, matchNs, matchMail, matchHost } from '../lib/ownership/providers';
+
+test.describe('업체 패턴', () => {
+  test('대행자와 네임서버를 회사 키로', () => {
+    expect(matchRegistrar('Name.com, Inc.')?.key).toBe('namecom');
+    expect(matchNs(['ns1.vercel-dns.com', 'ns2.vercel-dns.com'])?.key).toBe('vercel');
+  });
+  test('모르는 값은 null(지어내지 않음)', () => {
+    expect(matchNs(['ns1.example.net'])).toBeNull();
+    expect(matchRegistrar('Some Registrar LLC')).toBeNull();
+    expect(matchRegistrar(null)).toBeNull();
+    expect(matchHost(['203.0.113.7'], [])).toBeNull();
+  });
+  test('메일', () => {
+    expect(matchMail(['smtp.google.com'])).toMatchObject({ key: 'google' });
+    expect(matchMail([])).toBe('none');
+  });
+  test('null MX는 메일 없음', () => { expect(matchMail(['.'])).toBe('none'); expect(matchMail([''])).toBe('none'); });
+  test('모든 로그인 주소는 https, 키는 겹치지 않음', () => {
+    for (const p of PROVIDERS) if (p.login) expect(p.login).toMatch(/^https:\/\//);
+    expect(new Set(PROVIDERS.map((p) => p.key)).size).toBe(PROVIDERS.length);
+  });
+});
+
+/* ── 규칙과 문구 ── */
+import { QUESTIONS } from '../content/ownership/rules';
+import { ko, en } from '../content/ownership/copy';
+
+test.describe('규칙과 문구', () => {
+  test('모르겠어요는 언제나 check', () => { for (const q of QUESTIONS) if (q.opts.includes('unknown')) expect(q.judge.unknown, q.id).toBe('check'); });
+  test('모든 질문·선택지에 두 언어 문구가 있다', () => {
+    for (const c of [ko, en]) for (const q of QUESTIONS) {
+      expect(c.q[q.id].title.length, q.id).toBeGreaterThan(0);
+      for (const o of q.opts) expect(c.q[q.id].opts[o]?.length ?? 0, `${q.id}.${o}`).toBeGreaterThan(0);
+    }
+  });
+  test('영어 문구에 한글이 없다', () => { expect(JSON.stringify(en)).not.toMatch(/[가-힣]/); });
+  test('문구에 낫표·RDAP 낱말 없음', () => { for (const c of [ko, en]) expect(JSON.stringify(c)).not.toMatch(/[「」]|RDAP/); });
+});
