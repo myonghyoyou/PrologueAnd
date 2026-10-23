@@ -8,3 +8,9 @@ export const DATE_KO: DateFieldText = {
   show: (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})`,
   title: (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월`,
 };
+/** 영어 — 숫자만 쓴 날짜는 나라마다 순서가 달라 글자로 쓴 달(명세 3-4) */
+export const DATE_EN: DateFieldText = {
+  locale: 'en', empty: 'Pick a date', none: 'not set', prev: 'Previous month', next: 'Next month',
+  show: (d) => new Intl.DateTimeFormat('en', { dateStyle: 'full' }).format(d),
+  title: (d) => new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' }).format(d),
+};

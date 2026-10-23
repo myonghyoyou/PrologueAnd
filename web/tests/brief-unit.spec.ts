@@ -208,7 +208,7 @@ import { join } from 'node:path';
 import { bannedWords } from './banned';
 
 test('문구: 금지 낱말·낫표 없음, 이유 문장에 금액 없음', () => {
-  const files = ['content/brief/copy/ko.ts', 'components/brief/result.tsx', 'components/brief/brief-tool.tsx', 'components/brief/steps.tsx', 'components/brief/intro.tsx', 'components/brief/preview.tsx', 'content/brief/sample.ts', 'lib/brief/derive.ts', 'app/tools/brief/page.tsx'];
+  const files = ['content/brief/copy/ko.ts', 'components/brief/result.tsx', 'components/brief/brief-tool.tsx', 'components/brief/steps.tsx', 'components/brief/intro.tsx', 'components/brief/preview.tsx', 'content/brief/sample.ts', 'lib/brief/derive.ts', 'app/tools/brief/page.tsx', 'content/brief/copy/en.ts', 'app/en/tools/brief/page.tsx'];
   // 화면·문서에 나가는 문구만 본다 — 코드 주석은 빼고
   const strip = (t: string) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
   const text = files.map((f) => strip(readFileSync(join(__dirname, '..', f), 'utf8'))).join('\n');
@@ -445,4 +445,68 @@ test('코드에 한글 없음 — 화면·문서 글자는 문구 파일에만(�
   const files = [...readdirSync(dir).filter((f) => f.endsWith('.ts') && f !== 'prefill.ts' && f !== 'migrate-v1.ts').map((f) => `lib/brief/${f}`), 'content/brief/rules.ts'];
   const strip = (t: string) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
   for (const f of files) expect(strip(readFileSync(join(__dirname, '..', f), 'utf8')), f).not.toMatch(/[가-힣]/);
+});
+
+/* 영어판(명세 3·5-1) — 모든 칸 세트(고정 파일의 max)에서 사장님이 적는 칸만 영어로 바꾼다 */
+import { mailHref } from '../lib/brief/derive';
+const MAX_V1 = (JSON.parse(readFileSync(join(__dirname, 'fixtures/brief/ko-before.json'), 'utf8')) as { sets: { name: string; v1: Record<string, unknown> }[] }).sets.find((x) => x.name === 'max')!.v1;
+const en = copyFor('en');
+const enMax = (): Answers => ({ ...fromKo(MAX_V1), name: 'Wren Hollow Bakery', kindOther: '', pagesExtra: 'Catering', featuresExtra: 'Gift cards', renewPain: 'Text is too small on phones',
+  refs: [{ url: 'https://example.org', likes: ['color'], memo: 'Big photos' }], dislikes: 'Flashy motion', budgetText: '$3,000' });
+
+test.describe('영어판', () => {
+  test('영어: 요청서·복사 글에 한글이 없다(모든 칸 세트)', () => {
+    const a = enMax();
+    expect(en.locale).toBe('en');
+    const all = JSON.stringify([buildBrief(a, D, en), impactItems(a, D, en), vendorQuestions(a, en), unknownItems(a, en), toPlainText(a, D, en), mailHref(a, D, en, 'x@y.z'),
+      buildBrief(fromKo({ kind: '회사·사무실', goalMain: '문의 남기기' }), D, en)]);
+    expect(all).not.toMatch(/[가-힣ㄱ-ㅎㅏ-ㅣ]/);
+  });
+  test('영어: 제목과 날짜는 글자로 쓴 달', () => {
+    const b = buildBrief(enMax(), D, en);
+    expect(b.title).toBe('Website brief · Wren Hollow Bakery');
+    expect(buildBrief(fromKo({ kind: '회사·사무실' }), D, en).title).toBe('Website brief · Untitled');
+    expect(b.subtitle).toBe('Website redesign · Written October 15, 2026');
+    expect(b.sections.find((x) => x.id === 'when')!.rows[0].value).toContain('Tuesday, November 10, 2026');
+  });
+  test('영어: 예산은 budgetText만, 넣기를 끄면 없음, 원화 구간은 안 나옴', () => {
+    const base = enMax();
+    const ids = (a: Answers) => buildBrief(a, D, en).sections.map((x) => x.id);
+    expect(ids({ ...base, budget: '300to800', budgetText: '', budgetInBrief: true })).not.toContain('budget');
+    expect(ids({ ...base, budgetText: '$3,000', budgetInBrief: false })).not.toContain('budget');
+    const b = buildBrief({ ...base, budget: '300to800', budgetText: '$3,000', budgetInBrief: true }, D, en).sections.find((x) => x.id === 'budget')!;
+    expect(b.rows[0].value).toBe('$3,000');
+  });
+  test('영어: 외국어 ja는 Japanese', () => {
+    const b = buildBrief({ ...enMax(), features: { multilang: 'later' }, langs: ['ja'], langOther: '' }, D, en);
+    expect(b.sections.find((x) => x.id === 'features')!.rows.find((r) => r.tag === 'later')!.value).toBe('Japanese');
+  });
+  test('mailHref: 받는 사람·제목·첫 줄, 1,800자 안', () => {
+    const a = enMax();
+    const h = mailHref(a, D, en, 'hello@prologueand.com');
+    expect(h.startsWith('mailto:hello@prologueand.com?subject=')).toBe(true);
+    expect(decodeURIComponent(h.split('?subject=')[1].split('&body=')[0])).toBe('Website brief · Wren Hollow Bakery');
+    const body = decodeURIComponent(h.split('&body=')[1]).split('\n');
+    expect(body[0]).toBe(en.end.kind === 'mail' ? en.end.attachLine : '');
+    expect(body[1]).toBe('');
+    expect(body[2]).toBe(en.summary.mode.renew);
+    expect(h.length).toBeLessThanOrEqual(1800);
+    const long = mailHref({ ...a, name: 'x'.repeat(300), featuresExtra: 'y'.repeat(300), kind: 'other', kindOther: 'z'.repeat(300) }, D, en, 'hello@prologueand.com');
+    expect(long.length).toBeLessThanOrEqual(1800);
+    expect(decodeURIComponent(long.split('&body=')[1]).split('\n')[0]).toBe(en.end.kind === 'mail' ? en.end.attachLine : '');
+    // 한국어 글처럼 인코딩하면 아주 길어지는 글이어도 1,800자 안
+    const wide = mailHref({ ...a, name: '\u00e9'.repeat(60), featuresExtra: '\u00e9\u00e8'.repeat(100), pagesExtra: Array.from({ length: 40 }, (_, i) => `p${i}`).join(',') }, D, en, 'hello@prologueand.com');
+    expect(wide.length).toBeLessThanOrEqual(1800);
+  });
+  test('영어 문구: 금지 낱말·낫표 없음, 한글은 한국어 링크 이름뿐, 이유 문장에 금액 없음', () => {
+    const strip = (t: string) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
+    const src = strip(readFileSync(join(__dirname, '..', 'content/brief/copy/en.ts'), 'utf8'));
+    expect(src.replace(/'한국어'/, '')).not.toMatch(/[가-힣ㄱ-ㅎㅏ-ㅣ]/);
+    expect(en.intro.switchTo).toEqual({ href: '/tools/brief', label: '한국어', lang: 'ko' });
+    const Q = en.q;
+    const why = [Q.renew.amountWhy, Q.pages.manyWhy, ...Object.values(Q.features.why), Q.links.manyWhy, Q.content.why, Q.brand.noneWhy, Q.design.customWhy, Q.when.rushWhy, en.impact.bookingService].join('\n');
+    expect(why).not.toMatch(/[$£€¥₩]\s*\d|\d\s*(dollars|pounds|euros)/i);
+    expect(Q.features.why.booking).toContain('Linking a booking app like Calendly or Square keeps the cost much lower.');
+    expect(en.end).toMatchObject({ kind: 'mail', madeBy: 'Made by Prologue&' });
+  });
 });

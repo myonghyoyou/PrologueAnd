@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { briefSummary, buildBrief, impactKeys, printZoom, impactItems, toPlainText, vendorQuestions } from '@/lib/brief/derive';
+import { briefSummary, buildBrief, impactKeys, mailHref, printZoom, impactItems, toPlainText, vendorQuestions } from '@/lib/brief/derive';
+import { CONTACT_MAIL } from '@/lib/contact';
+import { OWNERSHIP_EN_PATH } from '@/content/brief/links';
 import { COMPARE_ROWS, YN_ROWS, YN, type CompareRowId } from '@/content/brief/rules';
 import { browserStorage, loadCompare, saveCompare, type Vendor } from '@/lib/brief/storage';
 import { PREFILL_NEED_NEW } from '@/lib/brief/prefill';
@@ -139,8 +141,12 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
       </div>
 
       <p className={`${s.small} ${s.noPrint}`} data-part="privacy" data-brief-privacy>{R.privacy}</p>
-      {/* 맨 아래 줄 — 한국어판은 문의 서랍으로 보낸다(영어판 메일 보내기는 따로) */}
-      {c.end.kind === 'drawer' ? <p className={`${s.foot} ${s.noPrint}`} data-part="prologue" data-brief-prologue>{c.end.text} · <button type="button" className={s.link} onClick={send} data-brief-send>{c.end.send}</button></p> : null}
+      {/* 맨 아래 줄 — 한국어판은 문의 서랍으로, 영어판은 메일 앱 열기(mailto, 명세 5-1 — 서버로는 아무것도 가지 않는다) */}
+      {c.end.kind === 'drawer'
+        ? <p className={`${s.foot} ${s.noPrint}`} data-part="prologue" data-brief-prologue>{c.end.text} · <button type="button" className={s.link} onClick={send} data-brief-send>{c.end.send}</button></p>
+        : <p className={`${s.foot} ${s.noPrint}`} data-part="prologue" data-brief-prologue>{c.end.madeBy} · <a className={s.link} href={mailHref(a, today, c, CONTACT_MAIL)} data-brief-mail>{c.end.send}</a>{' '}
+            <span data-brief-mail-hint>{c.end.hint}</span>
+            {OWNERSHIP_EN_PATH ? <><br /><a className={s.link} href={OWNERSHIP_EN_PATH} data-brief-to-ownership>{c.end.toOwnership}</a></> : null}</p>}
     </div>
   );
 }

@@ -44,6 +44,8 @@ export function Intro({ onStart }: { onStart: () => void }) {
   const c = useCopy();
   return (
     <section className={s.intro} data-brief-intro>
+      {/* 언어 바꾸기 — 시작 화면에만(명세 5절). 언어가 바뀌면 처음부터 불러오도록 보통 <a> */}
+      <a className={s.lang} href={c.intro.switchTo.href} hrefLang={c.intro.switchTo.lang} lang={c.intro.switchTo.lang} data-brief-lang>{c.intro.switchTo.label}</a>
       <h1 className={s.h}>{c.intro.title}</h1>
       <p className={s.lead}>{c.intro.lead}</p>
       <ul className={s.promise} data-brief-promise>

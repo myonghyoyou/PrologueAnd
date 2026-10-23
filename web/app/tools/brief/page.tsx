@@ -8,7 +8,7 @@ const DESC = '질문에 답하면 어느 업체에나 보낼 수 있는 홈페�
 export const metadata: Metadata = {
   title: '홈페이지 요청서 만들기',
   description: DESC,
-  alternates: { canonical: '/tools/brief' },
+  alternates: { canonical: '/tools/brief', languages: { ko: '/tools/brief', en: '/en/tools/brief' } },
   openGraph: { type: 'website', locale: 'ko_KR', siteName: 'Prologue&', url: '/tools/brief', title: '홈페이지 요청서 만들기 · Prologue&', description: DESC },
 };
 

@@ -1,4 +1,5 @@
 .intro{padding-bottom:24px}
+.lang{display:inline-block;margin:0 0 10px;font-size:13px;color:var(--bone-600);text-decoration:underline;text-underline-offset:3px}
 .h{margin:0;font-size:40px;font-weight:600;letter-spacing:-.025em;line-height:1.2}
 .lead{margin:14px 0 0;font-size:16px;color:var(--bone-700);line-height:1.65}
 /* 약속 세 가지 — 알약 대신 가운뎃점으로 이은 한 줄 */
