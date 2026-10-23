@@ -1,4 +1,4 @@
-import type { DateFieldText } from '@/components/ui/date-field';
+import type { DateFieldText } from '@/components/ui/date-text';
 import type { CompareRowId, Opt, OptKey } from '../rules';
 
 export type Locale = 'ko' | 'en';

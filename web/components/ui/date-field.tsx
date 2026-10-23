@@ -5,6 +5,9 @@ import { ko } from 'date-fns/locale/ko';
 import { enUS } from 'date-fns/locale/en-US';
 import 'react-datepicker/dist/react-datepicker.css';
 import s from './date-field.module.css';
+import { DATE_KO, type DateFieldText } from './date-text';
+
+export { DATE_KO, type DateFieldText };
 
 registerLocale('ko', ko);
 registerLocale('en', enUS);
@@ -13,15 +16,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 /** 저장은 「2026-11-15」 — 시간대에 흔들리지 않게 그 기기의 날짜 그대로 */
 const toIso = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const fromIso = (v: string) => { const [y, m, d] = v.split('-').map(Number); return y && m && d ? new Date(y, m - 1, d) : null; };
-const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
-/** 달력에 보이는 글자 — 언어별로 바꿔 끼운다(기본은 한국어) */
-export type DateFieldText = { locale: 'ko' | 'en'; empty: string; none: string; prev: string; next: string; show: (d: Date) => string; title: (d: Date) => string };
-export const DATE_KO: DateFieldText = {
-  locale: 'ko', empty: '날짜를 골라 주세요', none: '고르지 않음', prev: '이전 달', next: '다음 달',
-  show: (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})`,
-  title: (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월`,
-};
 
 type TriggerProps = { label: string; text: string; empty: string; none: string; ref?: Ref<HTMLButtonElement> } & Pick<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'onKeyDown' | 'onFocus' | 'onBlur' | 'id' | 'disabled' | 'tabIndex'>;
 /** 입력칸 대신 단추 — 폰에서 키보드가 올라오지 않고, 누르면 달력이 펼쳐진다.
