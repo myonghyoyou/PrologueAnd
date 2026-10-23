@@ -148,3 +148,112 @@ test.describe('규칙과 문구', () => {
   test('영어 문구에 한글이 없다', () => { expect(JSON.stringify(en)).not.toMatch(/[가-힣]/); });
   test('문구에 낫표·RDAP 낱말 없음', () => { for (const c of [ko, en]) expect(JSON.stringify(c)).not.toMatch(/[「」]|RDAP/); });
 });
+
+/* ── 해석과 판정 ── */
+import { interpret } from '../lib/ownership/interpret';
+import { visibleQuestions, items, headline, vendorMessage, sheetRows, fill } from '../lib/ownership/verdict';
+import type { Lookup, Normalized } from '../lib/ownership/types';
+
+const NOW = new Date('2026-10-23T00:00:00Z');
+const norm = (s: string) => normalizeInput(s) as Extract<Normalized, { ok: true }>;
+const withExp = (l: Lookup, iso: string | null): Lookup =>
+  l.rdap.status === 'ok' ? { ...l, rdap: { status: 'ok', value: { ...l.rdap.value, expires: iso } } } : l;
+const comLookup = () => lookupAll('prologueand.com', { fetch: fake([{ match: 'rdap.verisign.com', file: 'rdap-com.json' }, ...DNS_OK]) });
+const plusDays = (d: number) => new Date(NOW.getTime() + d * 86400000).toISOString();
+
+test.describe('해석과 판정', () => {
+  test('종료일: 지남·20일·60일·400일', async () => {
+    const l = await comLookup();
+    const st = (d: number) => interpret(norm('prologueand.com'), withExp(l, plusDays(d)), NOW).expiry?.state;
+    expect([st(-3), st(20), st(60), st(400)]).toEqual(['risk', 'risk', 'check', 'ok']);
+  });
+  test('종료일이 없으면 종료일 항목이 없다', async () => {
+    const l = await lookupAll('prologueand.com', { fetch: fake([{ match: 'rdap.verisign.com', file: 'rdap-noexp.json' }, ...DNS_OK]) });
+    const f = interpret(norm('prologueand.com'), l, NOW);
+    expect(f.expiry).toBeNull();
+    expect(items(f, {}).map((i) => i.id)).not.toContain('expiry');
+  });
+  test('네임서버 회사 키: 다름·같음·모름', async () => {
+    const l = await comLookup();                                // 대행자 Name.com · 네임서버 Vercel
+    const f = interpret(norm('prologueand.com'), l, NOW);
+    expect(f.nsDiffers).toBe('yes');
+    expect(visibleQuestions(f)).toContain('dnsLogin');
+    const same = interpret(norm('prologueand.com'), { ...l, ns: { status: 'ok', value: ['ns1.name.com'] } }, NOW);
+    expect(same.nsDiffers).toBe('no');
+    expect(visibleQuestions(same)).not.toContain('dnsLogin');
+    const unk = interpret(norm('prologueand.com'), { ...l, ns: { status: 'ok', value: ['ns1.example.net'] } }, NOW);
+    expect(unk.nsDiffers).toBe('unknown');
+    expect(visibleQuestions(unk)).toContain('dnsLogin');
+    expect(unk.nsRaw).toEqual(['ns1.example.net']);
+  });
+  test('메일·호스팅 추정', async () => {
+    const f = interpret(norm('prologueand.com'), await comLookup(), NOW);
+    expect(f.mail).toMatchObject({ key: 'google' });
+    expect(f.registrar?.key).toBe('namecom');
+    const nullMx = interpret(norm('prologueand.com'), { ...(await comLookup()), mx: { status: 'ok', value: ['.'] } }, NOW);
+    expect(nullMx.mail).toBe('none');
+    expect(visibleQuestions(nullMx)).not.toContain('mailAdmin');
+    const failed = interpret(norm('prologueand.com'), { ...(await comLookup()), mx: { status: 'failed', reason: 'timeout' } }, NOW);
+    expect(failed.mail).toBe('unknown');
+  });
+  test('빌더 기본 주소: ownDomain 이 check, 등록대행자 질문 없음', () => {
+    const f = interpret(norm('abc.imweb.me'), null, NOW);
+    expect(f.builderOnly).toBe('imweb');
+    expect(f.isBuilder).toBe(true);
+    const qs = visibleQuestions(f);
+    expect(qs).not.toContain('registrarLogin');
+    expect(qs).toContain('builderAccount');
+    expect(qs).not.toContain('backup');
+    expect(items(f, {})).toEqual([{ id: 'ownDomain', state: 'check', value: null }]);
+  });
+  test('지원 안 되는 도메인: 자동 항목 없이 질문만', async () => {
+    const l = await lookupAll('shop.es', { fetch: fake(DNS_OK) });
+    const f = interpret(norm('shop.es'), l, NOW);
+    expect(f.unsupported).toBe(true);
+    expect(f.expiry).toBeNull();
+    expect(visibleQuestions(f)).toContain('registrarLogin');
+  });
+  test('items는 보이는 질문의 답만 쓴다', async () => {
+    const l = await comLookup();
+    const differs = interpret(norm('prologueand.com'), l, NOW);
+    expect(items(differs, { dnsLogin: 'no' }).find((i) => i.id === 'dnsLogin')?.state).toBe('risk');
+    const same = interpret(norm('prologueand.com'), { ...l, ns: { status: 'ok', value: ['ns1.name.com'] } }, NOW);
+    const list = items(same, { dnsLogin: 'no' });
+    expect(list.map((i) => i.id)).not.toContain('dnsLogin');
+    expect(headline(list).kind).not.toBe('risk');
+  });
+  test('판정 한 줄과 순서', async () => {
+    const f = interpret(norm('prologueand.com'), withExp(await comLookup(), plusDays(400)), NOW);
+    const list = items(f, { registrarLogin: 'no', hostLogin: 'unknown', adminAccount: 'no', selfEdit: 'yes' });
+    expect(list.map((i) => i.state)).toEqual(['risk', 'risk', 'check', 'ok', 'ok']);
+    expect(headline(list)).toEqual({ kind: 'risk', n: 2 });
+    expect(headline(items(f, { hostLogin: 'unknown', registrarLogin: 'unknown', selfEdit: 'no' }))).toEqual({ kind: 'check', n: 3 });
+    expect(headline(items(f, { registrarLogin: 'yes' }))).toEqual({ kind: 'ok', n: 0 });
+  });
+  test('요청 문구: 위험·확인 필요만, Prologue 없음, 두 언어', async () => {
+    const f = interpret(norm('prologueand.com'), withExp(await comLookup(), plusDays(400)), NOW);
+    const list = items(f, { registrarLogin: 'no', selfEdit: 'yes', backup: 'unknown' });
+    for (const c of [ko, en]) {
+      const m = vendorMessage(list, f, c, 'prologueand.com');
+      expect(m.startsWith(c.vendor.intro)).toBe(true);
+      expect(m).toContain(fill(c.vendor.lines.registrarLogin, { d: 'prologueand.com' }));
+      expect(m).toContain(c.vendor.lines.backup);
+      expect(m).not.toContain(c.vendor.lines.selfEdit);
+      expect(m).not.toContain(c.vendor.lines.expiry.slice(0, 8));
+      expect(m).not.toContain('Prologue');
+      expect(m.trim().endsWith(c.vendor.outro)).toBe(true);
+    }
+    expect(vendorMessage(list, f, en, 'prologueand.com')).not.toMatch(/[가-힣]/);
+  });
+  test('정리표: 로그인 주소는 아는 것만, 아는 값은 채운다', async () => {
+    const f = interpret(norm('prologueand.com'), await comLookup(), NOW);
+    const rows = sheetRows(f, ko, 'ko', 'prologueand.com');
+    const by = Object.fromEntries(rows.map((r) => [r.key, r]));
+    expect(by.domain.where).toBe('prologueand.com');
+    expect(by.registrar).toMatchObject({ where: 'Name.com', login: 'https://www.name.com/account/login' });
+    expect(by.dns.where).toBe('Vercel');
+    expect(by.mail.where).toBe('Google Workspace');
+    expect(by.map).toMatchObject({ where: '', login: null });
+    expect(rows.map((r) => r.key)).toEqual(['domain', 'registrar', 'expiry', 'dns', 'host', 'mail', 'map', 'admin', 'backup', 'contract']);
+  });
+});
