@@ -1,0 +1,28 @@
+{
+ "Status": 0,
+ "TC": false,
+ "RD": true,
+ "RA": true,
+ "AD": false,
+ "CD": false,
+ "Question": [
+  {
+   "name": "prologueand.com",
+   "type": 2
+  }
+ ],
+ "Answer": [
+  {
+   "name": "prologueand.com",
+   "type": 2,
+   "TTL": 86400,
+   "data": "ns1.vercel-dns.com."
+  },
+  {
+   "name": "prologueand.com",
+   "type": 2,
+   "TTL": 86400,
+   "data": "ns2.vercel-dns.com."
+  }
+ ]
+}

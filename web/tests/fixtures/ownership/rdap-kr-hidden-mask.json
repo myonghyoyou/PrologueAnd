@@ -1,0 +1,343 @@
+{
+ "rdapConformance": [
+  "rdap_level_0",
+  "redacted",
+  "jscontact"
+ ],
+ "notices": [
+  {
+   "title": "KRNIC Domain Policy",
+   "description": [
+    "Domain Name Management Rules by law"
+   ],
+   "links": [
+    {
+     "value": "https://krnic.kisa.or.kr/jsp/eng/policy/domainNewRules.jsp",
+     "rel": "terms-of-service",
+     "href": "https://krnic.kisa.or.kr/jsp/eng/policy/domainNewRules.jsp",
+     "type": "text/html"
+    }
+   ]
+  },
+  {
+   "title": "Status Codes",
+   "description": [
+    "For more infomation on domain status codes, please visit https://icann.org/epp"
+   ],
+   "links": [
+    {
+     "value": "https://icann.org/epp",
+     "rel": "glossary",
+     "href": "https://icann.org/epp",
+     "type": "text/html"
+    }
+   ]
+  },
+  {
+   "title": "jCard deprecation",
+   "description": [
+    "jCard has been deprecated"
+   ]
+  }
+ ],
+ "objectClassName": "domain",
+ "lang": "en",
+ "links": [
+  {
+   "value": "https://rdap.kisa.or.kr/domain/kisa.or.kr",
+   "rel": "self",
+   "href": "https://rdap.kisa.or.kr/domain/kisa.or.kr",
+   "type": "application/rdap+json"
+  }
+ ],
+ "remarks": [
+  {
+   "title": "IP Information Display Policy",
+   "description": [
+    "If the name server name is not .kr, the IP information is not visible."
+   ]
+  }
+ ],
+ "events": [
+  {
+   "eventAction": "registration",
+   "eventDate": "1996-07-19T15:00:00Z"
+  },
+  {
+   "eventAction": "last changed",
+   "eventDate": "2025-05-09T08:31:52Z"
+  },
+  {
+   "eventAction": "expiration",
+   "eventDate": "9999-12-30T15:00:00Z"
+  },
+  {
+   "eventAction": "last update of RDAP database",
+   "eventDate": "2026-10-23T05:48:55Z"
+  }
+ ],
+ "status": [
+  "server delete prohibited",
+  "server transfer prohibited",
+  "server update prohibited"
+ ],
+ "port43": "whois.kisa.or.kr",
+ "publicIds": [
+  {
+   "type": "KRNIC Registrar ID",
+   "identifier": "krnic"
+  }
+ ],
+ "redacted": [
+  {
+   "name": {
+    "description": "Registry Domain ID"
+   },
+   "prePath": "$.handle",
+   "pathLang": "jsonpath",
+   "method": "removal",
+   "reason": {
+    "description": "Server policy"
+   }
+  },
+  {
+   "name": {
+    "description": "All entity identifiers (handles) have been redacted"
+   },
+   "prePath": "$.entities[*].handle",
+   "pathLang": "jsonpath",
+   "method": "removal",
+   "reason": {
+    "description": "Server policy"
+   }
+  },
+  {
+   "name": {
+    "description": "Zone Signed"
+   },
+   "prePath": "$.secureDNS.zoneSigned",
+   "pathLang": "jsonpath",
+   "method": "removal",
+   "reason": {
+    "description": "Server policy"
+   }
+  },
+  {
+   "name": {
+    "description": "Maximum Signature Lifetime"
+   },
+   "prePath": "$.secureDNS.maxSigLife",
+   "pathLang": "jsonpath",
+   "method": "removal",
+   "reason": {
+    "description": "Server policy"
+   }
+  },
+  {
+   "name": {
+    "description": "DS Data"
+   },
+   "prePath": "$.secureDNS.dsData",
+   "pathLang": "jsonpath",
+   "method": "removal",
+   "reason": {
+    "description": "Server policy"
+   }
+  },
+  {
+   "name": {
+    "description": "Key Data"
+   },
+   "prePath": "$.secureDNS.keyData",
+   "pathLang": "jsonpath",
+   "method": "removal",
+   "reason": {
+    "description": "Server policy"
+   }
+  }
+ ],
+ "ldhName": "kisa.or.kr",
+ "unicodeName": "kisa.or.kr",
+ "nameservers": [
+  {
+   "objectClassName": "nameserver",
+   "links": [
+    {
+     "value": "https://rdap.kisa.or.kr/nameserver/rhea.kisa.or.kr",
+     "rel": "self",
+     "href": "https://rdap.kisa.or.kr/nameserver/rhea.kisa.or.kr",
+     "type": "application/rdap+json"
+    }
+   ],
+   "ldhName": "rhea.kisa.or.kr",
+   "unicodeName": "rhea.kisa.or.kr",
+   "ipAddresses": {
+    "v4": [
+     "114.108.133.98"
+    ]
+   }
+  },
+  {
+   "objectClassName": "nameserver",
+   "links": [
+    {
+     "value": "https://rdap.kisa.or.kr/nameserver/center.kisa.or.kr",
+     "rel": "self",
+     "href": "https://rdap.kisa.or.kr/nameserver/center.kisa.or.kr",
+     "type": "application/rdap+json"
+    }
+   ],
+   "ldhName": "center.kisa.or.kr",
+   "unicodeName": "center.kisa.or.kr",
+   "ipAddresses": {
+    "v4": [
+     "211.252.150.11"
+    ]
+   }
+  },
+  {
+   "objectClassName": "nameserver",
+   "links": [
+    {
+     "value": "https://rdap.kisa.or.kr/nameserver/hera.kisa.or.kr",
+     "rel": "self",
+     "href": "https://rdap.kisa.or.kr/nameserver/hera.kisa.or.kr",
+     "type": "application/rdap+json"
+    }
+   ],
+   "ldhName": "hera.kisa.or.kr",
+   "unicodeName": "hera.kisa.or.kr",
+   "ipAddresses": {
+    "v4": [
+     "211.252.150.20"
+    ]
+   }
+  }
+ ],
+ "entities": [
+  {
+   "objectClassName": "entity",
+   "roles": [
+    "registrant"
+   ],
+   "jscontact_card": {
+    "@type": "Card",
+    "version": "2.0",
+    "language": "en",
+    "kind": "org",
+    "name": {
+     "full": "비공개"
+    },
+    "addresses": {
+     "addr": {
+      "full": "KISA, 9, Jinheung-gil, Naju-si, Jeollanam-do, 58324",
+      "countryCode": "KR"
+     }
+    },
+    "localizations": {
+     "ko": {
+      "name": {
+       "full": "비공개"
+      },
+      "addresses": {
+       "addr": {
+        "full": "(58324) 전라남도 나주시 진흥길 9(빛가람동) 한국인터넷진흥원",
+        "countryCode": "KR"
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "objectClassName": "entity",
+   "roles": [
+    "administrative"
+   ],
+   "jscontact_card": {
+    "@type": "Card",
+    "version": "2.0",
+    "language": "en",
+    "kind": "org",
+    "name": {
+     "full": "Domain Manager"
+    },
+    "organizations": {
+     "org": {
+      "name": "Domain Manager"
+     }
+    },
+    "emails": {
+     "email": {
+      "address": "kisairm@kisa.or.kr"
+     }
+    },
+    "localizations": {
+     "ko": {
+      "name": {
+       "full": "도메인관리자"
+      },
+      "organizations": {
+       "org": {
+        "name": "도메인관리자"
+       }
+      },
+      "emails": {
+       "email": {
+        "address": "kisairm@kisa.or.kr"
+       }
+      }
+     }
+    },
+    "phones": {
+     "voice": {
+      "features": {
+       "voice": true
+      },
+      "number": "1433-25"
+     }
+    }
+   }
+  },
+  {
+   "objectClassName": "entity",
+   "roles": [
+    "registrar"
+   ],
+   "jscontact_card": {
+    "@type": "Card",
+    "version": "2.0",
+    "language": "en",
+    "kind": "org",
+    "name": {
+     "full": "KISA"
+    },
+    "organizations": {
+     "org": {
+      "name": "KISA"
+     }
+    },
+    "localizations": {
+     "ko": {
+      "name": {
+       "full": "한국인터넷진흥원"
+      },
+      "organizations": {
+       "org": {
+        "name": "한국인터넷진흥원"
+       }
+      }
+     }
+    },
+    "links": {
+     "url": {
+      "uri": "http://www.kisa.or.kr"
+     }
+    }
+   }
+  }
+ ],
+ "secureDNS": {
+  "delegationSigned": true
+ }
+}

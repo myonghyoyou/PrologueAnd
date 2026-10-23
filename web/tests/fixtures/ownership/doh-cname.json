@@ -1,0 +1,22 @@
+{
+ "Status": 0,
+ "TC": false,
+ "RD": true,
+ "RA": true,
+ "AD": false,
+ "CD": false,
+ "Question": [
+  {
+   "name": "prologueand.com",
+   "type": 5
+  }
+ ],
+ "Authority": [
+  {
+   "name": "prologueand.com",
+   "type": 6,
+   "TTL": 600,
+   "data": "ns1.vercel-dns.com. hostmaster.nsone.net. 1790908343 43200 7200 1209600 600"
+  }
+ ]
+}
