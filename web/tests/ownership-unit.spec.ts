@@ -311,3 +311,21 @@ test.describe('기기 저장', () => {
     expect(interpret(norm('prologueand.com'), back.lookup, new Date('2026-11-15T00:00:00Z')).expiry?.state).toBe('risk');
   });
 });
+
+/* ── 문구 검사 ── 공개 저장소: 금지 낱말(저장소 밖 목록)·낫표를 점검기 파일 전부에서 확인한다 */
+import { readdirSync } from 'node:fs';
+import { bannedWords } from './banned';
+
+test('점검기 파일에 금지 낱말·낫표가 없다', () => {
+  const root = join(__dirname, '..');
+  const comp = readdirSync(join(root, 'components/ownership')).filter((f) => f.endsWith('.tsx')).map((f) => `components/ownership/${f}`);
+  const files = ['content/ownership/copy/ko.ts', 'content/ownership/copy/en.ts', 'content/ownership/rules.ts', 'lib/ownership/verdict.ts', 'lib/ownership/providers.ts',
+    'app/tools/ownership/page.tsx', 'app/en/tools/ownership/page.tsx', ...comp];
+  expect(comp.length).toBeGreaterThan(4);
+  const words = bannedWords();
+  for (const f of files) {
+    const t = readFileSync(join(root, f), 'utf8');
+    expect(t, f).not.toMatch(/[「」]/);
+    if (words) for (const w of words) expect(t.includes(w), `${f}: ${w}`).toBe(false);
+  }
+});
