@@ -1,6 +1,7 @@
 import type { Answers, Facts, ItemId, ItemState, Locale, Provider, QId } from './types';
 import type { OwnershipCopy, SheetRow } from '@/content/ownership/copy/types';
 import { QUESTIONS } from '@/content/ownership/rules';
+import { noExpiry } from './interpret';
 
 export type Item = { id: ItemId; state: ItemState; value: string | null };
 
@@ -60,7 +61,7 @@ export function sheetRows(f: Facts, c: OwnershipCopy, locale: Locale, domain: st
   const where: Record<SheetRow, [string, string | null]> = {
     domain: [domain, null],
     registrar: [name(f.registrar, f.registrarRaw ?? ''), f.registrar?.login ?? null],
-    expiry: [f.expiry ? fmtDate(f.expiry.date, c) : '', null],
+    expiry: [f.expiry ? (noExpiry(f.expiry.date) ? c.lookup.expiry.none : fmtDate(f.expiry.date, c)) : '', null],
     dns: [name(f.nsProvider, f.nsRaw.join(', ')), f.nsProvider && f.nsProvider !== f.registrar ? f.nsProvider.login ?? null : null],
     host: [name(f.host, ''), f.host?.login ?? null],
     mail: [mail, f.mail && typeof f.mail === 'object' ? f.mail.login ?? null : null],

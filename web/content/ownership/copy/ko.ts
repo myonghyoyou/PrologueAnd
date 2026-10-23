@@ -31,7 +31,7 @@ export const ko: OwnershipCopy = {
     next: '질문으로',
     source: '공개 도메인 정보 · {time} 조회',
     rows: { expiry: '사용 종료일', registrar: '등록대행자', registrant: '등록인', dns: '도메인 연결(DNS)', mail: '회사 메일', host: '홈페이지가 있는 곳' },
-    expiry: { past: '{date} (기간이 끝났어요)', soon: '{date} ({days}일 남음)', ok: '{date}' },
+    expiry: { past: '{date} (기간이 끝났어요)', soon: '{date} ({days}일 남음)', ok: '{date}', none: '기한 없음' },
     noMail: '없음',
     unknown: '확인 못 함',
     hidden: '공개 안 됨',
@@ -67,6 +67,7 @@ export const ko: OwnershipCopy = {
     mailAdmin: { name: '회사 메일 관리자', why: '직원 메일을 만들거나 지울 권한이 업체에 있어요.', how: '메일 관리자 계정을 사장님 명의로 받아 두세요.' },
     mapAdmin: { name: '네이버 지도 관리자', why: '영업시간·사진·리뷰 답글을 업체만 바꿀 수 있어요.', how: '스마트플레이스에서 대표 관리자를 사장님으로 바꿔 달라고 하세요.' },
   },
+  unknownWhy: '아직 확인되지 않았어요. 아래 부탁 글로 업체에 먼저 물어보세요.',
   state: { risk: '위험', check: '확인 필요', ok: '안전' },
   headline: {
     risk: '지금은 업체 없이 할 수 없는 일이 {n}가지 있어요',

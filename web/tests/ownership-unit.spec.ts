@@ -364,3 +364,11 @@ test.describe('최종 검토 수정', () => {
     expect(() => interpret(norm('a.com'), v.lookup, NOW)).not.toThrow();
   });
 });
+
+test('기한이 없는 도메인(9999년)은 정리표에 기한 없음', async () => {
+  const l = await lookupAll('kisa.or.kr', { fetch: fake([{ match: 'rdap.nic.or.kr', file: 'rdap-kr-org.json' }, ...DNS_OK]) });
+  const f = interpret(norm('kisa.or.kr'), l, NOW);
+  expect(f.expiry?.state).toBe('ok');
+  expect(sheetRows(f, ko, 'ko', 'kisa.or.kr').find((r) => r.key === 'expiry')?.where).toBe(ko.lookup.expiry.none);
+  expect(sheetRows(f, en, 'en', 'kisa.or.kr').find((r) => r.key === 'expiry')?.where).toBe(en.lookup.expiry.none);
+});

@@ -355,3 +355,26 @@ test.describe('최종 검토 수정(화면)', () => {
     await expect(page.getByText('공개 도메인 정보를 확인하는 중이에요')).toHaveCount(0);
   });
 });
+
+test.describe('실제 브라우저 확인 뒤 고친 것', () => {
+  test('모르겠어요·답 없음 항목은 단정하는 이유 대신 아직 확인되지 않았다고', async ({ page }) => {
+    await routeLookups(page, DEFAULT);
+    await start(page, 'prologueand.com');
+    await page.locator('[data-own-next]').click();
+    for (let i = 0; i < 20 && !(await page.locator('[data-own-result]').isVisible()); i++) {
+      const id = await page.locator('[data-own-q]').getAttribute('data-own-q');
+      await page.locator('[data-own-q] [data-choice]').nth(id === 'mapAdmin' ? 3 : 0).click();   // 지도만 모르겠어요
+      await page.locator('[data-own-next]').click();
+    }
+    const item = page.locator('[data-own-item="mapAdmin"]');
+    await expect(item).toHaveAttribute('data-state', 'check');
+    await expect(item).toContainText('아직 확인되지 않았어요');
+    await expect(item).not.toContainText('업체만 바꿀 수 있어요');
+  });
+  test('기한이 없는 도메인은 사용 종료일에 기한 없음', async ({ page }) => {
+    await routeLookups(page, [{ match: 'rdap.nic.or.kr', file: 'rdap-kr-org.json' }, ...DEFAULT]);
+    await start(page, 'kisa.or.kr');
+    await expect(page.locator('[data-own-lookup-row="expiry"]')).toContainText('기한 없음');
+    await expect(page.locator('[data-own-lookup-row="expiry"]')).not.toContainText('9999');
+  });
+});

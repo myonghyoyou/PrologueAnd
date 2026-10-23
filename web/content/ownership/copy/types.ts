@@ -14,12 +14,14 @@ export type OwnershipCopy = {
   lookup: {
     heading: string; trimmed: string; builderOnly: string; unsupported: string; failed: string; retry: string; next: string; source: string;
     rows: { expiry: string; registrar: string; registrant: string; dns: string; mail: string; host: string };
-    expiry: { past: string; soon: string; ok: string };
+    expiry: { past: string; soon: string; ok: string; none: string };
     noMail: string; unknown: string; hidden: string;
   };
   phases: { login: string; keep: string; mailmap: string };
   q: Record<QId, QCopy>;
   items: Record<ItemId, ItemCopy>;
+  /** 모르겠어요·답 없음 항목의 이유 — 아직 모르는 것을 단정하지 않는다 */
+  unknownWhy: string;
   state: Record<ItemState, string>;
   headline: Record<ItemState, string>;
   headlineOne: { risk: string; check: string };

@@ -3,6 +3,9 @@ import { matchHost, matchMail, matchNs, matchRegistrar, providerByKey } from './
 
 const DAY = 86_400_000;
 
+/** 기한이 없는 도메인 — 기관 도메인 등은 사용 종료일이 9999년으로 등록돼 있다 */
+export const noExpiry = (iso: string) => new Date(iso).getUTCFullYear() >= 9000;
+
 /** 사용 종료일 판정 — 지남·30일 안 = 위험, 90일 안 = 확인 필요. 기준 날짜는 인자로 받는다(저장해 두지 않는다) */
 export function expiryState(iso: string, now: Date): { state: ItemState; days: number } {
   const days = Math.ceil((new Date(iso).getTime() - now.getTime()) / DAY);

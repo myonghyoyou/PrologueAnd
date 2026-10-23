@@ -2,7 +2,7 @@
 import { ui } from '@/components/ui/controls';
 import type { OwnershipCopy } from '@/content/ownership/copy/types';
 import type { Facts, Locale, Lookup } from '@/lib/ownership/types';
-import { expiryState } from '@/lib/ownership/interpret';
+import { expiryState, noExpiry } from '@/lib/ownership/interpret';
 import { fill, providerName } from '@/lib/ownership/verdict';
 import s from './ownership.module.css';
 
@@ -17,7 +17,7 @@ export function LookupPanel({ c, locale, display, trimmedFrom, lookup, facts: f,
   if (f.expiry) {
     const { days } = expiryState(f.expiry.date, now);
     const t = days < 0 ? c.lookup.expiry.past : days <= 90 ? c.lookup.expiry.soon : c.lookup.expiry.ok;
-    rows.push(['expiry', fill(t, { date: fmtDate(f.expiry.date, c), days: String(days) })]);
+    rows.push(['expiry', noExpiry(f.expiry.date) ? c.lookup.expiry.none : fill(t, { date: fmtDate(f.expiry.date, c), days: String(days) })]);
   }
   if (f.registrar || f.registrarRaw) rows.push(['registrar', providerName(f.registrar, locale) ?? f.registrarRaw!]);
   if (f.registrant) rows.push(['registrant', f.registrant]);

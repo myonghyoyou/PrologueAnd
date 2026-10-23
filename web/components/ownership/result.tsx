@@ -27,7 +27,7 @@ export function Result({ c, locale, domain, facts, list, onEdit, onReset, sheet 
             <span className={s.state} data-state={it.state}>{c.state[it.state]}</span>
             <div>
               <p className={s.iname}>{c.items[it.id].name}</p>
-              {it.state !== 'ok' ? <><p className={s.why}>{c.items[it.id].why}</p><p className={s.how}>{c.items[it.id].how}</p></> : null}
+              {it.state !== 'ok' ? <><p className={s.why}>{it.value === 'unknown' || (it.value === null && it.id !== 'expiry' && it.id !== 'ownDomain') ? c.unknownWhy : c.items[it.id].why}</p><p className={s.how}>{c.items[it.id].how}</p></> : null}
             </div>
           </li>
         ))}

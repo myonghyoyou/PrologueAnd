@@ -31,7 +31,7 @@ export const en: OwnershipCopy = {
     next: 'Go to questions',
     source: 'Public domain records · checked {time}',
     rows: { expiry: 'Expires', registrar: 'Registrar', registrant: 'Registered to', dns: 'DNS', mail: 'Business email', host: 'Website hosted on' },
-    expiry: { past: '{date} (expired)', soon: '{date} ({days} days left)', ok: '{date}' },
+    expiry: { past: '{date} (expired)', soon: '{date} ({days} days left)', ok: '{date}', none: 'No expiry date' },
     noMail: 'None',
     unknown: "Couldn't check",
     hidden: 'Not public',
@@ -67,6 +67,7 @@ export const en: OwnershipCopy = {
     mailAdmin: { name: 'Email admin', why: 'Only your web company can add or remove staff email accounts.', how: 'Get the email admin account in your name.' },
     mapAdmin: { name: 'Google Business Profile owner', why: 'Only they can change your hours, photos and review replies.', how: 'Ask them to make you the primary owner.' },
   },
+  unknownWhy: "Not confirmed yet. Ask your web company first, using the message below.",
   state: { risk: 'At risk', check: 'Check', ok: 'OK' },
   headline: {
     risk: "There are {n} things you can't do without your web company right now",
