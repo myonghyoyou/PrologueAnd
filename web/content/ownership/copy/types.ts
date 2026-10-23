@@ -22,6 +22,7 @@ export type OwnershipCopy = {
   items: Record<ItemId, ItemCopy>;
   state: Record<ItemState, string>;
   headline: Record<ItemState, string>;
+  headlineOne: { risk: string; check: string };
   vendor: { heading: string; intro: string; lines: Record<ItemId, string>; outro: string; copy: string; copied: string; copyFail: string };
   sheet: {
     heading: string; lead: string; checkedOn: string; cols: { item: string; where: string; id: string; pw: string };

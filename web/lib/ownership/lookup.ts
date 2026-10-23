@@ -55,6 +55,7 @@ function parseDns(j: unknown, type: keyof typeof DNS_TYPE): string[] | null {
   if (!j || typeof j !== 'object' || typeof (j as { Status?: unknown }).Status !== 'number') return null;
   const o = j as { Status: number; Answer?: { type: number; data: string }[] };
   if (o.Status === 3) return [];   // 그런 이름 없음
+  if (o.Status !== 0) return null;  // SERVFAIL 등 — 없다고 단정하지 않고 다음 서버로
   return (o.Answer ?? []).filter((x) => x.type === DNS_TYPE[type])
     .map((x) => (type === 'MX' ? x.data.split(/\s+/).slice(1).join(' ') : x.data).toLowerCase().replace(/\.$/, ''));
 }

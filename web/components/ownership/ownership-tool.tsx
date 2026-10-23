@@ -75,13 +75,16 @@ export function OwnershipTool({ locale }: { locale: Locale }) {
     if (!r.ok) { setError(r.error === 'empty' ? c.errors.empty : c.errors.shape); return; }
     setError('');
     const my = ++seq.current;
-    if (r.builderOnly) { setDomainOf(raw); setLookup(null); go('lookup'); return; }
+    // 다른 도메인이면 앞 도메인의 답을 비운다(같은 도메인을 다시 조회하면 둔다)
+    const prev = normalizeInput(domainOf);
+    const fresh = () => { if (!(prev.ok && prev.domain === r.domain)) setAnswers({}); };
+    if (r.builderOnly) { setBusy(false); fresh(); setDomainOf(raw); setLookup(null); go('lookup'); return; }
     setBusy(true);
     const l = await lookupAll(r.domain);
     if (my !== seq.current) return;                     // 그사이 다른 주소로 다시 조회했다
     setBusy(false);
     if (l.rdap.status === 'notFound') { setLookup(null); setStep('domain'); setError(c.errors.notFound); return; }
-    setDomainOf(raw); setLookup(l); go('lookup');
+    fresh(); setDomainOf(raw); setLookup(l); go('lookup');
   };
 
   if (!ready) return <div className={s.root} data-own />;

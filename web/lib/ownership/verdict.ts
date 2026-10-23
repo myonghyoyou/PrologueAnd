@@ -15,18 +15,25 @@ export function visibleQuestions(f: Facts): QId[] {
 
 const ORDER: Record<ItemState, number> = { risk: 0, check: 1, ok: 2 };
 
-/** 판정 항목 — 자동 확인한 것 + 지금 보이는 질문의 답만(안 보이는 질문의 옛 답은 쓰지 않는다). 위험 → 확인 필요 → 안전 */
+/** 판정 항목 — 자동 확인한 것 + 지금 보이는 질문(안 보이는 질문의 옛 답은 쓰지 않는다).
+ *  보이는데 답하지 않은 질문은 확인 필요로 센다 — 건너뛰었다고 안전으로 보이면 안 된다. 위험 → 확인 필요 → 안전 */
 export function items(f: Facts, a: Answers): Item[] {
   const list: Item[] = [];
   if (f.expiry) list.push({ id: 'expiry', state: f.expiry.state, value: f.expiry.date });
   if (f.builderOnly) list.push({ id: 'ownDomain', state: 'check', value: null });
   for (const q of QUESTIONS) {
+    if (!q.show(f)) continue;
     const ans = a[q.id];
-    if (!ans || !q.show(f)) continue;
-    const st = q.judge[ans];
-    if (st) list.push({ id: q.id, state: st, value: ans });
+    const st = ans ? q.judge[ans] : undefined;
+    list.push(st ? { id: q.id, state: st, value: ans! } : { id: q.id, state: 'check', value: null });
   }
   return list.map((it, i) => ({ it, i })).sort((x, y) => ORDER[x.it.state] - ORDER[y.it.state] || x.i - y.i).map((x) => x.it);
+}
+
+/** 판정 한 줄 문구 — 하나일 때는 단수 문구(영어) */
+export function headlineText(h: { kind: ItemState; n: number }, c: OwnershipCopy): string {
+  const t = h.n === 1 && h.kind !== 'ok' ? c.headlineOne[h.kind] : c.headline[h.kind];
+  return fill(t, { n: String(h.n) });
 }
 
 export function headline(list: Item[]): { kind: ItemState; n: number } {

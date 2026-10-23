@@ -204,7 +204,8 @@ test.describe('해석과 판정', () => {
     expect(qs).not.toContain('registrarLogin');
     expect(qs).toContain('builderAccount');
     expect(qs).not.toContain('backup');
-    expect(items(f, {})).toEqual([{ id: 'ownDomain', state: 'check', value: null }]);
+    expect(items(f, {})[0]).toEqual({ id: 'ownDomain', state: 'check', value: null });
+    expect(items(f, {}).map((i) => i.id)).not.toContain('registrarLogin');
   });
   test('지원 안 되는 도메인: 자동 항목 없이 질문만', async () => {
     const l = await lookupAll('shop.es', { fetch: fake(DNS_OK) });
@@ -225,10 +226,12 @@ test.describe('해석과 판정', () => {
   test('판정 한 줄과 순서', async () => {
     const f = interpret(norm('prologueand.com'), withExp(await comLookup(), plusDays(400)), NOW);
     const list = items(f, { registrarLogin: 'no', hostLogin: 'unknown', adminAccount: 'no', selfEdit: 'yes' });
-    expect(list.map((i) => i.state)).toEqual(['risk', 'risk', 'check', 'ok', 'ok']);
+    expect(list.slice(0, 3).map((i) => i.state)).toEqual(['risk', 'risk', 'check']);
+    expect(list.filter((i) => i.state === 'ok').map((i) => i.id)).toEqual(['expiry', 'selfEdit']);
     expect(headline(list)).toEqual({ kind: 'risk', n: 2 });
-    expect(headline(items(f, { hostLogin: 'unknown', registrarLogin: 'unknown', selfEdit: 'no' }))).toEqual({ kind: 'check', n: 3 });
-    expect(headline(items(f, { registrarLogin: 'yes' }))).toEqual({ kind: 'ok', n: 0 });
+    const all = (over: Record<string, string>) => Object.fromEntries(visibleQuestions(f).map((q) => [q, over[q] ?? (q === 'renewalCard' || q === 'mailAdmin' || q === 'mapAdmin' ? 'mine' : 'yes')])) as never;
+    expect(headline(items(f, all({ hostLogin: 'unknown', registrarLogin: 'unknown', selfEdit: 'no' })))).toEqual({ kind: 'check', n: 3 });
+    expect(headline(items(f, all({})))).toEqual({ kind: 'ok', n: 0 });
   });
   test('요청 문구: 위험·확인 필요만, Prologue 없음, 두 언어', async () => {
     const f = interpret(norm('prologueand.com'), withExp(await comLookup(), plusDays(400)), NOW);
@@ -328,4 +331,36 @@ test('점검기 파일에 금지 낱말·낫표가 없다', () => {
     expect(t, f).not.toMatch(/[「」]/);
     if (words) for (const w of words) expect(t.includes(w), `${f}: ${w}`).toBe(false);
   }
+});
+
+/* ── 최종 검토 뒤 고친 것 ── */
+test.describe('최종 검토 수정', () => {
+  test('답하지 않은 보이는 질문은 확인 필요로 센다', async () => {
+    const f = interpret(norm('prologueand.com'), withExp(await comLookup(), plusDays(400)), NOW);
+    const list = items(f, {});
+    expect(headline(list).kind).toBe('check');
+    expect(list.find((i) => i.id === 'registrarLogin')).toEqual({ id: 'registrarLogin', state: 'check', value: null });
+  });
+  test('영어 판정 한 줄은 하나일 때 단수', async () => {
+    const { headlineText } = await import('../lib/ownership/verdict');
+    expect(headlineText({ kind: 'risk', n: 1 }, en)).toBe("There's 1 thing you can't do without your web company right now");
+    expect(headlineText({ kind: 'check', n: 1 }, en)).toBe('1 thing to check before you could run your site on your own');
+    expect(headlineText({ kind: 'risk', n: 2 }, en)).toBe("There are 2 things you can't do without your web company right now");
+    expect(headlineText({ kind: 'risk', n: 1 }, ko)).toBe('지금은 업체 없이 할 수 없는 일이 1가지 있어요');
+  });
+  test('DNS가 SERVFAIL이면 메일 없음이 아니라 다음 서버로', async () => {
+    const fail = JSON.stringify({ Status: 2 });
+    const calls: string[] = [];
+    const l = await lookupAll('prologueand.com', { fetch: fake([{ match: 'cloudflare-dns.com', body: fail }, { match: 'dns.google', file: 'doh-mx.json' }, { match: 'rdap.verisign.com', file: 'rdap-com.json' }], calls) });
+    expect(l.mx).toEqual({ status: 'ok', value: ['smtp.google.com'] });
+    const both = await lookupAll('prologueand.com', { fetch: fake([{ match: 'type=MX', body: fail }, { match: 'rdap.verisign.com', file: 'rdap-com.json' }]) });
+    expect(both.mx).toEqual({ status: 'failed', reason: 'shape' });
+  });
+  test('조회 결과 일부가 깨진 저장 값은 조회 결과를 버린다', () => {
+    const s = new MemStore();
+    s.setItem('prologue.ownership.v1', JSON.stringify({ v: 1, input: 'a.com', lookup: { domain: 'a.com', at: 'x', rdap: { status: 'notFound' } }, answers: {}, step: 'lookup', done: false }));
+    const v = loadOwnership(s)!;
+    expect(v.lookup).toBeNull();
+    expect(() => interpret(norm('a.com'), v.lookup, NOW)).not.toThrow();
+  });
 });

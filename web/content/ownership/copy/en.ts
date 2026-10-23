@@ -70,8 +70,12 @@ export const en: OwnershipCopy = {
   state: { risk: 'At risk', check: 'Check', ok: 'OK' },
   headline: {
     risk: "There are {n} things you can't do without your web company right now",
-    check: 'Check {n} things and you could run your site without them',
+    check: '{n} things to check before you could run your site on your own',
     ok: 'You could keep running your site even if your web company disappeared',
+  },
+  headlineOne: {
+    risk: "There's 1 thing you can't do without your web company right now",
+    check: '1 thing to check before you could run your site on your own',
   },
   vendor: {
     heading: 'Message to your web company',

@@ -331,3 +331,27 @@ test('요청서 결과: 권한 점검 연결 줄은 화면에 있고 인쇄에�
   await page.emulateMedia({ media: 'print' });
   await expect(link).toBeHidden();
 });
+
+test.describe('최종 검토 수정(화면)', () => {
+  test('주소를 바꾸면 앞 도메인의 답이 남지 않는다', async ({ page }) => {
+    await routeLookups(page, DEFAULT);
+    await start(page, 'prologueand.com');
+    await page.locator('[data-own-next]').click();
+    await page.locator('[data-own-q] [data-choice]').first().click();
+    await page.locator('[data-own-prev]').click();
+    await page.locator('[data-own-input]').fill('other-shop-test.com');
+    await page.locator('[data-own-submit]').click();
+    await expect(page.locator('[data-own-lookup]')).toContainText('other-shop-test.com');
+    await page.locator('[data-own-next]').click();
+    await expect(page.locator('[data-own-q="registrarLogin"] input:checked')).toHaveCount(0);
+  });
+  test('조회 중 빌더 주소로 바꾸면 확인하는 중 문구가 남지 않는다', async ({ page }) => {
+    await routeLookups(page, [{ match: 'http', hang: true }]);
+    await start(page, 'prologueand.com');
+    await expect(page.getByText('공개 도메인 정보를 확인하는 중이에요')).toBeVisible();
+    await page.locator('[data-own-input]').fill('abc.imweb.me');
+    await page.locator('[data-own-submit]').click();
+    await expect(page.locator('[data-own-lookup]')).toBeVisible();
+    await expect(page.getByText('공개 도메인 정보를 확인하는 중이에요')).toHaveCount(0);
+  });
+});

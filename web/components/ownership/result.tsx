@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ui } from '@/components/ui/controls';
 import type { OwnershipCopy } from '@/content/ownership/copy/types';
 import type { Facts, Locale } from '@/lib/ownership/types';
-import { fill, headline, vendorMessage, type Item } from '@/lib/ownership/verdict';
+import { headline, headlineText, vendorMessage, type Item } from '@/lib/ownership/verdict';
 import s from './ownership.module.css';
 
 type P = { c: OwnershipCopy; locale: Locale; domain: string; facts: Facts; list: Item[]; onEdit: () => void; onReset: () => void; sheet: React.ReactNode };
@@ -20,7 +20,7 @@ export function Result({ c, locale, domain, facts, list, onEdit, onReset, sheet 
     <section className={s.result} data-own-result>
       <div className={s.noPrint}>
       <p className={s.domain}>{domain}</p>
-      <h1 className={s.h1} data-own-headline data-kind={h.kind}>{fill(c.headline[h.kind], { n: String(h.n) })}</h1>
+      <h1 className={s.h1} data-own-headline data-kind={h.kind}>{headlineText(h, c)}</h1>
       <ul className={s.items}>
         {list.map((it) => (
           <li key={it.id} className={s.item} data-own-item={it.id} data-state={it.state}>

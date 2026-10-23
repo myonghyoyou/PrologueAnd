@@ -33,7 +33,10 @@ export function loadOwnership(s: Storage | null): Saved | null {
     const raw = s?.getItem(KEY); if (!raw) return null;
     const v = JSON.parse(raw) as Partial<Saved>;
     if (!v || v.v !== 1 || typeof v.input !== 'string' || typeof v.step !== 'string') return null;
-    const lookup = v.lookup && typeof v.lookup === 'object' && typeof v.lookup.domain === 'string' && v.lookup.rdap ? v.lookup : null;
+    const parts = ['rdap', 'ns', 'mx', 'a', 'cname'] as const;
+    const l = v.lookup as unknown as Record<string, unknown> | null | undefined;
+    // 조회 결과가 하나라도 빠졌거나 깨졌으면 조회 결과만 버린다(열 때마다 화면이 멈추지 않게)
+    const lookup = l && typeof l === 'object' && typeof l.domain === 'string' && parts.every((k) => typeof (l[k] as { status?: unknown } | undefined)?.status === 'string') ? v.lookup! : null;
     return { v: 1, input: v.input, lookup, answers: cleanAnswers(v.answers), step: v.step, done: !!v.done };
   } catch { return null; }
 }
