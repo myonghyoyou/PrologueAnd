@@ -1,0 +1,11 @@
+.sheet{margin:56px 0 0;padding-top:28px;border-top:1px solid var(--bone-200)}
+.h2{margin:0 0 8px;font-size:20px;font-weight:700;letter-spacing:-.02em}
+.lead{margin:0 0 4px;color:var(--bone-600);font-size:15px}
+.date{margin:0 0 16px;color:var(--bone-500);font-size:13px}
+.wrap{overflow-x:auto}
+.table{width:100%;min-width:560px;border-collapse:collapse;font-size:14px}
+.table th,.table td{border-bottom:1px solid var(--bone-200);padding:10px 8px;text-align:left;vertical-align:top}
+.table thead th{font-size:13px;font-weight:600;color:var(--bone-600);border-bottom:1px solid var(--bone-400)}
+.table tbody th{font-weight:600;width:28%}
+.table td[data-own-blank]{width:20%}
+.login{font-size:12px;color:var(--bone-500);word-break:break-all}

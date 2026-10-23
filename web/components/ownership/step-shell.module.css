@@ -1,0 +1,14 @@
+.step{padding-bottom:24px}
+/* 진행 — 디돈 숫자 「01 / 03」 + 묶음 이름, 아래 1px 괘선 위에 네이비 진행선 */
+.top{position:relative;display:flex;align-items:baseline;gap:10px;padding-bottom:14px}
+.n{font-size:30px;line-height:1;color:var(--navy-900)}
+.of{font-size:15px;color:var(--bone-500)}
+.ph{font-size:15px;font-weight:600;color:var(--bone-800);margin-left:6px}
+.bar{position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--bone-200)}
+.bar b{position:absolute;left:0;top:-.5px;height:2px;background:var(--navy-900)}
+.q{margin:36px 0 28px;font-size:28px;font-weight:700;letter-spacing:-.025em;line-height:1.4;outline:none}
+.navbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(250,249,246,.96);border-top:1px solid var(--bone-200);padding:14px 0 calc(14px + env(safe-area-inset-bottom))}
+.navrow{max-width:640px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.next{min-width:140px}
+@media (max-width:700px){ .q{font-size:23px} .navrow{padding:0 16px} }
+@media print{ .navbar{display:none} }
