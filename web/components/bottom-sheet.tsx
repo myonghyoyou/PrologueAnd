@@ -6,8 +6,8 @@ import { useDragClose } from '@/lib/use-drag-close';
 import s from './bottom-sheet.module.css';
 
 /** 아래 시트 — 막 · 손잡이 · 제목 · 닫기. 열려 있는 동안 페이지 스크롤을 잠그고, 다 닫히면 hidden(명세 §7) */
-export function BottomSheet({ open, onClose, title, label, children }: {
-  open: boolean; onClose: () => void; title: string; label: string; children: ReactNode;
+export function BottomSheet({ open, onClose, title, label, closeLabel = '닫기', children }: {
+  open: boolean; onClose: () => void; title: string; label: string; closeLabel?: string; children: ReactNode;
 }) {
   const [mounted, setMounted] = useState(open);
   const [shown, setShown] = useState(false);
@@ -46,7 +46,7 @@ export function BottomSheet({ open, onClose, title, label, children }: {
         <div className={s.grab} data-grab aria-hidden="true" {...drag}><i /></div>
         <div className={s.head}>
           <h2 className={s.title}>{title}</h2>
-          <button type="button" className={s.close} onClick={onClose} aria-label="닫기" data-sheet-close>×</button>
+          <button type="button" className={s.close} onClick={onClose} aria-label={closeLabel} data-sheet-close>×</button>
         </div>
         <div className={s.body}>{children}</div>
       </div>

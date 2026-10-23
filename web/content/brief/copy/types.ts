@@ -1,3 +1,4 @@
+import type { DateFieldText } from '@/components/ui/date-field';
 import type { CompareRowId, Opt, OptKey } from '../rules';
 
 export type Locale = 'ko' | 'en';
@@ -58,7 +59,7 @@ export type BriefCopy = {
   };
   ui: { impactBadge: string; dunno: string; required: string; multiHint: string; prev: string; next: string; stepNext: string; toResult: string; makeBrief: string;
     preview: string; phases: readonly [string, string, string, string]; phaseOf: (n: number, total: number) => string; noStore: string;
-    previewEmpty: string; langName: (code: string) => string };
+    previewEmpty: string; langName: (code: string) => string; date: DateFieldText; sheetClose: string };
   intro: { title: string; lead: string; promises: readonly [string, string, string]; neutral: string; start: string; sampleCaption: string; stamp: string; rest: string;
     sampleName: string; switchTo: { href: string; label: string; lang: Locale } };
   doc: { title: (name: string) => string; untitled: string; subtitle: (mode: 'new' | 'renew', today: Date) => string;

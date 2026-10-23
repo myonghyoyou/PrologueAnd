@@ -50,3 +50,12 @@ export async function seedBrief(page: Page, answers: Answers, step: StepId, done
   await page.evaluate(([an, st, dn]) => localStorage.setItem('prologue.brief.v2', JSON.stringify({ answers: an, step: st, done: dn })), [answers, step, done] as const);
   await page.reload();
 }
+
+/** 문서에 크기가 A4인 @page 규칙이 있는가 — @media 안까지 훑는다 */
+export const hasA4 = (page: Page) => page.evaluate(() => {
+  // size 값을 못 읽는 브라우저도 있어 규칙 글자(cssText)에서도 찾는다
+  const isA4 = (r: CSSPageRule) => /A4/i.test(r.style.getPropertyValue('size')) || /size\s*:\s*A4/i.test(r.cssText);
+  const walk = (rules: CSSRuleList): boolean => [...rules].some((r) =>
+    r instanceof CSSPageRule ? isA4(r) : 'cssRules' in r ? walk((r as CSSGroupingRule).cssRules) : false);
+  return [...document.styleSheets].some((sh) => { try { return walk(sh.cssRules); } catch { return false; } });
+});

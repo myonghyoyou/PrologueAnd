@@ -1,4 +1,5 @@
 import type { BriefCopy } from './types';
+import { DATE_KO } from '@/components/ui/date-field';
 
 /** 한국어 문구 — questions.ts·derive.ts·components/brief/*.tsx 에 있던 글자를 그대로 옮겼다(다시 쓰지 않는다). 금액을 쓰지 않는다(배수는 「2~4배」만) */
 const dateKo = (d: Date) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
@@ -124,6 +125,7 @@ export const ko: BriefCopy = {
     },
   },
   ui: {
+    date: DATE_KO, sheetClose: '닫기',
     impactBadge: '견적가에 크게 영향',
     dunno: '모르겠어요',
     required: '하나만 골라 주세요',

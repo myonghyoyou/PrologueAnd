@@ -82,7 +82,7 @@ function Tool() {
           </StepShell></div>
           {/* 넓은 화면: 답이 요청서가 되어 가는 모습을 옆에 둔다(명세 §11 2차) */}
           <aside className={s.aside} data-brief-preview data-lenis-prevent aria-label={c.ui.preview}><BriefPreview a={a} current={step} /></aside>
-          <BottomSheet open={sheet} onClose={() => setSheet(false)} title={c.ui.preview} label={c.ui.preview}><BriefPreview a={a} current={step} /></BottomSheet>
+          <BottomSheet open={sheet} onClose={() => setSheet(false)} title={c.ui.preview} label={c.ui.preview} closeLabel={c.ui.sheetClose}><BriefPreview a={a} current={step} /></BottomSheet>
         </div>}
     </div>
   );

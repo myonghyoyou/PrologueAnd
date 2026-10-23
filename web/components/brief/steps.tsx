@@ -134,7 +134,7 @@ export function StepView({ id, a, set }: P & { id: StepId }) {
     case 'when': {
       const W = q.when, B = W.budget;
       return (<>
-        <DateField label={W.date} value={a.openDate} onChange={(v) => set({ openDate: v, openUnknown: false })} />
+        <DateField text={c.ui.date} label={W.date} value={a.openDate} onChange={(v) => set({ openDate: v, openUnknown: false })} />
         <Check label={W.dateUnknown} checked={a.openUnknown} onChange={(v) => set({ openUnknown: v, openDate: v ? '' : a.openDate })} />
         {a.openDate ? <Single label={W.fixedLabel} opts={OPTS.openFixed} labels={W.fixed} value={a.openFixed} onChange={(v) => set({ openFixed: v })} /> : null}
         {/* 예산 — 한국어판은 구간, 영어판은 금액·통화를 적는 글칸(명세 3-3) */}
