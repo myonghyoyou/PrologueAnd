@@ -83,7 +83,7 @@ export const MID = { ...MAX, renewPain: '모바일에서 글자가 작아요', d
 
 
 const HANGUL = /[가-힣ㄱ-ㅎㅏ-ㅣ]/;
-/** 세트에 쓴 자유 입력 글의 영어 — 영어 사장님이 적을 만한 글로(글자 수를 맞추지 않는다. 영어가 더 길다) */
+/** 세트에 쓴 자유 입력 글을 영어 사장님이 적을 만한 말로 옮긴 것 — 대개 한국어보다 글자 수가 많다 */
 const EN_OF: Record<string, string> = {
   '모바일에서 글자가 너무 작고 예약 버튼을 찾기 어려워요': 'Text is too small on phones and the booking button is hard to find',
   '모바일에서 글자가 작아요': 'Text is small on phones',
@@ -94,13 +94,16 @@ const EN_OF: Record<string, string> = {
   '쿠폰 발급': 'Gift cards', '쿠폰 발급, 대기 번호 안내, 포인트 적립': 'Gift cards, Waitlist, Loyalty points',
 };
 const EN_LINE = 'Text is small on phones and the booking button is hard to find. ';
-/** 표에 없는 한글 글(L(n) 같은 긴 글)은 같은 길이의 영어 글로 */
-const enText = (s: string) => (!HANGUL.test(s) ? s : EN_OF[s] ?? EN_LINE.repeat(Math.ceil(s.length / EN_LINE.length) + 1).slice(0, s.length).trim());
+/** 한글 글과 글자 수가 같은 영어 글 */
+const sameLen = (s: string) => EN_LINE.repeat(Math.ceil(s.length / EN_LINE.length) + 1).slice(0, s.length).trim();
 
 /** 영어판 답 세트 — fromKo 로 만든 답에서 사장님이 직접 적는 칸만 영어 글로 바꾼다. 선택지 id 는 그대로(명세 9-6: 한글 없음 검사가 사용자 입력 때문에 걸리지 않게).
+ *  기본은 옮긴 말(EN_OF, 표에 없는 L(n) 같은 긴 글은 같은 글자 수). sameLength 면 모든 칸을 한국어와 같은 글자 수로 —
+ *  짧은 영어 답은 printZoom 의 줄 수 어림이 작아져 덜 줄어들므로, 인쇄 한 쪽 검사는 두 경우를 다 본다.
  *  한국어판 예산 구간을 요청서에 넣기로 한 세트는 영어 예산 글칸도 채워 같은 줄이 생기게 한다 */
-export function toEnglishText(a: Answers): Answers {
-  return { ...a, renewPain: enText(a.renewPain), kindOther: enText(a.kindOther), name: HANGUL.test(a.name) ? 'Sample Bakery' : a.name,
-    pagesExtra: enText(a.pagesExtra), featuresExtra: enText(a.featuresExtra), langOther: enText(a.langOther), dislikes: enText(a.dislikes),
-    refs: a.refs.map((r) => ({ ...r, memo: enText(r.memo) })), budgetText: a.budgetText || (a.budgetInBrief && a.budget ? '$3,000–$8,000' : '') };
+export function toEnglishText(a: Answers, { sameLength = false } = {}): Answers {
+  const t = (s: string) => (!HANGUL.test(s) ? s : sameLength ? sameLen(s) : EN_OF[s] ?? sameLen(s));
+  return { ...a, renewPain: t(a.renewPain), kindOther: t(a.kindOther), name: HANGUL.test(a.name) ? 'Sample Bakery' : a.name,
+    pagesExtra: t(a.pagesExtra), featuresExtra: t(a.featuresExtra), langOther: t(a.langOther), dislikes: t(a.dislikes),
+    refs: a.refs.map((r) => ({ ...r, memo: t(r.memo) })), budgetText: a.budgetText || (a.budgetInBrief && a.budget ? '$3,000–$8,000' : '') };
 }

@@ -116,10 +116,11 @@ test('한글 없음: 복사 글·인쇄 미디어', async ({ page, context }, in
   await noHangul(page, '인쇄 미디어');
 });
 
-for (const [name, set] of [['RICH', RICH], ['MIN', MIN], ['MAX', MAX], ['MID', MID]] as const) {
-  test(`인쇄: A4·Letter 한 쪽 — ${name}`, async ({ page }, info) => {
+// 옮긴 말(대개 더 길다)과 한국어와 같은 글자 수(짧은 영어 답) 두 가지 — 짧은 답일수록 printZoom 이 덜 줄여 Letter 에서 넘치기 쉽다
+for (const sameLength of [false, true]) for (const [name, set] of [['RICH', RICH], ['MIN', MIN], ['MAX', MAX], ['MID', MID]] as const) {
+  test(`인쇄: A4·Letter 한 쪽 — ${name}${sameLength ? '(같은 글자 수)' : ''}`, async ({ page }, info) => {
     test.skip(info.project.name !== 'w1440');   // PDF 는 화면 크기와 무관 — 한 번만
-    await seedBrief(page, en1(set), 'when', true, EN);
+    await seedBrief(page, toEnglishText(fromKo(set), { sameLength }), 'when', true, EN);
     await expect(page.locator('[data-brief-doc]')).toBeVisible();
     await page.emulateMedia({ media: 'print' });
     for (const sel of ['[data-brief-prologue]', '[data-brief-compare]', '[data-brief-export]']) await expect(page.locator(sel), sel).toBeHidden();

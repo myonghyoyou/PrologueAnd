@@ -263,8 +263,11 @@ export const en: BriefCopy = {
     note: 'Opens your email app. Nothing is sent until you press send.',
     attachLine: '(Please attach the PDF you saved from the brief page before sending.)', toOwnership: 'Already have a website? Website Ownership Check →',
   },
-  /* 한 줄 글자 수 — 실측(2026-10-23): 영어판 RICH·MID·MAX·MIN(brief-print.spec.ts 세트의 자유 입력을 영어로) 넷을 /en/tools/brief 에 채우고,
-     값마다 printZoom 으로 낸 비율을 --print-zoom 에 넣어 page.pdf A4·Letter 로 쪽 수를 셌다. 넷 다 두 용지 모두 한 쪽인 가장 큰 값이 20
-     (21 이면 RICH 가 Letter 두 쪽). 영어 글이 한국어보다 길어 한국어 26 보다 작다 */
-  print: { lineChars: 20 },
+  /* 한 줄 글자 수 — 실측(2026-10-23): 영어판 RICH·MID·MAX·MIN(tests/brief-ko.ts 세트의 자유 입력을 영어로) 넷을 두 가지로 —
+     옮긴 말(대개 더 길다)과 한국어와 같은 글자 수(짧은 영어 답) — /en/tools/brief 에 채우고, 인쇄 미디어에서 용지 폭(A4 794px·Letter 816px)의
+     문서 높이로 남는 px 와 page.pdf 쪽 수를 쟀다. 짧은 답일수록 줄 수 어림이 작아 덜 줄어든다. 가장 빠듯한 것은 RICH 같은 글자 수의 Letter:
+     20 이면 -14px(두 쪽), 19 는 -3px(두 쪽), 18 은 12px, 17 은 37px. 15px 넘게 남는 가장 큰 값 17.
+     17 에서 남는 px(A4/Letter) — 옮긴 말: RICH 132/65, MID 345/278, MAX 292/225(0.6배 하한), MIN 586/519 ·
+     같은 글자 수: RICH 89/37, MID 309/242, MAX 292/225(0.6배 하한), MIN 586/519. 영어 글이 한국어보다 길어 한국어 26 보다 작다 */
+  print: { lineChars: 17 },
 };
