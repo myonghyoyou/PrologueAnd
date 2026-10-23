@@ -257,3 +257,57 @@ test.describe('해석과 판정', () => {
     expect(rows.map((r) => r.key)).toEqual(['domain', 'registrar', 'expiry', 'dns', 'host', 'mail', 'map', 'admin', 'backup', 'contract']);
   });
 });
+
+/* ── 기기 저장 ── */
+import { loadOwnership, saveOwnership, clearOwnership, ownershipStorageOk, type Saved } from '../lib/ownership/storage';
+
+class MemStore implements Storage {
+  m = new Map<string, string>();
+  get length() { return this.m.size; }
+  clear() { this.m.clear(); }
+  getItem(k: string) { return this.m.get(k) ?? null; }
+  key(i: number) { return [...this.m.keys()][i] ?? null; }
+  removeItem(k: string) { this.m.delete(k); }
+  setItem(k: string, v: string) { this.m.set(k, v); }
+}
+const broken = { getItem() { throw new Error('x'); }, setItem() { throw new Error('x'); }, removeItem() { throw new Error('x'); } } as unknown as Storage;
+
+test.describe('기기 저장', () => {
+  test('저장하고 다시 불러온다(요청서 키와 다른 키)', async () => {
+    const s = new MemStore();
+    const v: Saved = { v: 1, input: 'prologueand.com', lookup: await comLookup(), answers: { registrarLogin: 'no' }, step: 'q:hostLogin', done: false };
+    expect(saveOwnership(s, v)).toBe(true);
+    expect([...s.m.keys()]).toEqual(['prologue.ownership.v1']);
+    expect(loadOwnership(s)).toEqual(v);
+    clearOwnership(s);
+    expect(loadOwnership(s)).toBeNull();
+  });
+  test('버전이 다르거나 깨진 값은 버린다', () => {
+    const s = new MemStore();
+    s.setItem('prologue.ownership.v1', '{not json'); expect(loadOwnership(s)).toBeNull();
+    s.setItem('prologue.ownership.v1', JSON.stringify({ v: 2, input: 'a.com', lookup: null, answers: {}, step: 'domain', done: false })); expect(loadOwnership(s)).toBeNull();
+    s.setItem('prologue.ownership.v1', JSON.stringify({ v: 1, input: 5, lookup: null, answers: {}, step: 'domain', done: false })); expect(loadOwnership(s)).toBeNull();
+  });
+  test('모르는 질문·선택지 답은 그 답만 버린다', () => {
+    const s = new MemStore();
+    s.setItem('prologue.ownership.v1', JSON.stringify({ v: 1, input: 'a.com', lookup: null, answers: { hostLogin: 'yes', nope: 'yes', backup: 'maybe' }, step: 'domain', done: false }));
+    expect(loadOwnership(s)?.answers).toEqual({ hostLogin: 'yes' });
+  });
+  test('저장이 막힌 저장소', () => {
+    expect(saveOwnership(broken, { v: 1, input: '', lookup: null, answers: {}, step: 'domain', done: false })).toBe(false);
+    expect(loadOwnership(broken)).toBeNull();
+    expect(ownershipStorageOk(broken)).toBe(false);
+    expect(ownershipStorageOk(null)).toBe(false);
+    expect(() => clearOwnership(broken)).not.toThrow();
+  });
+  test('불러온 뒤 사용 종료일 판정은 지금 날짜로', async () => {
+    const s = new MemStore();
+    const l = withExp(await comLookup(), '2026-12-01T00:00:00Z');
+    saveOwnership(s, { v: 1, input: 'prologueand.com', lookup: l, answers: {}, step: 'result', done: true });
+    const raw = s.getItem('prologue.ownership.v1')!;
+    expect(raw).not.toMatch(/"state"/);                               // 판정 값은 저장하지 않는다
+    const back = loadOwnership(s)!;
+    expect(interpret(norm('prologueand.com'), back.lookup, new Date('2026-09-01T00:00:00Z')).expiry?.state).toBe('ok');
+    expect(interpret(norm('prologueand.com'), back.lookup, new Date('2026-11-15T00:00:00Z')).expiry?.state).toBe('risk');
+  });
+});
