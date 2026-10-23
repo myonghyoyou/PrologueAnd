@@ -260,3 +260,62 @@ test.describe('영어판', () => {
     await expect(page.locator('[data-own-lang]')).toHaveAttribute('href', '/tools/ownership');
   });
 });
+
+async function toResultWithRisk(page: Page, path = '/tools/ownership') {
+  await routeLookups(page, DEFAULT);
+  await start(page, 'prologueand.com', path);
+  await page.locator('[data-own-next]').click();
+  await page.locator('[data-own-q] [data-choice]').nth(1).click();     // 등록대행자: 아니요 → 위험
+  await page.locator('[data-own-next]').click();
+  await answerAllFirst(page);
+}
+
+test.describe('내보내기', () => {
+  test('요청 문구 복사: 위험·확인 필요만, Prologue 없음', async ({ page, context }, info) => {
+    test.skip(info.project.name !== 'w1440');
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await toResultWithRisk(page);
+    await page.locator('[data-own-copy]').click();
+    await expect(page.locator('[data-own-copied]')).toContainText('복사했어요');
+    const t = await page.evaluate(() => navigator.clipboard.readText());
+    expect(t).toMatch(/^안녕하세요\./);
+    expect(t).toMatch(/1\. 도메인\(prologueand\.com\) 등록대행자 계정/);
+    expect(t).not.toContain('영업시간');                                // 안전 항목은 넣지 않는다
+    expect(t).not.toContain('Prologue');
+  });
+  test('복사가 막히면 글상자', async ({ page }) => {
+    await page.addInitScript(() => { Object.defineProperty(navigator, 'clipboard', { value: { writeText: () => Promise.reject(new Error('no')) } }); });
+    await toResultWithRisk(page);
+    await page.locator('[data-own-copy]').click();
+    await expect(page.locator('[data-own-copybox] textarea')).toHaveValue(/등록대행자 계정/);
+  });
+  test('정리표 인쇄: 한 쪽, 정리표만, 비밀번호 칸 빈칸, Prologue 없음', async ({ page }, info) => {
+    test.skip(info.project.name !== 'w1440');
+    await toResultWithRisk(page);
+    await page.emulateMedia({ media: 'print' });
+    await expect(page.locator('[data-own-sheet]')).toBeVisible();
+    await expect(page.locator('[data-own-headline]')).toBeHidden();
+    await expect(page.locator('header')).toBeHidden();
+    for (const t of await page.locator('[data-own-sheet] td[data-own-blank]').allInnerTexts()) expect(t.trim()).toBe('');
+    expect(await page.locator('[data-own-sheet]').innerText()).not.toContain('Prologue');
+    const pdf = await page.pdf({ format: 'A4', printBackground: true, preferCSSPageSize: true });
+    expect((pdf.toString('latin1').match(/\/Type\s*\/Page(?!s)/g) ?? []).length).toBe(1);
+  });
+  test('쓰레드 앱 안에서는 사파리·크롬 안내와 주소 복사가 먼저', async ({ browser }) => {
+    const ctx = await browser.newContext({ userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Barcelona 450.0.0.31.61' });
+    const page = await ctx.newPage();
+    await toResultWithRisk(page);
+    const note = page.locator('[data-own-inapp]');
+    await expect(note).toContainText('사파리나 크롬');
+    await expect(page.locator('[data-own-copyurl]')).toBeVisible();
+    const a = (await note.boundingBox())!, b = (await page.locator('[data-own-print]').boundingBox())!;
+    expect(a.y).toBeLessThan(b.y);
+    await ctx.close();
+  });
+  test('영어판 인쇄에도 한글 없음', async ({ page }, info) => {
+    test.skip(info.project.name !== 'w1440');
+    await toResultWithRisk(page, '/en/tools/ownership');
+    await page.emulateMedia({ media: 'print' });
+    expect(await page.locator('[data-own-sheet]').innerText()).not.toMatch(/[가-힣]/);
+  });
+});

@@ -18,6 +18,7 @@ export function Result({ c, locale, domain, facts, list, onEdit, onReset, sheet 
   };
   return (
     <section className={s.result} data-own-result>
+      <div className={s.noPrint}>
       <p className={s.domain}>{domain}</p>
       <h1 className={s.h1} data-own-headline data-kind={h.kind}>{fill(c.headline[h.kind], { n: String(h.n) })}</h1>
       <ul className={s.items}>
@@ -42,12 +43,13 @@ export function Result({ c, locale, domain, facts, list, onEdit, onReset, sheet 
           ) : null}
         </div>
       ) : null}
+      </div>
       {sheet}
-      <div className={s.actions}>
+      <div className={`${s.actions} ${s.noPrint}`}>
         <button type="button" className={`${ui.btn} ${ui.sec}`} onClick={onEdit} data-own-edit>{c.nav.edit}</button>
         <button type="button" className={ui.txt} onClick={onReset} data-own-reset>{c.nav.reset}</button>
       </div>
-      {locale === 'ko' && c.nav.toBrief ? <p className={s.foot}><a className={ui.txt} href="/tools/brief" data-own-to-brief>{c.nav.toBrief}</a></p> : null}
+      {locale === 'ko' && c.nav.toBrief ? <p className={`${s.foot} ${s.noPrint}`}><a className={ui.txt} href="/tools/brief" data-own-to-brief>{c.nav.toBrief}</a></p> : null}
     </section>
   );
 }

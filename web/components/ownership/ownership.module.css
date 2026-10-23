@@ -49,3 +49,8 @@
   .lrow{grid-template-columns:110px minmax(0,1fr)}
   .item{grid-template-columns:76px minmax(0,1fr)}
 }
+
+@media print{
+  .noPrint,.nostore{display:none!important}
+  .root{max-width:none}
+}
