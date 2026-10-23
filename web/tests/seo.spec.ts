@@ -100,3 +100,45 @@ test('사이트맵에 요청서 만들기가 있다', async ({ request }) => {
   const t = await (await request.get('/sitemap.xml')).text();
   expect(t).toContain('<loc>https://www.prologueand.com/tools/brief</loc>');
 });
+
+test.describe('요청서 영어판 SEO', () => {
+  const KO = 'https://www.prologueand.com/tools/brief', EN = 'https://www.prologueand.com/en/tools/brief';
+  test('영어 머리: 대표 주소·언어 짝·og 영어·공유 그림·한글 없음·본문 lang="en"', async ({ page }) => {
+    await page.goto('/en/tools/brief');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', EN);
+    await expect(page.locator('link[rel="alternate"][hreflang="ko"]')).toHaveAttribute('href', KO);
+    await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href', EN);
+    await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute('content', 'en_US');
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', EN);
+    // Next 가 그림 주소 뒤에 해시를 붙인다
+    expect(await page.locator('meta[property="og:image"]').first().getAttribute('content')).toContain('/en/tools/brief/opengraph-image');
+    const heads = await page.locator('meta[property^="og:"], meta[name^="twitter:"]').evaluateAll((els) => els.map((e) => `${e.getAttribute('property') ?? e.getAttribute('name')}=${e.getAttribute('content')}`));
+    expect(heads.length).toBeGreaterThan(5);
+    expect(heads.filter((h) => /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(h))).toEqual([]);
+    await expect(page.locator('main[lang="en"]')).toHaveCount(1);
+  });
+  test('한국어 요청서도 언어 짝을 알린다', async ({ page }) => {
+    await page.goto('/tools/brief');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', KO);
+    await expect(page.locator('link[rel="alternate"][hreflang="ko"]')).toHaveAttribute('href', KO);
+    await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href', EN);
+  });
+  test('영어 공유 그림: 1200×630 PNG', async ({ page, request }) => {
+    await page.goto('/en/tools/brief');
+    const img = new URL((await page.locator('meta[property="og:image"]').first().getAttribute('content'))!);
+    const r = await request.get(img.pathname + img.search);
+    expect(r.status()).toBe(200);
+    expect(r.headers()['content-type']).toContain('image/png');
+    const b = await r.body();
+    expect([b.readUInt32BE(16), b.readUInt32BE(20)]).toEqual([1200, 630]);
+  });
+  test('사이트맵: 두 주소와 각각의 언어 짝(xhtml:link)', async ({ request }) => {
+    const t = await (await request.get('/sitemap.xml')).text();
+    for (const loc of [KO, EN]) {
+      const url = [...t.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((m) => m[1]).find((u) => u.includes(`<loc>${loc}</loc>`));
+      expect(url, loc).toBeTruthy();
+      expect(url).toContain(`<xhtml:link rel="alternate" hreflang="ko" href="${KO}"`);
+      expect(url).toContain(`<xhtml:link rel="alternate" hreflang="en" href="${EN}"`);
+    }
+  });
+});
