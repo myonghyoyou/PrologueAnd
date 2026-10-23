@@ -145,7 +145,7 @@ export function Result({ a, onEdit, onReset }: { a: Answers; onEdit: (s: StepId)
       {c.end.kind === 'drawer'
         ? <p className={`${s.foot} ${s.noPrint}`} data-part="prologue" data-brief-prologue>{c.end.text} · <button type="button" className={s.link} onClick={send} data-brief-send>{c.end.send}</button></p>
         : <p className={`${s.foot} ${s.noPrint}`} data-part="prologue" data-brief-prologue>{c.end.madeBy} · <a className={s.link} href={mailHref(a, today, c, CONTACT_MAIL)} data-brief-mail>{c.end.send}</a>{' '}
-            <span data-brief-mail-hint>{c.end.hint}</span>
+            <span data-brief-mail-hint>{c.end.hint}</span> <span data-brief-mail-note>{c.end.note}</span>
             {OWNERSHIP_EN_PATH ? <><br /><a className={s.link} href={OWNERSHIP_EN_PATH} data-brief-to-ownership>{c.end.toOwnership}</a></> : null}</p>}
     </div>
   );

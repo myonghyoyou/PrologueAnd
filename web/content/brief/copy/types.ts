@@ -79,6 +79,6 @@ export type BriefCopy = {
     pdf: string; copy: string; share: string; editAll: string; reset: string; resetConfirm: string; copied: string; inAppHint: string; printFailed: string;
     copyBoxHelp: string; privacy: string };
   end: { kind: 'drawer'; text: string; send: string; toOwnership: string }
-     | { kind: 'mail'; madeBy: string; send: string; hint: string; attachLine: string; toOwnership: string };
+     | { kind: 'mail'; madeBy: string; send: string; hint: string; note: string; attachLine: string; toOwnership: string };
   print: { lineChars: number };
 };

@@ -260,6 +260,7 @@ export const en: BriefCopy = {
   },
   end: {
     kind: 'mail', madeBy: 'Made by Prologue&', send: 'Send this brief to Prologue& too →', hint: 'Save the PDF first, then attach it to the email.',
+    note: 'Opens your email app. Nothing is sent until you press send.',
     attachLine: '(Please attach the PDF you saved from the brief page before sending.)', toOwnership: 'Already have a website? Website Ownership Check →',
   },
   /* 한 줄 글자 수 — 실측(2026-10-23): 영어판 RICH·MID·MAX·MIN(brief-print.spec.ts 세트의 자유 입력을 영어로) 넷을 /en/tools/brief 에 채우고,

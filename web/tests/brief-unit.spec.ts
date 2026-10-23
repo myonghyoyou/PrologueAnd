@@ -497,6 +497,14 @@ test.describe('영어판', () => {
     // 한국어 글처럼 인코딩하면 아주 길어지는 글이어도 1,800자 안
     const wide = mailHref({ ...a, name: '\u00e9'.repeat(60), featuresExtra: '\u00e9\u00e8'.repeat(100), pagesExtra: Array.from({ length: 40 }, (_, i) => `p${i}`).join(',') }, D, en, 'hello@prologueand.com');
     expect(wide.length).toBeLessThanOrEqual(1800);
+    // 이름 칸에는 길이 제한이 없다 — 인코딩하면 몇 배로 느는 이름(악센트 300자·한글 200자)도 1,800자 안, 첫 줄은 첨부 안내
+    for (const name of ['é'.repeat(300), '가'.repeat(200)]) {
+      const h2 = mailHref({ ...a, name, kind: 'other', kindOther: name, featuresExtra: name }, D, en, 'hello@prologueand.com');
+      expect(h2.length, name.slice(0, 3)).toBeLessThanOrEqual(1800);
+      expect(h2.startsWith('mailto:hello@prologueand.com?subject=')).toBe(true);
+      expect(decodeURIComponent(h2.split('&body=')[1]).split('\n')[0]).toBe(en.end.kind === 'mail' ? en.end.attachLine : '');
+    }
+    expect(mailHref(a, D, en, 'x'.repeat(2000) + '@y.z').length).toBeLessThanOrEqual(2020);   // 받는 주소 자체가 넘치면 받는 사람만
   });
   test('영어 문구: 금지 낱말·낫표 없음, 한글은 한국어 링크 이름뿐, 이유 문장에 금액 없음', () => {
     const strip = (t: string) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
@@ -507,6 +515,6 @@ test.describe('영어판', () => {
     const why = [Q.renew.amountWhy, Q.pages.manyWhy, ...Object.values(Q.features.why), Q.links.manyWhy, Q.content.why, Q.brand.noneWhy, Q.design.customWhy, Q.when.rushWhy, en.impact.bookingService].join('\n');
     expect(why).not.toMatch(/[$£€¥₩]\s*\d|\d\s*(dollars|pounds|euros)/i);
     expect(Q.features.why.booking).toContain('Linking a booking app like Calendly or Square keeps the cost much lower.');
-    expect(en.end).toMatchObject({ kind: 'mail', madeBy: 'Made by Prologue&' });
+    expect(en.end).toMatchObject({ kind: 'mail', madeBy: 'Made by Prologue&', note: 'Opens your email app. Nothing is sent until you press send.' });
   });
 });

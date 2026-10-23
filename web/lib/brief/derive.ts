@@ -222,15 +222,20 @@ export function impactKeys(a: Answers, today: Date, c: BriefCopy): Set<string> {
 
 /** 영어판 「Prologue&에도 보내기」 — 메일 앱을 여는 mailto 주소(명세 5-1). 서버로는 아무것도 가지 않는다.
  *  본문은 첨부 안내 한 줄 + 짧은 요약뿐(전체 글은 인코딩하면 주소 길이 한도를 넘는다). 1,800자를 넘으면
- *  ① 요약의 자유 입력 값(이름·직접 입력 업종·그 밖의 기능)을 40자로 자르고 ② 그래도 넘으면 요약 줄을 뒤에서부터 뺀다. 제목·첨부 안내는 남긴다 */
+ *  ① 제목·요약의 자유 입력 값(이름·직접 입력 업종·그 밖의 기능)을 40자로 자르고 ② 그래도 넘으면 요약 줄을 뒤에서부터 뺀다.
+ *  이름 칸에는 길이 제한이 없고 한글·악센트 글자는 인코딩하면 몇 배로 늘어서, 제목도 자른 이름으로 다시 만든다. 결과는 늘 1,800자 안 */
 export const MAIL_MAX = 1800;
 export function mailHref(a: Answers, today: Date, c: BriefCopy, to: string): string {
   const attach = c.end.kind === 'mail' ? c.end.attachLine : '';
-  const head = `mailto:${to}?subject=${encodeURIComponent(buildBrief(a, today, c).title)}&body=`;
-  const href = (lines: string[]) => head + encodeURIComponent([attach, '', ...lines].join('\n'));
-  let lines = summaryLines(a, today, c);
-  if (href(lines).length <= MAIL_MAX) return href(lines);
-  lines = summaryLines({ ...a, name: clip(a.name.trim(), 40), kindOther: clip(a.kindOther.trim(), 40), featuresExtra: clip(a.featuresExtra.trim(), 40) }, today, c);
-  while (lines.length && href(lines).length > MAIL_MAX) lines = lines.slice(0, -1);
-  return href(lines);
+  const href = (title: string, lines: string[]) => `mailto:${to}?subject=${encodeURIComponent(title)}&body=${encodeURIComponent([attach, '', ...lines].join('\n'))}`;
+  const full = href(buildBrief(a, today, c).title, summaryLines(a, today, c));
+  if (full.length <= MAIL_MAX) return full;
+  const short = { ...a, name: clip(a.name.trim(), 40), kindOther: clip(a.kindOther.trim(), 40), featuresExtra: clip(a.featuresExtra.trim(), 40) };
+  const title = c.doc.title(short.name || c.doc.untitled);
+  let lines = summaryLines(short, today, c);
+  while (lines.length && href(title, lines).length > MAIL_MAX) lines = lines.slice(0, -1);
+  if (href(title, lines).length <= MAIL_MAX) return href(title, lines);
+  // 마지막 안전망 — 이름 없는 제목과 첨부 안내만, 그래도 넘으면(받는 주소가 아주 길 때) 받는 사람만
+  const bare = href(c.doc.title(c.doc.untitled), []);
+  return bare.length <= MAIL_MAX ? bare : `mailto:${to}`;
 }
