@@ -73,3 +73,9 @@ test('얼린 대응표가 지금 한국어 문구와 같다(옮기는 지금 한
     for (const [label, id] of Object.entries(table)) expect(ko[group as keyof typeof V1_MAP][id], `${group}.${id}`).toBe(label);
   }
 });
+
+test('v1: constructor·toString 같은 글자는 표에 없는 글자로 본다', () => {
+  const m = migrateV1({ v: 1, kind: 'constructor', pages: ['toString', '소개'] })!;
+  expect(m.kind).toBeUndefined();
+  expect(m.pages).toEqual(['about']);
+});

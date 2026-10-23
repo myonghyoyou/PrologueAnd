@@ -273,3 +273,11 @@ test('앱 안 브라우저(쓰레드 사용자 에이전트)', async ({ browser 
   await noHangul(page, '앱 안 브라우저 결과');
   await ctx.close();
 });
+
+test('이모지가 40·60자 자리에 걸린 이름이어도 결과 화면이 그려진다', async ({ page }) => {
+  for (const name of ['a'.repeat(58) + '\u{1F600}xyz', 'a'.repeat(39) + '\u{1F600}xyz']) {
+    await seedBrief(page, { ...fromKo(MIN), name }, 'when', true, EN);
+    await expect(page.locator('[data-brief-doc] h1')).toBeVisible();
+    expect(await page.locator('[data-brief-mail]').getAttribute('href')).toMatch(/^mailto:/);
+  }
+});

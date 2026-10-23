@@ -9,7 +9,8 @@ import { UNKNOWN, type Answers, type Feature, type StepId } from './types';
 export type Row = { label: string; value: string; tag?: 'must' | 'later' | 'ask'; edit?: StepId };
 export type Section = { id: string; title: string; rows: Row[] };
 
-const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
+/** 이모지 같은 짝 글자(서러게이트 쌍)의 한가운데를 자르면 외톨이 글자가 남아 encodeURIComponent 가 URIError 를 낸다 — 그 한 글자도 같이 뺀다 */
+const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1).replace(/[\uD800-\uDBFF]$/, '')}…` : s);
 const list = (xs: string[]) => xs.filter(Boolean).join(', ');
 const isUnknown = (v?: string) => !v || v === UNKNOWN;
 const kindText = (a: Answers, c: BriefCopy) => (a.kind === 'other' ? a.kindOther.trim() : a.kind ? c.q.kind.opts[a.kind] : '');
@@ -226,6 +227,9 @@ export function impactKeys(a: Answers, today: Date, c: BriefCopy): Set<string> {
  *  이름 칸에는 길이 제한이 없고 한글·악센트 글자는 인코딩하면 몇 배로 늘어서, 제목도 자른 이름으로 다시 만든다. 결과는 늘 1,800자 안 */
 export const MAIL_MAX = 1800;
 export function mailHref(a: Answers, today: Date, c: BriefCopy, to: string): string {
+  try { return mailHrefRaw(a, today, c, to); } catch { return `mailto:${to}`; }   // 인코딩이 어떤 이유로든 깨져도 화면은 멈추지 않는다
+}
+function mailHrefRaw(a: Answers, today: Date, c: BriefCopy, to: string): string {
   const attach = c.end.kind === 'mail' ? c.end.attachLine : '';
   const href = (title: string, lines: string[]) => `mailto:${to}?subject=${encodeURIComponent(title)}&body=${encodeURIComponent([attach, '', ...lines].join('\n'))}`;
   const full = href(buildBrief(a, today, c).title, summaryLines(a, today, c));

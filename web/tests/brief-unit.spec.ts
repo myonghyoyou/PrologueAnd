@@ -127,6 +127,11 @@ test.describe('저장', () => {
     expect(saveSaved(s, { answers: cafe(), step: 'pages', done: false })).toBe(true);
     expect(loadSaved(s)).toEqual({ answers: cafe(), step: 'pages', done: false });
   });
+  test('v2 langs 에 어긋난 값이 섞여도 언어 코드만 남긴다', () => {
+    const s = new Mem();
+    s.setItem('prologue.brief.v2', JSON.stringify({ answers: { ...emptyAnswers(), langs: ['', 5, 'ja'] }, step: 'kind', done: false }));
+    expect(loadSaved(s)!.answers.langs).toEqual(['ja']);
+  });
   test('깨진 값·다른 버전은 무시한다 — v1 키는 옮기지 못해도 지운다', () => {
     const s = new Mem();
     s.setItem('prologue.brief.v1', '{깨짐');
@@ -505,6 +510,18 @@ test.describe('영어판', () => {
       expect(decodeURIComponent(h2.split('&body=')[1]).split('\n')[0]).toBe(en.end.kind === 'mail' ? en.end.attachLine : '');
     }
     expect(mailHref(a, D, en, 'x'.repeat(2000) + '@y.z').length).toBeLessThanOrEqual(2020);   // 받는 주소 자체가 넘치면 받는 사람만
+  });
+  test('이모지가 잘리는 자리에서도 외톨이 글자가 없고 mailHref 가 멈추지 않는다', () => {
+    const a = enMax();
+    const lone = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/;
+    for (const n of [38, 39, 40, 41, 58, 59, 60, 61, 198, 199, 200, 201]) {
+      const name = 'a'.repeat(n) + '\u{1F600}xyz';
+      const b = buildBrief({ ...a, name, kind: 'other', kindOther: name, featuresExtra: name }, D, en);
+      expect(lone.test(JSON.stringify(b.sections.flatMap((x) => x.rows.map((r) => r.value))) + b.title), String(n)).toBe(false);
+      const h = mailHref({ ...a, name, kind: 'other', kindOther: name, featuresExtra: name }, D, en, 'hello@prologueand.com');
+      expect(h.length, String(n)).toBeLessThanOrEqual(1800);
+      expect(h.startsWith('mailto:hello@prologueand.com'), String(n)).toBe(true);
+    }
   });
   test('영어 문구: 금지 낱말·낫표 없음, 한글은 한국어 링크 이름뿐, 이유 문장에 금액 없음', () => {
     const strip = (t: string) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1');

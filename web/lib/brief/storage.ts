@@ -49,7 +49,8 @@ function idsOk(a: Answers): Answers {
   // 명의는 늘 하나가 골라져 있는 칸이라 모르는 id 는 비우지 않고 기본값으로
   const own = (k: keyof Answers['own'], o: 'ownDomain' | 'ownHosting' | 'ownAdmin' | 'ownSource') => (ok(o, a.own[k]) ? a.own[k] : OWN_DEFAULT[k]);
   return {
-    ...a, mode: a.mode === 'new' || a.mode === 'renew' ? a.mode : undefined,
+    ...a, langs: a.langs.filter((x) => typeof x === 'string' && /^[A-Za-z]{2,8}(-[A-Za-z0-9]{1,8})*$/.test(x)),   // 어긋난 언어 코드는 Intl.DisplayNames 를 멈추게 한다
+    mode: a.mode === 'new' || a.mode === 'renew' ? a.mode : undefined,
     renewAmount: one('renewAmount', a.renewAmount), kind: one('kind', a.kind), goalMain: one('goal', a.goalMain), goalMore: many('goal', a.goalMore),
     audience: many('audience', a.audience), pages: many('pages', a.pages), features,
     booking: one('booking', a.booking), shopCount: one('shopCount', a.shopCount), shopHow: one('shopHow', a.shopHow), member: one('member', a.member),

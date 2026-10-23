@@ -47,7 +47,8 @@ const isStr = (x: unknown): x is string => typeof x === 'string';
 /** 표에 없는 글자는 undefined. 「모르겠어요」는 그 질문에 unknown 이 있을 때만 unknown */
 function one<T extends string>(map: MapKey, v: unknown, optKey?: OptKey): T | undefined {
   if (!isStr(v)) return undefined;
-  const hit = (V1_MAP[map] as Record<string, string>)[v];
+  const t = V1_MAP[map] as Record<string, string>;
+  const hit = Object.hasOwn(t, v) ? t[v] : undefined;   // 'constructor' 같은 글자가 물려받은 함수를 집지 않게
   if (hit) return hit as T;
   if (v === DUNNO_V1 && optKey && (OPTS[optKey] as readonly string[]).includes('unknown')) return 'unknown' as T;
   return undefined;
@@ -109,9 +110,9 @@ export function migrateCompareV1(raw: unknown): CompareV2 | null {
     if (!v || typeof v !== 'object' || !isStr(v.name) || !isStr(v.price) || !v.cells || typeof v.cells !== 'object') return null;
     const cells = {} as Record<CompareRowId, string>;
     for (const [label, id] of Object.entries(V1_MAP.compareRow) as [string, CompareRowId][]) {
-      const c = (v.cells as Record<string, unknown>)[label];
+      const c = Object.hasOwn(v.cells, label) ? (v.cells as Record<string, unknown>)[label] : undefined;
       const s = isStr(c) ? c : '';
-      cells[id] = YN_ROWS.includes(id) ? ((V1_MAP.compareYn as Record<string, string>)[s] ?? '') : s;
+      cells[id] = YN_ROWS.includes(id) ? (Object.hasOwn(V1_MAP.compareYn, s) ? (V1_MAP.compareYn as Record<string, string>)[s] : '') : s;
     }
     out.push({ name: DEFAULT_VENDORS_V1.includes(v.name) ? '' : v.name, price: v.price, cells });
   }
