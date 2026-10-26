@@ -43,7 +43,7 @@ export const ko: BriefCopy = {
       help: '메뉴에 들어갈 이름이라고 생각하고 골라 주세요.',
       opts: { about: '소개', menu: '메뉴·서비스', pricing: '가격', location: '오시는 길', news: '소식', gallery: '사진·포트폴리오', reviews: '후기', faq: '자주 묻는 질문', contact: '문의', careers: '채용' },
       extra: '그 밖에 필요한 페이지 (쉼표로 나눠 적어 주세요)',
-      manyWhy: '페이지마다 디자인이 다르면 그만큼 작업이 늘어 비용이 올라가요.',
+      manyWhy: '페이지 디자인이 서로 다르면 그만큼 작업이 늘어 비용이 올라가요.',
     },
     features: {
       title: '홈페이지에 어떤 기능이 필요하세요?',

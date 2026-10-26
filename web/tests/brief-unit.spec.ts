@@ -415,9 +415,9 @@ test('인쇄 비율: 보통 분량은 그대로, 많을수록 줄이되 0.6배 �
 test('견적가 영향 설명: 무엇이 오르는지 분명히, 흐린 말 없이(사용자 승인 2026-10-21)', () => {
   const Q = ko.q;
   const all = [Q.renew.amountWhy, Q.pages.manyWhy, ...Object.values(Q.features.why), Q.links.manyWhy, Q.content.why, Q.brand.noneWhy, Q.design.customWhy, Q.when.rushWhy].join('\n');
-  for (const bad of ['가벼워져요', '가벼운 편', '시간이 따로 들어요', '작업이 따로 들어요', '보통 템플릿']) expect(all, bad).not.toContain(bad);
+  for (const bad of ['가벼워져요', '가벼운 편', '시간이 따로 들어요', '작업이 따로 들어요', '페이지마다', '보통 템플릿']) expect(all, bad).not.toContain(bad);
   expect(Q.renew.amountWhy).toBe('기존 홈페이지의 글과 사진을 하나씩 옮겨야 해서 비용이 올라가요.');
-  expect(Q.pages.manyWhy).toBe('페이지마다 디자인이 다르면 그만큼 작업이 늘어 비용이 올라가요.');
+  expect(Q.pages.manyWhy).toBe('페이지 디자인이 서로 다르면 그만큼 작업이 늘어 비용이 올라가요.');
   expect(Q.features.why.booking).toBe('홈페이지 안에서 예약을 받으려면 날짜·시간 선택과 중복 예약 방지 기능을 새로 만들어야 해요. 네이버 예약을 연결하면 비용을 크게 줄일 수 있어요.');
   expect(Q.features.why.payment).toBe('홈페이지 안에서 결제를 받으려면 결제 서비스 연결과 주문 관리 기능을 새로 만들어야 해요. 스마트스토어로 연결하면 비용을 줄일 수 있어요.');
   expect(Q.features.why.members).toBe('로그인을 만들면 가입·비밀번호 찾기·개인정보 보관까지 함께 만들어야 해서 비용이 올라가요.');
