@@ -20,7 +20,7 @@ test.describe('시작 화면', () => {
     await expect(intro).toContainText('특정 업체를 추천하거나 연결하지 않아요');
     await expect(intro.locator('[data-brief-sample]')).toContainText('홈페이지 제작 요청서');
     await page.locator('[data-brief-start]').click();
-    await expect(page.locator('h1')).toHaveText('새로 만드시나요, 지금 홈페이지를 고치시나요?');
+    await expect(page.locator('h1')).toHaveText('새로 만드시나요, 기존 홈페이지를 리뉴얼하시나요?');
   });
   test('시작한 뒤 새로고침하면 시작 화면 없이 이어진다', async ({ page }) => {
     await page.goto('/tools/brief');
@@ -28,7 +28,7 @@ test.describe('시작 화면', () => {
     await pick(page, '새로 만들기'); await next(page);
     await page.reload();
     await expect(page.locator('[data-brief-intro]')).toHaveCount(0);
-    await expect(page.locator('h1')).toHaveText('어떤 일을 하는 곳인가요?');
+    await expect(page.locator('h1')).toHaveText('어떤 업종인가요?');
   });
   test('모두 지우면 시작 화면으로', async ({ page }) => {
     await seedDone(page);
@@ -43,7 +43,7 @@ test('진행 표시는 묶음 이름과 네 칸 — 고치기를 골라도 바�
   await page.locator('[data-brief-start]').click();
   const pr = page.locator('[data-brief-progress]');
   await expect(pr).toContainText('어떤 홈페이지 · 4단계 중 1단계');
-  await pick(page, '지금 홈페이지 고치기'); await next(page);
+  await pick(page, '기존 홈페이지 리뉴얼'); await next(page);
   await expect(pr).toContainText('어떤 홈페이지 · 4단계 중 1단계');
   await expect(pr.locator('[data-numeral]')).toHaveText('01');
 });
@@ -99,7 +99,7 @@ test.describe('답하는 동안 요청서 미리보기', () => {
     await expect(pv).toContainText('홈페이지 제작 요청서 · 테스트 상사');
     await expect(pv.locator('[data-current]')).toContainText('목적');
     // 아직 묻지 않은 질문까지 「업체 제안 받기」로 보이면 안 된다 — 그 단원은 결과에서만
-    await expect(pv).not.toContainText('업체 제안을 받고 싶은 것');
+    await expect(pv).not.toContainText('제안 요청 사항');
     const q = (await page.locator('h1').boundingBox())!, p = (await pv.boundingBox())!;
     expect(p.x).toBeGreaterThan(q.x + q.width - 1);
   });
@@ -115,10 +115,10 @@ test.describe('답하는 동안 요청서 미리보기', () => {
   });
 });
 
-test('메뉴 칸 질문은 「화면」으로 묻는다', async ({ page }) => {
+test('메뉴 칸 질문은 「페이지」로 묻는다', async ({ page }) => {
   await seedBrief(page, fromKo({ mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }), 'pages');
-  await expect(page.locator('h1')).toHaveText('어떤 화면이 필요하세요?');
-  await expect(page.getByText('그 밖에 필요한 화면 (쉼표로 나눠 적어 주세요)')).toBeVisible();
+  await expect(page.locator('h1')).toHaveText('어떤 페이지가 필요하세요?');
+  await expect(page.getByText('그 밖에 필요한 페이지 (쉼표로 나눠 적어 주세요)')).toBeVisible();
 });
 
 test('기능 질문: 목록 밖의 기능을 적을 수 있고, 모르겠어요를 누르면 지워진다', async ({ page }) => {
@@ -158,12 +158,12 @@ test.describe('견적가 영향 — 늘 보이고, 해당 줄에 표시', () => 
   const seed = (page: Page, step: StepId, done: boolean) => seedBrief(page, fromKo(A), step, done);
   test('결과: 견적가 영향이 요청서 위에 있고, 해당 줄에만 표시가 붙는다', async ({ page }) => {
     await seed(page, 'when', true);
-    await expect(page.locator('[data-brief-impact] h2')).toHaveText('견적가를 크게 움직이는 항목');
+    await expect(page.locator('[data-brief-impact] h2')).toHaveText('견적에 크게 영향을 주는 항목');
     const marked = await page.locator('[data-brief-doc] [data-impact-row] dt').allTextContents();
     expect(marked.sort()).toEqual(['방식', '소개 글', '예약 받기'].sort());
     // 줄마다 글자 표시는 붙이지 않는다(정신없다는 피드백) — 칠한 줄의 뜻은 맨 위 상자 범례에서 한 번
     await expect(page.locator('[data-brief-doc] [data-impact-mark]')).toHaveCount(0);
-    await expect(page.locator('[data-brief-impact] [data-impact-legend]')).toContainText('요청서에서 이렇게 칠한 줄');
+    await expect(page.locator('[data-brief-impact] [data-impact-legend]')).toContainText('요청서에 이렇게 표시돼요');
     // 왼쪽 선과 글자 사이를 띄운다 — 글자는 다른 줄과 같은 선
     const row = page.locator('[data-brief-doc] [data-impact-row]').first();
     const gap = await row.evaluate((e) => e.querySelector('dt')!.getBoundingClientRect().left - e.getBoundingClientRect().left);

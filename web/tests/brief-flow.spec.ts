@@ -31,29 +31,29 @@ test.describe('질문 흐름', () => {
     await page.goto('/tools/brief');
     await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await pick(page, '새로 만들기'); await next(page);
-    await expect(page.locator('h1')).toHaveText('어떤 일을 하는 곳인가요?');
+    await expect(page.locator('h1')).toHaveText('어떤 업종인가요?');
     await next(page);
-    await expect(page.locator('[data-brief-error]')).toHaveText('하나만 골라 주세요');
-    await expect(page.locator('h1')).toHaveText('어떤 일을 하는 곳인가요?');
+    await expect(page.locator('[data-brief-error]')).toHaveText('하나를 골라 주세요');
+    await expect(page.locator('h1')).toHaveText('어떤 업종인가요?');
   });
 
-  test('고치기면 지금 홈페이지 단계가 나오고, 새로 만들기면 안 나온다', async ({ page }) => {
+  test('리뉴얼이면 기존 홈페이지 단계가 나오고, 새로 만들기면 안 나온다', async ({ page }) => {
     await page.goto('/tools/brief');
     await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
-    await pick(page, '지금 홈페이지 고치기'); await next(page);
-    await expect(page.locator('h1')).toHaveText('지금 홈페이지에 대해 알려 주세요');
+    await pick(page, '기존 홈페이지 리뉴얼'); await next(page);
+    await expect(page.locator('h1')).toHaveText('기존 홈페이지 정보를 알려 주세요');
     await expect(page.locator('[data-brief-progress]')).toContainText('어떤 홈페이지 · 4단계 중 1단계');
     await page.locator('[data-brief-prev]').click();
     await pick(page, '새로 만들기'); await next(page);
     await expect(page.locator('[data-brief-progress]')).toContainText('어떤 홈페이지 · 4단계 중 1단계');
   });
 
-  test('예약을 고르면 이어 질문, 「견적가에 크게 영향」을 누르면 이유가 펼쳐진다', async ({ page }) => {
+  test('예약을 고르면 이어 질문, 「견적에 크게 영향」을 누르면 이유가 펼쳐진다', async ({ page }) => {
     await page.goto('/tools/brief');
     await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await pick(page, '새로 만들기'); await next(page);
     await pick(page, '가게(식당·카페 등)'); await next(page);
-    await pick(page, '예약하기'); await next(page);
+    await pick(page, '예약'); await next(page);
     await next(page); await next(page);                       // 누가 보나요, 페이지
     await expect(page.locator('h1')).toHaveText('홈페이지에 어떤 기능이 필요하세요?');
     await page.locator('[data-feature="booking"] [data-seg="must"]').click();
@@ -68,7 +68,7 @@ test.describe('질문 흐름', () => {
     await pick(page, '새로 만들기'); await next(page);
     await pick(page, '회사·사무실'); await page.locator('[data-brief-name]').fill('테스트 상사'); await next(page);
     await page.reload();
-    await expect(page.locator('h1')).toHaveText('고객이 홈페이지에서 꼭 해야만 하는 한 가지는 무엇인가요?');
+    await expect(page.locator('h1')).toHaveText('홈페이지의 가장 중요한 목적은 무엇인가요?');
     await page.locator('[data-brief-prev]').click();
     await expect(page.getByRole('radio', { name: '회사·사무실', exact: true })).toBeChecked();
     await expect(page.locator('[data-brief-name]')).toHaveValue('테스트 상사');
@@ -79,7 +79,7 @@ test.describe('질문 흐름', () => {
     await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await pick(page, '새로 만들기'); await next(page);
     await pick(page, '가게(식당·카페 등)'); await next(page);
-    await pick(page, '예약하기'); await next(page); await next(page); await next(page);
+    await pick(page, '예약'); await next(page); await next(page); await next(page);
     await page.locator('[data-brief-next]').scrollIntoViewIfNeeded();
     await next(page);
     const top = await page.locator('h1').evaluate((h) => h.getBoundingClientRect().top);
@@ -97,7 +97,7 @@ test.describe('질문 흐름', () => {
     await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
     await expect(page.locator('[data-brief-nostore]')).toContainText('새로고침하면 답이 사라져요');
     await pick(page, '새로 만들기'); await next(page);
-    await expect(page.locator('h1')).toHaveText('어떤 일을 하는 곳인가요?');
+    await expect(page.locator('h1')).toHaveText('어떤 업종인가요?');
     await ctx.close();
   });
 
@@ -120,7 +120,7 @@ test('기능 아래 이어 질문은 작은 선택지로 한 줄에 놓인다(�
   await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
   await pick(page, '새로 만들기'); await next(page);
   await pick(page, '가게(식당·카페 등)'); await next(page);
-  await pick(page, '예약하기'); await next(page); await next(page); await next(page);
+  await pick(page, '예약'); await next(page); await next(page); await next(page);
   await page.locator('[data-feature="booking"] [data-seg="must"]').click();
   const tops = await page.locator('[data-feature="booking"] input[type="radio"]').evaluateAll((els) => els.map((e) => Math.round(e.parentElement!.getBoundingClientRect().top)));
   expect(tops).toHaveLength(3);
@@ -143,6 +143,6 @@ test.describe('최종 검토 보완 — 질문', () => {
     await seed(page, { mode: 'new', kind: '회사·사무실', goalMain: '문의 남기기' }, 'when', true);
     await page.locator('[data-edit="kind"]').click();
     await page.locator('[data-brief-step-next]').click();
-    await expect(page.locator('h1')).toHaveText('고객이 홈페이지에서 꼭 해야만 하는 한 가지는 무엇인가요?');
+    await expect(page.locator('h1')).toHaveText('홈페이지의 가장 중요한 목적은 무엇인가요?');
   });
 });

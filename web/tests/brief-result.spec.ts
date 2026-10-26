@@ -9,11 +9,11 @@ async function finish(page: Page) {
   await page.locator('[data-brief-start]').click();   // 시작 화면(명세 §11)
   await pick('새로 만들기'); await next();
   await pick('가게(식당·카페 등)'); await page.locator('[data-brief-name]').fill('가람 로스터리'); await next();
-  await pick('찾아오기'); await next();
+  await pick('매장 방문'); await next();
   await next(); await next();
   await page.locator('[data-feature="booking"] [data-seg="must"]').click(); await pick('네이버 예약 연결'); await next();
   await next();
-  await pick('써 주길 원함'); await next();
+  await pick('작성 요청'); await next();
   for (let i = 0; i < 6; i++) await next();
   await expect(page.locator('[data-brief-result]')).toBeVisible();
 }
@@ -38,7 +38,7 @@ test.describe('결과', () => {
     expect(sent.filter((u) => !u.includes('_next/') && !u.includes('?_rsc'))).toEqual([]);
   });
 
-  test('글자로 복사: 단원 포함, Prologue& 없음', async ({ page, context }, info) => {
+  test('텍스트 복사: 단원 포함, Prologue& 없음', async ({ page, context }, info) => {
     test.skip(info.project.name !== 'w1440');
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await finish(page);

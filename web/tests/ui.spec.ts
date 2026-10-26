@@ -54,7 +54,7 @@ test.describe('요청서 질문 화면', () => {
     // 누르는 것이 아니라 알림 — 옅은 경고색 바탕 칸에 표시와 이유가 함께
     const st = await imp.evaluate((e) => { const c = getComputedStyle(e); return [c.backgroundColor, c.borderTopColor, c.borderTopWidth, c.cursor]; });
     expect(st).toEqual(['rgb(251, 246, 236)', 'rgb(233, 211, 166)', '1px', 'auto']);
-    await expect(imp.locator('[data-impact-label]')).toHaveText('견적가에 크게 영향');
+    await expect(imp.locator('[data-impact-label]')).toHaveText('견적에 크게 영향');
     await expect(imp.locator('[data-impact-why]')).toContainText('네이버 예약을 연결하면');
     expect(await imp.locator('button, a').count()).toBe(0);
     const follow = page.locator('[data-feature="booking"] [data-follow]');

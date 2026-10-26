@@ -51,7 +51,7 @@ test.describe('결과 계산', () => {
     expect(ids).toEqual(['purpose', 'pages', 'features', 'links', 'content', 'brand', 'design', 'ops', 'own', 'scope', 'when', 'unknown']);
     const f = b.sections.find((s) => s.id === 'features')!;
     expect(f.rows.find((r) => r.label === '예약 받기')).toMatchObject({ tag: 'must', value: '네이버 예약 연결' });
-    expect(b.sections.find((s) => s.id === 'ops')!.rows).toContainEqual({ label: '관리자 화면', value: '필요' });
+    expect(b.sections.find((s) => s.id === 'ops')!.rows).toContainEqual({ label: '관리자 페이지', value: '필요' });
   });
   test('명의 단원 이름에 괄호 설명이 들어가지 않는다', () => {
     const own = buildBrief(cafe(), D, ko).sections.find((s) => s.id === 'own')!;
@@ -81,12 +81,12 @@ test.describe('결과 계산', () => {
     expect(q.slice(0, 3)).toEqual([
       '수정은 몇 번까지 포함인가요?', '오픈 뒤 매달 드는 비용은 무엇이고 얼마인가요?', '오픈 뒤 고칠 게 생기면 어디로 연락하고, 보통 며칠 걸리나요?']);
     expect(q.join('\n')).not.toMatch(/도메인과 호스팅|소스와 디자인 파일/);
-    expect(q).toContain('관리자 화면에서 제가 직접 고칠 수 있는 범위는 어디까지인가요?');
+    expect(q).toContain('관리자 페이지에서 제가 직접 고칠 수 있는 범위는 어디까지인가요?');
     expect(q).toContain('네이버 예약은 어떻게 연결하시나요?');
     expect(q).toContain('글 작성 비용은 견적에 들어 있나요?');
   });
   test('업체 제안 받기 목록', () => {
-    expect(unknownItems(cafe(), ko)).toEqual(['연결할 서비스', '사진', '디자인 자료', '디자인 방식', '오픈 일정']);
+    expect(unknownItems(cafe(), ko)).toEqual(['연동 서비스', '사진', '디자인 자료', '디자인 방식', '오픈 일정']);
   });
   test('필수 둘만 답한 최소 요청서도 깨지지 않는다', () => {
     const a: Answers = fromKo({ kind: '회사·사무실', goalMain: '문의 남기기' });
@@ -229,7 +229,7 @@ test.describe('최종 검토 보완', () => {
   test('건너뛴 항목도 업체 제안 받기에 모인다', () => {
     const a: Answers = fromKo({ kind: '회사·사무실', goalMain: '문의 남기기' });
     const u = unknownItems(a, ko);
-    for (const l of ['연결할 서비스', '디자인 자료', '오픈 뒤 운영', '사진', '수정 횟수', '오픈 뒤 관리', '오픈 일정']) expect(u, l).toContain(l);
+    for (const l of ['연동 서비스', '디자인 자료', '운영·유지보수', '사진', '수정 횟수', '유지보수', '오픈 일정']) expect(u, l).toContain(l);
   });
   test('같은 v1 안에서 형이 틀린 값·없는 단계는 버린다 — 어느 경우든 v1 키는 지운다', () => {
     const s = new Mem();
@@ -266,7 +266,7 @@ test.describe('보강 — 진행 묶음', () => {
   test('네 묶음, 고치기 단계는 첫 묶음', async () => {
     const { phaseOf, PHASES } = await import('../lib/brief/steps');
     expect(PHASES).toHaveLength(ko.ui.phases.length);
-    expect([...ko.ui.phases]).toEqual(['어떤 홈페이지', '필요한 것', '준비와 디자인', '약속']);
+    expect([...ko.ui.phases]).toEqual(['어떤 홈페이지', '필요한 것', '준비와 디자인', '계약 조건']);
     expect(phaseOf('renew')).toBe(0);
     expect(phaseOf('pages')).toBe(1);
     expect(phaseOf('ops')).toBe(2);
@@ -313,23 +313,23 @@ test.describe('디자인 방식 선택지', () => {
   });
 });
 
-test('견적 영향 표시 문구는 「견적가에 크게 영향」', () => {
-  expect(ko.ui.impactBadge).toBe('견적가에 크게 영향');
+test('견적 영향 표시 문구는 「견적에 크게 영향」', () => {
+  expect(ko.ui.impactBadge).toBe('견적에 크게 영향');
 });
 
 test('운영 질문 문구', () => {
-  expect(ko.q.ops.title).toBe('홈페이지 오픈 뒤 직접 생성하거나 수정하고 싶은 게 있을까요?');
+  expect(ko.q.ops.title).toBe('오픈 후 직접 관리하고 싶은 내용이 있나요?');
 });
 
 test('일정 문구', () => {
-  expect(ko.q.when.fixedLabel).toBe('선택한 날짜에 꼭 오픈되어야 하나요?');
-  expect(OPTS.openFixed.map((o) => ko.q.when.fixed[o])).toEqual(['해당 날짜에 꼭 오픈해주세요', '희망일이에요']);
-  expect(ko.q.when.budgetHelp).toBe('생각하는 예산을 넣으면 견적가가 거기에 맞춰 올라오기도 해요.');
+  expect(ko.q.when.fixedLabel).toBe('이 날짜에 꼭 오픈해야 하나요?');
+  expect(OPTS.openFixed.map((o) => ko.q.when.fixed[o])).toEqual(['네, 꼭 이 날 오픈해야 해요', '희망일이에요']);
+  expect(ko.q.when.budgetHelp).toBe('생각하는 예산을 넣으면 견적이 거기에 맞춰 올라오기도 해요.');
 });
 
 test('복사 글: 업체 제안 목록은 항목 이름만(「: 업체 제안 받기」 반복 없음)', () => {
   const t = toPlainText(cafe(), D, ko);
-  expect(t).toContain('업체 제안을 받고 싶은 것\n연결할 서비스, 사진, 디자인 자료, 디자인 방식, 오픈 일정\n');
+  expect(t).toContain('제안 요청 사항\n연동 서비스, 사진, 디자인 자료, 디자인 방식, 오픈 일정\n');
   expect(t).not.toContain('업체 제안 받기');
 });
 
@@ -337,8 +337,8 @@ test('업체 제안 항목마다 고칠 질문이 이어져 있다', () => {
   const a: Answers = fromKo({ mode: 'renew', kind: '회사·사무실', goalMain: '문의 남기기', own: { domain: '모르겠어요', hosting: '내 이름으로', admin: '대표 계정은 내가', source: '오픈 때 받기' } });
   const rows = buildBrief(a, D, ko).sections.find((s) => s.id === 'unknown')!.rows;
   const map = Object.fromEntries(rows.map((r) => [r.label, r.edit]));
-  expect(map).toMatchObject({ '옮길 글·사진 양': 'renew', '주 방문자': 'audience', '화면 구성': 'pages', '필요한 기능': 'features', '연결할 서비스': 'links',
-    '소개 글': 'content', '사진': 'content', '디자인 자료': 'brand', '디자인 방식': 'design', '오픈 뒤 운영': 'ops', '도메인': 'own', '수정 횟수': 'scope', '오픈 뒤 관리': 'scope', '오픈 일정': 'when' });
+  expect(map).toMatchObject({ '이전할 콘텐츠 양': 'renew', '주 방문자': 'audience', '페이지 구성': 'pages', '필요한 기능': 'features', '연동 서비스': 'links',
+    '소개 글': 'content', '사진': 'content', '디자인 자료': 'brand', '디자인 방식': 'design', '운영·유지보수': 'ops', '도메인': 'own', '수정 횟수': 'scope', '유지보수': 'scope', '오픈 일정': 'when' });
   expect(rows.every((r) => r.edit)).toBe(true);
 });
 
@@ -363,22 +363,22 @@ test.describe('복사 글 다듬기 — 업체에게 보내는 문서 말투', (
 
   test('단원 제목은 번호 + 명사', () => {
     const heads = t().split('\n').filter((l) => /^\d+\. /.test(l) && !l.includes('?'));
-    expect(heads).toEqual(['1. 목적', '2. 기존 홈페이지', '3. 화면 구성', '4. 기능', '5. 연결할 서비스', '6. 글과 사진', '7. 디자인 자료', '8. 디자인', '9. 오픈 뒤 운영', '10. 명의', '11. 범위', '12. 일정과 결정', '13. 업체 제안을 받고 싶은 것']);
+    expect(heads).toEqual(['1. 목적', '2. 기존 홈페이지', '3. 페이지 구성', '4. 기능', '5. 연동 서비스', '6. 콘텐츠(글·사진)', '7. 디자인 자료', '8. 디자인', '9. 운영·유지보수', '10. 명의', '11. 범위', '12. 일정·의사결정', '13. 제안 요청 사항']);
     expect(t()).not.toContain('■');
   });
   test('단추 글자 대신 문서 말투 — 반말·부탁·해요체가 섞이지 않는다', () => {
     const x = t();
-    for (const bad of ['써 주길 원함', '없어요', '만들어 주세요', '오픈해주세요', '내가', '나 혼자', '내 이름으로', '알려 주세요', '—', '2026-11-10']) expect(x, bad).not.toContain(bad);
-    for (const good of ['- 가장 중요한 고객 행동: 매장 방문', '- 그 밖의 고객 행동: 예약, 소식 보기', '- 옮길 글·사진 양: 보통(10~100개)', '- 화면 3개: 소개 / 메뉴·서비스 / 오시는 길',
-      '- 예약 받기 [오픈 때 필수]: 네이버 예약 연결', '- 소개 글: 작성 요청', '- 사진: 없음', '- 방식: 맞춤 디자인 희망', '- 참고 사이트 1: https://example.org', '- 참고 1 좋은 점: 색·분위기, 배치',
-      '- 직접 올리거나 고칠 것: 공지·소식', '- 관리자 화면: 필요', '- 도메인: 제 명의', '- 관리자 계정: 대표 계정은 제가 보유', '- 소스·디자인 파일: 오픈 때 인도',
-      '- 오픈 희망일: 2026년 11월 10일(화), 이 날짜에 꼭 오픈 필요', '- 최종 결정: 대표 혼자']) expect(x, good).toContain(good);
+    for (const bad of ['써 주길 원함', '없어요', '만들어 주세요', '오픈해주세요', '내가', '나 혼자', '내 이름으로', '내 명의', '제가 결정해요', '꼭 이 날 오픈해야 해요', '알려 주세요', '—', '2026-11-10']) expect(x, bad).not.toContain(bad);
+    for (const good of ['- 핵심 목적: 매장 방문', '- 기타 목적: 예약, 소식 보기', '- 이전할 콘텐츠 양: 보통(10~100개)', '- 3페이지: 소개 / 메뉴·서비스 / 오시는 길',
+      '- 예약 받기 [오픈 때 필수]: 네이버 예약 연결', '- 소개 글: 작성 요청', '- 사진: 없음', '- 방식: 맞춤 디자인 희망', '- 참고 사이트 1: https://example.org', '- 참고 1 좋은 점: 색·분위기, 레이아웃',
+      '- 직접 관리할 항목: 공지·소식', '- 관리자 페이지: 필요', '- 도메인: 제 명의', '- 관리자 계정: 대표 계정은 제가 보유', '- 소스·디자인 파일: 오픈 때 인도',
+      '- 오픈 희망일: 2026년 11월 10일(화), 이 날짜에 꼭 오픈 필요', '- 최종 결정: 대표 단독 결정']) expect(x, good).toContain(good);
   });
   test('업체 제안 항목은 한 줄, 매달 비용은 질문에만', () => {
     const x = t();
-    expect(x).toContain('13. 업체 제안을 받고 싶은 것\n사진\n');
+    expect(x).toContain('13. 제안 요청 사항\n사진\n');
     const min = toPlainText(fromKo({ kind: '회사·사무실', goalMain: '문의 남기기' }), D, ko);
-    expect(min).toMatch(/업체 제안을 받고 싶은 것\n주 방문자, 화면 구성, 필요한 기능, 연결할 서비스, [^\n]+\n/);
+    expect(min).toMatch(/제안 요청 사항\n주 방문자, 페이지 구성, 필요한 기능, 연동 서비스, [^\n]+\n/);
     expect(min).toContain('- 도메인: 제 명의');   // 건너뛰어도 명의는 적는다
     expect(x).not.toContain('매달 비용:');
     expect(x).toContain('오픈 뒤 매달 드는 비용은 무엇이고 얼마인가요?');
@@ -395,7 +395,7 @@ test.describe('복사 글 다듬기 — 업체에게 보내는 문서 말투', (
 test('복사 글: 단원 번호와 질문 번호가 헷갈리지 않고, 줄 이름이 단원 제목을 되풀이하지 않는다', () => {
   const t = toPlainText(fromKo({ ...CAFE, links: ['인스타그램'] }), D, ko);
   expect(t).toContain('Q1. 수정은 몇 번까지 포함인가요?');
-  expect(t).toContain('- 이용 중: 인스타그램');
+  expect(t).toContain('- 사용 중: 인스타그램');
   expect(t).not.toContain('- 서비스:');
 });
 
@@ -415,23 +415,23 @@ test('인쇄 비율: 보통 분량은 그대로, 많을수록 줄이되 0.6배 �
 test('견적가 영향 설명: 무엇이 오르는지 분명히, 흐린 말 없이(사용자 승인 2026-10-21)', () => {
   const Q = ko.q;
   const all = [Q.renew.amountWhy, Q.pages.manyWhy, ...Object.values(Q.features.why), Q.links.manyWhy, Q.content.why, Q.brand.noneWhy, Q.design.customWhy, Q.when.rushWhy].join('\n');
-  for (const bad of ['가벼워져요', '가벼운 편', '시간이 따로 들어요', '작업이 따로 들어요', '페이지마다', '보통 템플릿']) expect(all, bad).not.toContain(bad);
-  expect(Q.renew.amountWhy).toBe('기존 홈페이지의 글과 사진을 하나씩 옮겨야 해서 견적가가 올라가요.');
-  expect(Q.pages.manyWhy).toBe('화면마다 구성이 다르면 만들 화면이 그만큼 늘어 견적가가 올라가요.');
-  expect(Q.features.why.booking).toBe('홈페이지 안에서 예약을 받으려면 날짜·시간 고르기와 겹침 막기 기능을 새로 만들어야 해요. 네이버 예약을 연결하면 견적가를 크게 줄일 수 있어요.');
-  expect(Q.features.why.payment).toBe('홈페이지 안에서 결제를 받으려면 결제 서비스 연결과 주문 관리 화면을 새로 만들어야 해요. 스마트스토어로 연결하면 견적가를 줄일 수 있어요.');
-  expect(Q.features.why.members).toBe('로그인을 만들면 가입·비밀번호 찾기·개인정보 보관까지 함께 만들어야 해서 견적가가 올라가요.');
-  expect(Q.features.why.multilang).toBe('언어가 하나 늘 때마다 같은 화면과 글을 한 벌씩 더 만들어야 해서 견적가가 올라가요.');
-  expect(Q.links.manyWhy).toBe('서비스마다 따로 연결하는 작업이 있어 견적가가 올라가요.');
+  for (const bad of ['가벼워져요', '가벼운 편', '시간이 따로 들어요', '작업이 따로 들어요', '보통 템플릿']) expect(all, bad).not.toContain(bad);
+  expect(Q.renew.amountWhy).toBe('기존 홈페이지의 글과 사진을 하나씩 옮겨야 해서 비용이 올라가요.');
+  expect(Q.pages.manyWhy).toBe('페이지마다 디자인이 다르면 그만큼 작업이 늘어 비용이 올라가요.');
+  expect(Q.features.why.booking).toBe('홈페이지 안에서 예약을 받으려면 날짜·시간 선택과 중복 예약 방지 기능을 새로 만들어야 해요. 네이버 예약을 연결하면 비용을 크게 줄일 수 있어요.');
+  expect(Q.features.why.payment).toBe('홈페이지 안에서 결제를 받으려면 결제 서비스 연결과 주문 관리 기능을 새로 만들어야 해요. 스마트스토어로 연결하면 비용을 줄일 수 있어요.');
+  expect(Q.features.why.members).toBe('로그인을 만들면 가입·비밀번호 찾기·개인정보 보관까지 함께 만들어야 해서 비용이 올라가요.');
+  expect(Q.features.why.multilang).toBe('언어마다 페이지와 글을 따로 만들어야 해서 비용이 올라가요.');
+  expect(Q.links.manyWhy).toBe('서비스마다 따로 연동해야 해서 비용이 올라가요.');
   expect(Q.brand.noneWhy).toBe('로고를 새로 만들면 디자인 비용이 따로 들어요.');
   expect(Q.design.customWhy).toBe('맞춤 디자인은 템플릿을 쓸 때의 2~4배 정도예요.');
   expect(Q.when.rushWhy).toBe('일정을 앞당겨 맞춰야 하면 추가 비용이 붙을 수 있어요.');
   const titles = (a: Answers) => impactItems(a, D, ko).map((i) => i.title);
-  expect(titles(fromKo({ ...CAFE, mode: 'renew', renewAmount: '많아요(100개 넘음)' }))).toContain('옮길 글·사진 많음');
-  expect(titles(fromKo({ ...CAFE, links: ['네이버 플레이스·예약', '카카오 채널', '인스타그램', '스마트스토어'] }))).toContain('연결할 서비스 4곳');
+  expect(titles(fromKo({ ...CAFE, mode: 'renew', renewAmount: '많아요(100개 넘음)' }))).toContain('이전할 콘텐츠 많음');
+  expect(titles(fromKo({ ...CAFE, links: ['네이버 플레이스·예약', '카카오 채널', '인스타그램', '스마트스토어'] }))).toContain('연동 서비스 4곳');
   expect(titles(fromKo({ ...CAFE, brand: ['없어요'] }))).toContain('로고 없음');
   const naver = impactItems(fromKo({ ...CAFE, booking: '네이버 예약 연결' }), D, ko).find((i) => i.label === '예약 받기')!;
-  expect(naver.reason).toBe('네이버 예약을 연결해서 견적가 부담이 적은 편이에요. 홈페이지 안에서 직접 받으면 견적가가 크게 올라가요.');
+  expect(naver.reason).toBe('네이버 예약을 연결해서 비용 부담이 적은 편이에요. 홈페이지 안에서 직접 받으면 비용이 크게 올라가요.');
 });
 
 test('fromKo는 대응표에 없는 글자에서 멈춘다', () => {

@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { migrateV1, migrateCompareV1, V1_MAP } from '../lib/brief/migrate-v1';
+import { migrateV1, migrateCompareV1 } from '../lib/brief/migrate-v1';
 import { emptyAnswers } from '../lib/brief/storage';
-import { copyFor } from '../content/brief/copy';
 
 /** 2026-10-23 배포본이 저장하던 v1 답 — 표의 모든 칸을 쓴다 */
 const V1_FULL = {
@@ -53,25 +52,6 @@ test('비교표 v1 → v2: 줄 id, 예·아니오, 기본 업체 이름', () => 
   expect(c[1].name).toBe('우리동네 웹');
   expect(c[2].name).toBe('');
   expect(migrateCompareV1([])).toBeNull(); expect(migrateCompareV1('x')).toBeNull();
-});
-
-// 얼린 대응표가 지금 한국어 문구와 같은지 — 옮기는 지금 한 번만 의미 있다. ko 문구를 다듬으면 이 테스트는 깨지는 게 정상이고,
-// 표는 얼린 것이므로 그때는 표를 고치지 말고 이 테스트를 지운다.
-test('얼린 대응표가 지금 한국어 문구와 같다(옮기는 지금 한 번만 의미 있음)', () => {
-  const k = copyFor('ko'), q = k.q;
-  const ko: Record<keyof typeof V1_MAP, Record<string, string>> = {
-    renewAmount: q.renew.amount, kind: q.kind.opts, goal: q.goal.opts, audience: q.audience.opts, pages: q.pages.opts, features: q.features.opts,
-    booking: q.features.booking.opts, shopCount: q.features.shopCount.opts, shopHow: q.features.shopHow.opts, member: q.features.member.opts,
-    langs: { en: k.ui.langName('en'), zh: k.ui.langName('zh'), ja: k.ui.langName('ja') },
-    links: q.links.opts, copy: q.content.copy, photo: q.content.photo, brand: q.brand.opts, design: q.design.opts, likes: q.design.likes, ops: q.ops.opts,
-    ownDomain: q.own.domain.opts, ownHosting: q.own.hosting.opts, ownAdmin: q.own.admin.opts, ownSource: q.own.source.opts,
-    revisions: q.scope.revisions, care: q.scope.care, openFixed: q.when.fixed,
-    budget: q.when.budget.kind === 'range' ? q.when.budget.opts : {}, decider: q.when.decider,
-    compareRow: k.result.compareRows, compareYn: { yes: k.result.yn.yes, no: k.result.yn.no },
-  };
-  for (const [group, table] of Object.entries(V1_MAP)) {
-    for (const [label, id] of Object.entries(table)) expect(ko[group as keyof typeof V1_MAP][id], `${group}.${id}`).toBe(label);
-  }
 });
 
 test('v1: constructor·toString 같은 글자는 표에 없는 글자로 본다', () => {
