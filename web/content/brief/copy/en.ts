@@ -151,7 +151,7 @@ export const en: BriefCopy = {
     sampleCaption: 'A sample brief · made-up shop',
     stamp: 'Sample',
     rest: 'The rest covers timing, budget and questions for designers',
-    sampleName: 'Wren Hollow Bakery',   // Maple Lane Bakery 는 같은 이름의 실제 회사가 있어 바꿈(2026-10-23 검색)
+    sampleName: 'Wren Hollow Bakery',   // 가상의 가게 — 같은 이름의 실제 가게·회사가 없는지 검색으로 확인(2026-10-26)
     switchTo: { href: '/tools/brief', label: '한국어', lang: 'ko' },
   },
   doc: {
