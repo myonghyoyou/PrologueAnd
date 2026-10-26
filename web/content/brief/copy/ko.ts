@@ -221,7 +221,7 @@ export const ko: BriefCopy = {
     translate: '외국어 글 번역도 포함인가요?',
     existingDesign: '정해 둔 디자인(색·글꼴·화면 규칙)을 그대로 따라 만들어 주시나요?',
     copyCost: '글 작성 비용은 견적에 들어 있나요?',
-    migrate: '지금 홈페이지의 글과 사진을 옮기는 것도 포함인가요?',
+    migrate: '기존 홈페이지의 글과 사진을 옮기는 것도 포함인가요?',
     deadline: '이 날짜까지 오픈이 가능한가요? 늦어지면 어떻게 하나요?',
   },
   summary: {
