@@ -83,7 +83,8 @@ export function HomePhone({ projects }: { projects: { slug: string; title: strin
         {geo ? <i className={s.rail} style={{ top: geo.rail.top, height: geo.rail.height }} data-rail aria-hidden="true" /> : null}
         <section className={s.panel} data-panel>
           <i className={s.dot} data-dot aria-hidden="true" />
-          <h1 className={s.h} dangerouslySetInnerHTML={html(HERO.h)} />
+          {/* PC 화면의 h1 과 함께 HTML 에 들어 있어 h1 태그는 하나만 둔다(네이버 진단: h1 2개). 화면 낭독기에는 제목으로 읽힌다 */}
+          <p className={s.h} role="heading" aria-level={1} dangerouslySetInnerHTML={html(HERO.h)} />
           <p className={s.p}>{HERO.p}</p>
           <div className={s.cta}>
             <button type="button" className={s.btn} data-open-drawer>프로젝트 문의</button>

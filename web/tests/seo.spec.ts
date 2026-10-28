@@ -142,3 +142,26 @@ test.describe('요청서 영어판 SEO', () => {
     }
   });
 });
+
+/* 네이버 서치어드바이저 진단(2026-10): 색인 0, 홈에 <h1> 2개. 검색로봇은 첫 응답 HTML 을 본다 */
+const firstHtml = async (request: import('@playwright/test').APIRequestContext, path: string) =>
+  (await request.get(path, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; Yeti/1.1; +https://naver.me/spd)' } })).text();
+
+test('검색로봇이 받는 홈 HTML 에 h1 은 하나', async ({ request }) => {
+  expect((await firstHtml(request, '/')).match(/<h1[\s>]/g)?.length).toBe(1);
+});
+
+test('검색로봇이 받는 도구 페이지 HTML 에 제목과 소개가 있다', async ({ request }) => {
+  const ko = await firstHtml(request, '/tools/brief');
+  expect(ko.match(/<h1[\s>]/g)?.length).toBe(1);
+  expect(ko).toMatch(/<h1[^>]*>[^<]*요청서/);
+  const en = await firstHtml(request, '/en/tools/brief');
+  expect(en.match(/<h1[\s>]/g)?.length).toBe(1);
+});
+
+test('목록 페이지 설명은 홈과 다르다', async ({ request }) => {
+  const desc = (h: string) => h.match(/name="description" content="([^"]*)"/)?.[1];
+  const home = desc(await firstHtml(request, '/')), list = desc(await firstHtml(request, '/projects'));
+  expect(list).toBeTruthy();
+  expect(list).not.toBe(home);
+});

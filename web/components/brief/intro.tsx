@@ -40,7 +40,8 @@ function SamplePaper() {
 }
 
 /** 시작 화면 — 부담 없이 시작하게: 걸리는 시간, 연락처를 묻지 않음, 저장 위치, 중립, 결과 견본(명세 §11) */
-export function Intro({ onStart }: { onStart: () => void }) {
+/** pending: 저장된 답을 읽기 전(첫 응답 HTML) — 시작 단추는 눌러도 아무 일이 없으므로 막아 둔다 */
+export function Intro({ onStart, pending = false }: { onStart: () => void; pending?: boolean }) {
   const c = useCopy();
   return (
     <section className={s.intro} data-brief-intro>
@@ -52,7 +53,7 @@ export function Intro({ onStart }: { onStart: () => void }) {
         {c.intro.promises.map((p) => <li key={p}>{p}</li>)}
       </ul>
       <p className={s.neutral}>{c.intro.neutral}</p>
-      <button type="button" className={`${ui.btn} ${ui.pri} ${s.start}`} onClick={onStart} data-brief-start>{c.intro.start}</button>
+      <button type="button" className={`${ui.btn} ${ui.pri} ${s.start}`} onClick={onStart} disabled={pending} data-brief-start>{c.intro.start}</button>
       <figure className={s.sample} data-brief-sample>
         <figcaption className={s.cap}>{c.intro.sampleCaption}</figcaption>
         <SamplePaper />

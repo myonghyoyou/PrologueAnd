@@ -68,7 +68,8 @@ function Tool() {
     : DUNNO_CLEAR[step]
       ? { label: c.ui.dunno, onClick: () => { set(DUNNO_CLEAR[step]!); next(); } } : undefined;
 
-  if (!ready) return <div className={s.root} data-brief aria-busy="true" />;
+  // 저장된 답을 읽기 전(첫 응답 HTML)에도 시작 화면을 그린다 — 검색로봇은 이 HTML 만 본다. 저장된 답이 있으면 읽은 뒤 이어서 보인다
+  if (!ready) return <div className={s.root} data-brief aria-busy="true"><div className={s.single}><Intro onStart={start} pending /></div></div>;
   return (
     <div className={s.root} data-brief>
       {noStore ? <p className={s.nostore} data-brief-nostore>{c.ui.noStore}</p> : null}
