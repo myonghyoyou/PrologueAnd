@@ -18,7 +18,7 @@ const sans = localFont({
 /** 아이폰 아래 홈 바·노치 영역까지 그린다 — 아래 고정 요소는 env(safe-area-inset-bottom) 로 비켜 선다 */
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover' };
 
-const DESCRIPTION = `${NAME_KO}(${NAME}) — ${TAGLINE} 업무 시스템의 화면 설계부터 개발까지 한 팀이 진행합니다.`;
+const DESCRIPTION = `${NAME_KO}(${NAME}) — ${TAGLINE} 엑셀·종이·메신저로 하던 회사 일을 업무 시스템으로 옮기고, 가게와 브랜드의 홈페이지를 디자이너와 함께 만듭니다.`;
 
 /** 검색·공유 미리보기 — 제목과 설명에 읽는 이름(프롤로그엔)을 함께 둔다. 미리보기 배포는 검색에서 뺀다 */
 export const metadata: Metadata = {

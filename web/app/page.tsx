@@ -1,6 +1,5 @@
 import { Header } from '@/components/header';
-import { Dashboard } from '@/components/home/dashboard';
-import { HomePhone } from '@/components/home/home-phone';
+import { Home as HomePage } from '@/components/home/home';
 import { publishedProjects } from '@/content';
 import { SITE, NAME, ALT_NAMES, TAGLINE } from '@/lib/site';
 import { CONTACT_MAIL } from '@/lib/contact';
@@ -16,14 +15,12 @@ const LD = {
 };
 
 export default function Home() {
-  const ps = publishedProjects();
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(LD) }} />
       <Header variant="home" />
       <main>
-        <Dashboard published={ps.length} />
-        <HomePhone projects={ps.map((p) => ({ slug: p.slug, title: p.title, year: p.year }))} />
+        <HomePage projects={publishedProjects()} />
       </main>
     </>
   );

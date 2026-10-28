@@ -61,13 +61,14 @@ test.describe('폰', () => {
     if (r.tall) expect(Math.abs(r.cy)).toBeLessThan(30);   // 그림이 화면보다 낮으면 세로는 가운데 정렬로 둔다
   });
 
-  test('가로 아이폰: 본문·헤더·문의 바·홈 목록이 좌우 safe-area 를 비켜 선다', async ({ page }) => {
+  test('가로 아이폰: 본문·헤더·문의 바·홈 섹션이 좌우 safe-area 를 비켜 선다', async ({ page }) => {
+    const rulesOf = () => page.evaluate(() => [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules].map((r) => r.cssText); } catch { return []; } }).join('\n'));
+    const has = (css: string, sel: string) => css.split('\n').some((l) => l.includes(sel) && l.includes('safe-area-inset-left'));
     await page.goto('/projects');
-    const css = await page.evaluate(() => [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules].map((r) => r.cssText); } catch { return []; } }).join('\n'));
-    for (const sel of ['.wrap', 'hdr', 'dock', 'list']) {
-      const rules = css.split('\n').filter((l) => l.includes(sel) && l.includes('safe-area-inset-left'));
-      expect(rules.length, sel).toBeGreaterThan(0);
-    }
+    const css = await rulesOf();
+    for (const sel of ['.wrap', 'hdr', 'dock']) expect(has(css, sel), sel).toBe(true);
+    await page.goto('/');
+    expect(has(await rulesOf(), 'home-module'), 'home').toBe(true);
   });
 
   test('문의 바에서 연 시트도 닫을 때는 아래로 미끄러진다', async ({ page }) => {
