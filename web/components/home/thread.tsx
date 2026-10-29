@@ -1,22 +1,24 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { AMP_H, AMP_LEG, AMP_ARM, AMP_WMAX } from './amp-path';
+import { AMP_H, AMP_TIP } from './amp-path';
 import { INTRO_DONE } from './intro';
 import s from './home.module.css';
 
 const NS = 'http://www.w3.org/2000/svg';
-const PAD = AMP_WMAX;   // 가림막 둥근 끝 반지름보다 넉넉히
 const clamp = (v: number, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 const f = (n: number) => n.toFixed(1);
 type Anchor = { len: number; y: number };
 type Box = { l: number; t: number; r: number; b: number; w: number; h: number };
 type Pt = [number, number];
+/** 꺾은선 점 — 셋째 값이 있으면 그 모서리만 그 반지름으로 둥글린다 */
+type Wp = [number, number] | [number, number, number];
 
 /** 홈을 잇는 선(시그니처 2) — 한 가닥이 장면마다 다른 일을 하고, 일이 없는 구간은 조용히 지나간다.
- *  첫 & 의 받침 끝(한 획의 끝)에서 그대로 이어져 나와 → 첫 화면 아래 빈 줄을 비스듬히 건너 → 「불편한지」 밑에 받침을 대고(찾기)
+ *  첫 & 의 받침 꼬리 끝에서 가로로 나와 → 오른쪽 길로 내려와 02 머리 선(가로 구분선)의 오른쪽 끝에서 그 선을 이어받아 왼쪽 끝까지 가고 → 「불편한지」 밑에 받침을 대고(찾기)
  *  → 단계 사이 빈 칸으로 내려와(짓기는 글만) → 오픈 후 수정 옆에서 예전 경로(흐린 점선)의 한 구간만 곧게 고친다(고치기)
- *  → 서비스 두 묶음 사이 줄을 그어 나누고(나누기) → 작업 머리 사이 빈 칸으로 요청 처리 화면에 들어간다(들어가기, 네 갈래 요청은 흐린 보조선)
- *  → 문제 은행·병원 화면 뒤로 조용히 지나 → 근무표 확대 자리를 원본 위에 테두리로 짚고(짚기) → 마지막 & 의 팔 끝으로 들어가 같은 획을 따라 & 를 드러낸다(완성).
+ *  → 서비스 두 묶음 사이 구분선을 이어받아 나누고(나누기) → 04 머리 선을 이어받다 작업 머리 사이 빈 칸으로 빠져 요청 처리 화면에 들어간다(들어가기, 네 갈래 요청은 흐린 보조선)
+ *  → 문제 은행·병원 화면 뒤로 조용히 지나 → 근무표 확대 자리를 원본 위에 테두리로 짚고(짚기) → 「모든 작업」 구분선을 이어받아 오른쪽 끝에서 빠져
+ *  → 마지막 & 의 받침 꼬리 끝으로 가로로 들어가 뼈대를 그린 뒤 굵기가 채워진다(완성). 구분선과 만나는 모서리는 그 선의 끝에서 꺾인다(이중선이 생기지 않게).
  *  실제 화면 그림 안에서는 가려지고(그림 뒤로 지나간다), 글 칸은 지나지 않는다. 정지 화면 보드: docs/superpowers/specs/2026-10-29-home-motion-p2.md 10절.
  *  선 끝은 화면 높이 62% 를 따라간다(스크롤을 붙잡지 않는다). 같은 고리에서 머리글 낱말 채우기(시그니처 3)와 남색 헤더 전환도 돈다 */
 export function Thread() {
@@ -35,9 +37,8 @@ export function Thread() {
     let traceLen = 0, ampBox: Box | null = null;
     const fills = [...root.querySelectorAll<HTMLElement>('[data-fill]')].map((h) => ({ h, ws: [...h.querySelectorAll<HTMLElement>('[data-w]')], n: -1 }));
     const contactAmp = root.querySelector<SVGSVGElement>('[data-amp="contact"]');
-    // 문의 장 & 의 조각별 가림막(그리기 순서)과 보이지 않는 전체 중심선(선 끝 점 자리)
-    const traces = [...(contactAmp?.querySelectorAll<SVGPathElement>('[data-trace]') ?? [])].map((p) => ({ p, a: Number(p.dataset.from), b: Number(p.dataset.to), n: 0 }));
-    const line = contactAmp?.querySelector<SVGPathElement>('[data-line]') ?? null;
+    // 문의 장 & 의 뼈대 획과 채움
+    const trace = contactAmp?.querySelector<SVGPathElement>('[data-trace]') ?? null, fillEl = contactAmp?.querySelector<SVGPathElement>('[data-fillpath]') ?? null;
     const contactSec = root.querySelector<HTMLElement>('[data-sec="contact"]');
 
     const rel = (e: Element): Box => { const r = e.getBoundingClientRect(), b = root.getBoundingClientRect(); return { l: r.left - b.left, t: r.top - b.top, r: r.right - b.left, b: r.bottom - b.top, w: r.width, h: r.height }; };
@@ -86,22 +87,22 @@ export function Thread() {
 
       const m = document.createElementNS(NS, 'path');
       el.appendChild(m);
-      // 출구: 첫 & 의 받침 끝 — & 를 그린 한 획이 같은 방향(오른쪽 아래)으로 계속 나가다가 오른쪽 길로 꺾인다
-      const ha = a.h / AMP_H, hx = a.l + AMP_LEG.x * ha, hy = a.t + AMP_LEG.y * ha;
-      let d = `M${f(hx)} ${f(hy)} C${f(hx + AMP_LEG.dx * 28)} ${f(hy + AMP_LEG.dy * 28)} ${f(xR)} ${f(hy + 24)} ${f(xR)} ${f(hy + 90)}`;
-      let cur: Pt = [xR, hy + 90];
+      // 출구: 첫 & 의 받침 꼬리 끝 — 받침이 가늘어진 그 방향(오른쪽)으로 그대로 나간다
+      const ha = a.h / AMP_H, hx = a.l + AMP_TIP.x * ha, hy = a.t + AMP_TIP.y * ha;
+      let d = `M${f(hx)} ${f(hy)}`;
+      let cur: Pt = [hx, hy];
       /** 꺾이는 곳을 둥글린 꺾은선 — 지금 점에서 pts 를 차례로 지난다(마지막 점에서 멈춘다) */
-      const go = (pts: Pt[], r = 56) => {
+      const go = (pts: Wp[], r = 56) => {
         let prev = cur;
         pts.forEach((p, i) => {
           const nx = pts[i + 1];
           if (!nx) { d += ` L${f(p[0])} ${f(p[1])}`; return; }
-          const la = Math.hypot(prev[0] - p[0], prev[1] - p[1]) || 1, lb = Math.hypot(nx[0] - p[0], nx[1] - p[1]) || 1, t = Math.min(r, la / 2, lb / 2);
+          const la = Math.hypot(prev[0] - p[0], prev[1] - p[1]) || 1, lb = Math.hypot(nx[0] - p[0], nx[1] - p[1]) || 1, t = Math.min(p[2] ?? r, la / 2, lb / 2);
           const p1: Pt = [p[0] + ((prev[0] - p[0]) / la) * t, p[1] + ((prev[1] - p[1]) / la) * t], p2: Pt = [p[0] + ((nx[0] - p[0]) / lb) * t, p[1] + ((nx[1] - p[1]) / lb) * t];
           d += ` L${f(p1[0])} ${f(p1[1])} C${f(p1[0] + (p[0] - p1[0]) * 0.55)} ${f(p1[1] + (p[1] - p1[1]) * 0.55)} ${f(p2[0] + (p[0] - p2[0]) * 0.55)} ${f(p2[1] + (p[1] - p2[1]) * 0.55)} ${f(p2[0])} ${f(p2[1])}`;
-          prev = p;
+          prev = [p[0], p[1]];
         });
-        cur = pts.at(-1)!;
+        const e = pts.at(-1)!; cur = [e[0], e[1]];
       };
       /** 지금까지 그린 선 길이 — 보조 획은 선이 이 길이까지 오면 보인다 */
       const here = () => { m.setAttribute('d', d); return m.getTotalLength(); };
@@ -119,10 +120,11 @@ export function Thread() {
       });
 
       // 찾기 — 「불편한지」 밑에만 받침을 댄다(글자와 12px 띄운다)
-      const hf = rel(heroFoot), sh = rel(howSh), w = rel(find), lead = rel(find.closest('h2')!), wb = w.b + 12;
+      // 02 머리 선(가로 구분선, 1px)의 가운데 높이 — 선은 그 오른쪽 끝에서 들어와 구분선을 이어받는다(모서리 반지름 = 길과 구분선 끝 사이)
+      const sh = rel(howSh), rY = sh.t + 0.5, w = rel(find), lead = rel(find.closest('h2')!), wb = w.b + 12;
       if (!phone) {
-        // 첫 화면 아래 빈 줄을 비스듬히 건너 왼쪽 길로 와서(02 머리 선 위에서 꺾는다), 머리글 아래로 비스듬히 올라와 낱말 밑을 받친다
-        go([[xR, hf.b + 28], [xL, sh.t - 22], [xL, sh.t + 20]], 56);
+        // 구분선을 왼쪽 끝(「02 일하는 방식」 위)까지 따라가 왼쪽 길로 빠지고, 머리글 아래로 비스듬히 올라와 낱말 밑을 받친다
+        go([[xR, hy, 40], [xR, rY, xR - CR], [xL, rY, CL - xL], [xL, rY + 60]]);
         go([[xL, wb + 64], [w.l - 22, wb], [w.r + 6, wb], [w.r + 6, wb + 24]], 28);
       } else {
         // 폰은 줄이 바뀌어 낱말 아래·앞에 다른 글이 붙는다. 낱말 오른쪽이 비어 있으면 오른쪽 길에서 낱말 끝까지 와서 짚고 돌아간다(받침 대신 가리키기).
@@ -130,8 +132,9 @@ export function Thread() {
         const rb0 = root.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(find.closest('h2')!);
         const after = [...rg.getClientRects()].some((x) => x.width > 2 && x.left - rb0.left > w.r + 2 && Math.abs((x.top + x.bottom) / 2 - rb0.top - (w.t + w.b) / 2) < w.h / 2);
         const my = w.t + w.h / 2;
-        if (!after) go([[xR, my - 7], [w.r + 12, my - 7], [w.r + 12, my + 7], [xR, my + 7], [xR, my + 60]], 7);
-        else go([[xR, wb], [w.l - 8, wb], [w.l - 8, lead.b + 22], [xR, lead.b + 22], [xR, lead.b + 60]], 14);
+        // 폰도 02 머리 선을 오른쪽 끝에서 이어받아, 낱말 오른쪽 위에서 빠져 내려와 낱말 끝을 짚고 오른쪽 길로 돌아간다
+        if (!after) go([[xR, hy, 8], [xR, rY, xR - CR], [w.r + 18, rY, 10], [w.r + 18, my, 10], [xR, my, 10], [xR, my + 60]]);
+        else go([[xR, hy, 8], [xR, wb, 14], [w.l - 8, wb, 14], [w.l - 8, lead.b + 22, 14], [xR, lead.b + 22, 14], [xR, lead.b + 60]]);
       }
 
       // 짓기 — 단계 사이 빈 칸으로 내려온다(선은 거들지 않는다). 폰은 오른쪽 길로
@@ -149,18 +152,18 @@ export function Thread() {
       for (const x of [ra, rb]) addAux('path', { d: `M${f(x)} ${f(yc - 10)} L${f(x)} ${f(yc + 10)}` }, s.threadAux);
       d = dSave;
 
-      // 나누기 — 서비스 두 묶음(업무 시스템 / 웹서비스·홈페이지) 사이 줄을 따라 긋는다. 데스크톱은 오른쪽 길에서 왼쪽으로, 폰은 왼쪽에서 오른쪽으로
-      const r = rows.map(rel), yDiv = r[1].b - 0.5;
-      const [from, to] = phone ? [xL, xR] : [xR, xL];
-      go([[from, yDiv], [to, yDiv], [to, yDiv + 60]], phone ? 24 : 48);
+      // 서비스 — 선은 목록 안으로 들어가지 않는다(분류와 제목이 먼저 읽히게, 목록을 감싸지 않게).
+      // 데스크톱은 오른쪽 길로 지나 04 머리 선을 오른쪽 끝에서 이어받고, 폰은 왼쪽 길로 지나 04 머리 선을 왼쪽 끝에서 이어받아 오른쪽 길로 건너간다
+      const wy = rel(workSh).t + 0.5;
 
       // 들어가기 — 작업 머리(큰 제목과 옆 글) 사이 빈 칸으로 내려와 요청 처리 화면 위로 들어간다(화면 안에서는 가려진다).
       // 네 갈래 요청(전화·메신저·메일·자리 방문)은 흐린 보조선으로 화면 왼쪽 가장자리 네 곳에 닿는다 — 선이 갈라지는 것이 아니라 흩어져 오던 요청
-      const pf = rel(pfh), ws = rel(workSh);
+      const pf = rel(pfh);
       const tabR = tabs ? textR(...tabs.children) : pf.l;
       if (!phone) {
         const cw = clamp((textR(workT) + rel(workSide).l) / 2, tabR + 32, pf.r - 32);
-        go([[xL, r[3].b + 36], [cw, ws.t - 26], [cw, pf.t + 40]], 56);
+        // 04 머리 선을 오른쪽 끝에서 이어받아 큰 제목과 옆 글 사이까지 와서 빠져나와 아래로
+        go([[xR, wy, xR - CR], [cw, wy, 40], [cw, pf.t + 40]]);
         const ways = ['전화', '메신저', '메일', '자리 방문'];
         if (fits(pf.l - 46, ways)) ways.forEach((t, i) => {
           const y = pf.t + pf.h * (0.22 + i * 0.17), y0 = pf.t + pf.h * (0.3 + i * 0.12);
@@ -182,7 +185,7 @@ export function Thread() {
         d += ` L${f(xs)} ${f(hb.b)}`; cur = [xs, hb.b];
       } else {
         // 폰: 작업 장은 오른쪽 길로만 — 그림이 글보다 먼저 와서, 안으로 들어가면 글을 가로지른다
-        go([[xR, r[3].b + 30]], 24);
+        go([[xL, wy, CL - xL], [xR, wy, xR - CR], [xR, wy + 60]]);
       }
 
       // 짚기 — 근무표: 확대 그림이 원본의 어느 자리인지 원본 위에 테두리로 짚는다(첫 화면일 때만 보인다). 선은 원본·확대 뒤로 지난다
@@ -193,12 +196,10 @@ export function Thread() {
       addAux('rect', { x: f(zx + 3), y: f(zy + 3), width: f(zw - 6), height: f(zh - 6), rx: '3' }, `${s.threadAux} ${s.threadZoom}`);
       if (!phone) { d += ` L${f(cur[0])} ${f(cr.b)}`; cur = [cur[0], cr.b]; }
 
-      // 입구 — 오른쪽 길로 내려와 마지막 & 의 팔 끝으로, 팔이 뻗은 방향을 거슬러 들어간다
-      const hc = c.h / AMP_H, ax = c.l + AMP_ARM.x * hc, ay = c.t + AMP_ARM.y * hc;
-      const allEl = q(`.${s.all}`), yE = allEl ? (cr.b + rel(allEl).t) / 2 : cr.b + 60;   // 확대 그림과 「모든 작업」 줄 사이 빈 줄
-      if (!phone) go([[cur[0], yE], [xR, yE], [xR, ay - 70]], 40);
-      else go([[xR, ay - 50]], 24);
-      d += ` C${f(xR)} ${f(ay - 22)} ${f(ax + AMP_ARM.dx * 30)} ${f(ay + AMP_ARM.dy * 30)} ${f(ax)} ${f(ay)}`;
+      // 입구 — 데스크톱은 「모든 작업」 구분선을 이어받아 오른쪽 끝에서 빠지고, 오른쪽 길로 내려와 마지막 & 의 받침 꼬리 끝으로 가로로 들어간다
+      const hc = c.h / AMP_H, ax = c.l + AMP_TIP.x * hc, ay = c.t + AMP_TIP.y * hc, allEl = q(`.${s.all}`);
+      if (!phone && allEl) { const ay0 = rel(allEl).t + 0.5; go([[cur[0], ay0, 40], [xR, ay0, xR - CR], [xR, ay, xR - ax], [ax, ay]]); }
+      else go([[xR, ay, Math.max(4, xR - ax)], [ax, ay]]);
       L = here();
 
       // 스크롤 높이 ↔ 선 길이: 선 위 점의 높이를 따라가되(지나온 가장 낮은 곳) 가로로 가는 구간에도 조금씩 스크롤을 준다.
@@ -220,10 +221,9 @@ export function Thread() {
       if (lastY > end && end > y0) for (const an of anchors) an.y = y0 + (an.y - y0) * (end - y0) / (lastY - y0);
       aIn = anchors.at(-1)!.y;
 
-      // & 를 드러내는 가림막: 조각마다 중심선을 굵게 그은 것 — 점선 길이는 실제 획 길이로.
-      // 아직 닿지 않은 조각은 둥근 끝이 시작점에 비치지 않게 가림막을 획 길이보다 더(PAD) 밀어 둔다
-      traceLen = line?.getTotalLength() ?? 0;
-      for (const t of traces) { t.n = t.p.getTotalLength(); t.p.style.strokeDasharray = `${f(t.n)} ${f(t.n + PAD * 2)}`; }
+      // & 의 뼈대 획: 선과 같은 화면 굵기(2px)가 되게 & 크기로 나눠 넣고, 점선 길이는 실제 획 길이로
+      traceLen = trace?.getTotalLength() ?? 0;
+      if (trace) { trace.style.strokeWidth = f(2 / (c.h / AMP_H)); trace.style.strokeDasharray = `${f(traceLen)} ${f(traceLen + 10)}`; }
 
       // 실제 화면 그림 안에서는 선이 가려진다(그림 뒤로 지나간다). 남색 문의 장 안에서는 밝은 선
       const under = [...root.querySelectorAll('[data-under]')].map(rel).filter((u) => u.w > 0);
@@ -247,15 +247,16 @@ export function Thread() {
       const drawn = reduced ? L : lenAt(y);
       for (const p of [ink, light]) p.style.strokeDasharray = `${f(drawn)} ${f(L + 40)}`;
       for (const x of aux) x.el.toggleAttribute('data-on', drawn >= x.len - 1);
-      // & 그리기: 팔 끝에 닿은 뒤 남은 스크롤이 같은 획을 따라 & 를 드러낸다
-      const k = reduced ? 1 : clamp((y - aIn) / Math.max(1, maxT - aIn));
-      for (const t of traces) t.p.style.strokeDashoffset = f((t.n + PAD) * (1 - clamp((k - t.a) / Math.max(1e-4, t.b - t.a))));
+      // & 그리기: 꼬리 끝에 닿은 뒤 남은 스크롤의 앞 70% 는 뼈대를 그리고, 뒤 30% 는 굵기를 채우며 뼈대를 거둔다
+      const k = reduced ? 1 : clamp((y - aIn) / Math.max(1, maxT - aIn)), kt = clamp(k / 0.7), kf = clamp((k - 0.7) / 0.3);
+      if (trace) { trace.style.strokeDashoffset = f(traceLen * (1 - kt)); trace.style.strokeOpacity = f(1 - kf); }
+      if (fillEl) fillEl.style.fillOpacity = f(kf);
       contactAmp?.toggleAttribute('data-drawn', k >= 0.995);
       let pt: { x: number; y: number };
-      if (k > 0 && line && ampBox) { const q = line.getPointAtLength(k * traceLen), sc = ampBox.h / AMP_H; pt = { x: ampBox.l + q.x * sc, y: ampBox.t + q.y * sc }; }
+      if (k > 0 && trace && ampBox) { const q = trace.getPointAtLength(kt * traceLen), sc = ampBox.h / AMP_H; pt = { x: ampBox.l + q.x * sc, y: ampBox.t + q.y * sc }; }
       else pt = ink.getPointAtLength(drawn);
       tip.setAttribute('cx', f(pt.x)); tip.setAttribute('cy', f(pt.y));
-      tip.toggleAttribute('data-on', !reduced && drawn > 2 && k < 0.995);
+      tip.toggleAttribute('data-on', !reduced && drawn > 2 && kt < 0.995);
       tip.toggleAttribute('data-dark', pt.y > darkTop);
     };
     const words = () => {

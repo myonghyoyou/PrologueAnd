@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { bannedWords } from './banned';
 import { scrollToY } from './helpers';
-import { AMP_LEG, AMP_ARM } from '../components/home/amp-path';
+import { AMP_TIP } from '../components/home/amp-path';
 
 // 홈 = 편집형 세로 페이지(P1). 첫 화면 → 일하는 방식 → 할 수 있는 일 → 작업 → 문의. 움직임 없음
 test.describe('홈', () => {
@@ -131,7 +131,9 @@ test.describe('홈 — 데스크톱', () => {
         cradle: [w.left + 4, w.left + w.width / 2, w.right - 4].map((x) => near(x, w.bottom + 12)),
         step2: pts.filter((q) => q.x > s2.left - 8 && q.x < s2.right + 8 && q.y > s2.top - 8 && q.y < s2.bottom + 8).length,
         old: sm(old).map((q) => near(q.x, q.y)),
-        div: pts.filter((q) => Math.abs(q.y - rows[1].bottom) < 1.2 && q.x > rows[0].left && q.x < rows[0].right).length,
+        svc: pts.filter((q) => q.x > rows[0].left - 4 && q.x < rows[0].right + 4 && q.y > rows[0].top - 4 && q.y < rows[3].bottom + 4).length,
+        // 가로 구분선을 이어받는 구간: 02 머리 선 · 04 머리 선 · 「모든 작업」 선(선의 가운데 높이 ±1)
+        rules: ['#how [class*="__sh"]', '#work [class*="__sh"]', '#work [class*="__all"]'].map((sel) => { const b = box(sel); return pts.filter((q) => Math.abs(q.y - (b.top + 0.5)) < 1 && q.x > rows[0].left && q.x < rows[0].right).length * (L / 11999); }),
         braceL: pts.filter((q) => q.x < rows[0].left - 10 && q.y > rows[0].top && q.y < rows[1].bottom - 4).length,
         reqs: reqs.map((q) => ({ dx: Math.abs(q.x - pf.left), y: q.y })),
         zoom: { l: zoom.left - sf.left, t: zoom.top - sf.top, w: zoom.width / sf.width, h: zoom.height / sf.height },
@@ -142,8 +144,11 @@ test.describe('홈 — 데스크톱', () => {
     for (const d of r.cradle) expect(d).toBeLessThanOrEqual(2);           // 「불편한지」 밑 받침(글자와 12px)
     expect(r.step2).toBe(0);                                              // 설계와 개발은 선이 감싸지 않는다
     for (const d of r.old) expect(d).toBeLessThanOrEqual(1.5);           // 예전 경로(점선)는 고친 선 위에서 갈라져 다시 만난다
-    expect(r.div).toBeGreaterThan(300);                                   // 두 묶음 사이 줄을 따라 긋는다
-    expect(r.braceL).toBe(0);                                             // 첫 묶음 왼쪽에는 괄호가 없다
+    expect(r.svc).toBe(0);                                                // 서비스 목록 안으로는 들어가지 않는다(감싸지도 않는다)
+    expect(r.rules[0]).toBeGreaterThan(600);   // 02 머리 선은 거의 끝에서 끝까지 이어받는다
+    expect(r.rules[1]).toBeGreaterThan(200);                              // 04 머리 선은 왼쪽 끝에서 작업 머리 사이까지
+    expect(r.rules[2]).toBeGreaterThan(150);                              // 「모든 작업」 선은 확대 그림 아래에서 오른쪽 끝까지
+    expect(r.braceL).toBe(0);                                             // 서비스 왼쪽에는 괄호가 없다
     // 네 갈래 요청은 그림 왼쪽 가장자리 서로 다른 자리에 닿는다. 왼쪽 여백에 이름이 들어가지 않는 폭(1280)에서는 통째로 뺀다
     expect(r.reqs).toHaveLength(page.viewportSize()!.width >= 1440 ? 4 : 0);
     for (const q of r.reqs) expect(q.dx).toBeLessThanOrEqual(1);
@@ -192,13 +197,13 @@ test.describe('홈 — 데스크톱', () => {
 test.describe('홈 — 폰', () => {
   test.skip(({ isMobile }) => !isMobile, '폰 전용');
 
-  test('잇는 선: 폰에서는 「불편한지」 오른쪽 빈자리에서 낱말 끝을 짚고 돌아간다', async ({ page }) => {
+  test('잇는 선: 폰에서는 02 머리 선을 이어받다 「불편한지」 오른쪽 위에서 빠져 낱말 끝을 짚고 돌아간다', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('[data-thread] path').first()).toBeAttached();
     const d = await page.evaluate(() => {
       const p = document.querySelector<SVGPathElement>('[data-thread] path[class*="threadInk"]:not([class*="threadLight"])')!, m = p.getScreenCTM()!, L = p.getTotalLength(), w = document.querySelector('[data-mark="find"]')!.getBoundingClientRect();
       const pts = Array.from({ length: 12000 }, (_, i) => { const q = p.getPointAtLength((L * i) / 11999); return { x: q.x * m.a + m.e, y: q.y * m.d + m.f }; });
-      return Math.min(...pts.map((q) => Math.hypot(q.x - (w.right + 12), q.y - (w.top + w.height / 2))));
+      return Math.min(...pts.map((q) => Math.hypot(q.x - (w.right + 18), q.y - (w.top + w.height / 2 - 12))));
     });
     expect(d).toBeLessThanOrEqual(8);
   });
@@ -340,50 +345,45 @@ test.describe('홈 — 한 획 & 와 잇는 선의 출구·입구', () => {
   const at = (which: 'hero' | 'contact', p: { x: number; y: number }) => `(() => { const m = document.querySelector('[data-amp="${which}"]').getScreenCTM(); return { x: ${p.x} * m.a + m.e, y: ${p.y} * m.d + m.f }; })()`;
   const ink = `document.querySelector('[data-thread] path[class*="threadInk"]:not([class*="threadLight"])')`;
 
-  test('출구: 선은 첫 & 받침 끝(획의 끝)에서 그 획이 뻗은 방향 그대로 시작한다', async ({ page }) => {
+  test('출구: 선은 첫 & 받침 꼬리 끝에서 꼬리가 뻗은 방향(오른쪽) 그대로 시작한다', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('[data-thread] path').first()).toBeAttached();
-    const r = await page.evaluate(`(() => { const t = ${at('hero', AMP_LEG)}; const p = ${ink}, m = p.getScreenCTM();
+    const r = await page.evaluate(`(() => { const t = ${at('hero', AMP_TIP)}; const p = ${ink}, m = p.getScreenCTM();
       const a = p.getPointAtLength(0), b = p.getPointAtLength(6);
       return { gap: Math.hypot(a.x * m.a + m.e - t.x, a.y * m.d + m.f - t.y), dir: [b.x - a.x, b.y - a.y] }; })()`) as { gap: number; dir: [number, number] };
     expect(r.gap).toBeLessThanOrEqual(0.6);
-    const ang = Math.acos(Math.min(1, (r.dir[0] * AMP_LEG.dx + r.dir[1] * AMP_LEG.dy) / Math.hypot(...r.dir)));
+    const ang = Math.acos(Math.min(1, (r.dir[0] * AMP_TIP.dx + r.dir[1] * AMP_TIP.dy) / Math.hypot(...r.dir)));
     expect(ang * 180 / Math.PI).toBeLessThan(12);
   });
 
-  test('입구: 선의 끝이 마지막 & 팔 끝이고, 팔을 거슬러 들어오며, & 를 드러내는 획이 바로 그 점에서 시작한다', async ({ page }) => {
+  test('입구: 선의 끝이 마지막 & 받침 꼬리 끝이고, 꼬리를 거슬러 가로로 들어오며, & 뼈대 획이 바로 그 점에서 시작한다', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('[data-thread] path').first()).toBeAttached();
     // 그림·글꼴이 늦게 들어오면 선을 한 번 더 짠다 — 자리가 잡힌 뒤에 잰다
-    const gap = () => page.evaluate(`(() => { const t = ${at('contact', AMP_ARM)}; const p = ${ink}, m = p.getScreenCTM();
+    const gap = () => page.evaluate(`(() => { const t = ${at('contact', AMP_TIP)}; const p = ${ink}, m = p.getScreenCTM();
       const e = p.getPointAtLength(p.getTotalLength()); return Math.hypot(e.x * m.a + m.e - t.x, e.y * m.d + m.f - t.y); })()`) as Promise<number>;
     await expect.poll(gap, { timeout: 5000 }).toBeLessThanOrEqual(0.6);
-    const r = await page.evaluate(`(() => { const t = ${at('contact', AMP_ARM)}; const p = ${ink}, L = p.getTotalLength();
+    const r = await page.evaluate(`(() => { const t = ${at('contact', AMP_TIP)}; const p = ${ink}, L = p.getTotalLength();
       const a = p.getPointAtLength(L - 6), e = p.getPointAtLength(L);
       const tr = document.querySelector('[data-amp="contact"] [data-trace]'), tm = document.querySelector('[data-amp="contact"]').getScreenCTM(), q = tr.getPointAtLength(0);
       return { dir: [e.x - a.x, e.y - a.y], tr0: Math.hypot(q.x * tm.a + tm.e - t.x, q.y * tm.d + tm.f - t.y) }; })()`) as { dir: [number, number]; tr0: number };
     expect(r.tr0).toBeLessThanOrEqual(0.6);
-    const ang = Math.acos(Math.min(1, -(r.dir[0] * AMP_ARM.dx + r.dir[1] * AMP_ARM.dy) / Math.hypot(...r.dir)));
+    const ang = Math.acos(Math.min(1, -(r.dir[0] * AMP_TIP.dx + r.dir[1] * AMP_TIP.dy) / Math.hypot(...r.dir)));
     expect(ang * 180 / Math.PI).toBeLessThan(15);
   });
 
-  test('큰 & 는 한 획: 첫 & 윤곽은 하나, 문의 장 & 의 조각은 팔 끝에서 받침 끝까지 끊김 없이 이어진다', async ({ page }) => {
+  test('큰 &: 채운 윤곽 하나와 문의 장 뼈대 획 하나 — 뼈대는 글자 안을 지나 꼬리 끝에서 시작한다', async ({ page }) => {
     await page.goto('/');
-    expect((await page.locator('[data-amp="hero"] [data-fillpath]').getAttribute('d'))!.match(/M/g)).toHaveLength(1);
-    expect((await page.locator('[data-amp="contact"] [data-line]').getAttribute('d'))!.match(/M/g)).toHaveLength(1);
-    const r = await page.evaluate(() => {
-      const ps = [...document.querySelectorAll<SVGPathElement>('[data-amp="contact"] [data-trace]')];
-      const ends = ps.map((p) => [p.getPointAtLength(0), p.getPointAtLength(p.getTotalLength())]);
-      const line = document.querySelector<SVGPathElement>('[data-amp="contact"] [data-line]')!, L = line.getTotalLength();
-      const d = (a: DOMPoint, b: DOMPoint) => Math.hypot(a.x - b.x, a.y - b.y);
-      return { n: ps.length, joins: ends.slice(1).map((e, i) => d(e[0], ends[i][1])), first: d(ends[0][0], line.getPointAtLength(0)), last: d(ends.at(-1)![1], line.getPointAtLength(L)),
-        span: ps.map((p) => [Number(p.dataset.from), Number(p.dataset.to)]) };
+    expect(await page.locator('[data-amp="hero"] path').count()).toBe(1);
+    const tr = page.locator('[data-amp="contact"] [data-trace]');
+    expect((await tr.getAttribute('d'))!.match(/M/g)).toHaveLength(1);
+    // 뼈대 점은 대부분 채운 윤곽 안에 있다(획의 가운데를 지난다)
+    const inside = await page.evaluate(() => {
+      const s = document.querySelector<SVGSVGElement>('[data-amp="contact"]')!, f = s.querySelector<SVGGeometryElement>('[data-fillpath]')!, t = s.querySelector<SVGPathElement>('[data-trace]')!, L = t.getTotalLength();
+      const pts = Array.from({ length: 200 }, (_, i) => t.getPointAtLength((L * i) / 199));
+      return pts.filter((q) => { const p = s.createSVGPoint(); p.x = q.x; p.y = q.y; return f.isPointInFill(p); }).length / pts.length;
     });
-    expect(r.n).toBe(4);
-    for (const j of r.joins) expect(j).toBeLessThanOrEqual(0.5);   // 조각 사이에 틈이 없다
-    expect(r.first).toBeLessThanOrEqual(0.5); expect(r.last).toBeLessThanOrEqual(0.5);
-    expect(r.span[0][0]).toBe(0); expect(r.span.at(-1)![1]).toBe(1);
-    for (let i = 1; i < r.span.length; i++) expect(r.span[i][0]).toBe(r.span[i - 1][1]);
+    expect(inside).toBeGreaterThan(0.95);
   });
 
   test('역방향: 끝까지 내렸다가 맨 위로 돌아오면 & 와 보조 획이 처음 상태로 돌아간다', async ({ page }) => {
