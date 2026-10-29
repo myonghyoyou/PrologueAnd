@@ -71,13 +71,16 @@ test.describe('홈', () => {
   });
 
 
-  test('작업: 병원은 같은 자리를 전/후로 자른 비교 셋, 교대 근무표는 글이 그림보다 먼저, 확대 셋', async ({ page }) => {
+  test('작업: 병원은 같은 자리를 전/후로 자른 비교 하나, 교대 근무표는 글이 그림보다 먼저, 확대 하나, 요청 처리는 확대 없음', async ({ page }) => {
     const h = page.locator('[data-layout="pair"] [data-compare]');
-    await expect(h.locator('[data-detail]')).toHaveCount(6);
+    await expect(h.locator('[data-detail]')).toHaveCount(2);
     const full = page.locator('[data-layout="full"]');
     const t = (await full.locator('h3').boundingBox())!, img = (await full.locator('img').first().boundingBox())!;
     expect(t.y).toBeLessThan(img.y);
-    await expect(full.locator('[data-detail]')).toHaveCount(3);
+    await expect(full.locator('[data-detail]')).toHaveCount(1);
+    await expect(page.locator('[data-layout="wide"] [data-detail]')).toHaveCount(0);
+    // 작업마다 문제 → 설계 판단 → 바꾼 것
+    for (const w of await page.locator('[data-work]').all()) await expect(w.locator('dt')).toHaveText(['문제', '설계 판단', '바꾼 것']);
   });
 
   test('문제 은행은 테스트 중이라고 적는다', async ({ page }) => {

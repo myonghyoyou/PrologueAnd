@@ -55,6 +55,7 @@ function CaseText({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
       <h3 className={s.caseT}>{p.title}</h3>
       <dl className={s.qa}>
         <dt>문제</dt><dd>{w.problem}</dd>
+        <dt>설계 판단</dt><dd>{w.decision}</dd>
         <dt>바꾼 것</dt><dd>{w.changed}</dd>
       </dl>
       <Link className={s.link} href={`/projects/${p.slug}`}>자세히 보기 →</Link>
@@ -91,7 +92,7 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
       <div className={s.pairTxt}><CaseText p={p} w={w} i={i} /></div>
       <div className={s.pairPics}>{w.shots.map((sh) => <Pic key={sh.src} shot={sh} sizes="(min-width:1024px) 40vw, 100vw" />)}</div>
       <div className={s.cmp} data-compare>
-        <p className={s.cmpHead}>달라진 곳</p>
+        <p className={s.cmpHead}>가장 크게 달라진 곳</p>
         {w.compare?.map((c, k) => (
           <div key={c.cap} className={s.cmpRow}>
             <p className={s.cmpCap}><span className={s.num}>{k + 1}</span>{c.cap}</p>
@@ -108,12 +109,12 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
     <article className={`${s.case} ${s.full}`} {...attrs}>
       <div className={s.fullTxt}><CaseText p={p} w={w} i={i} /></div>
       <div className={s.fullPic}><Pic shot={w.shots[0]} sizes="(min-width:1024px) 80vw, 100vw" /></div>
-      {w.details ? (
-        <div className={s.fullDetails}>
-          <div className={s.fdA}>{w.details.slice(0, 2).map((d) => <Crop key={d.cap} d={d} />)}</div>
-          <div className={s.fdB}>{w.details.slice(2).map((d) => <Crop key={d.cap} d={d} />)}</div>
+      {w.details?.map((d) => (
+        <div key={d.cap} className={s.fd}>
+          <div className={s.fdPic}><Crop d={{ ...d, cap: undefined }} /></div>
+          <p className={s.fdCap}><span className={s.label}>확대</span>{d.cap}</p>
         </div>
-      ) : null}
+      ))}
     </article>
   );
 }
@@ -130,7 +131,7 @@ export function Home({ projects }: { projects: Project[] }) {
         <p className={s.label}>{HERO.label}</p>
         <div className={s.heroTop}>
           <h1 id="home-h1" className={s.h1}>{lines(HERO.h)}</h1>
-          <span className={s.heroAmp} aria-hidden="true">&amp;</span>
+          <span className={s.heroAmp} data-amp="hero" aria-hidden="true">&amp;</span>
         </div>
         <div className={s.heroFoot}>
           <div className={s.svc} aria-label="하는 일">
@@ -159,6 +160,7 @@ export function Home({ projects }: { projects: Project[] }) {
               <i className={s.dot} data-step-dot aria-hidden="true" />
               <h3><span className={s.num}>{no(i)}</span>{st.t}</h3>
               <p>{st.p}</p>
+              <ul className={s.kw} aria-label="하는 일">{st.kw.map((k) => <li key={k}>{k}</li>)}</ul>
             </div>
           ))}
         </div>
@@ -208,7 +210,7 @@ export function Home({ projects }: { projects: Project[] }) {
               <button type="button" className={`${s.btn} ${s.fill}`} data-open-drawer>프로젝트 문의하기 <span aria-hidden="true">→</span></button>
               <a className={s.mail} href={`mailto:${CONTACT_MAIL}`}>{CONTACT_MAIL}</a>
             </div>
-            <span className={s.contactAmp} aria-hidden="true">&amp;</span>
+            <span className={s.contactAmp} data-amp="contact" aria-hidden="true">&amp;</span>
           </div>
           <footer className={s.end} data-footer>
             <span>{CONTACT.end}</span>

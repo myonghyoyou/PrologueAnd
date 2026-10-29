@@ -1,7 +1,7 @@
 /* 홈 — 편집형 세로 페이지(P1·P1.5). 데스크톱 12칸 격자, 1023 이하 6칸, 700 이하 한 줄.
    색은 globals.css 의 bone·navy 토큰만. 움직임 없음(P2 에서 data-step-line·data-sec 에 붙인다).
    간격 단계: 8 · 12 · 20 · 32 · 56 · 96 · 섹션(--sec) */
-.root{--cg:24px;--sec:140px;background:var(--bone-50);word-break:keep-all}
+.root{--cg:24px;--sec:140px;--read:34em;background:var(--bone-50);word-break:keep-all}   /* --read: 글 칸 최대 폭(읽기). 그림·큰 제목은 격자 폭을 그대로 쓴다 */
 .wrap{max-width:var(--grid);margin:0 auto;padding:var(--sec) max(var(--gutter), env(safe-area-inset-right)) 0 max(var(--gutter), env(safe-area-inset-left))}
 .label{margin:0;font-size:14px;line-height:1.4;font-weight:500;color:var(--bone-600)}
 .num{font-family:var(--font-serif),Georgia,serif;font-weight:400;font-variant-numeric:lining-nums}
@@ -24,19 +24,19 @@
 .shT{font-size:14px;font-weight:600}
 
 /* 01 첫 화면 — 제목과 아래 묶음이 한 덩어리로 읽히게 높이를 고정하지 않는다 */
-.hero{padding-top:calc(var(--hdr) + clamp(32px,6vh,64px));padding-bottom:32px}
+.hero{padding-top:calc(var(--hdr) + clamp(32px,6vh,64px));padding-bottom:32px;min-height:min(100svh,1000px);display:flex;flex-direction:column}   /* 데스크톱: 첫 화면 한 장. 1023 이하는 높이를 풀어 준다 */
 .heroTop{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);align-items:end;margin-top:clamp(24px,4vh,40px)}
-.h1{grid-column:1/10;grid-row:1;margin:0;font-size:clamp(56px,min(8.4vw,13.5vh),148px);line-height:1.02;letter-spacing:-.055em;font-weight:760}
-.heroAmp{grid-column:10/13;grid-row:1;justify-self:end;font-family:var(--font-serif),Georgia,serif;font-size:clamp(180px,min(22vw,40vh),400px);
+.h1{grid-column:1/10;grid-row:1;margin:0;font-size:clamp(56px,min(9vw,15.5vh),176px);line-height:1.02;letter-spacing:-.055em;font-weight:760}
+.heroAmp{grid-column:9/13;grid-row:1;justify-self:end;font-family:var(--font-serif),Georgia,serif;font-size:clamp(180px,min(26vw,50vh),520px);
   line-height:.72;color:var(--navy-900);user-select:none}
-.heroFoot{padding-top:clamp(40px,6vh,56px);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);row-gap:32px}
+.heroFoot{margin-top:auto;padding-top:clamp(40px,6vh,56px);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);row-gap:32px}
 .svc{grid-column:1/7;grid-row:1/3;align-self:start;display:grid;grid-template-columns:1fr 1fr;column-gap:var(--cg)}
 .svcHead{margin:0 0 8px;font-size:13px;font-weight:600;color:var(--bone-500)}
 .svc ul{margin:0;padding:0;list-style:none;border-top:1px solid var(--bone-300)}
 .svc li{border-bottom:1px solid var(--bone-300)}
 .svc a{display:block;padding:12px 0;font-size:16px;font-weight:600}
 .svc a:hover{color:var(--navy-800)}
-.lede{grid-column:8/13;margin:0;font-size:18px;line-height:1.75;color:var(--bone-700)}
+.lede{grid-column:8/13;max-width:var(--read);margin:0;font-size:18px;line-height:1.75;color:var(--bone-700)}
 .cta{grid-column:8/13;display:flex;gap:10px;flex-wrap:wrap}
 
 /* 02 일하는 방식 */
@@ -52,17 +52,19 @@
 .step h3{display:flex;align-items:baseline;gap:12px;margin:0 0 12px;font-size:28px;line-height:1.25;letter-spacing:-.03em}
 .step h3 .num{font-size:17px;font-weight:400;letter-spacing:0;color:var(--bone-500)}
 .step p{margin:0;max-width:22em;font-size:17px;line-height:1.75;color:var(--bone-700)}
+.kw{margin:16px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:4px 0;font-size:14px;font-weight:500;color:var(--bone-500)}
+.kw li + li::before{content:"·";margin:0 8px}
 
 /* 03 할 수 있는 일 — 네 줄이 같은 구조: 번호·보조 이름 / 서비스 이름 / 설명·관련 작업 */
 .intro{margin:0 0 56px;max-width:34em;font-size:18px;line-height:1.75;color:var(--bone-700)}
 .rows{border-top:1px solid var(--bone-900)}
 .row{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);align-items:baseline;padding:36px 0;border-bottom:1px solid var(--bone-300);
   scroll-margin-top:calc(var(--hdr) + 16px)}
-.rowMeta{grid-column:1/3;margin:0;display:flex;gap:12px;align-items:baseline;font-size:15px;font-weight:600;color:var(--bone-600)}
+.rowMeta{grid-column:1/3;margin:0;display:flex;gap:12px;align-items:baseline;font-size:17px;font-weight:600;color:var(--navy-800)}
 .rowMeta .num{font-size:18px;font-weight:400;color:var(--bone-500)}
 .rowT{grid-column:3/8;margin:0;font-size:clamp(30px,3.2vw,52px);line-height:1.1;letter-spacing:-.045em;font-weight:740}
 .rowBody{grid-column:8/13}
-.rowBody p{margin:0;font-size:17px;line-height:1.7;color:var(--bone-700)}
+.rowBody p{margin:0;max-width:var(--read);font-size:18px;line-height:1.7;color:var(--bone-700)}
 .rowBody .rel{margin-top:12px;font-size:15px;color:var(--bone-500)}
 .rel a{color:var(--bone-900);border-bottom:1px solid var(--bone-400)}
 
@@ -80,7 +82,7 @@
 .caseT{margin:0 0 20px;font-size:clamp(30px,3vw,48px);line-height:1.12;letter-spacing:-.04em}
 .qa{margin:0 0 20px}
 .qa dt{margin:0 0 4px;font-size:14px;font-weight:600;color:var(--bone-600)}
-.qa dd{margin:0 0 16px;font-size:17px;line-height:1.7;color:var(--bone-700)}
+.qa dd{margin:0 0 16px;max-width:var(--read);font-size:17px;line-height:1.7;color:var(--bone-700)}
 /* 그림 — 틀(테두리·바탕)과 캡션은 모든 작업이 같다 */
 .fig{margin:0;min-width:0}
 .frame{border:1px solid var(--bone-200);background:var(--bone-100);overflow:hidden}
@@ -96,7 +98,7 @@
 .devs > :first-child{margin-top:120px}
 .dev{border:8px solid var(--bone-900);border-radius:28px;background:var(--bone-900);overflow:hidden}
 .dev img{display:block;width:100%;height:auto}
-.pairTxt{grid-column:1/8}
+
 .pairPics{grid-column:1/13;display:grid;grid-template-columns:1fr 1fr;gap:var(--cg);margin-top:32px}
 .cmp{grid-column:1/13;margin-top:56px}
 .cmpHead{margin:0 0 8px;font-size:14px;font-weight:600;color:var(--bone-600)}
@@ -107,15 +109,17 @@
 .cmpPics.stack{grid-template-columns:1fr;row-gap:20px}
 .tag{display:block;margin-bottom:8px;font-size:13px;font-weight:600;color:var(--bone-600)}
 /* 교대 근무표: 글이 먼저, 그 아래 꽉 찬 그림, 다시 그 아래 핵심 자리 셋 */
-.fullTxt{grid-column:1/13;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);align-items:start}
-.fullTxt > .meta{grid-column:1/6;grid-row:1}
-.fullTxt > .caseT{grid-column:1/6;grid-row:2}
-.fullTxt > .qa{grid-column:7/13;grid-row:1/4}
-.fullTxt > .link{grid-column:1/6;grid-row:3;justify-self:start}
+/* 글을 두 칸으로: 왼쪽 번호·이름·링크, 오른쪽 문제·판단·바꾼 것 (병원·교대 근무표) */
+.fullTxt,.pairTxt{grid-column:1/13;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);align-items:start}
+:is(.fullTxt,.pairTxt) > .meta{grid-column:1/6;grid-row:1}
+:is(.fullTxt,.pairTxt) > .caseT{grid-column:1/6;grid-row:2}
+:is(.fullTxt,.pairTxt) > .qa{grid-column:7/13;grid-row:1/4}
+:is(.fullTxt,.pairTxt) > .link{grid-column:1/6;grid-row:3;justify-self:start}
 .fullPic{grid-column:1/13;margin-top:40px}
-.fullDetails{grid-column:1/13;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);margin-top:40px}
-.fdA{grid-column:1/8;display:grid;gap:32px;align-content:start}
-.fdB{grid-column:8/13}
+.fd{grid-column:1/13;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);align-items:end;margin-top:32px}
+.fdPic{grid-column:1/9}
+.fdCap{grid-column:9/13;margin:0;font-size:17px;line-height:1.7;color:var(--bone-700)}
+.fdCap .label{display:block;margin-bottom:8px}
 .all{display:flex;justify-content:space-between;align-items:center;padding-top:40px;border-top:1px solid var(--bone-900)}
 .all b{font-size:22px;letter-spacing:-.02em}
 
@@ -125,7 +129,7 @@
 .contactGrid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg)}
 .contactT{grid-column:1/9;margin:0 0 32px;font-size:clamp(44px,5.4vw,96px);line-height:1.08;letter-spacing:-.055em;font-weight:760}
 .contactT em{font-style:normal;color:var(--navy-300)}
-.contactP{grid-column:1/6;margin:0 0 40px;font-size:18px;color:var(--navy-100)}
+.contactP{grid-column:1/6;max-width:var(--read);margin:0 0 40px;font-size:18px;color:var(--navy-100)}
 .act{grid-column:1/8;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .contact .btn{border-color:var(--bone-50)}
 .contact .fill{background:var(--bone-50);color:var(--navy-900)}
@@ -139,7 +143,8 @@
 
 @media (max-width:1023px){
   .root{--sec:96px}
-  .heroTop,.heroFoot,.workHead,.case,.contactGrid,.row,.cmpRow,.fullTxt,.fullDetails{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .hero{min-height:0}
+  .heroTop,.heroFoot,.workHead,.case,.contactGrid,.row,.cmpRow,.fullTxt,.pairTxt,.fd{grid-template-columns:repeat(6,minmax(0,1fr))}
   .h1{grid-column:1/7;grid-row:2}
   .heroAmp{grid-column:4/7;grid-row:1}
   .svc,.lede,.cta{grid-column:1/7;grid-row:auto}
@@ -150,13 +155,13 @@
   .rowMeta,.rowT,.rowBody{grid-column:1/7}
   .workHead{row-gap:24px}
   .workT,.workSide{grid-column:1/7}
-  .wide .pic,.wide .txt,.phones .txt,.devs,.pairTxt,.pairPics,.fullPic,.fdA,.fdB{grid-column:1/7}
+  .wide .pic,.wide .txt,.phones .txt,.devs,.pairTxt,.pairPics,.fullTxt,.fullPic,.fdPic,.fdCap{grid-column:1/7}
+  .fdCap{margin-top:16px}
   .wide .pic,.devs{margin-bottom:28px}
   .devs{order:-1}
-  .fullTxt > .meta,.fullTxt > .caseT,.fullTxt > .qa,.fullTxt > .link{grid-column:1/7;grid-row:auto}
+  :is(.fullTxt,.pairTxt) > :is(.meta,.caseT,.qa,.link){grid-column:1/7;grid-row:auto}
   .cmpCap,.cmpPics{grid-column:1/7}
   .cmpCap{margin-bottom:16px}
-  .fdB{margin-top:32px}
   .contactT,.contactP,.act{grid-column:1/7}
   .contactAmp{grid-column:1/7;grid-row:auto;margin-top:40px}
 }
@@ -180,7 +185,7 @@
   .case{padding:48px 0}
   .dev{border-width:5px;border-radius:20px}
   .devs > :first-child{margin-top:48px}
-  .pairPics,.cmpPics{grid-template-columns:1fr;row-gap:20px}
+  .cmpPics{grid-template-columns:1fr;row-gap:20px}   /* 전·후 전체 그림은 폰에서도 나란히 — 차이는 모양으로 보이고, 세로 길이가 반으로 준다 */
   .all b{font-size:18px}
   .contactAmp{font-size:240px}
   .mail{margin-left:0}
