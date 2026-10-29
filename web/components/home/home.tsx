@@ -4,11 +4,18 @@ import { Fragment } from 'react';
 import type { Project } from '@/content/types';
 import { CONTACT_MAIL } from '@/lib/contact';
 import { HERO, HOW, CAN, SERVICES, WORK, WORK_HEAD, CONTACT, type WorkEntry, type Shot, type Detail } from './copy';
-import { StepLine } from './step-line';
+import { Amp } from './amp';
+import { BeforeAfter } from './before-after';
+import { Intro, INTRO_GATE } from './intro';
+import { Thread } from './thread';
 import s from './home.module.css';
 
-const lines = (ls: readonly string[]) => ls.map((l, i) => <Fragment key={l}>{i > 0 ? <br /> : null}{l}</Fragment>);
 const no = (i: number) => String(i + 1).padStart(2, '0');
+/** 머리글 낱말 채우기 — 낱말마다 span(data-w). 움직임이 없으면 그대로 진한 글자다. em 은 그 번째 줄을 강조 */
+const words = (ls: readonly string[], em?: number) => ls.map((l, i) => {
+  const ws = l.split(' ').map((w, k) => <Fragment key={k}>{k > 0 ? ' ' : null}<span data-w>{w}</span></Fragment>);
+  return <Fragment key={l}>{i > 0 ? <br /> : null}{i === em ? <em>{ws}</em> : ws}</Fragment>;
+});
 
 /** 섹션 머리 — 번호(세리프)와 이름, 위에 굵은 선 하나 */
 function SectionHead({ n, t }: { n: string; t: string }) {
@@ -90,7 +97,7 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
   if (w.layout === 'pair') return (
     <article className={`${s.case} ${s.pair}`} {...attrs}>
       <div className={s.pairTxt}><CaseText p={p} w={w} i={i} /></div>
-      <div className={s.pairPics}>{w.shots.map((sh) => <Pic key={sh.src} shot={sh} sizes="(min-width:1024px) 40vw, 100vw" />)}</div>
+      <div className={s.baWrap}><BeforeAfter before={w.shots[0]} after={w.shots[1]} /></div>
       <div className={s.cmp} data-compare>
         <p className={s.cmpHead}>가장 크게 달라진 곳</p>
         {w.compare?.map((c, k) => (
@@ -120,18 +127,22 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
 }
 
 /** 홈 — 편집형 세로 페이지. 첫 화면 → 일하는 방식 → 할 수 있는 일 → 작업 → 문의.
- *  움직임은 넣지 않는다. P2 는 data-step-line(계단 선)과 섹션 경계([data-sec])에 붙인다 */
+ *  움직임(P2, docs/superpowers/specs/2026-10-29-home-motion-p2.md): 인트로 · 잇는 선 · 머리글 채우기 · 전후 비교 + Lenis = 5종.
+ *  모두 꺼져도(스크립트 실패·모션 줄이기) 글과 그림은 그대로 보인다 */
 export function Home({ projects }: { projects: Project[] }) {
   const works = projects.filter((p) => WORK[p.slug]);
   const bySlug = new Map(works.map((p) => [p.slug, p]));
   const groups = [...new Set(SERVICES.map((v) => v.group))];
   return (
     <div className={s.root} data-home>
+      <script dangerouslySetInnerHTML={{ __html: INTRO_GATE }} />
+      <Intro />
+      <Thread />
       <section className={`${s.wrap} ${s.hero}`} data-sec="hero" aria-labelledby="home-h1">
         <p className={s.label}>{HERO.label}</p>
         <div className={s.heroTop}>
-          <h1 id="home-h1" className={s.h1}>{lines(HERO.h)}</h1>
-          <span className={s.heroAmp} data-amp="hero" aria-hidden="true">&amp;</span>
+          <h1 id="home-h1" className={s.h1}>{HERO.h.map((l) => <span key={l} className={s.hl}><span>{l}</span></span>)}</h1>
+          <Amp className={s.heroAmp} which="hero" />
         </div>
         <div className={s.heroFoot}>
           <div className={s.svc} aria-label="하는 일">
@@ -152,9 +163,8 @@ export function Home({ projects }: { projects: Project[] }) {
 
       <section className={s.wrap} id="how" data-sec="how">
         <SectionHead n="02" t="일하는 방식" />
-        <h2 className={s.lead}>{lines(HOW.h)}</h2>
+        <h2 className={s.lead} data-fill>{words(HOW.h)}</h2>
         <div className={s.steps}>
-          <StepLine className={s.stepLine} />
           {HOW.steps.map((st, i) => (
             <div key={st.t} className={s.step} data-step>
               <i className={s.dot} data-step-dot aria-hidden="true" />
@@ -193,7 +203,7 @@ export function Home({ projects }: { projects: Project[] }) {
       <section className={s.wrap} id="work" data-sec="work">
         <SectionHead n="04" t="작업" />
         <div className={s.workHead}>
-          <h2 className={s.workT}>{WORK_HEAD.h}</h2>
+          <h2 className={s.workT} data-fill>{words([WORK_HEAD.h])}</h2>
           <div className={s.workSide}><p className={s.label}><span data-published>{works.length}</span>건</p><p>{WORK_HEAD.p}</p></div>
         </div>
         {works.map((p, i) => <Case key={p.slug} p={p} w={WORK[p.slug]} i={i} />)}
@@ -204,13 +214,13 @@ export function Home({ projects }: { projects: Project[] }) {
         <div className={s.wrap}>
           <SectionHead n="05" t="문의" />
           <div className={s.contactGrid}>
-            <h2 className={s.contactT}>{CONTACT.h[0]}<br /><em>{CONTACT.h[1]}</em><br />{CONTACT.h[2]}</h2>
+            <h2 className={s.contactT} data-fill>{words(CONTACT.h, 1)}</h2>
             <p className={s.contactP}>{CONTACT.p}</p>
             <div className={s.act}>
               <button type="button" className={`${s.btn} ${s.fill}`} data-open-drawer>프로젝트 문의하기 <span aria-hidden="true">→</span></button>
               <a className={s.mail} href={`mailto:${CONTACT_MAIL}`}>{CONTACT_MAIL}</a>
             </div>
-            <span className={s.contactAmp} data-amp="contact" aria-hidden="true">&amp;</span>
+            <Amp className={s.contactAmp} which="contact" />
           </div>
           <footer className={s.end} data-footer>
             <span>{CONTACT.end}</span>

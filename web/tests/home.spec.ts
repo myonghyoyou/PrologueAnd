@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { bannedWords } from './banned';
+import { scrollToY } from './helpers';
 
 // 홈 = 편집형 세로 페이지(P1). 첫 화면 → 일하는 방식 → 할 수 있는 일 → 작업 → 문의. 움직임 없음
 test.describe('홈', () => {
@@ -105,18 +106,28 @@ test.describe('홈', () => {
 test.describe('홈 — 데스크톱', () => {
   test.skip(({ isMobile }) => !!isMobile, '데스크톱 전용');
 
-  test('계단 선이 첫 점에서 시작해 마지막 점에서 끝난다', async ({ page }) => {
+  test('잇는 선: 세 점을 모두 지나고, 끝까지 내리면 점이 채워지고 문의 & 가 그려진다', async ({ page }) => {
     await page.goto('/');
-    await page.locator('[data-sec="how"]').scrollIntoViewIfNeeded();
-    await expect(page.locator('[data-step-line] path')).toHaveCount(1);
-    const d = await page.evaluate(() => {
-      const p = document.querySelector<SVGPathElement>('[data-step-line] path')!, m = p.getScreenCTM()!;
-      const at = (l: number) => { const q = p.getPointAtLength(l); return { x: q.x * m.a + m.e, y: q.y * m.d + m.f }; };
-      const dots = [...document.querySelectorAll<HTMLElement>('[data-step-dot]')].map((e) => { const b = e.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; });
-      const a = at(0), z = at(p.getTotalLength()), f = dots[0], l = dots[dots.length - 1];
-      return Math.max(Math.hypot(a.x - f.x, a.y - f.y), Math.hypot(z.x - l.x, z.y - l.y));
+    await expect(page.locator('[data-thread] path').first()).toBeAttached();
+    const far = await page.evaluate(() => {
+      const p = document.querySelector<SVGPathElement>('[data-thread] path')!, m = p.getScreenCTM()!, L = p.getTotalLength();
+      const pts = Array.from({ length: 5000 }, (_, i) => { const q = p.getPointAtLength((L * i) / 4999); return { x: q.x * m.a + m.e, y: q.y * m.d + m.f }; });
+      return [...document.querySelectorAll<HTMLElement>('[data-step-dot]')].map((e) => { const b = e.getBoundingClientRect(), c = { x: b.left + b.width / 2, y: b.top + b.height / 2 };
+        return Math.min(...pts.map((q) => Math.hypot(q.x - c.x, q.y - c.y))); });
     });
-    expect(d).toBeLessThanOrEqual(2);
+    for (const d of far) expect(d).toBeLessThanOrEqual(3);
+    await expect(page.locator('[data-amp="contact"]')).not.toHaveAttribute('data-drawn', '');
+    await scrollToY(page, 1e6);
+    await expect(page.locator('[data-amp="contact"]')).toHaveAttribute('data-drawn', '', { timeout: 5000 });
+    for (const st of await page.locator('[data-step]').all()) await expect(st).toHaveAttribute('data-on', '');
+  });
+
+  test('머리글 낱말: 화면에 닿기 전엔 흐리고, 지나면 채워진다', async ({ page }) => {
+    await page.goto('/');
+    const lead = page.locator('[data-sec="how"] [data-fill]');
+    await expect(lead.locator('[data-w][data-on]')).toHaveCount(0);
+    await lead.evaluate((e) => { const y = e.getBoundingClientRect().top + scrollY - 120; const l = (window as unknown as { __lenis?: { scrollTo: (y: number, o: object) => void } }).__lenis; if (l) l.scrollTo(y, { immediate: true }); else scrollTo(0, y); });
+    await expect.poll(async () => (await lead.locator('[data-w]').count()) - (await lead.locator('[data-w][data-on]').count())).toBe(0);
   });
 
   test('헤더 「할 수 있는 일」이 서비스 줄로 간다', async ({ page }) => {
@@ -136,7 +147,7 @@ test.describe('홈 — 폰', () => {
 
   test('계단 선은 숨고, 작업은 그림이 글보다 먼저, 글자가 화면 밖으로 나가지 않는다', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('[data-step-line]')).toBeHidden();
+    await expect(page.locator('[data-thread] path').first()).toBeAttached();
     const w = page.locator('[data-layout="phones"]');
     const img = (await w.locator('img').first().boundingBox())!, h = (await w.locator('h3').boundingBox())!;
     expect(img.y).toBeLessThan(h.y);
@@ -144,4 +155,55 @@ test.describe('홈 — 폰', () => {
       .filter((e) => e.getBoundingClientRect().right > innerWidth + 0.5).map((e) => e.textContent));
     expect(over).toEqual([]);
   });
+});
+
+test.describe('홈 — 움직임(P2)', () => {
+  test('전·후 비교: 키보드와 값으로 가운데 선이 움직이고, 전 화면은 선 왼쪽만 보인다', async ({ page }) => {
+    await page.goto('/');
+    const ba = page.locator('[data-ba]'), range = ba.locator('input[type="range"]');
+    await expect(range).toHaveAccessibleName(/전·후 비교 위치/);
+    await range.focus();
+    for (let i = 0; i < 10; i++) await page.keyboard.press('ArrowRight');
+    await expect.poll(() => ba.evaluate((e) => e.style.getPropertyValue('--x'))).toBe('60%');
+    await range.fill('20');
+    await expect.poll(() => ba.evaluate((e) => e.style.getPropertyValue('--x'))).toBe('20%');
+    const r = await ba.evaluate((e) => { const b = e.getBoundingClientRect(), c = e.querySelector<HTMLElement>('[class*="baBefore"]')!; return { w: b.width, clip: getComputedStyle(c).clipPath }; });
+    expect(r.clip).toContain('inset');
+  });
+
+  test('인트로(?intro): 엉킨 선이 덮고 제목은 숨었다가, 아래로 내리면(폰은 누르면) & 로 모인 뒤 제목이 올라온다', async ({ page, isMobile }) => {
+    await page.goto('/?intro');
+    const layer = page.locator('[data-intro-layer]');
+    await expect(layer).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-intro', 'on');
+    const y0 = await page.evaluate(() => scrollY);
+    await page.waitForTimeout(1500);
+    if (isMobile) await page.touchscreen.tap(200, 400);
+    else { await page.mouse.move(600, 400); await page.mouse.wheel(0, 400); }
+    expect(await page.evaluate(() => scrollY)).toBe(y0);   // 인트로 동안 페이지는 움직이지 않는다
+    await expect(page.locator('html')).toHaveAttribute('data-intro', 'done', { timeout: 6000 });
+    await expect(layer).toHaveCount(0);
+    await expect(page.locator('h1 span span').first()).toHaveCSS('transform', /none|matrix\(1, 0, 0, 1, 0, 0\)/, { timeout: 3000 });
+    expect(await page.evaluate(() => sessionStorage.getItem('prologue.intro'))).toBe('1');
+  });
+
+  test('인트로: 건너뛰기를 누르면 바로 끝난다', async ({ page }) => {
+    await page.goto('/?intro');
+    await page.getByRole('button', { name: '건너뛰기' }).click();
+    await expect(page.locator('html')).toHaveAttribute('data-intro', 'done');
+    await expect(page.locator('[data-intro-layer]')).toHaveCount(0);
+    await page.locator('[data-sec="hero"]').getByRole('button', { name: /프로젝트 문의/ }).click();
+    await expect(page.locator('html')).toHaveAttribute('data-drawer-open', '');
+  });
+});
+
+test('모션 줄이기: 인트로 없음, 선과 & 는 다 그려진 상태, 낱말은 모두 진하다', async ({ browser }) => {
+  const ctx = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto('/?intro');
+  await expect(page.locator('[data-intro-layer]')).toHaveCount(0);
+  await expect(page.locator('[data-home]')).toHaveAttribute('data-motion', 'still');
+  await expect(page.locator('[data-amp="contact"]')).toHaveAttribute('data-drawn', '');
+  expect(await page.locator('[data-fill] [data-w]:not([data-on])').count()).toBe(0);
+  await ctx.close();
 });
