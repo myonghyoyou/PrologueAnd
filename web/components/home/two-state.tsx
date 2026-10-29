@@ -16,7 +16,7 @@ export function TwoState({ names, shots, sizes }: { names: [string, string]; sho
           <button key={n} type="button" className={s.twoBtn} aria-pressed={k === i} onClick={() => setK(i)}>{n}</button>
         ))}
       </div>
-      <div className={s.frame} style={{ aspectRatio: `${a.w} / ${a.h}` }}>
+      <div className={s.frame} style={{ aspectRatio: `${a.w} / ${a.h}` }} data-under>
         <div className={s.twoStage}>
           {shots.map((sh, i) => (
             <div key={sh.src} className={s.twoShot} data-on={k === i ? '' : undefined} aria-hidden={k !== i} data-zoom={sh.src} data-zoom-alt={sh.alt}>

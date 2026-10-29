@@ -12,9 +12,9 @@ import { TwoState } from './two-state';
 import s from './home.module.css';
 
 const no = (i: number) => String(i + 1).padStart(2, '0');
-/** 머리글 낱말 채우기 — 낱말마다 span(data-w). 움직임이 없으면 그대로 진한 글자다. em 은 그 번째 줄을 강조 */
-const words = (ls: readonly string[], em?: number) => ls.map((l, i) => {
-  const ws = l.split(' ').map((w, k) => <Fragment key={k}>{k > 0 ? ' ' : null}<span data-w>{w}</span></Fragment>);
+/** 머리글 낱말 채우기 — 낱말마다 span(data-w). 움직임이 없으면 그대로 진한 글자다. em 은 그 번째 줄을 강조, find 는 잇는 선이 감싸는 낱말 */
+const words = (ls: readonly string[], em?: number, find?: string) => ls.map((l, i) => {
+  const ws = l.split(' ').map((w, k) => <Fragment key={k}>{k > 0 ? ' ' : null}<span data-w data-mark={w === find ? 'find' : undefined}>{w}</span></Fragment>);
   return <Fragment key={l}>{i > 0 ? <br /> : null}{i === em ? <em>{ws}</em> : ws}</Fragment>;
 });
 
@@ -27,7 +27,7 @@ function SectionHead({ n, t }: { n: string; t: string }) {
 function Pic({ shot, sizes }: { shot: Shot; sizes: string }) {
   return (
     <figure className={s.fig}>
-      <div className={s.frame} data-zoom={shot.src} data-zoom-alt={shot.alt}>
+      <div className={s.frame} data-zoom={shot.src} data-zoom-alt={shot.alt} data-under>
         <Image src={shot.src} alt={shot.alt} width={shot.w} height={shot.h} sizes={sizes} />
       </div>
       {shot.cap ? <figcaption className={s.cap}>{shot.cap}</figcaption> : null}
@@ -41,7 +41,7 @@ function Crop({ d }: { d: Detail }) {
   const [x, y, w, h] = d.crop;
   return (
     <figure className={s.fig} data-detail>
-      <div className={s.frame} data-zoom={d.src} data-zoom-alt={d.alt} data-zoom-crop={d.crop.join(',')}>
+      <div className={s.frame} data-zoom={d.src} data-zoom-alt={d.alt} data-zoom-crop={d.crop.join(',')} data-under>
         <div className={s.win} style={{ aspectRatio: `${(w / 100) * d.w} / ${(h / 100) * d.h}` }}>
           <Image src={d.src} alt={d.alt} width={d.w} height={d.h} unoptimized className={s.winImg}
                  style={{ width: `${(10000 / w).toFixed(3)}%`, left: `${(-x / w * 100).toFixed(3)}%`, top: `${(-y / h * 100).toFixed(3)}%` }} />
@@ -90,7 +90,7 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
       <div className={s.devs}>
         {w.shots.map((sh) => (
           <figure key={sh.src} className={s.fig}>
-            <div className={s.dev} data-zoom={sh.src} data-zoom-alt={sh.alt}><Image src={sh.src} alt={sh.alt} width={sh.w} height={sh.h} sizes="(min-width:1024px) 24vw, 44vw" /></div>
+            <div className={s.dev} data-zoom={sh.src} data-zoom-alt={sh.alt} data-under><Image src={sh.src} alt={sh.alt} width={sh.w} height={sh.h} sizes="(min-width:1024px) 24vw, 44vw" /></div>
             <figcaption className={s.cap}>{sh.cap}</figcaption>
           </figure>
         ))}
@@ -162,13 +162,12 @@ export function Home({ projects }: { projects: Project[] }) {
 
       <section className={s.wrap} id="how" data-sec="how">
         <SectionHead n="02" t="일하는 방식" />
-        <h2 className={s.lead} data-fill>{words(HOW.h)}</h2>
+        <h2 className={s.lead} data-fill>{words(HOW.h, undefined, HOW.find)}</h2>
         <div className={s.steps}>
           {HOW.steps.map((st, i) => (
-            <div key={st.t} className={s.step} data-step>
-              <i className={s.dot} data-step-dot aria-hidden="true" />
+            <div key={st.t} className={s.step} data-step={i + 1}>
               <h3><span className={s.num}>{no(i)}</span>{st.t}</h3>
-              <p>{st.p}</p>
+              <p>{'mark' in st && st.mark ? <>{st.p.split(st.mark)[0]}<span data-mark="fix">{st.mark}</span>{st.p.split(st.mark)[1]}</> : st.p}</p>
               <ul className={s.kw} aria-label="하는 일">{st.kw.map((k) => <li key={k}>{k}</li>)}</ul>
             </div>
           ))}
@@ -182,7 +181,7 @@ export function Home({ projects }: { projects: Project[] }) {
           {SERVICES.map((v, i) => {
             const rel = v.rel.map((slug) => bySlug.get(slug)).filter((p): p is Project => !!p);
             return (
-              <div key={v.id} className={s.row} id={`s-${v.id}`} data-can>
+              <div key={v.id} className={s.row} id={`s-${v.id}`} data-can data-group={v.group}>
                 <p className={s.rowMeta}><span className={s.num}>{no(i)}</span>{v.label}</p>
                 <h3 className={s.rowT} data-fill>{words([v.t])}</h3>
                 <div className={s.rowBody}>

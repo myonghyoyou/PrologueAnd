@@ -10,7 +10,7 @@ export function BeforeAfter({ before, after, marks }: { before: Shot; after: Sho
   const box = useRef<HTMLDivElement>(null);
   return (
     <figure className={s.fig}>
-      <div ref={box} className={s.ba} data-ba style={{ ['--x' as string]: '50%' }}>
+      <div ref={box} className={s.ba} data-ba data-under style={{ ['--x' as string]: '50%' }}>
         <Image src={after.src} alt={after.alt} width={after.w} height={after.h} sizes="(min-width:1024px) 62vw, 100vw" className={s.baImg} />
         <div className={s.baBefore}>
           <Image src={before.src} alt={before.alt} width={before.w} height={before.h} sizes="(min-width:1024px) 62vw, 100vw" className={s.baImg} />
