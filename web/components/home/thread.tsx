@@ -119,8 +119,16 @@ export function Thread() {
         x.ws.forEach((w, i) => w.toggleAttribute('data-on', i < n));
       }
     };
+    /** 헤더가 남색 문의 장 위에 오면 헤더도 남색으로(html[data-hdr-dark]) */
+    const contactSec = root.querySelector<HTMLElement>('[data-sec="contact"]');
+    const header = () => {
+      if (!contactSec) return;
+      const h = document.querySelector('header')?.getBoundingClientRect().height ?? 64;
+      document.documentElement.toggleAttribute('data-hdr-dark', contactSec.getBoundingClientRect().top <= h * 0.5);
+    };
     const tick = () => {
       raf = 0;
+      header();
       if (!ready) return;
       target = lenAt(scrollY - top + innerHeight * 0.62);
       words();
@@ -145,6 +153,7 @@ export function Thread() {
       cancelAnimationFrame(raf); clearTimeout(rz); ro.disconnect();
       removeEventListener('scroll', wake); removeEventListener(INTRO_DONE, begin);
       delete root.dataset.motion;
+      document.documentElement.removeAttribute('data-hdr-dark');
     };
   }, []);
 

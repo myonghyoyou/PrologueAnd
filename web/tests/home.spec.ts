@@ -72,9 +72,12 @@ test.describe('홈', () => {
   });
 
 
-  test('작업: 병원은 같은 자리를 전/후로 자른 비교 하나, 교대 근무표는 글이 그림보다 먼저, 확대 하나, 요청 처리는 확대 없음', async ({ page }) => {
-    const h = page.locator('[data-layout="pair"] [data-compare]');
-    await expect(h.locator('[data-detail]')).toHaveCount(2);
+  test('작업: 병원은 전·후 비교 위에 짚은 자리 둘과 그 설명, 교대 근무표는 글이 그림보다 먼저, 확대 하나, 요청 처리는 확대 없음', async ({ page }) => {
+    const pair = page.locator('[data-layout="pair"]');
+    await expect(pair.locator('[data-ba] [class*="baMark"]')).toHaveCount(2);
+    await expect(pair.locator('[data-compare] li')).toHaveCount(3);
+    await expect(pair.locator('[data-compare] a')).toHaveAttribute('href', '/projects/hospital-ux');
+    await expect(pair.locator('[data-detail]')).toHaveCount(0);
     const full = page.locator('[data-layout="full"]');
     const t = (await full.locator('h3').boundingBox())!, img = (await full.locator('img').first().boundingBox())!;
     expect(t.y).toBeLessThan(img.y);
@@ -171,29 +174,69 @@ test.describe('홈 — 움직임(P2)', () => {
     expect(r.clip).toContain('inset');
   });
 
-  test('인트로(?intro): 엉킨 선이 덮고 제목은 숨었다가, 아래로 내리면(폰은 누르면) & 로 모인 뒤 제목이 올라온다', async ({ page, isMobile }) => {
+  test('인트로(?intro): 손대지 않으면 4초 안에 & 로 모이고 제목이 올라오며, 30일 동안 다시 나오지 않는다', async ({ page }) => {
     await page.goto('/?intro');
     const layer = page.locator('[data-intro-layer]');
     await expect(layer).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('data-intro', 'on');
-    const y0 = await page.evaluate(() => scrollY);
-    await page.waitForTimeout(1500);
+    await expect(page.locator('html')).toHaveAttribute('data-intro', 'done', { timeout: 4000 });
+    await expect(layer).toHaveCount(0);
+    await expect(page.locator('h1 span span').first()).toHaveCSS('transform', /none|matrix\(1, 0, 0, 1, 0, 0\)/, { timeout: 2000 });
+    const t = Number(await page.evaluate(() => localStorage.getItem('prologue.intro')));
+    expect(Date.now() - t).toBeLessThan(60_000);
+  });
+
+  test('인트로: 스크롤(폰은 누르기)이 오면 그 자리에서 끝나고 첫 화면이 바로 완성된다, 페이지는 움직이지 않는다', async ({ page, isMobile }) => {
+    await page.goto('/?intro');
+    await expect(page.locator('[data-intro-layer]')).toBeVisible();
+    await page.waitForTimeout(300);
     if (isMobile) await page.touchscreen.tap(200, 400);
     else { await page.mouse.move(600, 400); await page.mouse.wheel(0, 400); }
-    expect(await page.evaluate(() => scrollY)).toBe(y0);   // 인트로 동안 페이지는 움직이지 않는다
-    await expect(page.locator('html')).toHaveAttribute('data-intro', 'done', { timeout: 6000 });
-    await expect(layer).toHaveCount(0);
-    await expect(page.locator('h1 span span').first()).toHaveCSS('transform', /none|matrix\(1, 0, 0, 1, 0, 0\)/, { timeout: 3000 });
-    expect(await page.evaluate(() => sessionStorage.getItem('prologue.intro'))).toBe('1');
+    await expect(page.locator('html')).toHaveAttribute('data-intro', 'skip', { timeout: 1000 });
+    await expect(page.locator('[data-intro-layer]')).toHaveCount(0);
+    expect(await page.evaluate(() => scrollY)).toBe(0);
+    // 기다림 없이 완성: 제목 줄이 제자리, 아래 묶음이 보인다
+    expect(await page.locator('h1 span span').first().evaluate((e) => getComputedStyle(e).transform)).toMatch(/none|matrix\(1, 0, 0, 1, 0, 0\)/);
+    expect(await page.locator('[data-sec="hero"] [class*="heroFoot"]').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
   });
 
   test('인트로: 건너뛰기를 누르면 바로 끝난다', async ({ page }) => {
     await page.goto('/?intro');
     await page.getByRole('button', { name: '건너뛰기' }).click();
-    await expect(page.locator('html')).toHaveAttribute('data-intro', 'done');
+    await expect(page.locator('html')).toHaveAttribute('data-intro', 'skip');
     await expect(page.locator('[data-intro-layer]')).toHaveCount(0);
     await page.locator('[data-sec="hero"]').getByRole('button', { name: /프로젝트 문의/ }).click();
     await expect(page.locator('html')).toHaveAttribute('data-drawer-open', '');
+  });
+
+  test('두 화면 전환: 요청 처리와 근무표가 실제 두 화면을 단추로 바꿔 보이고, 캡션이 따라 바뀐다', async ({ page }) => {
+    await page.goto('/');
+    for (const [slug, second] of [['por-favor-harry', '요청한 사람 · 진행 상황'], ['shift-board', '내려받기 전 확인']] as const) {
+      const w = page.locator(`[data-work="${slug}"] [data-two]`);
+      const btns = w.getByRole('button');
+      await expect(btns).toHaveCount(2);
+      await expect(btns.first()).toHaveAttribute('aria-pressed', 'true');
+      const cap0 = await w.locator('figcaption').innerText();
+      await w.getByRole('button', { name: second }).click();
+      await expect(w.getByRole('button', { name: second })).toHaveAttribute('aria-pressed', 'true');
+      await expect(w.locator('figcaption')).not.toHaveText(cap0);
+      await expect(w.locator('[data-on] img')).toBeVisible();
+    }
+  });
+
+  test('문의 장 위에서는 헤더가 남색, 위로 돌아가면 원래대로', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('html')).not.toHaveAttribute('data-hdr-dark', '');
+    const top = await page.locator('[data-sec="contact"]').evaluate((e) => e.getBoundingClientRect().top + scrollY);
+    const max = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
+    await scrollToY(page, Math.min(top + 4, max));
+    // 큰 화면(2560)은 끝까지 내려도 문의 장 꼭대기가 헤더 밑까지 오지 않을 수 있다 — 그때 헤더는 밝은 바탕 위라 그대로가 맞다
+    const under = await page.evaluate(() => document.querySelector('[data-sec="contact"]')!.getBoundingClientRect().top <= document.querySelector('header')!.getBoundingClientRect().height / 2);
+    if (under) await expect(page.locator('html')).toHaveAttribute('data-hdr-dark', '');
+    else await expect(page.locator('html')).not.toHaveAttribute('data-hdr-dark', '');
+    expect(under || top + 4 > max).toBe(true);
+    await scrollToY(page, 0);
+    await expect(page.locator('html')).not.toHaveAttribute('data-hdr-dark', '');
   });
 });
 

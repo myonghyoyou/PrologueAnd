@@ -20,6 +20,17 @@
 .nav a:hover,.nav button:hover{background:var(--bone-900);color:var(--bone-50)}
 .nav .cur{display:inline-flex;align-items:center;height:40px;padding:0 18px;border:1px solid var(--bone-900);border-radius:2px;line-height:1;
   background:var(--bone-900);color:var(--bone-50);cursor:default}   /* 지금 있는 곳: 버튼 모양 그대로, 호버와 같은 반전 */
+/* 홈: 남색 문의 장 위에서는 헤더도 남색(html[data-hdr-dark] 은 홈의 선 고리가 붙인다). 대비·초점 표시는 그대로 */
+.hdr{transition:background .25s}
+.brand,.nav a,.nav button{transition:background .15s,color .15s,border-color .15s}
+:global(html[data-hdr-dark]) .hdr{background:linear-gradient(var(--navy-900) 70%, rgba(31,36,71,0))}
+:global(html[data-hdr-dark]) .brand{color:var(--bone-50)}
+:global(html[data-hdr-dark]) .amp{color:var(--navy-300)}
+:global(html[data-hdr-dark]) .nav a,:global(html[data-hdr-dark]) .nav button{background:var(--navy-900);border-color:var(--bone-50);color:var(--bone-50)}
+:global(html[data-hdr-dark]) .nav a:hover,:global(html[data-hdr-dark]) .nav button:hover{background:var(--bone-50);color:var(--navy-900)}
+:global(html[data-hdr-dark]) .nav .text{background:none;border-color:transparent;color:var(--bone-50)}
+:global(html[data-hdr-dark]) .nav a:focus-visible,:global(html[data-hdr-dark]) .nav button:focus-visible{outline:2px solid var(--bone-50);outline-offset:3px}
+@media (max-width:1023px){ :global(html[data-hdr-dark]) .hdr{background:var(--navy-900)} }
 /* 홈의 글자 링크(할 수 있는 일) — 단추 모양 없이 */
 .nav .text{border-color:transparent;background:none;padding:0 10px}
 .nav .text:hover{background:none;color:var(--navy-800);text-decoration:underline;text-underline-offset:4px}

@@ -8,6 +8,7 @@ import { Amp } from './amp';
 import { BeforeAfter } from './before-after';
 import { Intro, INTRO_GATE } from './intro';
 import { Thread } from './thread';
+import { TwoState } from './two-state';
 import s from './home.module.css';
 
 const no = (i: number) => String(i + 1).padStart(2, '0');
@@ -74,7 +75,9 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
   const attrs = { 'data-work': p.slug, 'data-layout': w.layout, id: `w-${p.slug}` };
   if (w.layout === 'wide') return (
     <article className={`${s.case} ${s.wide}`} {...attrs}>
-      <div className={s.pic}><Pic shot={w.shots[0]} sizes="(min-width:1024px) 62vw, 100vw" /></div>
+      <div className={s.pic}>{w.toggle
+        ? <TwoState names={w.toggle.names} shots={[w.shots[0], w.toggle.next]} sizes="(min-width:1024px) 62vw, 100vw" />
+        : <Pic shot={w.shots[0]} sizes="(min-width:1024px) 62vw, 100vw" />}</div>
       <div className={s.txt}>
         <CaseText p={p} w={w} i={i} />
         {w.details?.map((d) => <div key={d.cap} className={s.side}><Crop d={d} /></div>)}
@@ -97,25 +100,21 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
   if (w.layout === 'pair') return (
     <article className={`${s.case} ${s.pair}`} {...attrs}>
       <div className={s.pairTxt}><CaseText p={p} w={w} i={i} /></div>
-      <div className={s.baWrap}><BeforeAfter before={w.shots[0]} after={w.shots[1]} /></div>
-      <div className={s.cmp} data-compare>
-        <p className={s.cmpHead}>가장 크게 달라진 곳</p>
-        {w.compare?.map((c, k) => (
-          <div key={c.cap} className={s.cmpRow}>
-            <p className={s.cmpCap}><span className={s.num}>{k + 1}</span>{c.cap}</p>
-            <div className={c.stack ? `${s.cmpPics} ${s.stack}` : s.cmpPics}>
-              <div><span className={s.tag}>전</span><Crop d={c.before} /></div>
-              <div><span className={s.tag}>후</span><Crop d={c.after} /></div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <div className={s.baWrap}><BeforeAfter before={w.shots[0]} after={w.shots[1]} marks={w.marks} /></div>
+      {w.marks ? (
+        <ol className={s.marks} data-compare aria-label="짚은 자리">
+          {w.marks.map((m, k) => <li key={m.t}><span className={s.markNo} aria-hidden="true">{k + 1}</span>{m.t}</li>)}
+          <li className={s.more}>그 밖의 비교는 <Link href={`/projects/${p.slug}`}>사례 상세</Link>에 있습니다.</li>
+        </ol>
+      ) : null}
     </article>
   );
   return (
     <article className={`${s.case} ${s.full}`} {...attrs}>
       <div className={s.fullTxt}><CaseText p={p} w={w} i={i} /></div>
-      <div className={s.fullPic}><Pic shot={w.shots[0]} sizes="(min-width:1024px) 80vw, 100vw" /></div>
+      <div className={s.fullPic}>{w.toggle
+        ? <TwoState names={w.toggle.names} shots={[w.shots[0], w.toggle.next]} sizes="(min-width:1024px) 80vw, 100vw" />
+        : <Pic shot={w.shots[0]} sizes="(min-width:1024px) 80vw, 100vw" />}</div>
       {w.details?.map((d) => (
         <div key={d.cap} className={s.fd}>
           <div className={s.fdPic}><Crop d={{ ...d, cap: undefined }} /></div>
@@ -185,7 +184,7 @@ export function Home({ projects }: { projects: Project[] }) {
             return (
               <div key={v.id} className={s.row} id={`s-${v.id}`} data-can>
                 <p className={s.rowMeta}><span className={s.num}>{no(i)}</span>{v.label}</p>
-                <h3 className={s.rowT}>{v.t}</h3>
+                <h3 className={s.rowT} data-fill>{words([v.t])}</h3>
                 <div className={s.rowBody}>
                   <p>{v.d}</p>
                   {rel.length ? (

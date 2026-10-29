@@ -7,28 +7,30 @@ import s from './home.module.css';
 /** 인트로를 볼지 — 페이지 맨 위 인라인 스크립트(INTRO_GATE)가 html[data-intro="on"] 으로 정해 두고, 여기서는 그 값만 읽는다 */
 export const INTRO_KEY = 'prologue.intro';
 export const INTRO_DONE = 'prologue:intro-done';
-/** 첫 그림 전에 실행 — 처음 들어온 세션·맨 위·모션 허용일 때만 히어로를 숨기고 인트로를 켠다.
+const AGAIN_AFTER = 30 * 24 * 3600 * 1000;   // 한 번 본 브라우저는 30일 동안 다시 보이지 않는다
+/** 첫 그림 전에 실행 — 30일 안에 본 적 없음·맨 위·모션 허용일 때만 히어로를 숨기고 인트로를 켠다.
  *  자동화 브라우저(테스트)는 ?intro 가 있을 때만. 2.5초 안에 인트로가 시작되지 않으면(스크립트 실패) 그냥 보인다 */
 export const INTRO_GATE = `(function(){try{var q=location.search.indexOf('intro')>-1;
-if(sessionStorage.getItem('${INTRO_KEY}')&&!q)return;
+var t=+localStorage.getItem('${INTRO_KEY}')||0;if(Date.now()-t<${AGAIN_AFTER}&&!q)return;
 if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
 if((navigator.webdriver&&!q)||location.hash||scrollY>0)return;
 var h=document.documentElement;h.dataset.intro='on';
-setTimeout(function(){if(h.dataset.intro==='on'&&!window.__introStarted)h.dataset.intro='done'},2500)}catch(e){}})();`;
+setTimeout(function(){if(h.dataset.intro==='on'&&!window.__introStarted)h.dataset.intro='skip'},2500)}catch(e){}})();`;
 
-const DRAW = 1400, MORPH = 2200, FILL = 380;
+/** 그리기 → 잠깐 머묾 → & 로 모임 → 채움. 합쳐 약 2.7초, 그 뒤 제목이 0.7초에 올라온다 */
+const DRAW = 800, HOLD = 250, MORPH = 1400, FILL = 280;
 const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
 type P = [number, number];
 
-/** 화면을 가득 채우는 엉킨 선 — 무작위 점 120개를 2차 곡선으로 이어 점열로 편다 */
+/** 화면을 채우는 엉킨 선 — 무작위 점 60개를 2차 곡선으로 이어 점열로 편다(전보다 절반: 겹침을 줄였다) */
 function tangle(w: number, h: number): P[] {
   let seed = 7;
   const r = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
-  const k: P[] = Array.from({ length: 120 }, () => [w * (0.04 + 0.92 * r()), h * (0.06 + 0.88 * r())]);
+  const k: P[] = Array.from({ length: 60 }, () => [w * (0.06 + 0.88 * r()), h * (0.1 + 0.8 * r())]);
   const out: P[] = [k[0]];
   for (let i = 1; i < k.length - 1; i++) {
     const a = out[out.length - 1], c = k[i], b: P = [(k[i][0] + k[i + 1][0]) / 2, (k[i][1] + k[i + 1][1]) / 2];
-    for (let j = 1; j <= 14; j++) { const t = j / 14, u = 1 - t; out.push([u * u * a[0] + 2 * u * t * c[0] + t * t * b[0], u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]]); }
+    for (let j = 1; j <= 20; j++) { const t = j / 20, u = 1 - t; out.push([u * u * a[0] + 2 * u * t * c[0] + t * t * b[0], u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]]); }
   }
   return out;
 }
@@ -41,16 +43,16 @@ function resample(c: P[], m: number): P[] {
   });
 }
 
-/** 첫 화면 인트로(시그니처 1) — 엉킨 선이 그려지고, 첫 스크롤·키·터치에 &로 모인 뒤 채워진다. 그다음 제목이 줄마다 올라온다.
- *  캔버스 2D 한 장, 점 약 1,700개의 위치 보간만 한다(저사양 기준). 「건너뛰기」로 언제든 끝낸다 */
+/** 첫 화면 인트로(시그니처 1) — 엉킨 선이 그려지고 곧바로 & 로 모여 채워진 뒤, 제목이 줄마다 올라온다.
+ *  스크롤·키·누르기·「건너뛰기」 중 무엇이든 들어오면 그 자리에서 끝나고 첫 화면이 완성된 채로 나온다(data-intro="skip").
+ *  캔버스 2D 한 장, 점 약 1,200개의 위치 보간만 한다(저사양 기준) */
 export function Intro() {
   const [on, setOn] = useState(false);
   const cv = useRef<HTMLCanvasElement>(null);
   const skip = useRef<() => void>(() => {});
 
   useEffect(() => {
-    const html = document.documentElement;
-    if (html.dataset.intro !== 'on') return;
+    if (document.documentElement.dataset.intro !== 'on') return;
     (window as unknown as { __introStarted?: boolean }).__introStarted = true;
     setOn(true);
   }, []);
@@ -64,10 +66,10 @@ export function Intro() {
     ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     const ink = getComputedStyle(canvas).color;
     const pts = tangle(W, H);
-    const lenis = getLenis(); lenis?.stop();
+    getLenis()?.stop();
     const prevOverflow = html.style.overflow; html.style.overflow = 'hidden';
 
-    let raf = 0, t0 = performance.now(), phase: 'draw' | 'wait' | 'morph' | 'fill' | 'end' = 'draw', queued = false;
+    let raf = 0, t0 = performance.now(), phase: 'draw' | 'morph' | 'fill' | 'end' = 'draw';
     let groups: { src: P[]; dst: P[] }[] = [], amp: DOMRect | null = null;
 
     const stroke = (p: P[], n = p.length, close = false) => {
@@ -90,23 +92,19 @@ export function Intro() {
         return { src, dst: resample(c, src.length) };
       });
     };
-    const finish = () => {
+    /** cut: 입력으로 끊었으면 제목도 기다리지 않고 바로 보인다 */
+    const finish = (cut: boolean) => {
       if (phase === 'end') return;
       phase = 'end';
       cancelAnimationFrame(raf);
-      try { sessionStorage.setItem(INTRO_KEY, '1'); } catch {}
-      html.dataset.intro = 'done';
+      try { localStorage.setItem(INTRO_KEY, String(Date.now())); } catch {}
+      html.dataset.intro = cut ? 'skip' : 'done';
       html.style.overflow = prevOverflow;
       getLenis()?.start();
       window.dispatchEvent(new Event(INTRO_DONE));
-      setTimeout(() => setOn(false), 60);
+      setTimeout(() => setOn(false), 40);
     };
-    skip.current = finish;
-    const start = () => {
-      if (phase === 'draw') { queued = true; return; }
-      if (phase !== 'wait') return;
-      plan(); phase = 'morph'; t0 = performance.now();
-    };
+    skip.current = () => finish(true);
 
     const frame = (now: number) => {
       const t = now - t0;
@@ -115,9 +113,7 @@ export function Intro() {
       if (phase === 'draw') {
         const k = Math.min(1, t / DRAW);
         stroke(pts, Math.max(2, Math.floor(pts.length * (1 - Math.pow(1 - k, 3)))));
-        if (k >= 1) { phase = 'wait'; if (queued) start(); }
-      } else if (phase === 'wait') {
-        stroke(pts);
+        if (t >= DRAW + HOLD) { plan(); phase = 'morph'; t0 = now; }
       } else if (phase === 'morph') {
         const e = ease(Math.min(1, t / MORPH));
         for (const g of groups) stroke(g.src.map((a, i) => [a[0] + (g.dst[i][0] - a[0]) * e, a[1] + (g.dst[i][1] - a[1]) * e] as P), g.src.length, e > 0.98);
@@ -129,26 +125,26 @@ export function Intro() {
         ctx.translate(amp.left, amp.top); ctx.scale(amp.width / AMP_W, amp.height / AMP_H);
         ctx.fill(new Path2D(AMP_D), 'evenodd');
         ctx.restore();
-        if (k >= 1) return finish();
+        if (k >= 1) return finish(false);
       }
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
 
-    // 첫 입력이 풀기 신호다. 인트로 동안은 페이지가 움직이지 않게 막는다
-    const block = (e: Event) => { e.preventDefault(); start(); };
+    // 무엇이든 입력이 오면 바로 끝낸다. 그 입력이 페이지를 움직이지는 않게 막는다
+    const cut = (e: Event) => { e.preventDefault(); finish(true); };
     const key = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') return finish();
-      if (['ArrowDown', 'PageDown', ' ', 'Enter', 'End'].includes(e.key) && !(e.target as HTMLElement).closest('button')) { e.preventDefault(); start(); }
+      if ((e.target as HTMLElement).closest?.('button')) return;   // 건너뛰기 단추의 Enter·Space 는 단추가 처리
+      if (['ArrowDown', 'PageDown', ' ', 'Enter', 'End', 'Escape'].includes(e.key)) { e.preventDefault(); finish(true); }
     };
-    addEventListener('wheel', block, { passive: false });
-    addEventListener('touchmove', block, { passive: false });
+    addEventListener('wheel', cut, { passive: false });
+    addEventListener('touchmove', cut, { passive: false });
     addEventListener('keydown', key);
-    canvas.addEventListener('pointerdown', start);
+    canvas.addEventListener('pointerdown', cut);
     return () => {
-      canvas.removeEventListener('pointerdown', start);
       cancelAnimationFrame(raf);
-      removeEventListener('wheel', block); removeEventListener('touchmove', block); removeEventListener('keydown', key);
+      removeEventListener('wheel', cut); removeEventListener('touchmove', cut); removeEventListener('keydown', key);
+      canvas.removeEventListener('pointerdown', cut);
       if (phase !== 'end') { html.style.overflow = prevOverflow; getLenis()?.start(); }
     };
   }, [on]);
@@ -157,7 +153,6 @@ export function Intro() {
   return (
     <div className={s.introLayer} data-intro-layer>
       <canvas ref={cv} className={s.introCv} aria-hidden="true" />
-      <p className={s.introHint} aria-hidden="true">아래로 내려 보세요</p>
       <button type="button" className={s.introSkip} onClick={() => skip.current()}>건너뛰기</button>
     </div>
   );

@@ -107,7 +107,13 @@
 .tag{display:block;margin-bottom:8px;font-size:13px;font-weight:600;color:var(--bone-600)}
 /* 교대 근무표: 글이 먼저, 그 아래 꽉 찬 그림, 다시 그 아래 핵심 자리 셋 */
 /* 글을 두 칸으로: 왼쪽 번호·이름·링크, 오른쪽 문제·판단·바꾼 것 (병원·교대 근무표) */
-.fullTxt,.baWrap{grid-column:1/10;margin-top:32px}
+.fullTxt,.baWrap{grid-column:1/9;margin-top:32px}
+/* 병원: 비교 옆에 짚은 자리 둘(번호는 비교 위 번호와 같다) */
+.marks{grid-column:9/13;align-self:center;margin:32px 0 0;padding:0;list-style:none;display:grid;gap:20px}
+.marks li{display:flex;gap:12px;font-size:16px;line-height:1.7;color:var(--bone-700)}
+.markNo,.baMark{flex:none;width:26px;height:26px;border-radius:50%;background:var(--navy-900);color:var(--bone-50);font-size:13px;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.marks .more{display:block;font-size:14px;color:var(--bone-500)}
+.more a{color:var(--bone-900);border-bottom:1px solid var(--bone-400)}
 .pairTxt{grid-column:1/13;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);align-items:start}
 :is(.fullTxt,.pairTxt) > .meta{grid-column:1/6;grid-row:1}
 :is(.fullTxt,.pairTxt) > .caseT{grid-column:1/6;grid-row:2}
@@ -144,10 +150,12 @@
 
 /* 첫 화면: 제목은 줄마다 가림막 안에서 올라온다 */
 .hl{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
-.hl > span{display:block;transition:transform .9s var(--ease-out)}
-.hl:nth-child(2) > span{transition-delay:.09s}
-.hl:nth-child(3) > span{transition-delay:.18s}
-.hero > .label,.heroFoot{transition:opacity .7s var(--ease-out) .45s,transform .7s var(--ease-out) .45s}
+.hl > span{display:block;transition:transform .7s var(--ease-out)}
+.hl:nth-child(2) > span{transition-delay:.07s}
+.hl:nth-child(3) > span{transition-delay:.14s}
+.hero > .label,.heroFoot{transition:opacity .5s var(--ease-out) .3s,transform .5s var(--ease-out) .3s}
+/* 입력으로 끊었으면 기다리지 않는다 */
+:global(html[data-intro="skip"]) .hl > span,:global(html[data-intro="skip"]) .hero > .label,:global(html[data-intro="skip"]) .heroFoot{transition:none}
 :global(html[data-intro="on"]) .hl > span{transform:translateY(110%)}
 :global(html[data-intro="on"]) .hero > .label,:global(html[data-intro="on"]) .heroFoot{opacity:0;transform:translateY(16px)}
 :global(html[data-intro="on"]) .heroAmp{opacity:0}
@@ -155,7 +163,6 @@
 /* 인트로 막 — 캔버스 한 장(선 색은 color 로 넘긴다), 안내, 건너뛰기 */
 .introLayer{position:fixed;inset:0;z-index:60;color:var(--navy-900)}
 .introCv{position:absolute;inset:0;width:100%;height:100%;color:inherit;touch-action:none}
-.introHint{position:absolute;left:50%;bottom:calc(32px + env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;font-size:14px;color:var(--bone-600);pointer-events:none}
 .introSkip{position:absolute;right:max(var(--gutter),16px);bottom:calc(24px + env(safe-area-inset-bottom));height:40px;padding:0 16px;border:1px solid var(--bone-400);border-radius:2px;
   background:var(--bone-50);font:inherit;font-size:14px;color:var(--bone-700);cursor:pointer}
 .introSkip:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
@@ -190,6 +197,7 @@
 .baLine i::before{content:"‹ ›";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--bone-50);font-size:15px;font-style:normal;letter-spacing:2px}
 .baTag{position:absolute;top:12px;padding:4px 10px;border-radius:2px;background:rgba(28,27,24,.8);color:#fff;font-size:12px;font-weight:600;pointer-events:none}
 .baL{left:12px}
+.baMark{position:absolute;z-index:3;margin:-13px 0 0 -13px;border:2px solid var(--bone-50);pointer-events:none}
 .baR{right:12px}
 .baRange{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize;touch-action:pan-y}
 .ba:has(.baRange:focus-visible){outline:2px solid var(--signal);outline-offset:3px}
@@ -197,6 +205,19 @@
 @media (prefers-reduced-motion:reduce){
   .hl > span,.hero > .label,.heroFoot,.root[data-motion] [data-w],.root[data-motion] .contactAmp path{transition:none}
 }
+
+/* 두 화면 전환 — 사례 상세의 전환 단추와 같은 방식(0.2초 교차, 틀은 첫 그림 비율로 고정) */
+.twoBtns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.twoBtn{height:36px;padding:0 14px;border:1px solid var(--bone-300);border-radius:2px;background:var(--bone-0);font:inherit;font-size:14px;font-weight:600;
+  color:var(--bone-700);cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.twoBtn:hover{border-color:var(--bone-900)}
+.twoBtn[aria-pressed="true"]{background:var(--bone-900);border-color:var(--bone-900);color:var(--bone-50)}
+.twoBtn:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+.twoStage{position:relative;width:100%;height:100%}
+.twoShot{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.twoShot[data-on]{opacity:1}
+.frame .twoShot img{width:auto;max-width:100%;max-height:100%;height:auto}
+@media (prefers-reduced-motion:reduce){ .twoShot{transition:none} }
 
 @media (max-width:1023px){
   .root{--sec:96px}
@@ -211,7 +232,8 @@
   .rowMeta,.rowT,.rowBody{grid-column:1/7}
   .workHead{row-gap:24px}
   .workT,.workSide{grid-column:1/7}
-  .wide .pic,.wide .txt,.phones .txt,.devs,.pairTxt,.pairPics,.baWrap,.fullTxt,.fullPic,.fdPic,.fdCap{grid-column:1/7}
+  .wide .pic,.wide .txt,.phones .txt,.devs,.pairTxt,.pairPics,.baWrap,.marks,.fullTxt,.fullPic,.fdPic,.fdCap{grid-column:1/7}
+  .marks{margin-top:24px}
   .fdCap{margin-top:16px}
   .wide .pic,.devs{margin-bottom:28px}
   .devs{order:-1}
