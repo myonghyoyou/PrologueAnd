@@ -12,7 +12,7 @@ import { TwoState } from './two-state';
 import s from './home.module.css';
 
 const no = (i: number) => String(i + 1).padStart(2, '0');
-/** 머리글 낱말 채우기 — 낱말마다 span(data-w). 움직임이 없으면 그대로 진한 글자다. em 은 그 번째 줄을 강조, find 는 잇는 선이 감싸는 낱말 */
+/** 머리글 낱말 채우기 — 낱말마다 span(data-w). 움직임이 없으면 그대로 진한 글자다. em 은 그 번째 줄을 강조, find 는 잇는 선이 밑에 받침을 대는 낱말 */
 const words = (ls: readonly string[], em?: number, find?: string) => ls.map((l, i) => {
   const ws = l.split(' ').map((w, k) => <Fragment key={k}>{k > 0 ? ' ' : null}<span data-w data-mark={w === find ? 'find' : undefined}>{w}</span></Fragment>);
   return <Fragment key={l}>{i > 0 ? <br /> : null}{i === em ? <em>{ws}</em> : ws}</Fragment>;
@@ -167,7 +167,7 @@ export function Home({ projects }: { projects: Project[] }) {
           {HOW.steps.map((st, i) => (
             <div key={st.t} className={s.step} data-step={i + 1}>
               <h3><span className={s.num}>{no(i)}</span>{st.t}</h3>
-              <p>{'mark' in st && st.mark ? <>{st.p.split(st.mark)[0]}<span data-mark="fix">{st.mark}</span>{st.p.split(st.mark)[1]}</> : st.p}</p>
+              <p>{st.p}</p>
               <ul className={s.kw} aria-label="하는 일">{st.kw.map((k) => <li key={k}>{k}</li>)}</ul>
             </div>
           ))}
