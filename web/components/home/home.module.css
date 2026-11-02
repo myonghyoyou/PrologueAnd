@@ -223,8 +223,8 @@
 .work .btn:not(.fill):hover{background:var(--bone-50);color:var(--navy-900)}
 
 /* 05 문의 + 바닥글 */
-.contact{background:var(--navy-900);color:var(--bone-50);overflow:hidden}
-.contact .sh{border-top:0;padding-top:0}   /* 작업에서 남색이 이어지므로 문의 장 위 선은 두지 않는다 */
+.contact{background:var(--navy-900);color:var(--bone-50);overflow:hidden;border-top:1px solid rgba(250,249,246,.16)}   /* 「모든 작업」과 문의 장 사이는 흐린 선 하나 */
+.contact .sh{border-top:0;padding-top:0}   /* 흰 머리 선은 두지 않는다(위 흐린 선과 겹친다) */
 .contactGrid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg)}
 .contactT{grid-column:1/9;margin:0 0 32px;font-size:clamp(44px,5.4vw,96px);line-height:1.08;letter-spacing:-.055em;font-weight:760}
 .contactT em{font-style:normal;color:var(--navy-300)}
