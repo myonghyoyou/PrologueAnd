@@ -281,13 +281,15 @@ test.describe('홈 — 데스크톱', () => {
     await expect.poll(() => fd.evaluate((e) => getComputedStyle(e).visibility)).toBe('hidden');
   });
 
-  test('가로선 정리: 「모든 작업」 위·05 머리의 흰 선, 작업 사이·서비스 목록 위 선은 없고, 「모든 작업」과 문의 장 사이 흐린 선은 있다', async ({ page }) => {
+  test('가로선 정리: 「모든 작업」 위 흰 선, 작업 사이·서비스 목록 위 선은 없고, 「모든 작업」과 문의 장 사이에는 글 폭의 흐린 선 하나', async ({ page }) => {
     await page.goto('/');
     const bw = (sel: string) => page.locator(sel).evaluateAll((es) => es.map((e) => parseFloat(getComputedStyle(e).borderTopWidth)));
     expect(await page.locator('[data-all] b').evaluate((e) => parseFloat(getComputedStyle(e.parentElement!).borderTopWidth))).toBe(0);
-    expect(await bw('[data-sec="contact"]')).toEqual([1]);
-    expect(await page.locator('[data-sec="contact"]').evaluate((e) => getComputedStyle(e).borderTopColor)).toBe('rgba(250, 249, 246, 0.16)');
-    expect((await bw('[data-sec="contact"] [class*="__sh"]'))[0]).toBe(0);
+    expect(await bw('[data-sec="contact"]')).toEqual([0]);   // 화면 끝까지 차는 선은 없다
+    const sh = await page.locator('[data-sec="contact"] [class*="__sh"]').first().evaluate((e) => { const r = e.getBoundingClientRect(), w = e.closest('[class*="__wrap"]')!, c = getComputedStyle(w); return { bw: parseFloat(getComputedStyle(e).borderTopWidth), color: getComputedStyle(e).borderTopColor, w: r.width, inner: w.clientWidth - parseFloat(c.paddingLeft) - parseFloat(c.paddingRight) }; });
+    expect(sh.bw).toBe(1); expect(sh.color).toBe('rgba(250, 249, 246, 0.16)');
+    expect(Math.abs(sh.w - sh.inner)).toBeLessThan(1);           // 글 폭
+    expect(sh.w).toBeLessThan(page.viewportSize()!.width - 20);
     expect((await bw('[data-work]')).every((w) => w === 0)).toBe(true);
     expect(await page.locator('[data-can]').first().evaluate((e) => parseFloat(getComputedStyle(e.parentElement!).borderTopWidth))).toBe(0);
   });
