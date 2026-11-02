@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import { AMP_H, AMP_TIP, AMP_VB, AMP_MAIN } from './amp-path';
-import { INTRO_DONE } from './intro';
+import { enterPlan, enterEase, dash, bandOf, band, ENTER_END, MAIN_END_SPEED } from './amp-enter';
 import s from './home.module.css';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -31,7 +31,7 @@ export function Thread() {
     root.dataset.motion = reduced ? 'still' : 'on';
 
     // 선 길이·높이 짝, 그리기 상태
-    let L = 0, top = 0, darkTop = Infinity, aIn = 0, maxT = 0, raf = 0, ready = false, yS = -1;
+    let L = 0, minLen = 0, top = 0, darkTop = Infinity, aIn = 0, maxT = 0, raf = 0, ready = false, yS = -1;
     let anchors: Anchor[] = [], aux: { el: SVGElement; len: number }[] = [];
     let ink: SVGPathElement | null = null, light: SVGPathElement | null = null, tip: SVGCircleElement | null = null;
     let ampBox: Box | null = null;
@@ -46,6 +46,16 @@ export function Thread() {
     const mainD = strands.find((x) => x.p.dataset.line === AMP_MAIN.diag), mainL = strands.find((x) => x.p.dataset.line === AMP_MAIN.loops);
     const contactSec = root.querySelector<HTMLElement>('[data-sec="contact"]');
 
+    // 첫 & 등장(amp-enter.ts) — eT: 등장 시계(ms), cap: 페이지 선이 그려져도 되는 길이(등장이 끝나면 주된 가닥 끝 속도로 늘어나 스크롤 자리를 따라잡는다)
+    const html = document.documentElement, heroSvg = root.querySelector<SVGSVGElement>('[data-amp="hero"]');
+    const enters = [...(heroSvg?.querySelectorAll<SVGPathElement>('[data-line]') ?? [])].map((p) => ({ p, len: 0, ...enterPlan(p.dataset.group ?? '', Number(p.dataset.line?.slice(-1))) }));
+    const lead = enters.find((x) => x.p.dataset.line === 'diagonal-line-1'), main = enters.find((x) => x.main);
+    let entering = html.dataset.ampIn === 'on' && !reduced && !!lead && !!main && scrollY < 2 && !location.hash;
+    if (!entering) delete html.dataset.ampIn;
+    const bands = entering && heroSvg && lead ? [...heroSvg.querySelectorAll<SVGPathElement>('mask path')].map((p) => bandOf(p, lead.p)) : [];
+    let eT = entering ? 0 : ENTER_END, cap = entering ? 0 : Infinity, capK = 0, heroBox: Box | null = null;
+    let enterTip: { x: number; y: number } | null = null;
+
     const rel = (e: Element): Box => { const r = e.getBoundingClientRect(), b = root.getBoundingClientRect(); return { l: r.left - b.left, t: r.top - b.top, r: r.right - b.left, b: r.bottom - b.top, w: r.width, h: r.height }; };
     /** 요소 안 글자가 실제로 닿는 오른쪽 끝 */
     const textR = (...es: (Element | null | undefined)[]) => {
@@ -57,6 +67,7 @@ export function Thread() {
       }
       return r;
     };
+    const want = (y: number) => Math.max(lenAt(y), minLen);
     const lenAt = (y: number) => {
       if (!anchors.length || y <= anchors[0].y) return 0;
       for (let i = 1; i < anchors.length; i++) {
@@ -68,6 +79,7 @@ export function Thread() {
 
     const build = () => {
       const W = root.clientWidth, H = root.offsetHeight, phone = innerWidth < 1024, vh = innerHeight;
+      if (heroSvg) { heroBox = rel(heroSvg); for (const x of enters) x.len = x.p.getTotalLength() * (heroBox.h / AMP_H); }
       top = root.getBoundingClientRect().top + scrollY;
       maxT = document.documentElement.scrollHeight - vh - top + vh * 0.62 - 8;   // 맨 끝까지 내렸을 때 선 끝이 닿는 높이
       el.setAttribute('viewBox', `0 0 ${W} ${H}`); el.setAttribute('width', String(W)); el.setAttribute('height', String(H));
@@ -206,6 +218,9 @@ export function Thread() {
       if (!phone && allEl) { const ay0 = rel(allEl).t + 0.5; go([[cur[0], ay0, 40], [xR, ay0, xR - CR], [xR, ay, xR - ax], [ax, ay]]); }
       else go([[xR, ay, Math.max(4, xR - ax)], [ax, ay]]);
       L = here();
+      // 맨 위에서도 선은 & 발끝에서 나와 오른쪽 길로 꺾여 내려가는 데까지는 보인다 — 긴 선으로 이어진다는 것이 읽히게
+      minLen = 0;
+      for (let l = 0; l < Math.min(L, 800); l += 4) if (m.getPointAtLength(l).y >= hy + 28) { minLen = l; break; }
 
       // 스크롤 높이 ↔ 선 길이: 선 위 점의 높이를 따라가되(지나온 가장 낮은 곳) 가로로 가는 구간에도 조금씩 스크롤을 준다.
       // 들어가는 지점은 맨 끝에서 traceRun 만큼 앞 — 남은 스크롤로 & 를 그린다
@@ -248,27 +263,23 @@ export function Thread() {
     /** y: 선 끝이 따라갈 높이(부드럽게 따라간 값) */
     const paint = (y: number) => {
       if (!ink || !light || !tip) return;
-      const drawn = reduced ? L : lenAt(y);
+      const drawn = reduced ? L : Math.min(want(y), cap);
       for (const p of [ink, light]) p.style.strokeDasharray = `${f(drawn)} ${f(L + 40)}`;
       for (const x of aux) x.el.toggleAttribute('data-on', drawn >= x.len - 1);
       // & 그리기: 꼬리 끝(주된 가닥 끝)에 닿은 뒤 남은 스크롤이 가닥을 차례로 그린다. 다 그린 가닥은 점선을 풀어 원본과 똑같이 둔다
       const k = reduced ? 1 : clamp((y - aIn) / Math.max(1, maxT - aIn));
-      for (const x of strands) {
-        const t = clamp((k - x.a) / (x.b - x.a)), st = x.p.style;
-        if (t >= 1) { st.strokeDasharray = ''; st.strokeDashoffset = ''; continue; }
-        st.strokeDasharray = `${f(x.len)} ${f(x.len + 2)}`;
-        st.strokeDashoffset = f((x.rev ? -1 : 1) * x.len * (1 - t));
-      }
+      for (const x of strands) dash(x.p, x.len, clamp((k - x.a) / (x.b - x.a)), x.rev ? 'rev' : 'fwd');
       contactAmp?.toggleAttribute('data-drawn', k >= 0.995);
-      // 선 끝 점: 주된 가닥을 그리는 동안은 그 가닥 위(사선 구간은 끝에서부터, 고리 구간은 꼭대기에서부터)
+      // 선 끝 점: 첫 & 주된 가닥이 그려지는 동안은 그 머리, 마지막 & 주된 가닥을 그리는 동안은 그 가닥 위(사선 구간은 끝에서부터, 고리 구간은 꼭대기에서부터)
       let pt: { x: number; y: number }, onAmp = false;
-      if (k > 0 && k < 0.55 && mainD && mainL && ampBox) {
+      if (enterTip) { pt = enterTip; onAmp = true; }
+      else if (k > 0 && k < 0.55 && mainD && mainL && ampBox) {
         const sc = ampBox.h / AMP_H, x = k < 0.3 ? mainD : mainL, t = clamp((k - x.a) / (x.b - x.a)), L0 = x.len / sc;
         const q = x.p.getPointAtLength(x.rev ? L0 * (1 - t) : L0 * t);
         pt = { x: ampBox.l + (q.x - AMP_VB[0]) * sc, y: ampBox.t + (q.y - AMP_VB[1]) * sc }; onAmp = true;
       } else pt = ink.getPointAtLength(drawn);
       tip.setAttribute('cx', f(pt.x)); tip.setAttribute('cy', f(pt.y));
-      tip.toggleAttribute('data-on', !reduced && drawn > 2 && (k <= 0 || onAmp));
+      tip.toggleAttribute('data-on', !reduced && (drawn > 2 || !!enterTip) && (k <= 0 || onAmp));
       tip.toggleAttribute('data-dark', pt.y > darkTop);
     };
     const words = () => {
@@ -301,7 +312,49 @@ export function Thread() {
       if (Math.abs(target - yS) > 0.5) raf = requestAnimationFrame(tick);
     };
     const wake = () => { if (!raf) raf = requestAnimationFrame(tick); };
-    const begin = () => { ready = true; build(); wake(); };
+
+    /** 첫 & 가닥을 등장 시계 et 에 맞춰 그린다. 다 그렸으면 원본 그대로 두고 표식을 거둔다 */
+    const paintEnter = (et: number) => {
+      let fl = 0;
+      enterTip = null;
+      for (const x of enters) {
+        const e = enterEase(x, clamp((et - x.a) / (x.b - x.a)));
+        dash(x.p, x.len, et >= ENTER_END ? 1 : e, x.mode, x.s, et < ENTER_END);
+        if (x === lead) fl = e;
+        if (x.main && e > 0 && e < 1 && heroBox) {
+          const L0 = x.p.getTotalLength(), q = x.p.getPointAtLength(L0 * e), sc = heroBox.h / AMP_H;
+          enterTip = { x: heroBox.l + (q.x - AMP_VB[0]) * sc, y: heroBox.t + (q.y - AMP_VB[1]) * sc };
+        }
+      }
+      for (const b of bands) band(b, et >= ENTER_END ? 1 : fl, et < ENTER_END);
+      if (et >= ENTER_END) { enterTip = null; delete html.dataset.ampIn; }
+    };
+    /** 등장 고리 — 스크롤이 들어오면 남은 & 를 세 배 빠르게 마치고, 크게 건너뛰면(새로고침 복원·끝으로) 바로 완성.
+     *  & 가 다 그려지면 페이지 선이 주된 가닥 끝 속도로 출발해, 스크롤 자리까지 점점 느려지며 따라잡는다(그 뒤로는 평소처럼 스크롤만 따른다) */
+    let eRaf = 0, eLast = 0, eFast = false, sy0 = scrollY;
+    const enterTick = (now: number) => {
+      const dt = Math.min(64, eLast ? now - eLast : 16); eLast = now;
+      if (Math.abs(scrollY - sy0) > innerHeight * 1.5) { eT = ENTER_END; cap = Infinity; }
+      else if (Math.abs(scrollY - sy0) > 0.5) eFast = true;
+      sy0 = scrollY;
+      if (eT < ENTER_END || bands.length) {
+        if (eT < ENTER_END) eT = Math.min(ENTER_END, eT + dt * (eFast ? 3 : 1));
+        paintEnter(eT);
+        if (eT >= ENTER_END) bands.length = 0;
+      } else if (cap < Infinity) {
+        const target = want(yS < 0 ? scrollY - top + innerHeight * 0.62 : yS);
+        if (!capK && main) capK = clamp((MAIN_END_SPEED * main.len) / (main.b - main.a) / Math.max(1, target - cap), 0.0025, 0.012);
+        cap += Math.max(0.06, (target - cap) * capK) * dt;
+        if (cap >= target - 0.5) cap = Infinity;
+      }
+      if (ready) paint(yS < 0 ? scrollY - top + innerHeight * 0.62 : yS);
+      if (eT < ENTER_END || cap < Infinity) eRaf = requestAnimationFrame(enterTick);
+      else eRaf = 0;
+    };
+    const begin = () => {
+      ready = true; build(); wake();
+      if (entering) { (window as unknown as { __ampIn?: boolean }).__ampIn = true; paintEnter(0); eRaf = requestAnimationFrame(enterTick); }
+    };
 
     let rz = 0;
     const onResize = () => { clearTimeout(rz); rz = window.setTimeout(() => { if (ready) build(); wake(); }, 150); };
@@ -309,11 +362,11 @@ export function Thread() {
     ro.observe(root);
     addEventListener('scroll', wake, { passive: true });
     document.fonts?.ready.then(onResize);
-    if (document.documentElement.dataset.intro === 'on') addEventListener(INTRO_DONE, begin, { once: true });
-    else begin();
+    begin();
     return () => {
-      cancelAnimationFrame(raf); clearTimeout(rz); ro.disconnect();
-      removeEventListener('scroll', wake); removeEventListener(INTRO_DONE, begin);
+      cancelAnimationFrame(raf); cancelAnimationFrame(eRaf); clearTimeout(rz); ro.disconnect();
+      removeEventListener('scroll', wake);
+      if (eT < ENTER_END) { eT = ENTER_END; paintEnter(eT); }
       delete root.dataset.motion;
       document.documentElement.removeAttribute('data-hdr-dark');
     };

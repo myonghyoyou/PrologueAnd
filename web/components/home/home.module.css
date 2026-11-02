@@ -148,28 +148,15 @@
   display:flex;justify-content:space-between;gap:16px;font-size:13px;color:var(--navy-300)}
 .end nav{display:flex;gap:28px;color:var(--bone-50)}
 
-/* ───── 움직임(P2) — 5종: Lenis · 인트로 · 잇는 선 · 머리글 채우기 · 전후 비교.
-   숨기는 상태는 모두 스크립트가 붙이는 표식(html[data-intro], .root[data-motion]) 아래에만 둔다 — 스크립트가 없으면 그대로 보인다 */
+/* ───── 움직임(P2) — 5종: Lenis · 첫 & 등장 · 잇는 선 · 머리글 채우기 · 전후 비교.
+   숨기는 상태는 모두 스크립트가 붙이는 표식(html[data-amp-in], .root[data-motion]) 아래에만 둔다 — 스크립트가 없으면 그대로 보인다 */
 .root{position:relative}
 
-/* 첫 화면: 제목은 줄마다 가림막 안에서 올라온다 */
-.hl{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
-.hl > span{display:block;transition:transform .7s var(--ease-out)}
-.hl:nth-child(2) > span{transition-delay:.07s}
-.hl:nth-child(3) > span{transition-delay:.14s}
-.hero > .label,.heroFoot{transition:opacity .5s var(--ease-out) .3s,transform .5s var(--ease-out) .3s}
-/* 입력으로 끊었으면 기다리지 않는다 */
-:global(html[data-intro="skip"]) .hl > span,:global(html[data-intro="skip"]) .hero > .label,:global(html[data-intro="skip"]) .heroFoot{transition:none}
-:global(html[data-intro="on"]) .hl > span{transform:translateY(110%)}
-:global(html[data-intro="on"]) .hero > .label,:global(html[data-intro="on"]) .heroFoot{opacity:0;transform:translateY(16px)}
-:global(html[data-intro="on"]) .heroAmp{opacity:0}
-
-/* 인트로 막 — 캔버스 한 장(선 색은 color 로 넘긴다), 안내, 건너뛰기 */
-.introLayer{position:fixed;inset:0;z-index:60;color:var(--navy-900)}
-.introCv{position:absolute;inset:0;width:100%;height:100%;color:inherit;touch-action:none}
-.introSkip{position:absolute;right:max(var(--gutter),16px);bottom:calc(24px + env(safe-area-inset-bottom));height:40px;padding:0 16px;border:1px solid var(--bone-400);border-radius:2px;
-  background:var(--bone-50);font:inherit;font-size:14px;color:var(--bone-700);cursor:pointer}
-.introSkip:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+/* 첫 화면: 제목·글은 처음부터 그대로. & 가닥만 첫 그림 전에 비워 두고(amp-enter.ts 의 AMP_GATE), 스크립트가 경로를 따라 그린다.
+   대각선 밑 가리개 띠도 처음에는 끄고, 대각선 머리가 지나간 곳까지만 켠다 */
+.hl{display:block}
+:global(html[data-amp-in]) .heroAmp [data-line]{stroke-dasharray:0 100000}
+:global(html[data-amp-in]) .heroAmp mask path{display:none}
 
 /* 잇는 선 — 페이지 전체 크기의 SVG 한 장. 문의 장(남색) 안에서는 밝은 선으로 바뀐다 */
 .thread{position:absolute;left:0;top:0;z-index:2;overflow:visible;pointer-events:none}

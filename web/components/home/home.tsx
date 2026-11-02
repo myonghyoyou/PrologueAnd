@@ -6,7 +6,7 @@ import { CONTACT_MAIL } from '@/lib/contact';
 import { HERO, HOW, CAN, SERVICES, WORK, WORK_HEAD, CONTACT, type WorkEntry, type Shot, type Detail } from './copy';
 import { Amp } from './amp';
 import { BeforeAfter } from './before-after';
-import { Intro, INTRO_GATE } from './intro';
+import { AMP_GATE } from './amp-enter';
 import { Thread } from './thread';
 import { TwoState } from './two-state';
 import s from './home.module.css';
@@ -126,7 +126,7 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
 }
 
 /** 홈 — 편집형 세로 페이지. 첫 화면 → 일하는 방식 → 할 수 있는 일 → 작업 → 문의.
- *  움직임(P2, docs/superpowers/specs/2026-10-29-home-motion-p2.md): 인트로 · 잇는 선 · 머리글 채우기 · 전후 비교 + Lenis = 5종.
+ *  움직임(P2, docs/superpowers/specs/2026-10-29-home-motion-p2.md): 첫 & 등장 · 잇는 선 · 머리글 채우기 · 전후 비교 + Lenis = 5종.
  *  모두 꺼져도(스크립트 실패·모션 줄이기) 글과 그림은 그대로 보인다 */
 export function Home({ projects }: { projects: Project[] }) {
   const works = projects.filter((p) => WORK[p.slug]);
@@ -134,8 +134,7 @@ export function Home({ projects }: { projects: Project[] }) {
   const groups = [...new Set(SERVICES.map((v) => v.group))];
   return (
     <div className={s.root} data-home>
-      <script dangerouslySetInnerHTML={{ __html: INTRO_GATE }} />
-      <Intro />
+      <script dangerouslySetInnerHTML={{ __html: AMP_GATE }} />
       <Thread />
       <section className={`${s.wrap} ${s.hero}`} data-sec="hero" aria-labelledby="home-h1">
         <p className={s.label}>{HERO.label}</p>

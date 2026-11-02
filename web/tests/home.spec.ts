@@ -236,39 +236,100 @@ test.describe('홈 — 움직임(P2)', () => {
     expect(r.clip).toContain('inset');
   });
 
-  test('인트로(?intro): 손대지 않으면 4초 안에 & 로 모이고 제목이 올라오며, 30일 동안 다시 나오지 않는다', async ({ page }) => {
-    await page.goto('/?intro');
-    const layer = page.locator('[data-intro-layer]');
-    await expect(layer).toBeVisible();
-    await expect(page.locator('html')).toHaveAttribute('data-intro', 'on');
-    await expect(page.locator('html')).toHaveAttribute('data-intro', 'done', { timeout: 4000 });
-    await expect(layer).toHaveCount(0);
-    await expect(page.locator('h1 span span').first()).toHaveCSS('transform', /none|matrix\(1, 0, 0, 1, 0, 0\)/, { timeout: 2000 });
-    const t = Number(await page.evaluate(() => localStorage.getItem('prologue.intro')));
-    expect(Date.now() - t).toBeLessThan(60_000);
-  });
+  /** 첫 & 가닥마다 보이는 비율(0~1)과 페이지 선이 그려진 길이를 프레임마다 모은다 — 페이지가 열리기 전부터 */
+  const sampler = () => {
+    const log: Record<string, number | string>[] = []; (window as unknown as { __log: typeof log }).__log = log; const t0 = performance.now();
+    const vis = (e: SVGPathElement) => { const st = e.style;
+      if (!st.strokeDasharray) return getComputedStyle(e).strokeDasharray.startsWith('0') ? 0 : 1;
+      if (st.strokeDasharray === 'none') return 1;
+      const d = st.strokeDasharray.split(/[ ,]+/).map(parseFloat);
+      return d.length === 4 ? d[2] / (d[3] / 2) : 1 - Math.abs(parseFloat(st.strokeDashoffset || '0')) / d[0]; };
+    const f = () => { const h = document.querySelectorAll<SVGPathElement>('[data-amp="hero"] [data-line]');
+      if (h.length) { const ink = document.querySelector<SVGPathElement>('[data-thread] path[class*="threadInk"]');
+        const o: Record<string, number | string> = { t: performance.now() - t0, on: document.documentElement.dataset.ampIn ?? '', ink: ink ? parseFloat(ink.style.strokeDasharray) || 0 : 0 };
+        for (const e of h) o[e.dataset.line!] = vis(e); log.push(o); }
+      if (performance.now() - t0 < 5000) requestAnimationFrame(f); };
+    requestAnimationFrame(f);
+  };
+  type Row = Record<string, number | string>;
+  const ids = (g: string) => [1, 2, 3, 4, 5, 6].map((n) => g + '-line-' + n);
 
-  test('인트로: 스크롤(폰은 누르기)이 오면 그 자리에서 끝나고 첫 화면이 바로 완성된다, 페이지는 움직이지 않는다', async ({ page, isMobile }) => {
-    await page.goto('/?intro');
-    await expect(page.locator('[data-intro-layer]')).toBeVisible();
-    await page.waitForTimeout(300);
-    if (isMobile) await page.touchscreen.tap(200, 400);
-    else { await page.mouse.move(600, 400); await page.mouse.wheel(0, 400); }
-    await expect(page.locator('html')).toHaveAttribute('data-intro', 'skip', { timeout: 1000 });
-    await expect(page.locator('[data-intro-layer]')).toHaveCount(0);
-    expect(await page.evaluate(() => scrollY)).toBe(0);
-    // 기다림 없이 완성: 제목 줄이 제자리, 아래 묶음이 보인다
-    expect(await page.locator('h1 span span').first().evaluate((e) => getComputedStyle(e).transform)).toMatch(/none|matrix\(1, 0, 0, 1, 0, 0\)/);
+  test('첫 & 등장(?amp): 제목·주요 정보는 처음부터 보이고, 가닥이 고리 → 내림획·가로획 → 대각선 차례로 경로를 따라 그려진 뒤 주된 가닥 끝에서 선이 이어진다', async ({ page }) => {
+    await page.addInitScript(sampler);
+    await page.goto('/?amp');
+    await expect(page.locator('html')).toHaveAttribute('data-amp-in', 'on');
+    // 기다리지 않는다 — 제목·글·단추가 바로 제자리에 보인다
+    await expect(page.locator('#home-h1')).toBeVisible();
     expect(await page.locator('[data-sec="hero"] [class*="heroFoot"]').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
+    await expect(page.locator('html')).not.toHaveAttribute('data-amp-in', 'on', { timeout: 3500 });
+    await page.waitForTimeout(800);
+    const log = await page.evaluate(() => (window as unknown as { __log: Row[] }).__log);
+    const first = (id: string) => log.find((o) => (o[id] as number) > 0.02)?.t as number;
+    const done = (id: string) => log.find((o) => (o[id] as number) >= 0.999)?.t as number;
+    const last = log.at(-1)!;
+    // 다 그려진 뒤는 원본 그대로(24줄 모두 끝)
+    for (const g of ['loops', 'descender', 'horizontal', 'diagonal']) for (const id of ids(g)) expect(last[id]).toBe(1);
+    // 차례: 고리가 먼저, 대각선이 마지막. 같은 무리 안에서는 1 → 6 번이 뒤따른다(동시에 나오지 않는다)
+    expect(first('loops-line-1')).toBeLessThan(first('descender-line-1'));
+    expect(first('descender-line-1')).toBeLessThanOrEqual(first('horizontal-line-1'));
+    expect(first('loops-line-1')).toBeLessThan(first('diagonal-line-1'));
+    for (const g of ['loops', 'diagonal']) expect(first(g + '-line-6')).toBeGreaterThan(first(g + '-line-1') + 150);
+    // 가닥은 갑자기 나타나지 않는다 — 한 프레임에 보이는 비율이 크게 뛰지 않는다
+    for (const id of [...ids('loops'), ...ids('diagonal')]) for (let i = 1; i < log.length; i++) {
+      if (log[i].on !== 'on') break;
+      expect((log[i][id] as number) - (log[i - 1][id] as number)).toBeLessThan(0.25);
+    }
+    // 그린 가닥이 도중에 사라지지 않는다
+    for (const id of ids('loops')) { const k = log.findIndex((o) => (o[id] as number) >= 0.999); expect(log.slice(k).every((o) => (o[id] as number) >= 0.999)).toBe(true); }
+    // 주된 가닥(대각선 6번)이 가장 늦게 끝나고, 페이지 선은 그 뒤에 출발한다
+    const mainDone = done('diagonal-line-6');
+    for (const g of ['loops', 'descender', 'horizontal', 'diagonal']) for (const id of ids(g)) expect(done(id)).toBeLessThanOrEqual(mainDone);
+    expect(log.filter((o) => (o.t as number) < mainDone).every((o) => (o.ink as number) < 0.5)).toBe(true);
+    expect(last.ink as number).toBeGreaterThan(10);
+    // 전체 등장은 짧게(첫 가닥부터 주된 가닥 끝까지 2초 안)
+    expect(mainDone - first('loops-line-1')).toBeLessThan(2000);
   });
 
-  test('인트로: 건너뛰기를 누르면 바로 끝난다', async ({ page }) => {
-    await page.goto('/?intro');
-    await page.getByRole('button', { name: '건너뛰기' }).click();
-    await expect(page.locator('html')).toHaveAttribute('data-intro', 'skip');
-    await expect(page.locator('[data-intro-layer]')).toHaveCount(0);
-    await page.locator('[data-sec="hero"]').getByRole('button', { name: /프로젝트 문의/ }).click();
-    await expect(page.locator('html')).toHaveAttribute('data-drawer-open', '');
+  test('첫 & 등장 중 스크롤: 막히지 않고, 남은 & 를 빨리 마친 뒤 선이 끊김 없이 스크롤 자리까지 자란다', async ({ page, isMobile }) => {
+    await page.addInitScript(sampler);
+    await page.goto('/?amp');
+    await expect(page.locator('html')).toHaveAttribute('data-amp-in', 'on');
+    await page.waitForTimeout(500);
+    if (isMobile) await page.evaluate(() => scrollTo(0, 500)); else { await page.mouse.move(600, 400); await page.mouse.wheel(0, 500); }
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);   // 스크롤이 막히지 않는다
+    await expect(page.locator('html')).not.toHaveAttribute('data-amp-in', 'on', { timeout: 1500 });
+    await page.waitForTimeout(1500);
+    const log = await page.evaluate(() => (window as unknown as { __log: Row[] }).__log);
+    // 선은 줄어들지 않고, 한 프레임에 크게 건너뛰지 않는다
+    for (let i = 1; i < log.length; i++) {
+      expect(log[i].ink as number).toBeGreaterThanOrEqual((log[i - 1].ink as number) - 0.5);
+      expect((log[i].ink as number) - (log[i - 1].ink as number)).toBeLessThan(160);
+    }
+    expect(log.at(-1)!.ink as number).toBeGreaterThan(100);
+    for (const id of ids('diagonal')) expect(log.at(-1)![id]).toBe(1);
+  });
+
+  test('첫 & 등장: 중간에서 새로고침하면(스크롤 복원) 기다림 없이 완성된 & 로 바로 보인다', async ({ page }) => {
+    await page.goto('/?amp');
+    await expect(page.locator('html')).not.toHaveAttribute('data-amp-in', 'on', { timeout: 3500 });
+    await scrollToY(page, 1600);
+    await page.reload();
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(800);
+    await expect(page.locator('html')).not.toHaveAttribute('data-amp-in', 'on', { timeout: 800 });
+    const dashes = await page.locator('[data-amp="hero"] [data-line]').evaluateAll((es) => es.map((e) => (e as SVGPathElement).style.strokeDasharray));
+    expect(dashes.every((d) => d === '')).toBe(true);
+  });
+
+  test('첫 & 등장: 빠르게 연달아 새로고침해도 매번 처음부터 다시 그려 같은 모양에서 끝난다', async ({ page }) => {
+    await page.goto('/?amp');
+    await page.waitForTimeout(300);
+    await page.reload(); await page.waitForTimeout(250);
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-amp-in', 'on');
+    await expect(page.locator('html')).not.toHaveAttribute('data-amp-in', 'on', { timeout: 3500 });
+    const dashes = await page.locator('[data-amp="hero"] [data-line]').evaluateAll((es) => es.map((e) => (e as SVGPathElement).style.strokeDasharray));
+    expect(dashes.every((d) => d === '')).toBe(true);
+    expect(await page.locator('[data-amp="hero"] mask path').evaluateAll((es) => es.map((e) => getComputedStyle(e).display))).toEqual(['inline', 'inline']);
   });
 
   test('두 화면 전환: 요청 처리와 근무표가 실제 두 화면을 단추로 바꿔 보이고, 캡션이 따라 바뀐다', async ({ page }) => {
@@ -302,11 +363,12 @@ test.describe('홈 — 움직임(P2)', () => {
   });
 });
 
-test('모션 줄이기: 인트로 없음, 선과 & 는 다 그려진 상태, 낱말은 모두 진하다', async ({ browser }) => {
+test('모션 줄이기: 첫 & 는 처음부터 완성(등장 없음), 선과 마지막 & 도 다 그려진 상태, 낱말은 모두 진하다', async ({ browser }) => {
   const ctx = await browser.newContext({ reducedMotion: 'reduce', viewport: { width: 1440, height: 900 } });
   const page = await ctx.newPage();
-  await page.goto('/?intro');
-  await expect(page.locator('[data-intro-layer]')).toHaveCount(0);
+  await page.goto('/?amp');
+  await expect(page.locator('html')).not.toHaveAttribute('data-amp-in', 'on');
+  expect(await page.locator('[data-amp="hero"] [data-line]').evaluateAll((es) => es.every((e) => getComputedStyle(e).strokeDasharray === 'none'))).toBe(true);
   await expect(page.locator('[data-home]')).toHaveAttribute('data-motion', 'still');
   await expect(page.locator('[data-amp="contact"]')).toHaveAttribute('data-drawn', '');
   expect(await page.locator('[data-fill] [data-w]:not([data-on])').count()).toBe(0);
