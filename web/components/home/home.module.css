@@ -25,7 +25,7 @@
 .shT{font-size:14px;font-weight:600}
 
 /* 장면 — 무대(stage)는 붙어 있는 동안 화면 한 장. 선 SVG 는 무대(또는 흐르는 구간)의 왼쪽 위에 1px 로 놓고 넘쳐 그린다 */
-.scene,.stage,.heroSec,.can,.case,.allHost,.contact{position:relative}
+.scene,.stage,.heroSec,.can,.case,.contact{position:relative}
 .stageIn{padding-top:calc(var(--hdr) + 24px)}
 .seg{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none;z-index:3}
 .root[data-motion="on"] [data-pin]{height:calc(var(--vh,100svh) + var(--pin,0px))}
@@ -53,15 +53,16 @@
 :global(html[data-amp-in]) .heroAmp [data-line]{stroke-dasharray:0 100000}
 :global(html[data-amp-in]) .heroAmp mask path{display:none}
 
-/* 02 일하는 방식 — 큰 글자: 「불편한지」 한 낱말이 첫 화면 제목보다 크다 */
+/* 02 일하는 방식 — 큰 글자: 「불편한지」 한 낱말이 첫 화면 제목보다 크고, 「듣습니다.」와 함께 글 폭을 거의 다 쓴다 */
 .focusH{margin:0;font-weight:740;letter-spacing:-.05em;line-height:1.1;color:var(--bone-900)}
 .fSmall{display:block;font-size:clamp(34px,3.9vw,64px)}
 .fRow{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:.32em;margin-top:.04em}
 .fRow .fSmall{display:inline}
 .fBig{font-size:clamp(96px,min(15vw,25vh),280px);line-height:.98;letter-spacing:-.065em;color:var(--navy-900)}
-/* 붙어 있을 때: 문장은 무대 세로 가운데(위아래가 고르게) */
+/* 붙어 있을 때: 문장은 무대 세로 가운데, 큰 낱말은 화면 폭에 맞춰 더 크게 */
 .root[data-motion="on"] [data-pin] .focusIn{display:flex;flex-direction:column}
 .root[data-motion="on"] [data-pin] .focusH{margin:auto 0}
+.root[data-motion="on"] [data-pin] .fBig{font-size:clamp(110px,min(18.5vw,30vh),340px)}
 /* 선이 02 머리 선 끝을 지나면 문장이 올라오고(--e), 「불편한지」 밑을 지나는 만큼(--f) 주변 글자가 물러나고 큰 낱말이 진해진다 */
 .root[data-motion="on"] [data-pin] .focusH{transform:translateY(calc((1 - var(--e,1)) * 64px));opacity:calc(.08 + .92 * var(--e,1))}
 .root[data-motion="on"] [data-pin] [data-dim]{opacity:calc(1 - .74 * var(--f,1))}
@@ -77,23 +78,23 @@
 .stepBody p{margin:0;max-width:30em;font-size:17px;line-height:1.75;color:var(--bone-700)}
 .kw{margin:14px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:4px 0;font-size:14px;font-weight:500;color:var(--bone-500)}
 .kw li + li::before{content:"·";margin:0 8px}
-/* 붙어 있을 때: 왼쪽에 번호 셋(선 끝이 지금 번호에 머문다), 가운데에 지금 단계의 제목과 설명을 한 덩어리로.
-   다음 단계 제목은 아래에 흐리게 기다리고(들어올 방향), 지난 단계는 위로 빠진다 */
+/* 붙어 있을 때: 번호(선 끝이 지금 번호에)·제목·설명이 화면 가운데에 한 묶음. 다음 단계 제목은 아래에 아주 흐리게(들어올 방향만), 지난 단계는 위로 빠진다 */
 .root[data-motion="on"] [data-scene="steps"][data-pin]{margin-top:calc(-1 * var(--ov,0px))}
 .root[data-motion="on"] [data-pin] .stepsIn{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);height:100%}
-.root[data-motion="on"] [data-pin] .track{display:flex;flex-direction:column;justify-content:center;padding-bottom:16vh !important;gap:28px;grid-column:1/3;margin:0;padding:0;list-style:none;
-  font-family:var(--font-serif),Georgia,serif;font-size:24px;line-height:1;color:var(--bone-400)}
+.root[data-motion="on"] [data-pin] .track{display:flex;flex-direction:column;justify-content:center;gap:18px;grid-column:1/3;margin:0;padding:0;list-style:none;
+  font-family:var(--font-serif),Georgia,serif;font-size:26px;line-height:1;color:var(--bone-300)}
 .root[data-motion="on"] [data-pin] .track li{transition:color .4s,transform .5s var(--ease-out);transform-origin:0 50%}
-.root[data-motion="on"] [data-pin] .track li[data-on]{color:var(--navy-900);transform:scale(1.5)}
-.root[data-motion="on"] [data-pin] .steps{display:block;position:relative;grid-column:3/12}
-.root[data-motion="on"] [data-pin] .step{position:absolute;left:0;right:0;top:42%;display:block;--dy:0px;
+.root[data-motion="on"] [data-pin] .track li[data-on]{color:var(--navy-900);transform:scale(2.2)}
+.root[data-motion="on"] [data-pin] .steps{display:block;position:relative;grid-column:3/13}
+.root[data-motion="on"] [data-pin] .step{position:absolute;left:0;right:0;top:50%;display:block;--dy:0px;
   transform:translateY(calc(-50% + var(--dy)));transition:transform .7s var(--ease-out),opacity .5s}
-.root[data-motion="on"] [data-pin] .step h3{display:block;font-size:clamp(36px,3.6vw,56px);line-height:1.12;letter-spacing:-.045em}
+.root[data-motion="on"] [data-pin] .step h3{display:block;font-size:clamp(46px,5.2vw,88px);line-height:1.08;letter-spacing:-.05em}
 .root[data-motion="on"] [data-pin] .step h3 .num{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}   /* 번호는 왼쪽 번호 줄이 보인다 */
-.root[data-motion="on"] [data-pin] .stepBody{margin-top:20px;transition:opacity .5s}
-.root[data-motion="on"] [data-pin] .stepBody p{font-size:19px;max-width:34em}
-.root[data-motion="on"] [data-pin] .step[data-st="next"]{--dy:calc(var(--vh,100vh) * .34);opacity:.32}
-.root[data-motion="on"] [data-pin] .step[data-st="next"] h3{font-size:clamp(26px,2.4vw,36px)}
+.root[data-motion="on"] [data-pin] .stepBody{margin-top:24px;transition:opacity .5s}
+.root[data-motion="on"] [data-pin] .stepBody p{font-size:clamp(19px,1.55vw,24px);line-height:1.7;max-width:38em;color:var(--bone-800)}
+.root[data-motion="on"] [data-pin] .kw{margin-top:18px;font-size:15px}
+.root[data-motion="on"] [data-pin] .step[data-st="next"]{--dy:calc(var(--vh,100vh) * .36);opacity:.16}
+.root[data-motion="on"] [data-pin] .step[data-st="next"] h3{font-size:clamp(28px,2.4vw,38px)}
 .root[data-motion="on"] [data-pin] .step:not([data-st="on"]) .stepBody{opacity:0}
 .root[data-motion="on"] [data-pin] .step[data-st="later"]{--dy:calc(var(--vh,100vh) * .6);opacity:0}
 .root[data-motion="on"] [data-pin] .step[data-st="past"]{--dy:calc(var(--vh,100vh) * -.32);opacity:0}
@@ -112,24 +113,23 @@
 .rel a{color:var(--bone-900);border-bottom:1px solid var(--bone-400)}
 .can{padding-bottom:var(--sec)}
 
-/* 04 작업 — 남색. 첫 무대는 밝은 바탕 위로 남색이 선을 따라 내려와 덮는다. 제목은 위쪽(일찍 읽힌다), 아래에는 첫 작업 화면의 윗부분 */
+/* 04 작업 — 남색. 소개 무대: 남색이 선을 따라 내려오고, 큰 제목·건수·설명은 남색이 다 지나간 뒤 통째로 나타난다(경계에 잘리지 않게) */
 .work{background:var(--navy-900);color:var(--bone-50)}
 .work .label{color:var(--navy-300)}
 .work .sh{border-top-color:var(--bone-50)}
 .curtain{background:var(--navy-900)}
 .darkIn{padding-bottom:var(--sec)}
-.workT{margin:0;font-size:clamp(64px,10vw,176px);line-height:1;letter-spacing:-.06em;font-weight:760}
-.workSide{display:flex;gap:28px;align-items:baseline;margin-top:32px;max-width:40em}
-.workSide p:last-child{margin:0;font-size:18px;line-height:1.7;color:var(--navy-100)}
-.peek{display:none}
+.workT{margin:0;font-size:clamp(64px,11vw,200px);line-height:.98;letter-spacing:-.06em;font-weight:760}
+.workSide{display:flex;gap:32px;align-items:baseline;margin-top:40px;max-width:44em}
+.count{margin:0;display:flex;align-items:baseline;gap:6px;font-size:22px;font-weight:600;color:var(--bone-50)}
+.count .num{font-size:clamp(56px,5vw,84px);line-height:1;letter-spacing:-.02em}
+.workSide p:last-child{margin:0;font-size:clamp(18px,1.4vw,21px);line-height:1.7;color:var(--navy-100)}
 .root[data-motion="on"] [data-pin] .stage:has(.curtain){background:var(--bone-50)}
 .root[data-motion="on"] [data-pin] .curtain{position:absolute;inset:0;clip-path:inset(0 0 calc(100% - var(--edge,100%)) 0)}
-.root[data-motion="on"] [data-pin] .darkIn{padding-bottom:0}
-.root[data-motion="on"] [data-pin] .workT{margin-top:clamp(16px,4vh,48px)}
-.root[data-motion="on"] [data-pin] .peek{display:block;position:absolute;left:0;right:0;bottom:0;height:40vh;overflow:hidden}
-.root[data-motion="on"] [data-pin] .peek .wrap{padding-top:0;height:100%}
-.peekIn{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);height:100%}
-.peekIn img{grid-column:1/6;width:100%;height:auto;border:1px solid var(--navy-700);border-bottom:0}
+.root[data-motion="on"] [data-pin] .darkIn{height:100%;display:flex;flex-direction:column;padding-bottom:0}
+.root[data-motion="on"] [data-pin] .darkIn .workT{margin-top:auto}
+.root[data-motion="on"] [data-pin] .darkIn .workSide{margin-bottom:auto}
+.root[data-motion="on"] [data-pin] :is(.workT,.workSide){opacity:var(--tv,1);transform:translateY(calc((1 - var(--tv,1)) * 24px))}
 
 .case{scroll-margin-top:calc(var(--hdr) + 16px)}
 .case .wrap{padding-top:72px;padding-bottom:72px}
@@ -144,7 +144,7 @@
 .qa dt{margin:0 0 4px;font-size:14px;font-weight:600;color:var(--navy-300)}
 .qa dd{margin:0 0 14px;max-width:var(--read);font-size:16px;line-height:1.65;color:var(--navy-100)}
 .work .link{color:var(--bone-50)}
-/* 그림 — 틀과 캡션은 모든 작업이 같다 */
+/* 그림 — 틀과 캡션은 모든 작업이 같다. 캡처는 틀을 가득 채운다(비율 그대로) */
 .fig{margin:0;min-width:0}
 .frame{border:1px solid var(--navy-700);background:var(--navy-800);overflow:hidden}
 .frame img{display:block;width:100%;height:auto}
@@ -155,14 +155,12 @@
 .side{min-width:0}
 .side .caseT{font-size:clamp(28px,2.4vw,40px)}
 
-/* 요청 처리 — 왼쪽에 큰 그림, 오른쪽에 글. 붙어 있으면 그림이 왼쪽 작은 자리에서 오른쪽 글 옆까지 커진다(왼쪽 길의 선이 바로 그림 가장자리에 닿는다) */
+/* 요청 처리 — 왼쪽에 큰 그림, 오른쪽에 글. 들어오는 첫 순간부터 그림이 거의 다 큰 크기(97%)이고, 붙는 동안 제 크기로 자리 잡는다 */
 .growIn{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);row-gap:32px;align-items:start}
 .growIn .side{grid-column:10/13;grid-row:1}
-.slot{display:none}
 .pic{position:relative;grid-column:1/10;grid-row:1;min-width:0}
 .root[data-motion="on"] [data-pin] .growIn{height:100%;align-content:center}
-.root[data-motion="on"] [data-pin] .slot{display:block;grid-column:1/6;grid-row:1;align-self:center}
-.root[data-motion="on"] [data-pin] .pic{justify-self:start;align-self:center;width:var(--pw,100%);transform-origin:0 50%;will-change:transform}
+.root[data-motion="on"] [data-pin] .pic{justify-self:start;align-self:center;width:var(--pw,100%);transform-origin:0 50%;transform:scale(var(--gk,1))}
 .root[data-motion="on"] [data-pin] .growIn .side{align-self:center}
 
 /* 문제 은행 — 두 폰 화면이 서로 다른 빠르기로 올라온다(--r: 화면을 지나는 정도) */
@@ -194,7 +192,7 @@
 .root[data-motion="on"] [data-pin] .pairIn{height:100%;align-content:center}
 .root[data-motion="on"] [data-pin] .baWrap{width:var(--pw,100%);justify-self:start}
 
-/* 근무표 — 왼쪽 글, 오른쪽 그림. 붙어 있으면 원본의 표시줄 자리가 그림 위로 크게 열린다 */
+/* 근무표 — 왼쪽 글, 오른쪽 그림. 붙어 있으면 원본의 표시줄 자리가 밝게 짚이고(나머지는 어두워진다), 그 자리가 그림 위로 크게 열린다 */
 .zoomIn{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--cg);row-gap:28px;align-items:start}
 .zoomIn .side{grid-column:1/4;grid-row:1/3}
 .fullPic{grid-column:4/13;grid-row:1;min-width:0}
@@ -202,23 +200,20 @@
 .fdPic{grid-column:1/7}
 .fdCap{grid-column:7/10;margin:0;font-size:16px;line-height:1.7;color:var(--navy-100)}
 .fdCap .label{display:block;margin-bottom:8px}
+.zmark{display:none}
 .root[data-motion="on"] [data-pin] .zoomIn{position:relative;height:100%;align-content:center}
 .root[data-motion="on"] [data-pin] .zoomIn .side{grid-row:1;align-self:center}
 .root[data-motion="on"] [data-pin] .fullPic{width:var(--pw,100%);justify-self:start;align-self:center}
+.root[data-motion="on"] [data-pin] .zmark{display:block;position:absolute;z-index:2;pointer-events:none;border:2px solid var(--bone-50);border-radius:2px;
+  box-shadow:0 0 0 100vmax rgba(21,26,51,.55);opacity:calc(var(--z,0) * 3)}
 .root[data-motion="on"] [data-pin] .fd{position:absolute;left:0;top:0;grid-area:auto;   /* 칸 지정이 있으면 그 칸이 기준이 된다 — 상자 기준으로 */
-  width:var(--fw,720px);grid-template-columns:1fr;row-gap:14px;padding:18px;box-sizing:border-box;
-  background:var(--navy-950);border:1px solid var(--navy-600);transform-origin:0 0;opacity:var(--zo,0);pointer-events:none;will-change:transform}
+  width:var(--fw,720px);grid-template-columns:1fr;row-gap:10px;padding:16px;box-sizing:border-box;
+  background:var(--navy-950);border:1px solid var(--navy-600);transform-origin:0 0;opacity:var(--zo,0);pointer-events:none;z-index:3}
 .root[data-motion="on"] [data-pin] .fd[data-open]{pointer-events:auto}
 .root[data-motion="on"] [data-pin] .fdPic,.root[data-motion="on"] [data-pin] .fdCap{grid-column:1/-1}
 .root[data-motion="on"] [data-pin] .fdCap{opacity:calc((var(--z,0) - .7) / .3)}
-/* 두 번째 화면(내려받기 전 확인)으로 바꾸면 확대는 숨긴다 — 확대는 첫 화면의 자리다 */
-.root:has([data-layout="full"] [data-two] [data-on]:nth-child(2)) [data-pin] .fd{visibility:hidden}
-
-/* 「모든 작업」 — 구분선 없이(선만으로 이어진다) */
-.allHost{padding-bottom:var(--sec)}
-.allHost .wrap{padding-top:96px}
-.all{display:flex;justify-content:space-between;align-items:center}
-.all b{font-size:22px;letter-spacing:-.02em}
+/* 두 번째 화면(내려받기 전 확인)으로 바꾸면 확대와 짚은 자리는 숨긴다 — 확대는 첫 화면의 자리다 */
+.root:has([data-layout="full"] [data-two] [data-on]:nth-child(2)) [data-pin] :is(.fd,.zmark){visibility:hidden}
 .work .btn{border-color:var(--bone-50)}
 .work .btn:not(.fill):hover{background:var(--bone-50);color:var(--navy-900)}
 
@@ -277,7 +272,8 @@
 .twoStage{position:relative;width:100%;height:100%}
 .twoShot{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
 .twoShot[data-on]{opacity:1}
-.frame .twoShot img{width:auto;max-width:100%;max-height:100%;height:auto}
+/* 캡처는 틀을 가득 채운다(틀 비율 = 첫 그림 비율). 비율이 다른 두 번째 그림(근무표 확인 창)만 틀 안에 통째로 들어간다 */
+.frame .twoShot img{width:100%;height:100%;object-fit:contain}
 
 @media (prefers-reduced-motion:reduce){
   .twoShot,.root[data-motion] [data-w]{transition:none}
@@ -286,7 +282,7 @@
 @media (max-width:1023px){
   .root{--sec:96px}
   .hero{min-height:0}
-  .heroTop,.heroFoot,.contactGrid,.row,.caseIn,.growIn,.pairIn,.zoomIn,.fd,.step,.peekIn{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .heroTop,.heroFoot,.contactGrid,.row,.caseIn,.growIn,.pairIn,.zoomIn,.fd,.step{grid-template-columns:repeat(6,minmax(0,1fr))}
   .h1{grid-column:1/7;grid-row:2}
   .heroAmp{grid-column:4/7;grid-row:1}
   .svc,.lede,.cta{grid-column:1/7;grid-row:auto}
@@ -294,7 +290,6 @@
   .rowMeta,.rowT,.rowBody{grid-column:1/7}
   .growIn .side,.pic,.phones .txt,.devs,.pairTxt,.baWrap,.pairQa,.zoomIn .side,.fullPic,.fd,.fdPic,.fdCap{grid-column:1/7;grid-row:auto}
   .growIn .side,.zoomIn .side{order:-1}
-  .peekIn img{grid-column:1/7}
   .pairQa{grid-template-columns:1fr}
   .devs{order:-1;margin-bottom:28px}
   .fdCap{margin-top:16px}
@@ -304,11 +299,14 @@
   .contactAmp{grid-column:1/7;grid-row:auto;margin-top:40px}
   /* 폰·태블릿: 번호 줄은 좁게 왼쪽, 단계는 나머지 칸 */
   .root[data-motion="on"] [data-pin] .stepsIn{grid-template-columns:repeat(6,minmax(0,1fr))}
-  .root[data-motion="on"] [data-pin] .track{grid-column:1/2;font-size:18px;gap:24px}
+  .root[data-motion="on"] [data-pin] .track{grid-column:1/2;font-size:18px;gap:16px}
+  .root[data-motion="on"] [data-pin] .track li[data-on]{transform:scale(1.7)}
   .root[data-motion="on"] [data-pin] .steps{grid-column:2/7}
-  .root[data-motion="on"] [data-pin] .step h3{font-size:30px}
+  .root[data-motion="on"] [data-pin] .step h3{font-size:32px}
+  .root[data-motion="on"] [data-pin] .fBig{font-size:clamp(84px,25vw,128px)}
   .root[data-motion="on"] [data-pin] .step[data-st="next"] h3{font-size:22px}
-  .root[data-motion="on"] [data-pin] .stepBody p{font-size:16px}
+  .root[data-motion="on"] [data-pin] .stepBody p{font-size:17px}
+  .workSide{flex-direction:column;gap:12px}
 }
 @media (max-width:700px){
   .root{--cg:12px;--sec:80px;--amp-line:1.2px}

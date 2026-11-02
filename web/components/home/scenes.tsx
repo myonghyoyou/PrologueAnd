@@ -45,6 +45,17 @@ class Line {
     });
     this.ink.setAttribute('d', d); this.L = this.ink.getTotalLength(); this.at = at;
     at[at.length - 1] = this.L;
+    // 선 끝 점 자리: 다시 짤 때 6px 마다 뽑아 둔다(스크롤 프레임에서 경로를 읽으면 레이아웃을 다시 계산하게 된다)
+    const n = Math.max(2, Math.ceil(this.L / 6) + 1);
+    this.pts = new Float32Array(n * 2);
+    for (let i = 0; i < n; i++) { const q = this.ink.getPointAtLength(Math.min(this.L, i * 6)); this.pts[i * 2] = q.x; this.pts[i * 2 + 1] = q.y; }
+  }
+  pts = new Float32Array(0);
+  /** 길이 l 자리의 점(뽑아 둔 점 사이를 곧게) */
+  point(l: number) {
+    const n = this.pts.length / 2; if (!n) return { x: 0, y: 0 };
+    const k = clamp(l / 6, 0, n - 1), i = Math.min(n - 2, Math.floor(k)), u = k - i, p = this.pts;
+    return n < 2 ? { x: p[0], y: p[1] } : { x: p[i * 2] + (p[i * 2 + 2] - p[i * 2]) * u, y: p[i * 2 + 1] + (p[i * 2 + 3] - p[i * 2 + 1]) * u };
   }
   private mk: SVGGElement | null = null;
   /** 이 상자들 안에서는 선이 보이지 않는다(그림 뒤로 지난다). 선 끝 점도 같이 가린다 */
@@ -57,6 +68,11 @@ class Line {
       this.ink.setAttribute('mask', `url(#${id})`); this.tip.setAttribute('mask', `url(#${id})`);
     }
     this.mk.replaceChildren(...rs.map((r) => { const e = document.createElementNS(NS, 'rect'); e.setAttribute('x', f(r.l)); e.setAttribute('y', f(r.t)); e.setAttribute('width', f(r.w)); e.setAttribute('height', f(r.h)); e.setAttribute('fill', '#000'); return e; }));
+  }
+  /** 가림 상자 i 의 자리만 바꾼다(요소를 다시 만들지 않는다) */
+  moveHide(i: number, r: Box) {
+    const e = this.mk?.children[i]; if (!e) return;
+    e.setAttribute('x', f(r.l)); e.setAttribute('y', f(r.t)); e.setAttribute('width', f(r.w)); e.setAttribute('height', f(r.h));
   }
   static n = 0;
   draw(len: number) { this.len = clamp(len, 0, this.L); this.ink.style.strokeDasharray = `${f(this.len)} ${f(this.L + 40)}`; }
@@ -107,7 +123,7 @@ export function Scenes() {
 
     let vh = innerHeight, P62 = vh * 0.62, phone = innerWidth < 1024, CL = 0, CR = 0, xR = 0, xL = 0;
     const scenes: Scene[] = [];
-    const side = new Map<Scene, number>();
+    const side = new Map<Scene, number>(), bots = new Map<Scene, number>();
     const add = (sc: Omit<Scene, 'top' | 'P' | 'extB' | 'exitX'>) => { const x = { ...sc, top: 0, P: 0, extB: 0, exitX: 0 }; scenes.push(x); return x; };
     /** 붙는 장면의 선 길이: 붙어 있는 동안은 knots, 풀린 뒤에는 (x0 높이에서 시작하는) 마지막 세로 구간을 스크롤 그대로 */
     const pinLen = (sc: Scene, k: Knot[], vy: number, Lx: number, yx: number) => (vy <= k[k.length - 1][0] ? knots(k, vy) : Math.max(Lx, Lx + (vy - sc.P - yx)));
@@ -166,7 +182,7 @@ export function Scenes() {
           ruleY = box(q('.' + s.sh, focusSt)!, focusSt).t;
           const w = box(big, focusSt); wb = w.b + 28; bigL = w.l; bigR = w.r;
           V0 = wb - R1;
-          sc.P = Math.max(0, V0 + vh * 0.72 - P62);
+          sc.P = Math.max(0, V0 + vh * 0.64 - P62);
           // 다음 장면(세 단계)은 이 무대 아래 빈 자리와 겹쳐 올라온다 — 선이 꺾여 내려가는 곳 아래 40px 부터
           stepsSc.style.setProperty('--ov', `${f(Math.max(0, vh - (wb + R1 + 40)))}px`);
         },
@@ -174,7 +190,7 @@ export function Scenes() {
           sc.line.set([xE, 0], [[xE, wb, R1], [xL, wb, R1], [xL, sc.extB]]);
           const h0 = sc.line.at[1] - ((xE - R1) - (xL + R1)), at = (x: number) => h0 + (xE - R1 - x);
           Lw0 = at(bigR + 6); Lw1 = at(bigL - 2); yx = wb + R1; Lx = sc.line.L - (sc.extB - yx);
-          k = [[0, 0], [V0, sc.line.at[0]], [V0 + vh * 0.1, Lw0], [V0 + vh * 0.38, Lw1], [V0 + vh * 0.62, Lw1], [V0 + vh * 0.72, Lx]];
+          k = [[0, 0], [V0, sc.line.at[0]], [V0 + vh * 0.08, Lw0], [V0 + vh * 0.34, Lw1], [V0 + vh * 0.54, Lw1], [V0 + vh * 0.64, Lx]];
           sc.exitX = xL;
         },
         frame: (vy) => {
@@ -196,13 +212,13 @@ export function Scenes() {
         measure: () => {
           ys = (nums.length === 3 && !reduced ? nums : rows.map((r) => q('h3', r)!)).map((e) => { const b = box(e, stepsSt); return (b.t + b.b) / 2; });
           const base = Math.max(ys[0], P62);
-          sc.P = Math.max(0, base + vh * 1.06 - P62);
+          sc.P = Math.max(0, base + vh * 0.86 - P62);
         },
         build: (xE) => { xE0 = xE; sc.line.set([xE, 0], Math.abs(xE - xL) < 1 ? [[xL, sc.extB]] : [[xE, 20, 12], [xL, 20, 12], [xL, sc.extB]]); sc.exitX = xL; },
         frame: (vy) => {
           void xE0;
           const [y1, y2, y3] = ys, base = Math.max(y1, P62), v = (i: number) => base + vh * i;
-          const k: Knot[] = [[0, 0], [y1, y1], [v(0.3), y1], [v(0.38), y2], [v(0.68), y2], [v(0.76), y3], [v(1.06), y3]];
+          const k: Knot[] = [[0, 0], [y1, y1], [v(0.24), y1], [v(0.32), y2], [v(0.56), y2], [v(0.64), y3], [v(0.86), y3]];
           const len = reduced ? sc.line.L : vy <= k[k.length - 1][0] ? knots(k, vy) : Math.max(y3, vy - sc.P);
           sc.line.draw(len);
           // 문제 파악은 장면이 아래에서 들어오기 시작할 때부터 앞에 선다(큰 글자 장면 끝에서 바로 이어 읽히게)
@@ -219,31 +235,34 @@ export function Scenes() {
     const canSec = q('[data-sec="can"]')!;
     flowScene('can', canSec, false, () => xL);
 
-    // ── 04 명암 전환: 선 끝 높이까지 남색이 덮인다(같은 한 동작). 제목은 위쪽이라 일찍 읽히고, 아래에 첫 작업 화면 윗부분이 보인다
-    const darkSc = q('[data-scene="dark"]')!, darkSt = q('[data-stage]', darkSc)!;
+    // ── 04 명암 전환: 선 끝 높이까지 남색이 덮인다(같은 한 동작). 큰 제목·건수·설명은 남색이 그 아래까지 지나간 뒤 통째로 나타난다(경계에 잘리지 않게)
+    const darkSc = q('[data-scene="dark"]')!, darkSt = q('[data-stage]', darkSc)!, darkSide = q('.' + s.workSide, darkSt);
     let edge = 0;
     {
+      let tvAt = 0;
       const sc = add({
         key: 'dark', host: darkSt, sec: darkSc, line: new Line(darkSt, true), pinned: true,
-        measure: () => { sc.P = vh * 0.62; },
+        measure: () => { darkSt.style.setProperty('--tv', '1'); tvAt = darkSide ? box(darkSide, darkSt).b + 24 : vh * 0.7; sc.P = vh * 0.62; },
         build: (xE) => { sc.line.set([xE, 0], [[xE, sc.extB]]); sc.exitX = xE; },
         frame: (vy) => {
           const len = reduced ? sc.line.L : vy <= P62 + sc.P ? clamp(vy, 0, vh) : Math.max(vh, vy - sc.P);
           sc.line.draw(len);
           edge = reduced ? vh : clamp(len, 0, vh);
-          darkSt.style.setProperty('--edge', `${f(edge)}px`);
+          // 다 덮었으면 무대보다 조금 더 덮는다(아래 끝에 밝은 1px 줄이 남지 않게)
+          darkSt.style.setProperty('--edge', `${f(edge >= vh - 0.5 ? vh + 8 : edge)}px`);
+          darkSt.style.setProperty('--tv', (reduced ? 1 : clamp((edge - tvAt) / 90)).toFixed(3));
         },
       });
     }
 
-    /** 그림 뒤로 지나는 선 — 그림 바깥 가장자리에서 멈췄다가(그림이 움직이는 동안) 그림 아래에서 다시 나온다.
+    /** 그림 뒤로 지나는 선 — 그림 바깥 가장자리에서 멈췄다가(그림이 움직이는 동안) 그림 아래에서 다시 나온다. 경로·가림은 다시 짤 때만 만든다.
      *  F: 그림 묶음(단추·캡션 포함) 상자. 들어오는 x 가 그림 폭 안이면 위에서 곧게, 밖이면 옆에서 가로로 들어간다. xo: 아래로 나오는 x */
     const through = (sc: Scene, xE: number, F: Box, xo: number) => {
       // 폰: 글이 그림 위에 오고 여백이 좁다 — 선은 오른쪽 여백 길로만 지난다(그림·글을 지나지 않는다)
       if (phone) { sc.line.set([xE, 0], Math.abs(xE - xR) < 1 ? [[xR, sc.extB]] : [[xE, 24, 12], [xR, 24, 12], [xR, sc.extB]]); sc.line.hide([]); return { aIn: F.t, aOut: F.b, x: xR }; }
       const inside = xE > F.l + 20 && xE < F.r - 20;
       if (inside) { sc.line.set([xE, 0], [[xE, sc.extB]]); sc.line.hide([F]); return { aIn: F.t, aOut: F.b, x: xE }; }
-      const yIn = F.t + F.h * 0.38, edgeX = xE < F.l ? F.l : F.r;
+      const yIn = F.t + F.h * 0.4, edgeX = xE < F.l ? F.l : F.r;
       sc.line.set([xE, 0], [[xE, yIn, 28], [xo, yIn, 28], [xo, sc.extB]]);
       sc.line.hide([F]);
       return { aIn: sc.line.at[0] + 28 * 1.12 + Math.abs(edgeX - xE) - 28, aOut: sc.line.L - (sc.extB - F.b), x: xo };
@@ -251,33 +270,39 @@ export function Scenes() {
     /** 그림 장면 선 길이: 붙기 전에는 가장자리까지, 붙어 있는 동안은 가장자리에 머물고, 풀린 뒤 그림 아래로 나온다 */
     const behindLen = (sc: Scene, vy: number, aIn: number, aOut: number, Fb: number) =>
       vy < P62 ? Math.min(vy, aIn) : vy <= P62 + sc.P ? aIn : Math.max(aIn, aOut + (vy - sc.P - Fb));
+    /** 흐르는(붙지 않는) 그림 장면: 경로가 같으니 높이↔길이 표를 다시 짤 때 한 번만 */
+    type R = { aIn: number; aOut: number; x: number };
 
-    // ── 첫 작업(요청 처리): 그림이 오른쪽 글 옆 작은 자리에서 왼쪽으로 커진다(글은 제자리). 선은 그 사이 그림 뒤에 있다
+    // ── 첫 작업(요청 처리): 들어오는 첫 순간부터 그림이 거의 다 큰 크기(97%)이고, 붙는 동안 제 크기로 자리 잡는다. 선은 왼쪽 길에서 그림 가장자리에 닿아 그림 뒤로
     const growSc = q('[data-scene="grow"]');
     if (growSc) {
-      const st = q('[data-stage]', growSc)!, pic = q('[data-grow]', growSc)!, slot = q('[data-slot]', growSc)!;
-      let F1: Box | null = null, s0 = 1, xE0 = 0;
+      const st = q('[data-stage]', growSc)!, pic = q('[data-grow]', growSc)!;
+      let F1: Box | null = null, r: R = { aIn: 0, aOut: 0, x: 0 }, an: { len: number; y: number }[] = [];
+      const K0 = 0.97;
       const sc = add({
         key: 'grow', host: st, sec: growSc, line: new Line(st, true), pinned: true,
         measure: () => {
-          pic.style.transform = ''; pic.style.removeProperty('--pw');
+          pic.style.removeProperty('--pw'); pic.style.setProperty('--gk', '1'); F1 = null;
           if (!sc.pinned) return;
           const cols = box(pic, st), H = vh - box(q('.' + s.growIn, st)!, st).t - 28;
-          pic.style.setProperty('--pw', `${f(Math.min(cols.w, (H - 100) * 1.6))}px`);
-          F1 = box(pic, st); s0 = Math.min(1, box(slot, st).w / F1.w);
-          sc.P = vh * 0.8;
+          // 그림 비율(틀 = 첫 그림)을 읽어 높이에 맞는 폭으로 — 단추·캡션 몫 100px
+          const im = q<HTMLImageElement>('[data-two] img', pic), ar = im ? +im.getAttribute('width')! / +im.getAttribute('height')! : 1.6;
+          pic.style.setProperty('--pw', `${f(Math.min(cols.w, (H - 100) * ar))}px`);
+          F1 = box(pic, st);
+          sc.P = vh * 0.62;
         },
-        build: (xE) => { xE0 = xE; },
+        build: (xE) => {
+          const F = F1 ?? box(pic, st);
+          r = through(sc, xE, F, F.l + F.w * 0.8); sc.exitX = r.x;
+          an = sc.line.anchors(0);
+        },
         frame: (vy) => {
-          if (!sc.pinned || reduced || !F1) {
-            const F = box(pic, st), r = through(sc, xE0, F, F.l + F.w * 0.8); sc.exitX = r.x;
-            sc.line.draw(reduced ? sc.line.L : lenAt(sc.line.anchors(0), vy));
-            return;
-          }
-          const g = clamp((vy - P62) / (vh * 0.45)), k = s0 + (1 - s0) * g;
-          pic.style.transform = g >= 1 ? '' : `scale(${k.toFixed(4)})`;
-          const F = box(pic, st), r = through(sc, xE0, F, F1.l + F1.w * 0.8);
-          sc.exitX = r.x;
+          if (!sc.pinned || reduced || !F1) { sc.line.draw(reduced ? sc.line.L : lenAt(an, vy)); return; }
+          const g = clamp((vy - P62 + vh * 0.25) / (vh * 0.45)), k = K0 + (1 - K0) * g;
+          pic.style.setProperty('--gk', k.toFixed(4));
+          // 그림이 왼쪽 가운데를 기준으로 커지므로 가림 상자도 같은 비율로(위치 읽기 없이)
+          const cy = F1.t + F1.h / 2;
+          sc.line.moveHide(0, { l: F1.l, t: cy - (F1.h * k) / 2, w: F1.w * k, h: F1.h * k, r: F1.l + F1.w * k, b: cy + (F1.h * k) / 2 });
           sc.line.draw(behindLen(sc, vy, r.aIn, r.aOut, F1.b));
         },
       });
@@ -287,23 +312,27 @@ export function Scenes() {
     const riseSc = q('[data-scene="rise"]');
     if (riseSc) {
       const devs = qa('[data-dev]', riseSc);
+      let rh = 0;
       const sc = flowScene('rise', riseSc, true, () => { const a = box(devs[0], riseSc), b = box(devs[1], riseSc); return (a.r + b.l) / 2; });
       const bd = sc.build;
       sc.build = (xE) => {
+        rh = riseSc.offsetHeight;
         if (!phone) return bd(xE);
         const a = box(devs[0], riseSc), b = box(devs[1], riseSc), gx = (a.r + b.l) / 2, top = Math.min(a.t, b.t) - 16, bot = Math.max(a.b, b.b) + 12;
         sc.line.set([xE, 0], [[xE, top, 12], [gx, top, 12], [gx, bot, 12], [xR, bot, 12], [xR, sc.extB]]);
-        sc.exitX = xR;
+        sc.exitX = xR; sc.frame = fr2;
       };
       const fr = sc.frame;
-      sc.frame = (vy) => { fr(vy); const r = riseSc.getBoundingClientRect(); riseSc.style.setProperty('--r', (reduced ? 0.5 : clamp((vh - r.top) / (vh + r.height))).toFixed(3)); };
+      // 화면 위 위치는 vy 로 안다(top = P62 − vy) — 위치를 읽지 않는다
+      const fr2 = (vy: number) => { fr(vy); riseSc.style.setProperty('--r', (reduced ? 0.5 : clamp((vh - (P62 - vy)) / (vh + rh))).toFixed(3)); };
+      sc.frame = fr2;
     }
 
-    // ── 병원: 스크롤이 전·후 비교의 가운데 선을 옮긴다(손으로 옮기면 그때부터는 손이 정한다). 그동안 잇는 선은 비교 뒤에 있다
+    // ── 병원: 스크롤이 전·후 비교의 가운데 선을 옮긴다(손으로 옮기면 그때부터는 손이 정한다). 그동안 잇는 선은 비교와 그 아래 글 뒤에 있다
     const sweepSc = q('[data-scene="sweep"]');
     if (sweepSc) {
       const st = q('[data-stage]', sweepSc)!, ba = q('[data-ba]', sweepSc)!, wrap = q('.' + s.baWrap, sweepSc)!, range = q<HTMLInputElement>('input[type="range"]', ba)!, qaEl = q('.' + s.pairQa, sweepSc);
-      let xE0 = 0;
+      let r: R = { aIn: 0, aOut: 0, x: 0 }, Fb = 0, an: { len: number; y: number }[] = [], lastX = -1;
       const X0 = 85, X1 = 15;
       const sc = add({
         key: 'sweep', host: st, sec: sweepSc, line: new Line(st, true), pinned: true,
@@ -312,29 +341,33 @@ export function Scenes() {
           if (!sc.pinned) return;
           const cols = box(wrap, st), H = vh - box(q('.' + s.pairIn, st)!, st).t - 28 - (qaEl?.offsetHeight ?? 0) - 20;
           wrap.style.setProperty('--pw', `${f(Math.min(cols.w, (H - 50) * 1.6))}px`);
-          sc.P = vh * 0.75;
+          sc.P = vh * 0.7;
         },
-        build: (xE) => { xE0 = xE; },
-        frame: (vy) => {
-          const drive = sc.pinned && !reduced && !('touched' in ba.dataset);
-          if (drive) { const X = Math.round(lerp(X0, X1, clamp((vy - P62 - vh * 0.05) / (vh * 0.5))) * 10) / 10; ba.style.setProperty('--x', `${X}%`); range.value = String(Math.round(X)); }
-          // 비교와 그 아래 문제·판단 글을 한 덩어리로 — 선은 그 뒤로 지나 아래에서 나온다
+        build: (xE) => {
           const w0 = box(wrap, st), q0 = qaEl && qaEl.offsetHeight ? box(qaEl, st) : w0;
           const F: Box = { l: Math.min(w0.l, q0.l), t: w0.t, r: Math.max(w0.r, q0.r), b: Math.max(w0.b, q0.b), w: 0, h: 0 }; F.w = F.r - F.l; F.h = F.b - F.t;
-          const r = through(sc, xE0, F, F.l + F.w * 0.5);
-          sc.exitX = r.x;
-          sc.line.draw(reduced ? sc.line.L : !sc.pinned ? lenAt(sc.line.anchors(0), vy) : behindLen(sc, vy, r.aIn, r.aOut, F.b));
+          r = through(sc, xE, F, F.l + F.w * 0.5); sc.exitX = r.x; Fb = F.b;
+          an = sc.line.anchors(0); lastX = -1;
+        },
+        frame: (vy) => {
+          if (sc.pinned && !reduced && !('touched' in ba.dataset)) {
+            const X = Math.round(lerp(X0, X1, clamp((vy - P62 - vh * 0.04) / (vh * 0.5))) * 10) / 10;
+            if (X !== lastX) { lastX = X; ba.style.setProperty('--x', `${X}%`); range.value = String(Math.round(X)); }
+          }
+          sc.line.draw(reduced ? sc.line.L : !sc.pinned ? lenAt(an, vy) : behindLen(sc, vy, r.aIn, r.aOut, Fb));
         },
       });
-      range.addEventListener('input', () => wake());
     }
 
-    // ── 근무표: 원본의 표시줄 자리가 그림 위로 크게 열린다. 그동안 잇는 선은 그림 뒤에 있다
+    // ── 근무표: 원본의 표시줄 자리가 밝게 짚이고(나머지는 어두워진다) 그 자리가 그림 위로 크게 열린다. 그동안 잇는 선은 그림 뒤에 있다가 오른쪽 아래에서 나와 문의 장으로
     const zoomSc = q('[data-scene="zoom"]');
     if (zoomSc) {
       const st = q('[data-stage]', zoomSc)!, fullPic = q('.' + s.fullPic, zoomSc)!, fd = q('[data-zoomed]', zoomSc);
       const crop = (fd?.querySelector<HTMLElement>('[data-zoom-crop]')?.dataset.zoomCrop ?? '0,0,40,21').split(',').map(Number);
-      let xE0 = 0, T0: [number, number, number] = [0, 0, 1], T1: [number, number] = [0, 0], ok = false;
+      const mark = document.createElement('span'); mark.className = s.zmark; mark.setAttribute('aria-hidden', 'true');
+      Object.assign(mark.style, { left: `${crop[0]}%`, top: `${crop[1]}%`, width: `${crop[2]}%`, height: `${crop[3]}%` });
+      q('[data-two] .' + s.twoStage, fullPic)?.appendChild(mark);
+      let T0: [number, number, number] = [0, 0, 1], T1: [number, number] = [0, 0], ok = false, r: R = { aIn: 0, aOut: 0, x: 0 }, Fb = 0, an: { len: number; y: number }[] = [];
       const sc = add({
         key: 'zoom', host: st, sec: zoomSc, line: new Line(st, true), pinned: true,
         measure: () => {
@@ -344,43 +377,34 @@ export function Scenes() {
           const cols = box(fullPic, st), H = vh - box(q('.' + s.zoomIn, st)!, st).t - 28;
           fullPic.style.setProperty('--pw', `${f(Math.min(cols.w, (H - 100) * (2789 / 1416)))}px`);
           const I = box(q('.' + s.frame, fullPic)!, st);
-          const R = { l: I.l + (I.w * crop[0]) / 100, t: I.t + (I.h * crop[1]) / 100, w: (I.w * crop[2]) / 100 };
+          const Rr = { l: I.l + (I.w * crop[0]) / 100, t: I.t + (I.h * crop[1]) / 100, w: (I.w * crop[2]) / 100, h: (I.h * crop[3]) / 100 };
           if (fd) {
-            const fw = Math.min(I.w * 0.92, 1040); fd.style.setProperty('--fw', `${f(fw)}px`);
-            const fh = fd.offsetHeight, pad = 18, s0 = R.w / (fw - pad * 2), zo = box(q('.' + s.zoomIn, st)!, st);   // 확대 칸은 zoomIn 기준으로 놓인다
-            T0 = [R.l - pad * s0 - zo.l, R.t - pad * s0 - zo.t, s0]; T1 = [I.l + (I.w - fw) / 2 - zo.l, I.b - fh - 20 - zo.t];
+            // 확대 칸: 원본에서 짚은 자리 바로 아래로 열린다(위 끝이 짚은 자리 아래 16px) — 원본과 확대가 한눈에 이어진다
+            const fw = Math.min(I.w * 0.86, 980); fd.style.setProperty('--fw', `${f(fw)}px`);
+            const fh = fd.offsetHeight, pad = 16, s0 = Rr.w / (fw - pad * 2), zo = box(q('.' + s.zoomIn, st)!, st);   // 확대 칸은 zoomIn 기준으로 놓인다
+            T0 = [Rr.l - pad * s0 - zo.l, Rr.t - pad * s0 - zo.t, s0];
+            T1 = [Math.min(I.r - fw - 16, Math.max(I.l + 16, Rr.l + 16)) - zo.l, Math.min(I.b - fh - 16, Rr.t + Rr.h + 16) - zo.t];
           }
           ok = true;
-          sc.P = vh * 0.75;
+          sc.P = vh * 0.7;
         },
-        build: (xE) => { xE0 = xE; },
+        build: (xE) => {
+          const F = box(fullPic, st);
+          r = through(sc, xE, F, F.r - 32); sc.exitX = r.x; Fb = F.b;
+          an = sc.line.anchors(0);
+        },
         frame: (vy) => {
-          const F = box(fullPic, st), r = through(sc, xE0, F, F.l + F.w * 0.8);
-          sc.exitX = r.x;
-          if (!sc.pinned || reduced || !ok) { sc.line.draw(reduced ? sc.line.L : lenAt(sc.line.anchors(0), vy)); return; }
-          sc.line.draw(behindLen(sc, vy, r.aIn, r.aOut, F.b));
-          const z = clamp((vy - P62 - vh * 0.1) / (vh * 0.35));
+          if (!sc.pinned || reduced || !ok) { sc.line.draw(reduced ? sc.line.L : lenAt(an, vy)); return; }
+          sc.line.draw(behindLen(sc, vy, r.aIn, r.aOut, Fb));
+          const z = clamp((vy - P62 - vh * 0.04) / (vh * 0.34));
+          st.style.setProperty('--z', z.toFixed(3));
           if (fd) {
             const kz = lerp(T0[2], 1, z);
             fd.style.transform = `translate(${f(lerp(T0[0], T1[0], z))}px, ${f(lerp(T0[1], T1[1], z))}px) scale(${kz.toFixed(4)})`;
-            fd.style.setProperty('--zo', z > 0.02 ? '1' : '0'); fd.style.setProperty('--z', z.toFixed(3));
+            fd.style.setProperty('--zo', z > 0.02 ? '1' : '0');
             fd.toggleAttribute('data-open', z >= 0.99);
           }
         },
-      });
-    }
-
-    // ── 「모든 작업」: 구분선 없이, 위 여백에서 오른쪽 길로 옮겨 내려간다
-    const allHost = q('[data-all]')!;
-    {
-      let an: { len: number; y: number }[] = [];
-      const sc = add({
-        key: 'all', host: allHost, sec: allHost, line: new Line(allHost, true), pinned: false, measure: () => {},
-        build: (xE) => {
-          sc.line.set([xE, 0], Math.abs(xE - xR) < 1 ? [[xR, sc.extB]] : [[xE, 40, 32], [xR, 40, 32], [xR, sc.extB]]);
-          sc.exitX = xR; an = sc.line.anchors(0);
-        },
-        frame: (vy) => sc.line.draw(reduced ? sc.line.L : lenAt(an, vy)),
       });
     }
 
@@ -392,6 +416,9 @@ export function Scenes() {
     const strands = [...(contactAmp?.querySelectorAll<SVGPathElement>('[data-line]') ?? [])].map((p) => ({ p, len: 0, ...order(p.dataset.line ?? '', p.dataset.group ?? '') }));
     const mainD = strands.find((x) => x.p.dataset.line === AMP_MAIN.diag), mainL = strands.find((x) => x.p.dataset.line === AMP_MAIN.loops);
     let ampBox: Box | null = null, kAmp = 0, contactTip: { x: number; y: number } | null = null;
+    /** 주된 가닥 위 점 — 다시 짤 때 200 점씩 뽑아 둔다(원본 좌표) */
+    const samp = (p: SVGPathElement) => { const L0 = p.getTotalLength(); return Array.from({ length: 201 }, (_, i) => { const q = p.getPointAtLength((L0 * i) / 200); return [q.x, q.y] as Pt; }); };
+    let mainPts: Pt[][] = [[], []];
     {
       let an: { len: number; y: number }[] = [], aIn = 0, maxV = 0;
       const sc = add({
@@ -400,8 +427,9 @@ export function Scenes() {
           if (!contactAmp) return;
           const c = box(contactAmp, contactSec); ampBox = c;
           const hc = c.h / AMP_H, ax = c.l + AMP_TIP.x * hc, ay = c.t + AMP_TIP.y * hc;
-          sc.line.set([xE, 0], [[xE, ay, Math.max(4, xE - ax)], [ax, ay]]);
+          sc.line.set([xE, 0], xE > ax + 8 ? [[xE, ay, Math.max(4, xE - ax)], [ax, ay]] : [[xE, 40, 32], [xR, 40, 32], [xR, ay, Math.max(4, xR - ax)], [ax, ay]]);
           for (const x of strands) x.len = x.p.getTotalLength() * hc;
+          if (mainD && mainL) mainPts = [samp(mainD.p), samp(mainL.p)];
           an = sc.line.anchors(0).map((p) => ({ ...p }));   // 아래에서 줄여 쓰므로 사본
           maxV = html.scrollHeight - vh + P62 - sc.top - 8;
           const end = Math.min(an[an.length - 1].y, maxV - Math.min(360, vh * 0.4));
@@ -416,29 +444,32 @@ export function Scenes() {
           contactAmp?.toggleAttribute('data-drawn', k >= 0.995);
           contactTip = null;
           if (k > 0 && k < 0.55 && mainD && mainL && ampBox) {
-            const sca = ampBox.h / AMP_H, x = k < 0.3 ? mainD : mainL, t = clamp((k - x.a) / (x.b - x.a)), L0 = x.len / sca;
-            const p = x.p.getPointAtLength(x.rev ? L0 * (1 - t) : L0 * t);
-            contactTip = { x: ampBox.l + (p.x - AMP_VB[0]) * sca, y: ampBox.t + (p.y - AMP_VB[1]) * sca };
+            const sca = ampBox.h / AMP_H, x = k < 0.3 ? mainD : mainL, ps = mainPts[k < 0.3 ? 0 : 1], t = clamp((k - x.a) / (x.b - x.a));
+            const u = (x.rev ? 1 - t : t) * 200, i = Math.min(199, Math.floor(u)), w = u - i, a = ps[i], b = ps[i + 1];
+            if (a && b) contactTip = { x: ampBox.l + (a[0] + (b[0] - a[0]) * w - AMP_VB[0]) * sca, y: ampBox.t + (a[1] + (b[1] - a[1]) * w - AMP_VB[1]) * sca };
           }
         },
       });
     }
 
     // ── 머리글 낱말 채우기(할 수 있는 일 · 문의)
-    const fills = qa('[data-fill]').map((h) => ({ h, ws: qa('[data-w]', h), n: -1 }));
-    const words = () => {
+    // 위치는 다시 짤 때만 잰다(페이지 기준 top) — 스크롤 프레임에서는 위치를 읽지 않는다
+    const fills = qa('[data-fill]').map((h) => ({ h, ws: qa('[data-w]', h), n: -1, top: 0 }));
+    const words = (sy: number) => {
       for (const x of fills) {
-        const r = x.h.getBoundingClientRect(), k = reduced ? 1 : clamp((vh * 0.92 - r.top) / (vh * 0.42)), n = Math.floor(k * x.ws.length + 0.0001);
+        const k = reduced ? 1 : clamp((vh * 0.92 - (x.top - sy)) / (vh * 0.42)), n = Math.floor(k * x.ws.length + 0.0001);
         if (n === x.n) continue;
         x.n = n; x.ws.forEach((w, i) => w.toggleAttribute('data-on', i < n));
       }
     };
     /** 헤더 밑이 남색이면 헤더도 남색 — 명암 전환 무대에서는 남색이 헤더까지 내려왔을 때부터 */
-    const header = () => {
-      const h = (document.querySelector('header')?.getBoundingClientRect().height ?? 64) / 2;
-      const work = q('[data-sec="work"]')!.getBoundingClientRect(), ds = darkSc.getBoundingClientRect(), st = darkSt.getBoundingClientRect();
-      const dark = h >= work.top && (h >= ds.bottom || (h >= st.top && h < st.top + edge));
-      html.toggleAttribute('data-hdr-dark', dark || contactSec.getBoundingClientRect().top <= h);
+    const hd = { h: 32, work: 0, ds: 0, de: 0, contact: 0 };
+    const header = (sy: number) => {
+      const dk = scenes.find((x) => x.key === 'dark')!;
+      // 명암 무대의 화면 위 위치: 붙기 전에는 내려오고, 붙어 있는 동안 0, 풀리면 올라간다
+      const stTop = dk.pinned ? (sy < hd.ds ? hd.ds - sy : sy <= hd.ds + dk.P ? 0 : hd.ds + dk.P - sy) : hd.ds - sy;
+      const dark = hd.h >= hd.work - sy && (hd.h >= hd.de - sy || (hd.h >= stTop && hd.h < stTop + edge));
+      html.toggleAttribute('data-hdr-dark', dark || hd.contact - sy <= hd.h);
     };
 
     let ready = false, built = { w: 0, h: 0 }, hashPending = !!location.hash;
@@ -481,6 +512,10 @@ export function Scenes() {
       }
       // 주소에 #이 있으면, 장면 길이가 정해져 페이지가 길어진 뒤 그 자리로 다시 맞춘다(사용자가 먼저 움직였으면 그대로)
       if (hashPending) { const tg = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (tg) { const y = tg.getBoundingClientRect().top + scrollY; const l = (window as unknown as { __lenis?: { scrollTo: (y: number, o: object) => void } }).__lenis; if (l) l.scrollTo(y, { immediate: true }); else scrollTo(0, y); } }
+      const py = (e: Element) => e.getBoundingClientRect().top + scrollY;
+      for (const x of fills) x.top = py(x.h);
+      for (const sc of scenes) bots.set(sc, sc.top + sc.sec.offsetHeight);
+      hd.h = (document.querySelector('header')?.getBoundingClientRect().height ?? 64) / 2; hd.work = py(q('[data-sec="work"]')!); hd.ds = py(darkSc); hd.de = hd.ds + darkSc.offsetHeight; hd.contact = py(contactSec);
       yS = -1; side.clear();
       paint(scrollY);
     };
@@ -490,8 +525,8 @@ export function Scenes() {
       for (const sc of scenes) {
         const vy = sy + P62 - sc.top;
         if (!reduced && sc.key !== 'hero' && sc.key !== 'contact') {
-          const r = sc.sec.getBoundingClientRect();
-          if (r.bottom < -vh || r.top > vh * 2) { const sd = r.top > 0 ? -1 : 1; if (side.get(sc) !== sd) { side.set(sc, sd); sc.frame(sd < 0 ? -1 : 1e7); } continue; }
+          const rt = sc.top - sy, rb = (bots.get(sc) ?? sc.top) - sy;   // 다시 짤 때 잰 위치로(읽지 않는다)
+          if (rb < -vh || rt > vh * 2) { const sd = rt > 0 ? -1 : 1; if (side.get(sc) !== sd) { side.set(sc, sd); sc.frame(sd < 0 ? -1 : 1e7); } continue; }
           side.set(sc, 0);
         }
         sc.frame(vy);
@@ -503,14 +538,14 @@ export function Scenes() {
       const show = (sc: Scene, p: { x: number; y: number }) => { sc.line.tip.setAttribute('cx', f(p.x)); sc.line.tip.setAttribute('cy', f(p.y)); sc.line.tip.setAttribute('data-on', ''); };
       if (enterTip) show(hero, enterTip);
       else if (contactTip) show(scenes[scenes.length - 1], contactTip);
-      else if (head && head.line.len < head.line.L - 1 && kAmp <= 0) show(head, head.line.ink.getPointAtLength(head.line.len));
+      else if (head && head.line.len < head.line.L - 1 && kAmp <= 0) show(head, head.line.point(head.line.len));
     };
 
     let raf = 0, yS = -1;
     const tick = () => {
       raf = 0;
       if (!ready) return;
-      header(); words();
+      header(scrollY); words(scrollY);
       const target = scrollY;
       // 크게 건너뛰었으면(링크·새로고침 복원·빠른 끌기) 따라가는 장면 없이 바로 그 자리 상태로
       if (yS < 0 || reduced || Math.abs(target - yS) > vh * 1.5) yS = target;

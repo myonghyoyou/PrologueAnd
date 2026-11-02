@@ -77,7 +77,7 @@ function QA({ w, changed = true }: { w: WorkEntry; changed?: boolean }) {
 const More = ({ p }: { p: Project }) => <Link className={s.link} href={`/projects/${p.slug}`}>자세히 보기 →</Link>;
 
 /** 작업 넷 — 자료마다 다른 장면.
- *  wide(요청 처리): 글 옆에서 그림이 커진다 · phones(문제 은행): 두 화면이 서로 다른 빠르기로 올라온다
+ *  wide(요청 처리): 처음부터 큰 그림이 글 옆에서 제 크기로 자리 잡는다 · phones(문제 은행): 두 화면이 서로 다른 빠르기로 올라온다
  *  pair(병원): 스크롤이 전·후 비교의 가운데 선을 옮긴다 · full(근무표): 표시줄 자리가 크게 열린다.
  *  그림이 움직이는 동안 잇는 선은 그림 뒤로 들어가 있다가 아래에서 다시 나온다 */
 function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
@@ -87,7 +87,6 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
       <div className={s.stage} data-stage>
         <div className={`${s.wrap} ${s.stageIn} ${s.growIn}`}>
           <div className={s.side}><CaseHead p={p} w={w} i={i} /><QA w={w} /><More p={p} /></div>
-          <div className={s.slot} data-slot aria-hidden="true" />
           <div className={s.pic} data-grow>{w.toggle
             ? <TwoState names={w.toggle.names} shots={[w.shots[0], w.toggle.next]} sizes="(min-width:1024px) 88vw, 100vw" />
             : <Pic shot={w.shots[0]} sizes="(min-width:1024px) 88vw, 100vw" />}</div>
@@ -159,7 +158,6 @@ export function Home({ projects }: { projects: Project[] }) {
   const bySlug = new Map(works.map((p) => [p.slug, p]));
   const groups = [...new Set(SERVICES.map((v) => v.group))];
   const [near, far] = HOW.h[1].split(HOW.find).map((x) => x.trim());
-  const peek = works[0] ? WORK[works[0].slug].shots[0] : null;
   return (
     <div className={s.root} data-home>
       <script dangerouslySetInnerHTML={{ __html: AMP_GATE }} />
@@ -258,17 +256,12 @@ export function Home({ projects }: { projects: Project[] }) {
               <div className={`${s.wrap} ${s.stageIn} ${s.darkIn}`}>
                 <SectionHead n="04" t="작업" />
                 <h2 className={s.workT}>{WORK_HEAD.h}</h2>
-                <div className={s.workSide}><p className={s.label}><span data-published>{works.length}</span>건</p><p>{WORK_HEAD.p}</p></div>
+                <div className={s.workSide}><p className={s.count}><span className={s.num} data-published>{works.length}</span>건</p><p>{WORK_HEAD.p}</p></div>
               </div>
-              {/* 다음 장면(첫 작업)의 실제 화면 윗부분 — 같은 자리에서 이어진다 */}
-              {peek ? <div className={s.peek} data-peek aria-hidden="true"><div className={s.wrap}><div className={s.peekIn}><Image src={peek.src} alt="" width={peek.w} height={peek.h} sizes="(min-width:1024px) 60vw, 100vw" /></div></div></div> : null}
             </div>
           </div>
         </div>
         {works.map((p, i) => <Case key={p.slug} p={p} w={WORK[p.slug]} i={i} />)}
-        <div className={s.allHost} data-host data-all>
-          <div className={s.wrap}><div className={s.all}><b>모든 작업</b><Link className={s.btn} href="/projects">Projects 보기 <span aria-hidden="true">→</span></Link></div></div>
-        </div>
       </section>
 
       <section className={s.contact} id="contact" data-sec="contact" data-closing data-host>

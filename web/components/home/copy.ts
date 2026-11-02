@@ -52,7 +52,8 @@ export const WORK_HEAD = {
   p: '프로젝트마다 무엇이 불편했고 어떻게 바꿨는지 실제 화면과 함께 정리했습니다.',
 };
 
-const PFH = '/screens/covers/por-favor-harry.png';
+// 홈의 요청 처리 그림은 화면 아래·옆 빈 여백을 잘라 낸 판 — 틀을 내용으로 가득 채운다(원본은 그대로)
+const PFH = '/screens/pfh/queue-fill.png';
 const HB = '/screens/hux/inventory-before.png', HA = '/screens/hux/inventory-after.png';
 const SB = '/screens/shift/panel.png';
 
@@ -62,11 +63,11 @@ export const WORK: Record<string, WorkEntry> = {
     problem: '전화·메신저·메일·자리 방문으로 흩어져 오던 요청을 담당자 한 사람이 모두 다시 정리하고 있었습니다.',
     decision: '전화로 오거나 자리로 찾아온 요청은 담당자가 요청한 사람 이름으로 대신 등록하게 했습니다. 양식을 쓰지 않는 사람이 있어도 요청이 빠지지 않습니다.',
     changed: '요청은 모두 같은 목록에 쌓이고, 요청한 사람이 진행 상황을 직접 확인합니다.',
-    shots: [{ src: PFH, w: 1280, h: 800, cap: '심사 대기 화면. 오늘 들어온 요청과 진행 중인 요청 수가 맨 위에 보입니다.',
+    shots: [{ src: PFH, w: 1280, h: 672, cap: '심사 대기 화면. 오늘 들어온 요청과 진행 중인 요청 수가 맨 위에 보입니다.',
       alt: '심사 대기 화면. 위에 숫자 칸 네 개가 있고, 그 아래 요청 목록에 번호·요청한 사람·내용·희망일·상태가 줄마다 적혀 있다.' }],
     toggle: { names: ['담당자 · 심사 대기', '요청한 사람 · 진행 상황'],
-      next: { src: '/screens/pfh/status.png', w: 1280, h: 800, cap: '요청한 사람은 이 화면에서 진행 상황과 처리 예정일, 담당자 메모를 직접 봅니다.',
-        alt: '요청 진행 상황 화면. 제목 아래 "진행 중 · 9/19까지"가 크게 표시되고, 원본 요청과 담당자 메모, 접수·처리 일정 확정 이력이 차례로 보인다.' } },
+      next: { src: '/screens/pfh/status-fill.png', w: 1067, h: 560, cap: '요청한 사람은 이 화면에서 진행 상황과 처리 예정일, 담당자 메모를 직접 봅니다.',
+        alt: '요청 진행 상황 화면. 제목 아래 "진행 중 · 9/19까지"가 크게 표시되고, 원본 요청과 대화 칸의 담당자 메모가 차례로 보인다.' } },
   },
   'problem-bank': {
     layout: 'phones',
