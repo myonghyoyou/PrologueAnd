@@ -319,6 +319,16 @@ test.describe('홈 — 데스크톱', () => {
     expect(await page.evaluate(() => (window as unknown as { __reads: number }).__reads)).toBe(0);
   });
 
+  test('작업 판에서는 선 끝 점(흰 점)이 켜지지 않는다 — 선이 그림에서 멈췄다 나와도 깜빡이지 않게', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('load'); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(300);
+    const [y0, y1] = await page.evaluate(() => { const w = document.querySelector('[data-sec="work"]')!.getBoundingClientRect(); return [w.top + scrollY - innerHeight * 0.5, w.bottom + scrollY - innerHeight]; });
+    await page.evaluate(() => { const w = window as unknown as { __tips: number }; w.__tips = 0;
+      const f = () => { w.__tips += document.querySelectorAll('[data-sec="work"] [data-thread] circle[data-on]').length; requestAnimationFrame(f); }; requestAnimationFrame(f); });
+    for (let y = y0; y < y1; y += 220) { await scrollToY(page, y); await page.waitForTimeout(60); }
+    expect(await page.evaluate(() => (window as unknown as { __tips: number }).__tips)).toBe(0);
+  });
+
   test('머리글 낱말: 화면에 닿기 전엔 흐리고, 지나면 채워진다', async ({ page }) => {
     await page.goto('/');
     const lead = page.locator('[data-sec="can"] [data-fill]').first();
@@ -504,9 +514,9 @@ test.describe('홈 — 움직임(P2)', () => {
       const r = await im0.evaluate((img) => {
         const i = img.getBoundingClientRect(), fr = img.closest('[class*="frame"]')!, f = fr.getBoundingClientRect(), b = fr.clientLeft;
         const im = img as HTMLImageElement, k = Math.min(i.width / im.naturalWidth, i.height / im.naturalHeight);
-        return { dw: f.width - 2 * b - im.naturalWidth * k, dh: f.height - 2 * b - im.naturalHeight * k };
+        return { dw: f.width - 2 * b - im.naturalWidth * k, dh: f.height - 2 * b - im.naturalHeight * k, tol: Math.max(2, f.width * 0.003) };   // 큰 화면의 비율 반올림(0.3%)까지
       });
-      expect(Math.abs(r.dw), slug).toBeLessThan(2); expect(Math.abs(r.dh), slug).toBeLessThan(2);
+      expect(Math.abs(r.dw), slug).toBeLessThan(r.tol); expect(Math.abs(r.dh), slug).toBeLessThan(r.tol);
     }
   });
 

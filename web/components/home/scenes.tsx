@@ -98,6 +98,9 @@ const knots = (k: Knot[], vy: number) => {
   return k[k.length - 1][1];
 };
 
+/** 작업 판(남색 구간)의 장면들 — 선 끝 점을 두지 않는다 */
+const WORK_KEYS = new Set(['dark', 'grow', 'rise', 'sweep', 'zoom']);
+
 type Scene = {
   key: string; host: HTMLElement; sec: HTMLElement; line: Line; pinned: boolean;
   /** 페이지 기준 장면 꼭대기, 붙어 있는 길이 */
@@ -531,14 +534,15 @@ export function Scenes() {
         }
         sc.frame(vy);
       }
-      // 선 끝 점: 첫 & 주된 가닥이 그려지는 동안은 그 머리, 마지막 & 주된 가닥을 그리는 동안은 그 가닥 위, 그 밖에는 지금 그려지는 선의 끝
+      // 선 끝 점: 첫 & 주된 가닥이 그려지는 동안은 그 머리, 마지막 & 주된 가닥을 그리는 동안은 그 가닥 위, 그 밖에는 지금 그려지는 선의 끝.
+      // 작업 판(남색 구간)에서는 두지 않는다 — 선이 그림 가장자리에서 멈췄다 나올 때마다 점이 켜졌다 꺼져 깜빡이게 보였다
       let head: Scene | null = null;
       for (const sc of scenes) { sc.line.tip.removeAttribute('data-on'); if (sc.line.len > 1) head = sc; }
       if (reduced) return;
       const show = (sc: Scene, p: { x: number; y: number }) => { sc.line.tip.setAttribute('cx', f(p.x)); sc.line.tip.setAttribute('cy', f(p.y)); sc.line.tip.setAttribute('data-on', ''); };
       if (enterTip) show(hero, enterTip);
       else if (contactTip) show(scenes[scenes.length - 1], contactTip);
-      else if (head && head.line.len < head.line.L - 1 && kAmp <= 0) show(head, head.line.point(head.line.len));
+      else if (head && !WORK_KEYS.has(head.key) && head.line.len < head.line.L - 1 && kAmp <= 0) show(head, head.line.point(head.line.len));
     };
 
     let raf = 0, yS = -1;
