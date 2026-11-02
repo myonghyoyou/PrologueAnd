@@ -1,13 +1,28 @@
-import { AMP_D, AMP_W, AMP_H, AMP_SPINE } from './amp-path';
+import { AMP_VB, AMP_LINES, AMP_MASKS, type AmpLine } from './amp-path';
 
-/** 큰 & — Bodoni Moda 800 윤곽에 받침 꼬리를 다시 그린 것(amp-path). 인트로의 엉킨 선이 이 윤곽으로 모인다.
- *  문의 장의 & 는 뼈대 획(data-trace)을 하나 더 갖는다 — 내려온 선이 받침 꼬리 끝으로 들어와 뼈대를 먼저 그리고, 그다음 굵기가 채워진다.
- *  스크립트가 없으면 뼈대는 숨고 채운 & 만 보인다 */
+/** 큰 & — 기준 SVG(public/brand/ampersand_dense_thicker.svg)의 여섯 가닥을 그대로 그린다(경로·가리개 원본 그대로).
+ *  화면마다 바뀌는 것은 CSS 의 선 굵기·색·크기뿐(home.module.css --amp-line, .heroAmp/.contactAmp).
+ *  문의 장의 & 는 잇는 선 고리가 가닥마다 그리는 정도(dashoffset)를 넣는다 — 스크립트가 없으면 처음부터 다 보인다 */
 export function Amp({ className, which }: { className?: string; which: 'hero' | 'contact' }) {
+  const id = (k: string) => `amp-${which}-${k}`;
+  const lines = (g: AmpLine['group']) => AMP_LINES.filter((l) => l.group === g).map((l) => <path key={l.id} d={l.d} data-line={l.id} data-group={g} />);
   return (
-    <svg className={className} data-amp={which} viewBox={`0 0 ${AMP_W} ${AMP_H}`} aria-hidden="true" focusable="false">
-      <path d={AMP_D} data-fillpath />
-      {which === 'contact' ? <path d={AMP_SPINE} data-trace /> : null}
+    <svg className={className} data-amp={which} viewBox={AMP_VB.join(' ')} aria-hidden="true" focusable="false">
+      <defs>
+        <mask id={id('loops')} maskUnits="userSpaceOnUse" x="0" y="0" width="1254" height="1254">
+          <rect width="1254" height="1254" fill="white" />
+          <path d={AMP_MASKS.loops.d} fill="none" stroke="black" strokeWidth={AMP_MASKS.loops.w} strokeLinecap="round" />
+        </mask>
+        <mask id={id('desc')} maskUnits="userSpaceOnUse" x="0" y="0" width="1254" height="1254">
+          <rect width="1254" height="1254" fill="white" />
+          <rect width="1254" height={AMP_MASKS.desc.top} fill="black" />
+          <path d={AMP_MASKS.desc.d} fill="none" stroke="black" strokeWidth={AMP_MASKS.desc.w} strokeLinecap="round" />
+        </mask>
+      </defs>
+      <g mask={`url(#${id('loops')})`}>{lines('loops')}</g>
+      <g mask={`url(#${id('desc')})`}>{lines('desc')}</g>
+      <g>{lines('bar')}</g>
+      <g>{lines('diag')}</g>
     </svg>
   );
 }

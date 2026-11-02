@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { bannedWords } from './banned';
 import { scrollToY } from './helpers';
-import { AMP_TIP } from '../components/home/amp-path';
+import fs from 'node:fs';
+import path from 'node:path';
+import { AMP_TIP, AMP_VB, AMP_MASKS } from '../components/home/amp-path';
 
 // 홈 = 편집형 세로 페이지(P1). 첫 화면 → 일하는 방식 → 할 수 있는 일 → 작업 → 문의. 움직임 없음
 test.describe('홈', () => {
@@ -340,23 +342,25 @@ test('잇는 선은 글자 위를 지나지 않고(머리글도), 실제 화면 
   await ctx.close();
 });
 
-test.describe('홈 — 한 획 & 와 잇는 선의 출구·입구', () => {
-  /** & 안의 점(단위: & 상자) → 화면 좌표 */
-  const at = (which: 'hero' | 'contact', p: { x: number; y: number }) => `(() => { const m = document.querySelector('[data-amp="${which}"]').getScreenCTM(); return { x: ${p.x} * m.a + m.e, y: ${p.y} * m.d + m.f }; })()`;
+test.describe('홈 — 기준 SVG & 와 잇는 선의 출구·입구', () => {
+  /** & 안의 점(보기 상자 왼쪽 위 기준) → 화면 좌표 */
+  const at = (which: 'hero' | 'contact', p: { x: number; y: number }) => `(() => { const m = document.querySelector('[data-amp="${which}"]').getScreenCTM(); return { x: ${p.x + AMP_VB[0]} * m.a + m.e, y: ${p.y + AMP_VB[1]} * m.d + m.f }; })()`;
   const ink = `document.querySelector('[data-thread] path[class*="threadInk"]:not([class*="threadLight"])')`;
 
-  test('출구: 선은 첫 & 받침 꼬리 끝에서 꼬리가 뻗은 방향(오른쪽) 그대로 시작한다', async ({ page }) => {
+  test('출구: 선은 첫 & 오른쪽 아래 맨 아래 가닥 끝에서 그 가닥 방향(오른쪽) 그대로, 같은 굵기로 시작한다', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('[data-thread] path').first()).toBeAttached();
     const r = await page.evaluate(`(() => { const t = ${at('hero', AMP_TIP)}; const p = ${ink}, m = p.getScreenCTM();
       const a = p.getPointAtLength(0), b = p.getPointAtLength(6);
-      return { gap: Math.hypot(a.x * m.a + m.e - t.x, a.y * m.d + m.f - t.y), dir: [b.x - a.x, b.y - a.y] }; })()`) as { gap: number; dir: [number, number] };
+      const w = getComputedStyle(document.querySelector('[data-amp="hero"] [data-line="diagonal-line-6"]')).strokeWidth;
+      return { gap: Math.hypot(a.x * m.a + m.e - t.x, a.y * m.d + m.f - t.y), dir: [b.x - a.x, b.y - a.y], w, iw: getComputedStyle(p).strokeWidth }; })()`) as { gap: number; dir: [number, number]; w: string; iw: string };
     expect(r.gap).toBeLessThanOrEqual(0.6);
     const ang = Math.acos(Math.min(1, (r.dir[0] * AMP_TIP.dx + r.dir[1] * AMP_TIP.dy) / Math.hypot(...r.dir)));
     expect(ang * 180 / Math.PI).toBeLessThan(12);
+    expect(r.iw).toBe(r.w);   // 잇는 선과 & 가닥이 같은 화면 굵기
   });
 
-  test('입구: 선의 끝이 마지막 & 받침 꼬리 끝이고, 꼬리를 거슬러 가로로 들어오며, & 뼈대 획이 바로 그 점에서 시작한다', async ({ page }) => {
+  test('입구: 선의 끝이 마지막 & 의 같은 가닥 끝이고, 그 가닥을 거슬러 가로로 들어온다', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('[data-thread] path').first()).toBeAttached();
     // 그림·글꼴이 늦게 들어오면 선을 한 번 더 짠다 — 자리가 잡힌 뒤에 잰다
@@ -365,25 +369,27 @@ test.describe('홈 — 한 획 & 와 잇는 선의 출구·입구', () => {
     await expect.poll(gap, { timeout: 5000 }).toBeLessThanOrEqual(0.6);
     const r = await page.evaluate(`(() => { const t = ${at('contact', AMP_TIP)}; const p = ${ink}, L = p.getTotalLength();
       const a = p.getPointAtLength(L - 6), e = p.getPointAtLength(L);
-      const tr = document.querySelector('[data-amp="contact"] [data-trace]'), tm = document.querySelector('[data-amp="contact"]').getScreenCTM(), q = tr.getPointAtLength(0);
-      return { dir: [e.x - a.x, e.y - a.y], tr0: Math.hypot(q.x * tm.a + tm.e - t.x, q.y * tm.d + tm.f - t.y) }; })()`) as { dir: [number, number]; tr0: number };
-    expect(r.tr0).toBeLessThanOrEqual(0.6);
+      const g = document.querySelector('[data-amp="contact"] [data-line="diagonal-line-6"]'), gm = g.getScreenCTM(), q = g.getPointAtLength(g.getTotalLength());
+      return { dir: [e.x - a.x, e.y - a.y], g0: Math.hypot(q.x * gm.a + gm.e - t.x, q.y * gm.d + gm.f - t.y) }; })()`) as { dir: [number, number]; g0: number };
+    expect(r.g0).toBeLessThanOrEqual(0.6);
     const ang = Math.acos(Math.min(1, -(r.dir[0] * AMP_TIP.dx + r.dir[1] * AMP_TIP.dy) / Math.hypot(...r.dir)));
     expect(ang * 180 / Math.PI).toBeLessThan(15);
   });
 
-  test('큰 &: 채운 윤곽 하나와 문의 장 뼈대 획 하나 — 뼈대는 글자 안을 지나 꼬리 끝에서 시작한다', async ({ page }) => {
+  test('큰 & 는 기준 SVG 그대로 — 두 장면 모두 24줄의 경로·가리개가 원본과 같고, 늘이거나 눌리지 않는다', async ({ page }) => {
     await page.goto('/');
-    expect(await page.locator('[data-amp="hero"] path').count()).toBe(1);
-    const tr = page.locator('[data-amp="contact"] [data-trace]');
-    expect((await tr.getAttribute('d'))!.match(/M/g)).toHaveLength(1);
-    // 뼈대 점은 대부분 채운 윤곽 안에 있다(획의 가운데를 지난다)
-    const inside = await page.evaluate(() => {
-      const s = document.querySelector<SVGSVGElement>('[data-amp="contact"]')!, f = s.querySelector<SVGGeometryElement>('[data-fillpath]')!, t = s.querySelector<SVGPathElement>('[data-trace]')!, L = t.getTotalLength();
-      const pts = Array.from({ length: 200 }, (_, i) => t.getPointAtLength((L * i) / 199));
-      return pts.filter((q) => { const p = s.createSVGPoint(); p.x = q.x; p.y = q.y; return f.isPointInFill(p); }).length / pts.length;
-    });
-    expect(inside).toBeGreaterThan(0.95);
+    const src = fs.readFileSync(path.join(__dirname, '../public/brand/ampersand_dense_thicker.svg'), 'utf8');
+    const want = Object.fromEntries([...src.matchAll(/<path id="([a-z]+-line-\d)" d="([^"]+)"/g)].map((m) => [m[1], m[2]]));
+    expect(Object.keys(want)).toHaveLength(24);
+    for (const which of ['hero', 'contact']) {
+      const sel = `[data-amp="${which}"]`;
+      const got = await page.locator(`${sel} [data-line]`).evaluateAll((es) => Object.fromEntries(es.map((e) => [e.getAttribute('data-line'), e.getAttribute('d')])));
+      expect(got).toEqual(want);
+      const ratio = await page.locator(sel).evaluate((s) => { const r = s.getBoundingClientRect(); return r.width / r.height; });
+      expect(Math.abs(ratio - AMP_VB[2] / AMP_VB[3])).toBeLessThan(0.01);
+      expect(await page.locator(`${sel} mask path`).evaluateAll((es) => es.map((e) => e.getAttribute('d')))).toEqual([AMP_MASKS.loops.d, AMP_MASKS.desc.d]);
+    }
+    expect(src).toContain(AMP_MASKS.loops.d); expect(src).toContain(AMP_MASKS.desc.d);
   });
 
   test('역방향: 끝까지 내렸다가 맨 위로 돌아오면 & 와 보조 획이 처음 상태로 돌아간다', async ({ page }) => {
@@ -393,6 +399,24 @@ test.describe('홈 — 한 획 & 와 잇는 선의 출구·입구', () => {
     await scrollToY(page, 0);
     await expect(page.locator('[data-amp="contact"]')).not.toHaveAttribute('data-drawn', '', { timeout: 5000 });
     await expect.poll(() => page.locator('[data-thread] [data-on]:is([class*="threadAux"],[class*="threadOld"],[class*="threadReq"])').count(), { timeout: 5000 }).toBe(0);
+  });
+
+  test('빠르게 앞뒤로 옮겨도 문의 장 & 가닥이 스크롤 자리와 맞고, 접합 자리는 그대로다', async ({ page }) => {
+    await page.goto('/');
+    const strands = () => page.locator('[data-amp="contact"] [data-line]').evaluateAll((es) => es.map((e) => ({ id: e.getAttribute('data-line'), da: (e as SVGPathElement).style.strokeDasharray, off: parseFloat((e as SVGPathElement).style.strokeDashoffset || '0') })));
+    for (const y of [1e6, 0, 1e6, 3000, 1e6]) await scrollToY(page, y);
+    await expect(page.locator('[data-amp="contact"]')).toHaveAttribute('data-drawn', '', { timeout: 5000 });
+    // 끝: 모든 가닥이 점선 없이 원본 그대로
+    await expect.poll(async () => (await strands()).filter((s) => s.da !== '').length, { timeout: 5000 }).toBe(0);
+    await scrollToY(page, 0);
+    // 맨 위: 주된 가닥(사선)은 아직 그리지 않았다 — 끝에서부터 그리므로 dashoffset 이 음수(가닥 길이만큼)
+    await expect.poll(async () => (await strands()).find((s) => s.id === 'diagonal-line-6')!.off, { timeout: 5000 }).toBeLessThan(-10);
+    const gap = await page.evaluate(() => {
+      const ink = document.querySelector<SVGPathElement>('[data-thread] path[class*="threadInk"]:not([class*="threadLight"])')!, m = ink.getScreenCTM()!;
+      const g = document.querySelector<SVGPathElement>('[data-amp="hero"] [data-line="diagonal-line-6"]')!, gm = g.getScreenCTM()!, q = g.getPointAtLength(g.getTotalLength()), s = ink.getPointAtLength(0);
+      return Math.hypot(s.x * m.a + m.e - (q.x * gm.a + gm.e), s.y * m.d + m.f - (q.y * gm.d + gm.f));
+    });
+    expect(gap).toBeLessThanOrEqual(0.6);
   });
 
   test('내부 링크로 중간(#work)에 들어와도 지난 구간은 이미 지난 상태로 바로 보인다', async ({ page }) => {

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { AMP_H, AMP_TIP } from './amp-path';
+import { AMP_H, AMP_TIP, AMP_VB, AMP_MAIN } from './amp-path';
 import { INTRO_DONE } from './intro';
 import s from './home.module.css';
 
@@ -34,11 +34,16 @@ export function Thread() {
     let L = 0, top = 0, darkTop = Infinity, aIn = 0, maxT = 0, raf = 0, ready = false, yS = -1;
     let anchors: Anchor[] = [], aux: { el: SVGElement; len: number }[] = [];
     let ink: SVGPathElement | null = null, light: SVGPathElement | null = null, tip: SVGCircleElement | null = null;
-    let traceLen = 0, ampBox: Box | null = null;
+    let ampBox: Box | null = null;
     const fills = [...root.querySelectorAll<HTMLElement>('[data-fill]')].map((h) => ({ h, ws: [...h.querySelectorAll<HTMLElement>('[data-w]')], n: -1 }));
     const contactAmp = root.querySelector<SVGSVGElement>('[data-amp="contact"]');
-    // 문의 장 & 의 뼈대 획과 채움
-    const trace = contactAmp?.querySelector<SVGPathElement>('[data-trace]') ?? null, fillEl = contactAmp?.querySelector<SVGPathElement>('[data-fillpath]') ?? null;
+    /** 문의 장 & 의 가닥과 그리는 차례 — 들어온 선이 주된 가닥(아래 가로 끝 → 사선 → 위 고리 꼭대기, 이어서 같은 번호 고리)을 먼저 그리고,
+     *  이웃 가닥이 같은 길을 뒤따른 뒤 오른쪽 내림획·위 가로획이 더해진다. a·b: 남은 스크롤 비율에서 그 가닥이 그려지는 구간, rev: 끝(오른쪽 아래)에서부터 */
+    const order = (id: string, g: string): { a: number; b: number; rev: boolean } =>
+      id === AMP_MAIN.diag ? { a: 0, b: 0.3, rev: true } : id === AMP_MAIN.loops ? { a: 0.3, b: 0.55, rev: false }
+        : g === 'diag' ? { a: 0.4, b: 0.75, rev: true } : g === 'loops' ? { a: 0.55, b: 0.85, rev: false } : { a: 0.72, b: 1, rev: false };
+    const strands = [...(contactAmp?.querySelectorAll<SVGPathElement>('[data-line]') ?? [])].map((p) => ({ p, len: 0, ...order(p.dataset.line ?? '', p.dataset.group ?? '') }));
+    const mainD = strands.find((x) => x.p.dataset.line === AMP_MAIN.diag), mainL = strands.find((x) => x.p.dataset.line === AMP_MAIN.loops);
     const contactSec = root.querySelector<HTMLElement>('[data-sec="contact"]');
 
     const rel = (e: Element): Box => { const r = e.getBoundingClientRect(), b = root.getBoundingClientRect(); return { l: r.left - b.left, t: r.top - b.top, r: r.right - b.left, b: r.bottom - b.top, w: r.width, h: r.height }; };
@@ -221,9 +226,8 @@ export function Thread() {
       if (lastY > end && end > y0) for (const an of anchors) an.y = y0 + (an.y - y0) * (end - y0) / (lastY - y0);
       aIn = anchors.at(-1)!.y;
 
-      // & 의 뼈대 획: 선과 같은 화면 굵기(2px)가 되게 & 크기로 나눠 넣고, 점선 길이는 실제 획 길이로
-      traceLen = trace?.getTotalLength() ?? 0;
-      if (trace) { trace.style.strokeWidth = f(2 / (c.h / AMP_H)); trace.style.strokeDasharray = `${f(traceLen)} ${f(traceLen + 10)}`; }
+      // & 가닥 길이 — 선 굵기가 화면 기준(vector-effect)이라 점선 길이도 화면 px 로 잰다(& 의 화면 배율을 곱한다)
+      for (const x of strands) x.len = x.p.getTotalLength() * (c.h / AMP_H);
 
       // 실제 화면 그림 안에서는 선이 가려진다(그림 뒤로 지나간다). 남색 문의 장 안에서는 밝은 선
       const under = [...root.querySelectorAll('[data-under]')].map(rel).filter((u) => u.w > 0);
@@ -247,16 +251,24 @@ export function Thread() {
       const drawn = reduced ? L : lenAt(y);
       for (const p of [ink, light]) p.style.strokeDasharray = `${f(drawn)} ${f(L + 40)}`;
       for (const x of aux) x.el.toggleAttribute('data-on', drawn >= x.len - 1);
-      // & 그리기: 꼬리 끝에 닿은 뒤 남은 스크롤의 앞 70% 는 뼈대를 그리고, 뒤 30% 는 굵기를 채우며 뼈대를 거둔다
-      const k = reduced ? 1 : clamp((y - aIn) / Math.max(1, maxT - aIn)), kt = clamp(k / 0.7), kf = clamp((k - 0.7) / 0.3);
-      if (trace) { trace.style.strokeDashoffset = f(traceLen * (1 - kt)); trace.style.strokeOpacity = f(1 - kf); }
-      if (fillEl) fillEl.style.fillOpacity = f(kf);
+      // & 그리기: 꼬리 끝(주된 가닥 끝)에 닿은 뒤 남은 스크롤이 가닥을 차례로 그린다. 다 그린 가닥은 점선을 풀어 원본과 똑같이 둔다
+      const k = reduced ? 1 : clamp((y - aIn) / Math.max(1, maxT - aIn));
+      for (const x of strands) {
+        const t = clamp((k - x.a) / (x.b - x.a)), st = x.p.style;
+        if (t >= 1) { st.strokeDasharray = ''; st.strokeDashoffset = ''; continue; }
+        st.strokeDasharray = `${f(x.len)} ${f(x.len + 2)}`;
+        st.strokeDashoffset = f((x.rev ? -1 : 1) * x.len * (1 - t));
+      }
       contactAmp?.toggleAttribute('data-drawn', k >= 0.995);
-      let pt: { x: number; y: number };
-      if (k > 0 && trace && ampBox) { const q = trace.getPointAtLength(kt * traceLen), sc = ampBox.h / AMP_H; pt = { x: ampBox.l + q.x * sc, y: ampBox.t + q.y * sc }; }
-      else pt = ink.getPointAtLength(drawn);
+      // 선 끝 점: 주된 가닥을 그리는 동안은 그 가닥 위(사선 구간은 끝에서부터, 고리 구간은 꼭대기에서부터)
+      let pt: { x: number; y: number }, onAmp = false;
+      if (k > 0 && k < 0.55 && mainD && mainL && ampBox) {
+        const sc = ampBox.h / AMP_H, x = k < 0.3 ? mainD : mainL, t = clamp((k - x.a) / (x.b - x.a)), L0 = x.len / sc;
+        const q = x.p.getPointAtLength(x.rev ? L0 * (1 - t) : L0 * t);
+        pt = { x: ampBox.l + (q.x - AMP_VB[0]) * sc, y: ampBox.t + (q.y - AMP_VB[1]) * sc }; onAmp = true;
+      } else pt = ink.getPointAtLength(drawn);
       tip.setAttribute('cx', f(pt.x)); tip.setAttribute('cy', f(pt.y));
-      tip.toggleAttribute('data-on', !reduced && drawn > 2 && kt < 0.995);
+      tip.toggleAttribute('data-on', !reduced && drawn > 2 && (k <= 0 || onAmp));
       tip.toggleAttribute('data-dark', pt.y > darkTop);
     };
     const words = () => {

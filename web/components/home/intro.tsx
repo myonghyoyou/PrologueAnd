@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { getLenis } from '@/components/lenis-provider';
-import { AMP_D, AMP_W, AMP_H, AMP_CONTOURS } from './amp-path';
+import { AMP_W, AMP_H, AMP_CONTOURS } from './amp-path';
 import s from './home.module.css';
 
 /** 인트로를 볼지 — 페이지 맨 위 인라인 스크립트(INTRO_GATE)가 html[data-intro="on"] 으로 정해 두고, 여기서는 그 값만 읽는다 */
@@ -35,15 +35,15 @@ function tangle(w: number, h: number): P[] {
   return out;
 }
 
-/** & 윤곽(닫힌 점열)을 m 개 점으로 다시 뽑는다 */
+/** & 가닥(열린 점열)을 m 개 점으로 다시 뽑는다 */
 function resample(c: P[], m: number): P[] {
   return Array.from({ length: m }, (_, j) => {
-    const f = (j * c.length) / m, i = Math.floor(f), t = f - i, a = c[i], b = c[(i + 1) % c.length];
+    const f = (j * (c.length - 1)) / Math.max(1, m - 1), i = Math.min(c.length - 2, Math.floor(f)), t = f - i, a = c[i], b = c[i + 1];
     return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t] as P;
   });
 }
 
-/** 첫 화면 인트로(시그니처 1) — 엉킨 선이 그려지고 곧바로 & 로 모여 채워진 뒤, 제목이 줄마다 올라온다.
+/** 첫 화면 인트로(시그니처 1) — 엉킨 선이 그려지고 곧바로 & 의 여섯 가닥으로 모인 뒤, 제목이 줄마다 올라온다.
  *  스크롤·키·누르기·「건너뛰기」 중 무엇이든 들어오면 그 자리에서 끝나고 첫 화면이 완성된 채로 나온다(data-intro="skip").
  *  캔버스 2D 한 장, 점 약 1,200개의 위치 보간만 한다(저사양 기준) */
 export function Intro() {
@@ -63,22 +63,23 @@ export function Intro() {
     const W = innerWidth, H = innerHeight, dpr = Math.min(1.5, devicePixelRatio || 1);
     canvas.width = W * dpr; canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    // 선 굵기는 & 가닥과 같은 화면 굵기(--amp-line) — 인트로가 끝나 SVG 로 바뀌어도 굵기가 그대로다
+    ctx.lineWidth = parseFloat(getComputedStyle(document.querySelector('[data-home]') ?? html).getPropertyValue('--amp-line')) || 1.6;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     const ink = getComputedStyle(canvas).color;
     const pts = tangle(W, H);
     getLenis()?.stop();
     const prevOverflow = html.style.overflow; html.style.overflow = 'hidden';
 
     let raf = 0, t0 = performance.now(), phase: 'draw' | 'morph' | 'fill' | 'end' = 'draw';
-    let groups: { src: P[]; dst: P[] }[] = [], amp: DOMRect | null = null;
+    let groups: { src: P[]; dst: P[]; full: P[] }[] = [], amp: DOMRect | null = null;
 
-    const stroke = (p: P[], n = p.length, close = false) => {
+    const stroke = (p: P[], n = p.length) => {
       ctx.beginPath(); ctx.moveTo(p[0][0], p[0][1]);
       for (let i = 1; i < n; i++) ctx.lineTo(p[i][0], p[i][1]);
-      if (close) ctx.closePath();
       ctx.stroke();
     };
-    /** 엉킨 선을 & 윤곽 길이 비율로 나눠, 조각마다 윤곽 하나에 1:1 로 짝짓는다 */
+    /** 엉킨 선을 & 가닥(보이는 구간) 길이 비율로 나눠, 조각마다 가닥 하나에 1:1 로 짝짓는다 */
     const plan = () => {
       const el = document.querySelector<SVGSVGElement>('[data-amp="hero"]');
       amp = el?.getBoundingClientRect() ?? new DOMRect(W * 0.6, H * 0.2, H * 0.4, H * 0.4);
@@ -89,7 +90,7 @@ export function Intro() {
       groups = cs.map((c, g) => {
         const m = g === cs.length - 1 ? pts.length - at : Math.round((pts.length * c.length) / total);
         const src = pts.slice(at, at + m); at += m;
-        return { src, dst: resample(c, src.length) };
+        return { src, dst: resample(c, src.length), full: c };
       });
     };
     /** cut: 입력으로 끊었으면 제목도 기다리지 않고 바로 보인다 */
@@ -116,16 +117,12 @@ export function Intro() {
         if (t >= DRAW + HOLD) { plan(); phase = 'morph'; t0 = now; }
       } else if (phase === 'morph') {
         const e = ease(Math.min(1, t / MORPH));
-        for (const g of groups) stroke(g.src.map((a, i) => [a[0] + (g.dst[i][0] - a[0]) * e, a[1] + (g.dst[i][1] - a[1]) * e] as P), g.src.length, e > 0.98);
+        for (const g of groups) stroke(g.src.map((a, i) => [a[0] + (g.dst[i][0] - a[0]) * e, a[1] + (g.dst[i][1] - a[1]) * e] as P), g.src.length);
         if (t >= MORPH) { phase = 'fill'; t0 = now; }
       } else if (phase === 'fill' && amp) {
-        for (const g of groups) stroke(g.dst, g.dst.length, true);
-        const k = Math.min(1, t / FILL);
-        ctx.save(); ctx.globalAlpha = k;
-        ctx.translate(amp.left, amp.top); ctx.scale(amp.width / AMP_W, amp.height / AMP_H);
-        ctx.fill(new Path2D(AMP_D));
-        ctx.restore();
-        if (k >= 1) return finish(false);
+        // 모인 뒤 잠깐 머문다 — 가닥 원래 점(촘촘한 곡선)으로 그려 SVG 와 같은 모양에서 끝난다
+        for (const g of groups) stroke(g.full);
+        if (t >= FILL) return finish(false);
       }
       raf = requestAnimationFrame(frame);
     };
