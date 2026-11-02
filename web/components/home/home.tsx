@@ -64,7 +64,7 @@ function CaseHead({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
     </>
   );
 }
-/** 문제 → 설계 판단(→ 바꾼 것). 첫 작업은 바꾼 것을 머리 줄에 크게 따로 둔다 */
+/** 문제 → 설계 판단(→ 바꾼 것). 병원·근무표는 바꾼 것을 이름 아래 크게 따로 둔다 */
 function QA({ w, changed = true }: { w: WorkEntry; changed?: boolean }) {
   return (
     <dl className={s.qa}>
@@ -77,20 +77,16 @@ function QA({ w, changed = true }: { w: WorkEntry; changed?: boolean }) {
 const More = ({ p }: { p: Project }) => <Link className={s.link} href={`/projects/${p.slug}`}>자세히 보기 →</Link>;
 
 /** 작업 넷 — 자료마다 다른 장면.
- *  wide(요청 처리): 그림이 화면 대부분으로 커진다 · phones(문제 은행): 두 화면이 서로 다른 빠르기로 올라온다
- *  pair(병원): 스크롤이 전·후 비교의 가운데 선을 옮긴다 · full(근무표): 선이 짚은 자리가 크게 열린다 */
+ *  wide(요청 처리): 글 옆에서 그림이 커진다 · phones(문제 은행): 두 화면이 서로 다른 빠르기로 올라온다
+ *  pair(병원): 스크롤이 전·후 비교의 가운데 선을 옮긴다 · full(근무표): 표시줄 자리가 크게 열린다.
+ *  그림이 움직이는 동안 잇는 선은 그림 뒤로 들어가 있다가 아래에서 다시 나온다 */
 function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
   const attrs = { 'data-work': p.slug, 'data-layout': w.layout, id: `w-${p.slug}` };
   if (w.layout === 'wide') return (
     <article className={`${s.case} ${s.wide}`} {...attrs} data-scene="grow">
       <div className={s.stage} data-stage>
         <div className={`${s.wrap} ${s.stageIn} ${s.growIn}`}>
-          <div className={s.band}>
-            <div className={s.bandHead}><CaseHead p={p} w={w} i={i} /></div>
-            <p className={s.result}><span className={s.label}>바꾼 것</span>{w.changed}</p>
-            <More p={p} />
-          </div>
-          <div className={s.growTxt} data-fade><QA w={w} changed={false} /></div>
+          <div className={s.side}><CaseHead p={p} w={w} i={i} /><QA w={w} /><More p={p} /></div>
           <div className={s.slot} data-slot aria-hidden="true" />
           <div className={s.pic} data-grow>{w.toggle
             ? <TwoState names={w.toggle.names} shots={[w.shots[0], w.toggle.next]} sizes="(min-width:1024px) 88vw, 100vw" />
@@ -139,7 +135,7 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
     <article className={`${s.case} ${s.full}`} {...attrs} data-scene="zoom">
       <div className={s.stage} data-stage>
         <div className={`${s.wrap} ${s.stageIn} ${s.zoomIn}`}>
-          <div className={s.zoomHead}><div><CaseHead p={p} w={w} i={i} /></div><p className={s.result}>{w.changed}</p><More p={p} /></div>
+          <div className={s.side}><CaseHead p={p} w={w} i={i} /><p className={s.result}>{w.changed}</p><QA w={w} changed={false} /><More p={p} /></div>
           <div className={s.fullPic}>{w.toggle
             ? <TwoState names={w.toggle.names} shots={[w.shots[0], w.toggle.next]} sizes="(min-width:1024px) 80vw, 100vw" />
             : <Pic shot={w.shots[0]} sizes="(min-width:1024px) 80vw, 100vw" />}</div>
@@ -149,7 +145,6 @@ function Case({ p, w, i }: { p: Project; w: WorkEntry; i: number }) {
               <p className={s.fdCap}><span className={s.label}>확대</span>{d.cap}</p>
             </div>
           ))}
-          <div className={s.zoomQa}><QA w={w} changed={false} /></div>
         </div>
       </div>
     </article>
@@ -164,6 +159,7 @@ export function Home({ projects }: { projects: Project[] }) {
   const bySlug = new Map(works.map((p) => [p.slug, p]));
   const groups = [...new Set(SERVICES.map((v) => v.group))];
   const [near, far] = HOW.h[1].split(HOW.find).map((x) => x.trim());
+  const peek = works[0] ? WORK[works[0].slug].shots[0] : null;
   return (
     <div className={s.root} data-home>
       <script dangerouslySetInnerHTML={{ __html: AMP_GATE }} />
@@ -197,7 +193,7 @@ export function Home({ projects }: { projects: Project[] }) {
         {/* 큰 글자 — 선이 02 머리 선 끝에 닿으면 문장이 올라오고, 「불편한지」 밑을 지나는 동안 주변 글자가 물러난다 */}
         <div className={s.scene} data-scene="focus">
           <div className={s.stage} data-stage>
-            <div className={`${s.wrap} ${s.stageIn}`}>
+            <div className={`${s.wrap} ${s.stageIn} ${s.focusIn}`}>
               <SectionHead n="02" t="일하는 방식" />
               <h2 className={s.focusH} data-focus>
                 <span className={s.fSmall} data-dim>{HOW.h[0]}</span>{' '}
@@ -207,10 +203,11 @@ export function Home({ projects }: { projects: Project[] }) {
             </div>
           </div>
         </div>
-        {/* 세 단계 — 선이 단계 머리에 닿을 때마다 그 단계가 앞으로 나온다(큰 글자 → 자리 이동 → 선이 고쳐 긋기) */}
+        {/* 세 단계 — 지금 단계의 제목과 설명이 화면 가운데에 함께 서고, 다음 단계 제목이 아래에 흐리게 기다린다. 선은 왼쪽 번호 사이를 옮겨 갈 때만 움직인다 */}
         <div className={s.scene} data-scene="steps">
           <div className={s.stage} data-stage>
-            <div className={`${s.wrap} ${s.stageIn}`}>
+            <div className={`${s.wrap} ${s.stageIn} ${s.stepsIn}`}>
+              <ol className={s.track} aria-hidden="true">{HOW.steps.map((st, i) => <li key={st.t} data-tn={i + 1}>{no(i)}</li>)}</ol>
               <ol className={s.steps}>
                 {HOW.steps.map((st, i) => (
                   <li key={st.t} className={s.step} data-step={i + 1}>
@@ -263,6 +260,8 @@ export function Home({ projects }: { projects: Project[] }) {
                 <h2 className={s.workT}>{WORK_HEAD.h}</h2>
                 <div className={s.workSide}><p className={s.label}><span data-published>{works.length}</span>건</p><p>{WORK_HEAD.p}</p></div>
               </div>
+              {/* 다음 장면(첫 작업)의 실제 화면 윗부분 — 같은 자리에서 이어진다 */}
+              {peek ? <div className={s.peek} data-peek aria-hidden="true"><div className={s.wrap}><div className={s.peekIn}><Image src={peek.src} alt="" width={peek.w} height={peek.h} sizes="(min-width:1024px) 60vw, 100vw" /></div></div></div> : null}
             </div>
           </div>
         </div>

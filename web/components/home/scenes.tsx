@@ -46,6 +46,19 @@ class Line {
     this.ink.setAttribute('d', d); this.L = this.ink.getTotalLength(); this.at = at;
     at[at.length - 1] = this.L;
   }
+  private mk: SVGGElement | null = null;
+  /** 이 상자들 안에서는 선이 보이지 않는다(그림 뒤로 지난다). 선 끝 점도 같이 가린다 */
+  hide(rs: Box[]) {
+    if (!this.mk) {
+      const id = `thread-m${++Line.n}`, defs = document.createElementNS(NS, 'defs'), m = document.createElementNS(NS, 'mask'), all = document.createElementNS(NS, 'rect');
+      m.id = id; m.setAttribute('maskUnits', 'userSpaceOnUse');
+      for (const [k, v] of [['x', '-20000'], ['y', '-20000'], ['width', '60000'], ['height', '200000']]) { m.setAttribute(k, v); all.setAttribute(k, v); }
+      all.setAttribute('fill', '#fff'); this.mk = document.createElementNS(NS, 'g'); m.append(all, this.mk); defs.append(m); this.svg.prepend(defs);
+      this.ink.setAttribute('mask', `url(#${id})`); this.tip.setAttribute('mask', `url(#${id})`);
+    }
+    this.mk.replaceChildren(...rs.map((r) => { const e = document.createElementNS(NS, 'rect'); e.setAttribute('x', f(r.l)); e.setAttribute('y', f(r.t)); e.setAttribute('width', f(r.w)); e.setAttribute('height', f(r.h)); e.setAttribute('fill', '#000'); return e; }));
+  }
+  static n = 0;
   draw(len: number) { this.len = clamp(len, 0, this.L); this.ink.style.strokeDasharray = `${f(this.len)} ${f(this.L + 40)}`; }
   /** 흐르는 구간: 선 위 점의 높이(지나온 가장 낮은 곳)를 8px 마다 — 가로로 가는 곳에도 조금씩 스크롤을 준다 */
   anchors(y0: number) {
@@ -77,9 +90,9 @@ type Scene = {
 };
 
 /** 홈의 잇는 선과 장면(시그니처 2) — 한 가닥이 장면마다 그 장면의 변화를 시작하고 다음 장면으로 시선을 넘긴다.
- *  첫 & 발끝 → 02 머리 선 끝에 닿으면 큰 문장이 올라오고, 「불편한지」 밑을 지나며 초점이 잡힌다 → 단계 머리에 닿을 때마다 그 단계가 앞으로 →
- *  남색이 선을 따라 내려와 작업이 열린다 → 첫 작업 그림이 화면 대부분으로 커지며 선은 그 오른쪽 가장자리를 따른다 → 두 폰 화면 사이로 →
- *  전·후 비교의 가운데 선이 되어 스크롤로 옮겨진다 → 근무표의 표시줄 자리를 짚고 그 자리가 크게 열린다 → 「모든 작업」 구분선을 이어받아 → 마지막 & 를 완성.
+ *  첫 & 발끝 → 02 머리 선 끝을 지나면 큰 문장이 올라오고, 「불편한지」 밑을 지나며 초점이 잡힌다 → 왼쪽 번호 사이를 옮겨 갈 때마다 단계가 바뀐다 →
+ *  남색이 선을 따라 내려와 작업이 열린다 → 그림이 커지거나(요청 처리) 비교가 움직이거나(병원) 확대가 열리는(근무표) 동안 선은 그림 뒤에 있다가 아래에서 다시 나온다 →
+ *  두 폰 화면 사이로 → 마지막 & 를 완성.
  *  선과 장면은 모두 스크롤 위치 하나에서 계산한다(되돌리면 그대로 되돌아가고, 빨리 내려도 같은 상태). 정지 화면 설명: docs/superpowers/specs/2026-10-29-home-motion-p2.md 14절 */
 export function Scenes() {
   useEffect(() => {
@@ -139,25 +152,29 @@ export function Scenes() {
     });
     const want = (vy: number) => Math.max(lenAt(heroAn, vy), minLen);
 
-    // ── 02 큰 글자: 선이 02 머리 선 오른쪽 끝을 지나면 문장이 올라오고(e), 「불편한지」 밑을 오른쪽에서 왼쪽으로 지나는 만큼 초점이 잡힌다(f)
+    // ── 02 큰 글자: 선이 02 머리 선 오른쪽 끝을 지나면 문장이 올라오고(e), 「불편한지」 밑(글자와 28px)을 오른쪽에서 왼쪽으로 지나는 만큼 초점이 잡힌다(f).
+    //    짧게 머문 뒤 풀려, 아래에서 다음 장면(문제 파악)이 올라온다
+    const stepsSc = q('[data-scene="steps"]')!;
     const focusSc = q('[data-scene="focus"]')!, focusSt = q('[data-stage]', focusSc)!, focusH = q('[data-focus]', focusSc)!, big = q('[data-mark="find"]', focusSc)!;
     {
       let ruleY = 0, wb = 0, k: Knot[] = [], Lx = 0, yx = 0, Lw0 = 0, Lw1 = 0, V0 = 0, bigL = 0, bigR = 0;
+      const R1 = 48;
       const sc = add({
         key: 'focus', host: focusSt, sec: focusSc, line: new Line(focusSt), pinned: true,
         measure: () => {
           focusH.style.setProperty('--e', '1');
           ruleY = box(q('.' + s.sh, focusSt)!, focusSt).t;
-          const w = box(big, focusSt); wb = w.b + 6; bigL = w.l; bigR = w.r;
-          V0 = wb - 36;
-          k = [[0, 0], [V0, V0], [V0 + vh * 0.14, 0], [V0 + vh * 0.52, 0], [V0 + vh * 0.95, 0], [V0 + vh * 1.07, 0]];
-          sc.P = Math.max(0, k[5][0] - P62);
+          const w = box(big, focusSt); wb = w.b + 28; bigL = w.l; bigR = w.r;
+          V0 = wb - R1;
+          sc.P = Math.max(0, V0 + vh * 0.72 - P62);
+          // 다음 장면(세 단계)은 이 무대 아래 빈 자리와 겹쳐 올라온다 — 선이 꺾여 내려가는 곳 아래 40px 부터
+          stepsSc.style.setProperty('--ov', `${f(Math.max(0, vh - (wb + R1 + 40)))}px`);
         },
         build: (xE) => {
-          sc.line.set([xE, 0], [[xE, wb, 36], [xL, wb, 28], [xL, sc.extB]]);
-          const h0 = sc.line.at[1] - ((xE - 36) - (xL + 28)), at = (x: number) => h0 + (xE - 36 - x);
-          Lw0 = at(bigR + 6); Lw1 = at(bigL - 2); yx = wb + 28; Lx = sc.line.L - (sc.extB - yx);
-          k = [[0, 0], [V0, sc.line.at[0]], [V0 + vh * 0.14, Lw0], [V0 + vh * 0.52, Lw1], [V0 + vh * 0.95, Lw1], [V0 + vh * 1.07, Lx]];
+          sc.line.set([xE, 0], [[xE, wb, R1], [xL, wb, R1], [xL, sc.extB]]);
+          const h0 = sc.line.at[1] - ((xE - R1) - (xL + R1)), at = (x: number) => h0 + (xE - R1 - x);
+          Lw0 = at(bigR + 6); Lw1 = at(bigL - 2); yx = wb + R1; Lx = sc.line.L - (sc.extB - yx);
+          k = [[0, 0], [V0, sc.line.at[0]], [V0 + vh * 0.1, Lw0], [V0 + vh * 0.38, Lw1], [V0 + vh * 0.62, Lw1], [V0 + vh * 0.72, Lx]];
           sc.exitX = xL;
         },
         frame: (vy) => {
@@ -169,64 +186,46 @@ export function Scenes() {
       });
     }
 
-    // ── 세 단계: 왼쪽 길의 선 끝이 단계 머리에 닿을 때마다 그 단계가 앞으로(1 큰 글자 · 2 자리 이동). 셋째 줄 머리 선을 따라 옆 빈 칸으로 건너가 옛 경로를 곧게 다시 긋는다(3)
-    const stepsSc = q('[data-scene="steps"]')!, stepsSt = q('[data-stage]', stepsSc)!, rows = qa('[data-step]', stepsSc);
+    // ── 세 단계: 왼쪽 번호 줄 옆으로 선이 내려와, 지금 단계 번호에 머문다. 다음 번호로 옮겨 가는 순간 단계가 바뀐다
+    //    (지금 단계의 제목·설명은 가운데, 다음 단계 제목은 아래에 흐리게, 지난 단계는 위로 빠진다)
+    const stepsSt = q('[data-stage]', stepsSc)!, rows = qa('[data-step]', stepsSc), nums = qa('[data-tn]', stepsSc);
     {
-      const old = document.createElementNS(NS, 'path'); old.setAttribute('class', s.threadOld);
-      let k: Knot[] = [], Lx = 0, yx = 0, lens = [0, 0, 0], Lfix0 = 0, Lfix1 = 0, act = -2;   // -2: 아직 한 번도 정하지 않음
+      let ys = [0, 0, 0], act = -2, xE0 = 0;
       const sc = add({
         key: 'steps', host: stepsSt, sec: stepsSc, line: new Line(stepsSt), pinned: true,
-        measure: () => { sc.P = 0; },
-        build: () => {},
-        frame: () => {},
-      });
-      sc.line.svg.prepend(old);
-      const geo = (xE: number) => {
-        const tm = rows.map((r) => { const h = box(q('h3', r)!, stepsSt); return (h.t + h.b) / 2; });
-        const r3 = box(rows[2], stepsSt), body1 = box(q('.' + s.stepBody, rows[0])!, stepsSt);
-        if (phone) { sc.line.set([xE, 0], xE === xL ? [[xL, sc.extB]] : [[xE, 20, 12], [xL, 20, 12], [xL, sc.extB]]); sc.exitX = xL; old.removeAttribute('d'); lens = [tm[0], tm[1], tm[2]]; Lfix0 = Lfix1 = tm[2]; yx = tm[2]; Lx = tm[2]; return; }
-        const fx0 = body1.l, y3 = tm[2];
-        stepsSt.style.setProperty('--col7', `${f(fx0 - CL)}px`);
-        sc.line.set([xE, 0], [[xL, r3.t, 28], [fx0, r3.t, 28], [fx0, y3, 24], [xR, y3, 28], [xR, sc.extB]]);
-        const at = sc.line.at;
-        lens = [tm[0], tm[1], at[0]];
-        Lfix0 = at[2] + 30; Lfix1 = at[3]; yx = y3 + 28; Lx = sc.line.L - (sc.extB - yx); sc.exitX = xR;
-        // 어긋난 옛 경로 — 고칠 구간(머리 선에서 내려온 곳 ~ 오른쪽 끝) 안에서 위아래로 흔들린다
-        const a = fx0 + 40, b = CR - 20, n = 6, z = 18;
-        old.setAttribute('d', 'M' + Array.from({ length: n + 1 }, (_, i) => `${f(a + ((b - a) * i) / n)} ${f(y3 + (i === 0 || i === n ? 0 : (i % 2 ? z : -z * 0.6)))}`).join(' L'));
-      };
-      sc.build = (xE) => { (sc as Scene & { xE?: number }).xE = xE; geo(xE); };
-      sc.frame = (vy) => {
-        geo((sc as Scene & { xE?: number }).xE ?? xL);   // 머리 위치는 그때그때 잰다(글꼴·전환 뒤에도 맞게)
-        const t1 = lens[0], base = Math.max(t1, P62), v = (i: number) => base + vh * i;   // 머무는 구간은 장면이 붙은 뒤부터 센다
-        k = phone
-          ? [[0, 0], [t1, lens[0]], [v(0.36), lens[0]], [v(0.62), lens[1]], [v(1.04), lens[1]], [v(1.24), lens[2]], [v(1.7), lens[2]], [v(1.95), Lx]]
-          : [[0, 0], [t1, lens[0]], [v(0.36), lens[0]], [v(0.62), lens[1]], [v(1.04), lens[1]], [v(1.2), Lfix0], [v(1.5), Lfix1], [v(1.85), Lfix1], [v(1.95), Lx]];
-        if (!reduced) sc.P = Math.max(sc.P, k[k.length - 1][0] - P62);
-        const len = reduced ? sc.line.L : pinLen(sc, k, vy, Lx, yx);
-        sc.line.draw(len);
-        const a = reduced ? -1 : len >= lens[2] - 2 && vy >= v(1.04) ? 2 : len >= lens[1] - 2 && vy >= v(0.6) ? 1 : len >= lens[0] - 2 ? 0 : -1;
-        if (a !== act) {
+        measure: () => {
+          ys = (nums.length === 3 && !reduced ? nums : rows.map((r) => q('h3', r)!)).map((e) => { const b = box(e, stepsSt); return (b.t + b.b) / 2; });
+          const base = Math.max(ys[0], P62);
+          sc.P = Math.max(0, base + vh * 1.06 - P62);
+        },
+        build: (xE) => { xE0 = xE; sc.line.set([xE, 0], Math.abs(xE - xL) < 1 ? [[xL, sc.extB]] : [[xE, 20, 12], [xL, 20, 12], [xL, sc.extB]]); sc.exitX = xL; },
+        frame: (vy) => {
+          void xE0;
+          const [y1, y2, y3] = ys, base = Math.max(y1, P62), v = (i: number) => base + vh * i;
+          const k: Knot[] = [[0, 0], [y1, y1], [v(0.3), y1], [v(0.38), y2], [v(0.68), y2], [v(0.76), y3], [v(1.06), y3]];
+          const len = reduced ? sc.line.L : vy <= k[k.length - 1][0] ? knots(k, vy) : Math.max(y3, vy - sc.P);
+          sc.line.draw(len);
+          // 문제 파악은 장면이 아래에서 들어오기 시작할 때부터 앞에 선다(큰 글자 장면 끝에서 바로 이어 읽히게)
+          const a = reduced ? -1 : len >= y3 - 2 ? 2 : len >= y2 - 2 ? 1 : vy > 0 ? 0 : -1;
+          if (a === act) return;
           act = a;
-          rows.forEach((r, i) => { if (reduced) delete r.dataset.st; else r.dataset.st = i < a ? 'past' : i === a ? 'on' : 'next'; });
-          stepsSt.style.setProperty('--rows', ['1fr 1fr 1fr', '5fr 1fr 1fr', '1fr 5fr 1fr', '1fr 1fr 5fr'][a + 1]);
-        }
-        const fx = clamp((len - Lfix0) / Math.max(1, Lfix1 - Lfix0));
-        old.style.opacity = reduced ? '0' : a === 2 ? f(1 - fx) : '0';
-      };
+          rows.forEach((r, i) => { if (reduced) delete r.dataset.st; else r.dataset.st = i < a ? 'past' : i === a ? 'on' : i === a + 1 ? 'next' : 'later'; });
+          nums.forEach((n, i) => n.toggleAttribute('data-on', i === a));
+        },
+      });
     }
 
-    // ── 03 할 수 있는 일: 오른쪽 길로 조용히 지난다(머리글 낱말 채우기가 이 구간의 변화)
+    // ── 03 할 수 있는 일: 왼쪽 길로 조용히 지난다(서비스 이름 채우기가 이 구간의 변화)
     const canSec = q('[data-sec="can"]')!;
-    flowScene('can', canSec, false, () => xR);
+    flowScene('can', canSec, false, () => xL);
 
-    // ── 04 명암 전환: 선 끝 높이까지 남색이 덮인다(같은 한 동작). 덮인 자리에 작업을 여는 큰 문구가 드러난다
+    // ── 04 명암 전환: 선 끝 높이까지 남색이 덮인다(같은 한 동작). 제목은 위쪽이라 일찍 읽히고, 아래에 첫 작업 화면 윗부분이 보인다
     const darkSc = q('[data-scene="dark"]')!, darkSt = q('[data-stage]', darkSc)!;
     let edge = 0;
     {
       const sc = add({
         key: 'dark', host: darkSt, sec: darkSc, line: new Line(darkSt, true), pinned: true,
-        measure: () => { sc.P = vh * 0.95; },
+        measure: () => { sc.P = vh * 0.62; },
         build: (xE) => { sc.line.set([xE, 0], [[xE, sc.extB]]); sc.exitX = xE; },
         frame: (vy) => {
           const len = reduced ? sc.line.L : vy <= P62 + sc.P ? clamp(vy, 0, vh) : Math.max(vh, vy - sc.P);
@@ -237,48 +236,54 @@ export function Scenes() {
       });
     }
 
-    // ── 첫 작업(요청 처리): 그림이 오른쪽 작은 자리에서 화면 대부분으로 커진다. 선은 그 화면의 오른쪽 가장자리를 따라 내려간다
+    /** 그림 뒤로 지나는 선 — 그림 바깥 가장자리에서 멈췄다가(그림이 움직이는 동안) 그림 아래에서 다시 나온다.
+     *  F: 그림 묶음(단추·캡션 포함) 상자. 들어오는 x 가 그림 폭 안이면 위에서 곧게, 밖이면 옆에서 가로로 들어간다. xo: 아래로 나오는 x */
+    const through = (sc: Scene, xE: number, F: Box, xo: number) => {
+      // 폰: 글이 그림 위에 오고 여백이 좁다 — 선은 오른쪽 여백 길로만 지난다(그림·글을 지나지 않는다)
+      if (phone) { sc.line.set([xE, 0], Math.abs(xE - xR) < 1 ? [[xR, sc.extB]] : [[xE, 24, 12], [xR, 24, 12], [xR, sc.extB]]); sc.line.hide([]); return { aIn: F.t, aOut: F.b, x: xR }; }
+      const inside = xE > F.l + 20 && xE < F.r - 20;
+      if (inside) { sc.line.set([xE, 0], [[xE, sc.extB]]); sc.line.hide([F]); return { aIn: F.t, aOut: F.b, x: xE }; }
+      const yIn = F.t + F.h * 0.38, edgeX = xE < F.l ? F.l : F.r;
+      sc.line.set([xE, 0], [[xE, yIn, 28], [xo, yIn, 28], [xo, sc.extB]]);
+      sc.line.hide([F]);
+      return { aIn: sc.line.at[0] + 28 * 1.12 + Math.abs(edgeX - xE) - 28, aOut: sc.line.L - (sc.extB - F.b), x: xo };
+    };
+    /** 그림 장면 선 길이: 붙기 전에는 가장자리까지, 붙어 있는 동안은 가장자리에 머물고, 풀린 뒤 그림 아래로 나온다 */
+    const behindLen = (sc: Scene, vy: number, aIn: number, aOut: number, Fb: number) =>
+      vy < P62 ? Math.min(vy, aIn) : vy <= P62 + sc.P ? aIn : Math.max(aIn, aOut + (vy - sc.P - Fb));
+
+    // ── 첫 작업(요청 처리): 그림이 오른쪽 글 옆 작은 자리에서 왼쪽으로 커진다(글은 제자리). 선은 그 사이 그림 뒤에 있다
     const growSc = q('[data-scene="grow"]');
     if (growSc) {
-      const st = q('[data-stage]', growSc)!, pic = q('[data-grow]', growSc)!, slot = q('[data-slot]', growSc)!, txt = q('[data-fade]', growSc)!;
-      const frame = q('.' + s.frame, pic)!;
-      let F: Box | null = null, S: Box | null = null, fo: Box | null = null, xE0 = 0;
-      const offs = (e: HTMLElement, host: HTMLElement): Box => { let l = 0, t = 0, n: HTMLElement | null = e; while (n && n !== host) { l += n.offsetLeft; t += n.offsetTop; n = n.offsetParent as HTMLElement | null; } return { l, t, r: l + e.offsetWidth, b: t + e.offsetHeight, w: e.offsetWidth, h: e.offsetHeight }; };
+      const st = q('[data-stage]', growSc)!, pic = q('[data-grow]', growSc)!, slot = q('[data-slot]', growSc)!;
+      let F1: Box | null = null, s0 = 1, xE0 = 0;
       const sc = add({
         key: 'grow', host: st, sec: growSc, line: new Line(st, true), pinned: true,
         measure: () => {
-          if (!sc.pinned) { pic.style.removeProperty('--pw'); pic.style.transform = ''; return; }
-          pic.style.transform = '';
-          const top = offs(pic, st).t, grid = box(q('.' + s.growIn, st)!, st).w;
-          const cap = 46, btn = 48, H = vh - top - 28;
-          pic.style.setProperty('--pw', `${f(Math.min(grid, (H - cap - btn) * 1.6))}px`);
-          F = offs(pic, st); S = offs(slot, st); fo = offs(frame, pic);
-          sc.P = vh * 1.05;
+          pic.style.transform = ''; pic.style.removeProperty('--pw');
+          if (!sc.pinned) return;
+          const cols = box(pic, st), H = vh - box(q('.' + s.growIn, st)!, st).t - 28;
+          pic.style.setProperty('--pw', `${f(Math.min(cols.w, (H - 100) * 1.6))}px`);
+          F1 = box(pic, st); s0 = Math.min(1, box(slot, st).w / F1.w);
+          sc.P = vh * 0.8;
         },
         build: (xE) => { xE0 = xE; },
         frame: (vy) => {
-          if (!sc.pinned || reduced || !F || !S || !fo) {
-            const e = box(frame, st);
-            sc.line.set([xE0, 0], [[xE0, e.t - 30, 20], [e.r, e.t - 30, 20], [e.r, sc.extB]]);
-            sc.exitX = e.r;
+          if (!sc.pinned || reduced || !F1) {
+            const F = box(pic, st), r = through(sc, xE0, F, F.l + F.w * 0.8); sc.exitX = r.x;
             sc.line.draw(reduced ? sc.line.L : lenAt(sc.line.anchors(0), vy));
             return;
           }
-          const g = clamp((vy - P62) / (vh * 0.5)), sc0 = S.w / F.w, k = sc0 + (1 - sc0) * g;
-          const cl = lerp(S.l, F.l, g), ct = lerp(S.t, F.t, g);
-          pic.style.transform = g >= 1 ? '' : `translate(${f(cl - F.l)}px, ${f(ct - F.t)}px) scale(${k.toFixed(4)})`;
-          txt.style.setProperty('--g', g.toFixed(3));
-          const er = cl + (fo.l + fo.w) * k, et = ct + fo.t * k, eb = ct + (fo.t + fo.h) * k;
-          sc.line.set([xE0, 0], [[xE0, et - 30, 20], [er, et - 30, 20], [er, sc.extB]]);
-          sc.exitX = F.l + fo.l + fo.w;
-          const a0 = sc.line.at[0], a2 = sc.line.L - (sc.extB - eb), Fb = F.t + fo.t + fo.h;
-          const len = vy < P62 ? Math.min(vy, a0) : g < 1 ? lerp(a0, a2, g) : vy <= P62 + sc.P ? a2 : Math.max(a2, a2 + (vy - sc.P - Fb));
-          sc.line.draw(len);
+          const g = clamp((vy - P62) / (vh * 0.45)), k = s0 + (1 - s0) * g;
+          pic.style.transform = g >= 1 ? '' : `scale(${k.toFixed(4)})`;
+          const F = box(pic, st), r = through(sc, xE0, F, F1.l + F1.w * 0.8);
+          sc.exitX = r.x;
+          sc.line.draw(behindLen(sc, vy, r.aIn, r.aOut, F1.b));
         },
       });
     }
 
-    // ── 문제 은행: 두 폰 화면이 서로 다른 빠르기로 올라오고, 선은 두 화면 사이로 지난다
+    // ── 문제 은행: 두 폰 화면이 서로 다른 빠르기로 올라오고, 선은 두 화면 사이로 지난다(폰에서는 사이를 지난 뒤 오른쪽 길로)
     const riseSc = q('[data-scene="rise"]');
     if (riseSc) {
       const devs = qa('[data-dev]', riseSc);
@@ -294,94 +299,85 @@ export function Scenes() {
       sc.frame = (vy) => { fr(vy); const r = riseSc.getBoundingClientRect(); riseSc.style.setProperty('--r', (reduced ? 0.5 : clamp((vh - r.top) / (vh + r.height))).toFixed(3)); };
     }
 
-    // ── 병원: 선이 전·후 비교의 가운데 선이 되고, 스크롤이 그 선을 옮긴다(손으로 옮기면 그때부터는 손이 정한다)
+    // ── 병원: 스크롤이 전·후 비교의 가운데 선을 옮긴다(손으로 옮기면 그때부터는 손이 정한다). 그동안 잇는 선은 비교 뒤에 있다
     const sweepSc = q('[data-scene="sweep"]');
     if (sweepSc) {
-      const st = q('[data-stage]', sweepSc)!, ba = q('[data-ba]', sweepSc)!, range = q<HTMLInputElement>('input[type="range"]', ba)!;
+      const st = q('[data-stage]', sweepSc)!, ba = q('[data-ba]', sweepSc)!, wrap = q('.' + s.baWrap, sweepSc)!, range = q<HTMLInputElement>('input[type="range"]', ba)!, qaEl = q('.' + s.pairQa, sweepSc);
       let xE0 = 0;
       const X0 = 85, X1 = 15;
       const sc = add({
         key: 'sweep', host: st, sec: sweepSc, line: new Line(st, true), pinned: true,
-        measure: () => { sc.P = vh * 1.0; },
+        measure: () => {
+          wrap.style.removeProperty('--pw');
+          if (!sc.pinned) return;
+          const cols = box(wrap, st), H = vh - box(q('.' + s.pairIn, st)!, st).t - 28 - (qaEl?.offsetHeight ?? 0) - 20;
+          wrap.style.setProperty('--pw', `${f(Math.min(cols.w, (H - 50) * 1.6))}px`);
+          sc.P = vh * 0.75;
+        },
         build: (xE) => { xE0 = xE; },
         frame: (vy) => {
-          const B = box(ba, st);
           const drive = sc.pinned && !reduced && !('touched' in ba.dataset);
-          const g = clamp((vy - P62 - vh * 0.12) / (vh * 0.58));
-          if (drive) { const X = Math.round(lerp(X0, X1, g) * 10) / 10; ba.style.setProperty('--x', `${X}%`); range.value = String(Math.round(X)); }
-          const X = parseFloat(ba.style.getPropertyValue('--x')) || 50, dx = B.l + (B.w * X) / 100, yb = B.b + 6;
-          sc.line.set([xE0, 0], [[xE0, B.t - 12, 10], [dx, B.t - 12, 10], [dx, yb, 6], [xR, yb, 16], [xR, sc.extB]]);
-          sc.exitX = xR;
-          const a0 = sc.line.at[0], aB = sc.line.at[2];
-          if (!sc.pinned || reduced) { sc.line.draw(reduced ? sc.line.L : lenAt(sc.line.anchors(0), vy)); return; }
-          const yx = yb + 16, Lx = sc.line.L - (sc.extB - yx);
-          const len = vy < P62 ? Math.min(vy, a0) : vy < P62 + vh * 0.12 ? lerp(a0, aB, (vy - P62) / (vh * 0.12)) : vy <= P62 + sc.P ? aB : Math.max(aB, Lx + (vy - sc.P - yx));
-          sc.line.draw(len);
+          if (drive) { const X = Math.round(lerp(X0, X1, clamp((vy - P62 - vh * 0.05) / (vh * 0.5))) * 10) / 10; ba.style.setProperty('--x', `${X}%`); range.value = String(Math.round(X)); }
+          // 비교와 그 아래 문제·판단 글을 한 덩어리로 — 선은 그 뒤로 지나 아래에서 나온다
+          const w0 = box(wrap, st), q0 = qaEl && qaEl.offsetHeight ? box(qaEl, st) : w0;
+          const F: Box = { l: Math.min(w0.l, q0.l), t: w0.t, r: Math.max(w0.r, q0.r), b: Math.max(w0.b, q0.b), w: 0, h: 0 }; F.w = F.r - F.l; F.h = F.b - F.t;
+          const r = through(sc, xE0, F, F.l + F.w * 0.5);
+          sc.exitX = r.x;
+          sc.line.draw(reduced ? sc.line.L : !sc.pinned ? lenAt(sc.line.anchors(0), vy) : behindLen(sc, vy, r.aIn, r.aOut, F.b));
         },
       });
       range.addEventListener('input', () => wake());
     }
 
-    // ── 근무표: 선이 원본의 표시줄 자리(오른쪽·아래 가장자리)를 짚고, 그 자리가 그림 위로 크게 열린다
+    // ── 근무표: 원본의 표시줄 자리가 그림 위로 크게 열린다. 그동안 잇는 선은 그림 뒤에 있다
     const zoomSc = q('[data-scene="zoom"]');
     if (zoomSc) {
       const st = q('[data-stage]', zoomSc)!, fullPic = q('.' + s.fullPic, zoomSc)!, fd = q('[data-zoomed]', zoomSc);
       const crop = (fd?.querySelector<HTMLElement>('[data-zoom-crop]')?.dataset.zoomCrop ?? '0,0,40,21').split(',').map(Number);
-      let xE0 = 0, I: Box | null = null, R: Box | null = null, T0: [number, number, number] = [0, 0, 1], T1: [number, number] = [0, 0];
+      let xE0 = 0, T0: [number, number, number] = [0, 0, 1], T1: [number, number] = [0, 0], ok = false;
       const sc = add({
         key: 'zoom', host: st, sec: zoomSc, line: new Line(st, true), pinned: true,
         measure: () => {
-          fullPic.style.removeProperty('--pw'); if (fd) { fd.style.transform = ''; fd.style.removeProperty('--fw'); }
+          fullPic.style.removeProperty('--pw'); ok = false;
+          if (fd) { fd.style.transform = ''; fd.style.removeProperty('--fw'); }
           if (!sc.pinned) return;
-          const fp = box(fullPic, st), H = vh - fp.t - 28;
-          fullPic.style.setProperty('--pw', `${f(Math.min(fp.w, (H - 94) * (2789 / 1416)))}px`);
-          I = box(q('.' + s.frame, fullPic)!, st);
-          R = { l: I.l + (I.w * crop[0]) / 100, t: I.t + (I.h * crop[1]) / 100, w: (I.w * crop[2]) / 100, h: (I.h * crop[3]) / 100, r: 0, b: 0 };
-          R.r = R.l + R.w; R.b = R.t + R.h;
+          const cols = box(fullPic, st), H = vh - box(q('.' + s.zoomIn, st)!, st).t - 28;
+          fullPic.style.setProperty('--pw', `${f(Math.min(cols.w, (H - 100) * (2789 / 1416)))}px`);
+          const I = box(q('.' + s.frame, fullPic)!, st);
+          const R = { l: I.l + (I.w * crop[0]) / 100, t: I.t + (I.h * crop[1]) / 100, w: (I.w * crop[2]) / 100 };
           if (fd) {
             const fw = Math.min(I.w * 0.92, 1040); fd.style.setProperty('--fw', `${f(fw)}px`);
-            const fh = fd.offsetHeight, pad = 18, s0 = R.w / (fw - pad * 2);
-            const zo = box(q('.' + s.zoomIn, st)!, st);   // 확대 칸은 zoomIn 기준으로 놓인다
+            const fh = fd.offsetHeight, pad = 18, s0 = R.w / (fw - pad * 2), zo = box(q('.' + s.zoomIn, st)!, st);   // 확대 칸은 zoomIn 기준으로 놓인다
             T0 = [R.l - pad * s0 - zo.l, R.t - pad * s0 - zo.t, s0]; T1 = [I.l + (I.w - fw) / 2 - zo.l, I.b - fh - 20 - zo.t];
           }
-          sc.P = vh * 1.0;
+          ok = true;
+          sc.P = vh * 0.75;
         },
         build: (xE) => { xE0 = xE; },
         frame: (vy) => {
-          if (!sc.pinned || reduced || !I || !R) {
-            const e = box(q('.' + s.frame, fullPic)!, st), bt = box(q('.' + s.twoBtns, fullPic) ?? q('.' + s.frame, fullPic)!, st).t - 14;
-            sc.line.set([xE0, 0], [[xE0, bt, 20], [e.l - (phone ? 0 : 0), bt, 20], [e.l, sc.extB]]);
-            sc.exitX = e.l;
-            sc.line.draw(reduced ? sc.line.L : lenAt(sc.line.anchors(0), vy));
-            return;
-          }
-          const bt = box(q('.' + s.twoBtns, fullPic) ?? q('.' + s.frame, fullPic)!, st).t - 14;
-          sc.line.set([xE0, 0], [[xE0, bt, 20], [R.r, bt, 20], [R.r, R.b, 16], [I.l, R.b, 16], [I.l, sc.extB]]);
-          sc.exitX = I.l;
-          const at = sc.line.at, a0 = at[0], aB = at[3] + 18, yx = R.b + 16;
-          const t = vy - P62;
-          const len = t < 0 ? Math.min(vy, a0) : t < vh * 0.3 ? lerp(a0, aB, t / (vh * 0.3)) : vy <= P62 + sc.P ? aB : Math.max(aB, aB + (vy - sc.P - yx));
-          sc.line.draw(len);
-          const z = clamp((t - vh * 0.35) / (vh * 0.3));
+          const F = box(fullPic, st), r = through(sc, xE0, F, F.l + F.w * 0.8);
+          sc.exitX = r.x;
+          if (!sc.pinned || reduced || !ok) { sc.line.draw(reduced ? sc.line.L : lenAt(sc.line.anchors(0), vy)); return; }
+          sc.line.draw(behindLen(sc, vy, r.aIn, r.aOut, F.b));
+          const z = clamp((vy - P62 - vh * 0.1) / (vh * 0.35));
           if (fd) {
-            const k = lerp(T0[2], 1, z);
-            fd.style.transform = `translate(${f(lerp(T0[0], T1[0], z))}px, ${f(lerp(T0[1], T1[1], z))}px) scale(${k.toFixed(4)})`;
-            fd.style.setProperty('--zo', t > vh * 0.33 ? '1' : '0'); fd.style.setProperty('--z', z.toFixed(3));
+            const kz = lerp(T0[2], 1, z);
+            fd.style.transform = `translate(${f(lerp(T0[0], T1[0], z))}px, ${f(lerp(T0[1], T1[1], z))}px) scale(${kz.toFixed(4)})`;
+            fd.style.setProperty('--zo', z > 0.02 ? '1' : '0'); fd.style.setProperty('--z', z.toFixed(3));
             fd.toggleAttribute('data-open', z >= 0.99);
           }
         },
       });
     }
 
-    // ── 「모든 작업」 구분선을 이어받아 오른쪽 끝에서 빠진다
+    // ── 「모든 작업」: 구분선 없이, 위 여백에서 오른쪽 길로 옮겨 내려간다
     const allHost = q('[data-all]')!;
     {
       let an: { len: number; y: number }[] = [];
       const sc = add({
         key: 'all', host: allHost, sec: allHost, line: new Line(allHost, true), pinned: false, measure: () => {},
         build: (xE) => {
-          const ry = box(q('.' + s.all, allHost)!, allHost).t + 0.5;
-          sc.line.set([xE, 0], Math.abs(xE - xR) < 1 ? [[xR, sc.extB]] : [[xE, ry, Math.max(4, Math.min(40, Math.abs(xE - CL) + 30))], [xR, ry, Math.max(4, xR - CR)], [xR, sc.extB]]);
+          sc.line.set([xE, 0], Math.abs(xE - xR) < 1 ? [[xR, sc.extB]] : [[xE, 40, 32], [xR, 40, 32], [xR, sc.extB]]);
           sc.exitX = xR; an = sc.line.anchors(0);
         },
         frame: (vy) => sc.line.draw(reduced ? sc.line.L : lenAt(an, vy)),
@@ -445,14 +441,17 @@ export function Scenes() {
       html.toggleAttribute('data-hdr-dark', dark || contactSec.getBoundingClientRect().top <= h);
     };
 
-    let ready = false, built = { w: 0, h: 0 };
+    let ready = false, built = { w: 0, h: 0 }, hashPending = !!location.hash;
+    const userMoved = () => { hashPending = false; };
+    for (const ev of ['wheel', 'touchstart', 'keydown', 'pointerdown']) addEventListener(ev, userMoved, { passive: true, once: true });
     const build = () => {
       vh = innerHeight; P62 = vh * 0.62; phone = innerWidth < 1024;
       built = { w: innerWidth, h: innerHeight };
       root.style.setProperty('--vh', `${vh}px`);
       const wr = q('.' + s.wrap, heroSec)!, cs = getComputedStyle(wr), rb = root.getBoundingClientRect(), wb = wr.getBoundingClientRect();
       CL = wb.left - rb.left + parseFloat(cs.paddingLeft); CR = wb.right - rb.left - parseFloat(cs.paddingRight);
-      xR = CR + (phone ? 8 : 24); xL = CL - (phone ? 9 : 30);
+      // 글·그림과 선 사이 — 데스크톱은 40px(여백이 좁으면 여백의 반)
+      xR = CR + (phone ? 8 : Math.min(40, (root.clientWidth - CR) / 2)); xL = CL - (phone ? 9 : Math.min(40, CL / 2));
       // 붙는 장면 정하기 → 장면 안 배치를 재고 붙는 길이를 정한 뒤 → 페이지 위치 → 선
       for (const sc of scenes) {
         if (sc.sec === sc.host && !sc.host.matches('[data-stage]')) continue;
@@ -480,6 +479,8 @@ export function Scenes() {
         x = xR;
         for (const sc of scenes) { sc.build(x); x = sc.exitX; }
       }
+      // 주소에 #이 있으면, 장면 길이가 정해져 페이지가 길어진 뒤 그 자리로 다시 맞춘다(사용자가 먼저 움직였으면 그대로)
+      if (hashPending) { const tg = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (tg) { const y = tg.getBoundingClientRect().top + scrollY; const l = (window as unknown as { __lenis?: { scrollTo: (y: number, o: object) => void } }).__lenis; if (l) l.scrollTo(y, { immediate: true }); else scrollTo(0, y); } }
       yS = -1; side.clear();
       paint(scrollY);
     };

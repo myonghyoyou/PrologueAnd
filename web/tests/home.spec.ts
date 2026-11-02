@@ -132,68 +132,101 @@ test.describe('홈 — 데스크톱', () => {
     return { x: q.x * m.a + m.e, y: q.y * m.d + m.f };
   });
 
-  test('큰 글자: 선이 02 머리 선에 닿기 전엔 문장이 아직 오지 않았고, 「불편한지」 밑을 지나는 동안 초점이 잡힌다 — 큰 낱말은 첫 화면 제목보다 크다', async ({ page }) => {
+  /** 선이 그림 뒤로 지나는 상자들(그 장면 SVG 의 가림 상자) — 화면 좌표 */
+  const hidden = (page: import('@playwright/test').Page, key: string) => page.evaluate((key) =>
+    [...document.querySelectorAll('[data-scene="' + key + '"] [data-thread] mask rect[fill="#000"]')].map((r) => { const m = (r as SVGRectElement).ownerSVGElement!.querySelector<SVGPathElement>('path[class*="threadInk"]')!.getScreenCTM()!, g = (k: string) => +r.getAttribute(k)!, x = g('x') * m.a + m.e, y = g('y') * m.d + m.f; return { l: x, t: y, r: x + g('width') * m.a, b: y + g('height') * m.d }; }), key);
+  /** 그 장면 선에서 지금 보이는 점들(그려진 길이 안, 가림 상자 밖) */
+  const shown = (page: import('@playwright/test').Page, key: string) => page.evaluate((key) => {
+    const p = document.querySelector<SVGPathElement>('[data-scene="' + key + '"] [data-thread] path[class*="threadInk"]')!, m = p.getScreenCTM()!, len = parseFloat(p.style.strokeDasharray) || 0;
+    const boxes = [...p.ownerSVGElement!.querySelectorAll('mask rect[fill="#000"]')].map((r) => { const g = (k: string) => +r.getAttribute(k)!, x = g('x') * m.a + m.e, y = g('y') * m.d + m.f; return { left: x, top: y, right: x + g('width') * m.a, bottom: y + g('height') * m.d }; });
+    const out: { x: number; y: number }[] = [];
+    for (let l = 0; l <= len; l += 3) { const q = p.getPointAtLength(l), x = q.x * m.a + m.e, y = q.y * m.d + m.f; if (!boxes.some((b) => x > b.left && x < b.right && y > b.top && y < b.bottom)) out.push({ x, y }); }
+    return out;
+  }, key);
+
+  test('큰 글자: 문장은 무대 세로 가운데, 「불편한지」 밑(28px 띄워)을 지나는 동안 초점이 잡히고, 짧게 머문 뒤 아래에서 문제 파악이 올라온다', async ({ page }) => {
     await page.goto('/');
+    const vp = page.viewportSize()!;
     const h1 = await page.locator('#home-h1').evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
     const big = page.locator('[data-mark="find"]');
     expect(await big.evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThan(h1 * 1.4);
     const v = (n: string) => page.locator('[data-focus]').evaluate((e, n) => parseFloat((e as HTMLElement).style.getPropertyValue(n) || '0'), n);
     await into(page, 'focus', -0.45);
-    expect(await v('--e')).toBeLessThan(0.4);
-    // 밑줄 가운데쯤 — 선 끝이 큰 낱말 아래에 있고, 초점 정도가 지나간 만큼
+    expect(await v('--e')).toBeLessThan(0.6);
     let mid = false;
-    for (const k of [0.15, 0.22, 0.29, 0.36, 0.43]) {
+    for (const k of [0.2, 0.3, 0.4, 0.5, 0.6]) {
       await into(page, 'focus', k);
       const f = await v('--f');
       if (f > 0.15 && f < 0.85) {
         const b = (await big.boundingBox())!, h = (await head(page))!;
-        expect(Math.abs(h.y - (b.y + b.height + 6))).toBeLessThan(4);
+        expect(Math.abs(h.y - (b.y + b.height + 28))).toBeLessThan(4);   // 글자에 붙지 않는다
         expect(Math.abs(h.x - (b.x + b.width - f * b.width))).toBeLessThan(b.width * 0.18);
         mid = true; break;
       }
     }
     expect(mid).toBe(true);
-    await into(page, 'focus', 0.62);
+    await into(page, 'focus', 0.85);
     expect(await v('--f')).toBe(1);
     expect(await page.locator('[data-focus] [data-dim]').first().evaluate((e) => +getComputedStyle(e).opacity)).toBeLessThan(0.35);
-    expect(await big.evaluate((e) => getComputedStyle(e).color)).toMatch(/rgb\(31, 36, 71\)|srgb 0\.12156\d* 0\.14117\d* 0\.27843/);   // 남색(color-mix 100%)
-  });
-
-  test('세 단계: 선 끝이 단계 머리에 닿을 때마다 그 단계가 앞으로 나오고 지난 단계는 물러난다(1 큰 글자 · 2 자리 이동 · 3 옆 칸 다시 긋기)', async ({ page }) => {
-    await page.goto('/');
-    const st = () => page.locator('[data-step]').evaluateAll((es) => es.map((e) => (e as HTMLElement).dataset.st));
-    await into(page, 'steps', 0.02);
-    expect(await st()).toEqual(['on', 'next', 'next']);
-    const t1 = (await page.locator('[data-step="1"] h3').boundingBox())!, h1 = (await head(page))!;
-    expect(Math.abs(h1.y - (t1.y + t1.height / 2))).toBeLessThan(6);
-    expect(await page.locator('[data-step="1"] [class*="stepT"]').evaluate((e) => getComputedStyle(e).transform)).not.toBe('none');
-    await into(page, 'steps', 0.42);
-    expect(await st()).toEqual(['past', 'on', 'next']);
+    expect(await big.evaluate((e) => getComputedStyle(e).color)).toMatch(/rgb\(31, 36, 71\)|srgb 0\.12156\d* 0\.14117\d* 0\.27843/);
+    // 위아래 여백이 고르다(문장 묶음의 가운데가 화면 가운데 근처)
+    const hb = (await page.locator('[data-focus]').boundingBox())!;
+    expect(Math.abs(hb.y + hb.height / 2 - vp.height / 2)).toBeLessThan(vp.height * 0.15);
+    // 큰 글자 장면이 풀리면 바로 아래에서 문제 파악(제목·설명)이 올라온다
+    await page.evaluate(() => { const e = document.querySelector('[data-scene="focus"]')!.getBoundingClientRect(); (window as unknown as { __lenis: { scrollTo: (y: number, o: object) => void } }).__lenis.scrollTo(e.bottom + scrollY - innerHeight * 0.55, { immediate: true }); });
     await page.waitForTimeout(800);
-    const t2 = (await page.locator('[data-step="2"] h3').boundingBox())!;
-    expect(t2.x).toBeGreaterThan(t1.x + 300);   // 2 는 제목이 오른쪽으로 건너간다
-    await into(page, 'steps', 0.9);
-    expect(await st()).toEqual(['past', 'past', 'on']);
-    // 3 의 옛 경로(흐린 점선)는 선이 곧게 다시 그으면 물러난다
-    expect(await page.locator('[data-thread] [class*="threadOld"]').evaluate((e) => +getComputedStyle(e).opacity)).toBeLessThan(0.2);
+    const s1 = (await page.locator('[data-step="1"] h3').boundingBox())!, p1 = (await page.locator('[data-step="1"] p').boundingBox())!, bb = (await big.boundingBox())!;
+    expect(s1.y + s1.height).toBeLessThan(vp.height); expect(p1.y).toBeLessThan(vp.height + 40);
+    expect(bb.y + bb.height).toBeGreaterThan(0);   // 큰 낱말이 아직 화면에 있는 동안
   });
 
-  test('명암 전환: 남색은 선 끝 높이까지만 덮고, 덮인 자리에 작업 문구가 크게 드러난다 — 헤더도 남색이 닿으면 남색', async ({ page }) => {
+  test('세 단계: 지금 단계의 제목과 설명이 화면 가운데에 함께 서고, 다음 단계 제목이 아래에 흐리게 기다린다 — 선 끝은 지금 번호에', async ({ page }) => {
     await page.goto('/');
+    const vp = page.viewportSize()!;
+    const st = () => page.locator('[data-step]').evaluateAll((es) => es.map((e) => (e as HTMLElement).dataset.st));
+    const one = async (i: number, want: string[]) => {
+      expect(await st()).toEqual(want);
+      await page.waitForTimeout(800);
+      const h = (await page.locator('[data-step="' + i + '"] h3').boundingBox())!, p = (await page.locator('[data-step="' + i + '"] p').boundingBox())!;
+      expect(await page.locator('[data-step="' + i + '"] p').evaluate((e) => +getComputedStyle(e.closest('[class*="stepBody"]')!).opacity)).toBeGreaterThan(0.95);
+      expect(await page.locator('[data-step="' + i + '"] p').evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(16);
+      expect(p.y - (h.y + h.height)).toBeLessThan(40);                       // 제목과 설명이 한 덩어리
+      expect(h.y).toBeGreaterThan(vp.height * 0.2); expect(p.y + p.height).toBeLessThan(vp.height * 0.8);
+      const n = (await page.locator('[data-tn="' + i + '"]').boundingBox())!, hd = (await head(page))!;
+      expect(Math.abs(hd.y - (n.y + n.height / 2))).toBeLessThan(8);         // 선 끝은 지금 번호 옆
+      if (i < 3) {                                                            // 다음 단계 제목이 아래에 흐리게
+        const nx = page.locator('[data-step="' + (i + 1) + '"] h3');
+        expect(await nx.evaluate((e) => +getComputedStyle(e.closest('[data-step]')!).opacity)).toBeGreaterThan(0.2);
+        expect((await nx.boundingBox())!.y).toBeGreaterThan(p.y + p.height);
+      }
+    };
+    await into(page, 'steps', 0.12); await one(1, ['on', 'next', 'later']);
+    await into(page, 'steps', 0.6); await one(2, ['past', 'on', 'next']);
+    await into(page, 'steps', 0.95); await one(3, ['past', 'past', 'on']);
+    // 단계 사이에는 줄 구분선이 없다
+    expect(await page.locator('[data-step]').evaluateAll((es) => es.filter((e) => parseFloat(getComputedStyle(e).borderTopWidth) > 0).length)).toBe(0);
+  });
+
+  test('명암 전환: 남색은 선 끝 높이까지만 덮고, 제목은 위쪽이라 일찍 읽힌다 — 아래에 첫 작업 화면 윗부분, 헤더도 남색', async ({ page }) => {
+    await page.goto('/');
+    const vp = page.viewportSize()!;
     const edge = () => page.locator('[data-scene="dark"] [data-stage]').evaluate((e) => parseFloat((e as HTMLElement).style.getPropertyValue('--edge')));
     await into(page, 'dark', 0.12);
     const e1 = await edge(), h = (await head(page))!, stTop = await page.locator('[data-scene="dark"] [data-stage]').evaluate((e) => e.getBoundingClientRect().top);
-    expect(e1).toBeGreaterThan(80); expect(e1).toBeLessThan(page.viewportSize()!.height);
+    expect(e1).toBeGreaterThan(80); expect(e1).toBeLessThanOrEqual(vp.height);
     expect(Math.abs(h.y - (stTop + e1))).toBeLessThan(3);
-    await into(page, 'dark', 0.7);
-    expect(await edge()).toBeCloseTo(page.viewportSize()!.height, 0);
-    await expect(page.locator('html')).toHaveAttribute('data-hdr-dark', '');
+    // 제목은 덮인 자리 안 — 무대가 붙자마자 다 읽힌다
     const wt = (await page.locator('[data-scene="dark"] h2').boundingBox())!;
-    expect(wt.height).toBeGreaterThan(100);
-    expect(wt.y + wt.height).toBeLessThan(page.viewportSize()!.height);
+    expect(wt.y + wt.height).toBeLessThan(stTop + e1);
+    expect(wt.y).toBeLessThan(vp.height * 0.4);
+    await into(page, 'dark', 0.7);
+    expect(await edge()).toBeCloseTo(vp.height, 0);
+    await expect(page.locator('html')).toHaveAttribute('data-hdr-dark', '');
+    const pk = (await page.locator('[data-peek] img').boundingBox())!;
+    expect(pk.y).toBeLessThan(vp.height - 120);                               // 첫 작업 화면 윗부분이 보인다
   });
 
-  test('첫 작업: 그림이 작은 자리에서 화면 대부분으로 커지고, 선은 그 화면 오른쪽 가장자리를 따른다 — 다 커지면 흐림 없이 원래 크기', async ({ page }) => {
+  test('첫 작업: 그림이 글 옆으로 커지고(글은 그림 바로 옆), 그동안 선은 그림 바깥 가장자리에서 멈춰 그림 뒤에 있다', async ({ page }) => {
     await page.goto('/');
     const vp = page.viewportSize()!;
     const frame = page.locator('[data-scene="grow"] [data-grow] [class*="frame"]');
@@ -202,21 +235,19 @@ test.describe('홈 — 데스크톱', () => {
     await into(page, 'grow', 0.75);
     const b = (await frame.boundingBox())!;
     expect(b.width).toBeGreaterThan(a.width * 1.15);
-    // 화면을 채우는 정도는 1440×900 기준(브리프) — 그 이상 폭에서도 같은 비율 이상
-    if (vp.width >= 1440) expect(b.width * b.height).toBeGreaterThan(vp.width * vp.height * 0.42);
+    if (vp.width === 1440) expect(b.width * b.height).toBeGreaterThan(vp.width * vp.height * 0.32);   // 글을 그림 옆에 붙인 배치(1440×900)
     expect(b.y + b.height).toBeLessThan(vp.height);
     expect(await page.locator('[data-scene="grow"] [data-grow]').evaluate((e) => getComputedStyle(e).transform)).toBe('none');
-    expect(await page.locator('[data-scene="grow"] [data-fade]').evaluate((e) => +getComputedStyle(e).opacity)).toBe(0);
-    // 선은 화면 틀 오른쪽 가장자리를 따라 내려간다
-    const on = await page.evaluate(([x, y0, y1]) => {
-      const p = [...document.querySelectorAll<SVGPathElement>('[data-scene="grow"] [data-thread] path[class*="threadInk"]')][0], m = p.getScreenCTM()!, L = p.getTotalLength();
-      let n = 0; for (let i = 0; i <= 400; i++) { const q = p.getPointAtLength((L * i) / 400), X = q.x * m.a + m.e, Y = q.y * m.d + m.f; if (Math.abs(X - x) < 1.5 && Y > y0 && Y < y1) n++; }
-      return n;
-    }, [b.x + b.width, b.y + 10, b.y + b.height - 10]);
-    expect(on).toBeGreaterThan(20);
+    const side = (await page.locator('[data-scene="grow"] [class*="side"]').boundingBox())!;
+    expect(side.x - (b.x + b.width)).toBeLessThan(80);                         // 글은 그림 바로 옆
+    expect(side.x).toBeGreaterThan(b.x + b.width);
+    // 보이는 선은 그림 상자 밖에만 있고, 그림과 40px 가까이 띄운다(가장자리를 따라 그리지 않는다)
+    const box = (await hidden(page, 'grow'))[0], pts = await shown(page, 'grow');
+    for (const q of pts) expect(q.x < box.l - 1 || q.x > box.r + 1 || q.y < box.t - 1 || q.y > box.b + 1).toBe(true);
+    expect(pts.filter((q) => q.y > box.t && q.y < box.b && Math.abs(q.x - box.r) < 30).length).toBe(0);
   });
 
-  test('병원: 스크롤이 전·후 비교의 가운데 선을 옮기고, 잇는 선이 그 가운데 선이 된다 — 손으로 옮기면 그때부터는 손이 정한다', async ({ page }) => {
+  test('병원: 스크롤이 전·후 비교의 가운데 선을 옮기는 동안 잇는 선은 비교 뒤에 있다 — 손으로 옮기면 그때부터는 손이 정한다', async ({ page }) => {
     await page.goto('/');
     const ba = page.locator('[data-scene="sweep"] [data-ba]');
     const x = () => ba.evaluate((e) => parseFloat((e as HTMLElement).style.getPropertyValue('--x')));
@@ -225,30 +256,39 @@ test.describe('홈 — 데스크톱', () => {
     await into(page, 'sweep', 0.5);
     const x1 = await x();
     expect(x0).toBeGreaterThan(x1 + 25);
-    const b = (await ba.boundingBox())!, dx = b.x + (b.width * x1) / 100;
-    const n = await page.evaluate(([dx, y0, y1]) => {
-      const p = [...document.querySelectorAll<SVGPathElement>('[data-scene="sweep"] [data-thread] path[class*="threadInk"]')][0], m = p.getScreenCTM()!, L = p.getTotalLength();
-      let n = 0; for (let i = 0; i <= 400; i++) { const q = p.getPointAtLength((L * i) / 400), X = q.x * m.a + m.e, Y = q.y * m.d + m.f; if (Math.abs(X - dx) < 2 && Y > y0 && Y < y1) n++; }
-      return n;
-    }, [dx, b.y + 10, b.y + b.height - 10]);
-    expect(n).toBeGreaterThan(10);
+    const b = (await ba.boundingBox())!, pts = await shown(page, 'sweep');
+    expect(pts.filter((q) => q.x > b.x && q.x < b.x + b.width && q.y > b.y && q.y < b.y + b.height).length).toBe(0);
     await ba.locator('input').focus(); await page.keyboard.press('ArrowRight');
     const xm = await x();
     await into(page, 'sweep', 0.6);
     expect(await x()).toBe(xm);
   });
 
-  test('근무표: 선이 표시줄 자리를 짚은 뒤 그 자리가 크게 열린다 — 두 번째 화면으로 바꾸면 확대는 숨는다', async ({ page }) => {
+  test('근무표: 표시줄 자리가 그림 위로 크게 열리는 동안 선은 그림 뒤에 있다 — 두 번째 화면으로 바꾸면 확대는 숨는다', async ({ page }) => {
     await page.goto('/');
     const fd = page.locator('[data-scene="zoom"] [data-zoomed]');
-    await into(page, 'zoom', 0.15);
+    await into(page, 'zoom', 0.05);
     expect(await fd.evaluate((e) => getComputedStyle(e).opacity)).toBe('0');
     await into(page, 'zoom', 0.8);
     await expect(fd).toHaveAttribute('data-open', '');
     const img = (await page.locator('[data-scene="zoom"] [data-zoomed] img').boundingBox())!, src = (await page.locator('[data-scene="zoom"] [data-two] [class*="frame"]').boundingBox())!;
-    expect(img.width).toBeGreaterThan(src.width * 0.396 * 1.8);   // 원본의 표시줄(폭 39.6%)이 두 배 가까이 크게
+    expect(img.width).toBeGreaterThan(src.width * 0.396 * 1.8);
+    const pts = await shown(page, 'zoom');
+    expect(pts.filter((q) => q.x > src.x && q.x < src.x + src.width && q.y > src.y && q.y < src.y + src.height).length).toBe(0);
+    const side = (await page.locator('[data-scene="zoom"] [class*="side"]').boundingBox())!;
+    expect(src.x - (side.x + side.width)).toBeLessThan(80);                    // 글은 그림 바로 옆
     await page.locator('[data-work="shift-board"]').getByRole('button', { name: '내려받기 전 확인' }).click();
     await expect.poll(() => fd.evaluate((e) => getComputedStyle(e).visibility)).toBe('hidden');
+  });
+
+  test('가로선 정리: 「모든 작업」 위·문의 장 위·작업 사이·서비스 목록 위에는 선이 없다', async ({ page }) => {
+    await page.goto('/');
+    const bw = (sel: string) => page.locator(sel).evaluateAll((es) => es.map((e) => parseFloat(getComputedStyle(e).borderTopWidth)));
+    expect(await page.locator('[data-all] b').evaluate((e) => parseFloat(getComputedStyle(e.parentElement!).borderTopWidth))).toBe(0);
+    expect(await bw('[data-sec="contact"]')).toEqual([0]);
+    expect((await bw('[data-sec="contact"] [class*="__sh"]'))[0]).toBe(0);
+    expect((await bw('[data-work]')).every((w) => w === 0)).toBe(true);
+    expect(await page.locator('[data-can]').first().evaluate((e) => parseFloat(getComputedStyle(e.parentElement!).borderTopWidth))).toBe(0);
   });
 
   test('머리글 낱말: 화면에 닿기 전엔 흐리고, 지나면 채워진다', async ({ page }) => {
@@ -263,7 +303,7 @@ test.describe('홈 — 데스크톱', () => {
     await page.goto('/');
     const state = () => page.evaluate(() => ({
       st: [...document.querySelectorAll<HTMLElement>('[data-step]')].map((e) => e.dataset.st),
-      f: (document.querySelector('[data-focus]') as HTMLElement).style.getPropertyValue('--f'),
+      f: (+(document.querySelector('[data-focus]') as HTMLElement).style.getPropertyValue('--f')).toFixed(1),
       edge: (document.querySelector('[data-scene="dark"] [data-stage]') as HTMLElement).style.getPropertyValue('--edge'),
       x: (document.querySelector('[data-ba]') as HTMLElement).style.getPropertyValue('--x'),
     }));
@@ -476,7 +516,9 @@ test('잇는 선은 글자 위를 지나지 않는다(머리글도) — 움직�
     const pts: { x: number; y: number }[] = [];
     for (const p of document.querySelectorAll<SVGPathElement>('[data-thread] path[class*="threadInk"]')) {
       const m = p.getScreenCTM()!, L = p.getTotalLength();
-      for (let i = 0; i <= Math.ceil(L / 3); i++) { const q = p.getPointAtLength(Math.min(L, i * 3)); pts.push({ x: q.x * m.a + m.e, y: q.y * m.d + m.f }); }
+      // 그림 뒤로 지나는 구간(가림 상자 안)은 보이지 않으니 빼고 센다
+      const boxes = [...p.ownerSVGElement!.querySelectorAll('mask rect[fill="#000"]')].map((r) => { const g = (k: string) => +r.getAttribute(k)!, x = g('x') * m.a + m.e, y = g('y') * m.d + m.f; return { left: x, top: y, right: x + g('width') * m.a, bottom: y + g('height') * m.d }; });
+      for (let i = 0; i <= Math.ceil(L / 3); i++) { const q = p.getPointAtLength(Math.min(L, i * 3)), x = q.x * m.a + m.e, y = q.y * m.d + m.f; if (!boxes.some((b) => x > b.left && x < b.right && y > b.top && y < b.bottom)) pts.push({ x, y }); }
     }
     const rects: { r: DOMRect; t: string }[] = [];
     const tw = document.createTreeWalker(document.querySelector('[data-home]')!, NodeFilter.SHOW_TEXT);
@@ -552,7 +594,7 @@ test.describe('홈 — 기준 SVG & 와 잇는 선의 출구·입구', () => {
     await expect(page.locator('[data-amp="contact"]')).toHaveAttribute('data-drawn', '', { timeout: 5000 });
     await scrollToY(page, 0);
     await expect(page.locator('[data-amp="contact"]')).not.toHaveAttribute('data-drawn', '', { timeout: 5000 });
-    await expect.poll(() => page.locator('[data-step]').evaluateAll((es) => es.map((e) => (e as HTMLElement).dataset.st)), { timeout: 5000 }).toEqual(['next', 'next', 'next']);
+    await expect.poll(() => page.locator('[data-step]').evaluateAll((es) => es.map((e) => (e as HTMLElement).dataset.st)), { timeout: 5000 }).toEqual(['next', 'later', 'later']);
     await expect.poll(() => page.locator('[data-scene="dark"] [data-stage]').evaluate((e) => parseFloat((e as HTMLElement).style.getPropertyValue('--edge'))), { timeout: 5000 }).toBe(0);
   });
 
@@ -577,7 +619,7 @@ test.describe('홈 — 기준 SVG & 와 잇는 선의 출구·입구', () => {
   test('내부 링크로 중간(#work)에 들어와도 지난 장면은 이미 지난 상태로 바로 보인다', async ({ page }) => {
     await page.goto('/#work');
     await page.waitForTimeout(600);
-    expect(await page.locator('[data-step]').evaluateAll((es) => es.map((e) => (e as HTMLElement).dataset.st))).toEqual(['past', 'past', 'on']);
+    await expect.poll(() => page.locator('[data-step]').evaluateAll((es) => es.map((e) => (e as HTMLElement).dataset.st)), { timeout: 4000 }).toEqual(['past', 'past', 'on']);
     expect(await page.locator('[data-focus]').evaluate((e) => (e as HTMLElement).style.getPropertyValue('--f'))).toBe('1.000');
   });
 });
