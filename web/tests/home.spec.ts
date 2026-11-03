@@ -358,9 +358,11 @@ test.describe('홈 — 데스크톱', () => {
     expect(await state()).toEqual(slow);
   });
 
-  test('헤더 「할 수 있는 일」이 서비스 줄로 간다', async ({ page }) => {
+  test('헤더 메뉴는 Projects 와 문의 둘뿐이다(「할 수 있는 일」 링크 없음)', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('header a[href="#can"]')).toBeVisible();
+    await expect(page.locator('header a[href="#can"]')).toHaveCount(0);
+    await expect(page.locator('header nav').getByRole('link')).toHaveText(['Projects']);
+    await expect(page.locator('header nav').getByRole('button')).toHaveText(['문의']);
   });
 
   test('첫 화면이 창 한 장 안에 든다(단추까지)', async ({ page }) => {

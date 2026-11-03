@@ -28,13 +28,8 @@
 :global(html[data-hdr-dark]) .amp{color:var(--navy-300)}
 :global(html[data-hdr-dark]) .nav a,:global(html[data-hdr-dark]) .nav button{background:var(--navy-900);border-color:var(--bone-50);color:var(--bone-50)}
 :global(html[data-hdr-dark]) .nav a:hover,:global(html[data-hdr-dark]) .nav button:hover{background:var(--bone-50);color:var(--navy-900)}
-:global(html[data-hdr-dark]) .nav .text{background:none;border-color:transparent;color:var(--bone-50)}
 :global(html[data-hdr-dark]) .nav a:focus-visible,:global(html[data-hdr-dark]) .nav button:focus-visible{outline:2px solid var(--bone-50);outline-offset:3px}
 @media (max-width:1023px){ :global(html[data-hdr-dark]) .hdr{background:var(--navy-900)} }
-/* 홈의 글자 링크(할 수 있는 일) — 단추 모양 없이 */
-.nav .text{border-color:transparent;background:none;padding:0 10px}
-.nav .text:hover{background:none;color:var(--navy-800);text-decoration:underline;text-underline-offset:4px}
-@media (max-width:700px){ .nav .text{display:none} }
 @media (max-width:1023px){ .who{display:none} .back span{display:none} .back{padding:0 10px;height:36px} }
 /* 폰: 단색(Safari 26 은 화면 위 끝 요소의 배경으로 툴바 색을 정한다 — 그라데이션·반투명 금지).
    사례 상세에서 장 진행 바가 붙으면(html[data-hdr-hide]) 위로 숨는다 */
