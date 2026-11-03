@@ -28,16 +28,20 @@ test.describe('홈', () => {
 
   test('일하는 방식: 세 단계', async ({ page }) => {
     await expect(page.locator('[data-step] h3')).toHaveText(['01문제 파악', '02설계와 개발', '03오픈 후 수정']);
+    await expect(page.locator('[data-step="3"] p').first()).toHaveText('오픈 후 석 달 동안은 쓰면서 생긴 불편을 무상으로 고칩니다. 한 달쯤 지나면 제가 먼저 연락해 불편한 점을 여쭙니다. 제가 만든 오류는 기간과 상관없이 고칩니다.');
   });
 
-  test('할 수 있는 일: 네 줄이 같은 구조, 관련 작업이 없으면 문의 단추, 관련 작업 링크는 이 페이지의 작업으로', async ({ page }) => {
+  test('할 수 있는 일: 네 줄이 같은 구조, 관련 작업이 없으면 문의 단추, 관련 작업 링크는 이 페이지의 작업이나 새 탭의 실제 사이트로', async ({ page }) => {
     await expect(page.locator('[data-can]')).toHaveCount(4);
     await expect(page.locator('[data-can] h3')).toHaveText(['업무 화면 개선', '업무 웹 전환', '맞춤 웹서비스 개발', '홈페이지 제작']);
     for (const row of await page.locator('[data-can]').all()) expect(await row.locator('a, button').count()).toBeGreaterThan(0);
-    await page.locator('#s-site').getByRole('button', { name: /이런 작업 문의하기/ }).click();
+    await page.locator('#s-make').getByRole('button', { name: /이런 작업 문의하기/ }).click();
     await expect(page.locator('html')).toHaveAttribute('data-drawer-open', '');
     await page.keyboard.press('Escape');
-    for (const href of await page.locator('[data-can] a').evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) {
+    const site = page.locator('#s-site a');
+    await expect(site).toHaveAttribute('href', 'https://www.aroma-roastery.com');
+    await expect(site).toHaveAttribute('target', '_blank');
+    for (const href of await page.locator('[data-can] a:not([target])').evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) {
       expect(href).toMatch(/^#w-/);
       await expect(page.locator(href)).toHaveCount(1);
     }

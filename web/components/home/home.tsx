@@ -229,13 +229,16 @@ export function Home({ projects }: { projects: Project[] }) {
           <div className={s.rows}>
             {SERVICES.map((v, i) => {
               const rel = v.rel.map((slug) => bySlug.get(slug)).filter((p): p is Project => !!p);
+              const ext = 'ext' in v ? v.ext : null;
               return (
                 <div key={v.id} className={s.row} id={`s-${v.id}`} data-can data-group={v.group}>
                   <p className={s.rowMeta}><span className={s.num}>{no(i)}</span>{v.label}</p>
                   <h3 className={s.rowT} data-fill>{words([v.t])}</h3>
                   <div className={s.rowBody}>
                     <p>{v.d}</p>
-                    {rel.length ? (
+                    {ext ? (
+                      <p className={s.rel}>관련 작업 · <a href={ext.href} target="_blank" rel="noopener">{ext.t} <span aria-hidden="true">↗</span></a></p>
+                    ) : rel.length ? (
                       <p className={s.rel}>관련 작업 · {rel.map((p, k) => <Fragment key={p.slug}>{k > 0 ? ', ' : null}<a href={`#w-${p.slug}`}>{p.title}</a></Fragment>)}</p>
                     ) : (
                       <p className={s.rel}><button type="button" className={s.ask} data-open-drawer>이런 작업 문의하기 →</button></p>
